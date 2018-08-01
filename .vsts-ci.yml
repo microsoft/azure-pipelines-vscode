@@ -6,6 +6,7 @@ steps:
 - script: |
     CI_VERSION_STRING=$(node -p "require('./package.json').version")-ci-$(git rev-parse --short HEAD)
     npm --no-git-tag-version version $CI_VERSION_STRING
+    echo "##vso[build.updatebuildnumber]${CI_VERSION_STRING}_${BUILD_BUILDID}"
   displayName: Indicate CI version
 
 - script: |
