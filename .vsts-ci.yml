@@ -4,6 +4,11 @@ steps:
   continueOnError: true
 
 - script: |
+    CI_VERSION_STRING=$(node -p "require('./package.json').version")-ci
+    npm --no-git-tag-version version $(CI_VERSION_STRING)
+  displayName: Indicate CI version
+
+- script: |
     mkdir ~/.npm-global
     export NPM_CONFIG_PREFIX=~/.npm-global
     export PATH=~/.npm-global/bin:$PATH
