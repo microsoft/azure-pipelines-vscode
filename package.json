@@ -4,6 +4,7 @@
     "description": "TODO description",
     "version": "0.0.1",
     "publisher": "nc-rocket",
+    "repository": "https://github.com/Microsoft/pipelines-vscode",
     "engines": {
         "vscode": "^1.25.0"
     },
