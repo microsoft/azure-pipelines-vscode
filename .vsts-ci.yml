@@ -1,0 +1,16 @@
+steps:
+- script: npm test
+  displayName: Run tests
+  continueOnError: true
+
+- script: npm install -g vsce
+  displayName: Install vsce
+
+- script: vsce package
+  displayName: Create VSIX
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish VSIX
+  inputs:
+    pathToPublish: $(Build.ArtifactStagingDirectory)/*.vsix
+    artifactName: VSIX
