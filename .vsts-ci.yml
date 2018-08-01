@@ -6,6 +6,7 @@ steps:
 - script: |
     mkdir ~/.npm-global
     export NPM_CONFIG_PREFIX=~/.npm-global
+    export PATH=~/.npm-global/bin:$PATH
     npm install -g vsce
     vsce package
   displayName: Create VSIX
