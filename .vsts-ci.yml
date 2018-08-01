@@ -11,8 +11,14 @@ steps:
     vsce package
   displayName: Create VSIX
 
+- task: CopyFiles@2
+  displayName: Stage VSIX for publishing
+  inputs:
+    contents: '*.vsix' 
+    targetFolder: $(Build.ArtifactStagingDirectory)
+
 - task: PublishBuildArtifacts@1
   displayName: Publish VSIX
   inputs:
-    pathToPublish: $(Build.ArtifactStagingDirectory)/*.vsix
+    pathToPublish: $(Build.ArtifactStagingDirectory)
     artifactName: VSIX
