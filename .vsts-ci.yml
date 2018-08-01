@@ -3,7 +3,7 @@ steps:
   displayName: Run tests
   continueOnError: true
 
-- script: npm install -g vsce
+- script: npm install --global-style vsce
   displayName: Install vsce
 
 - script: vsce package
