@@ -5,7 +5,7 @@ steps:
 
 - script: |
     CI_VERSION_STRING=$(node -p "require('./package.json').version")-ci
-    npm --no-git-tag-version version $(CI_VERSION_STRING)
+    npm --no-git-tag-version version $CI_VERSION_STRING
   displayName: Indicate CI version
 
 - script: |
