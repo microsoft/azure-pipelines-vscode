@@ -3,10 +3,11 @@ steps:
   displayName: Run tests
   continueOnError: true
 
-- script: npm install --global-style vsce
-  displayName: Install vsce
-
-- script: vsce package
+- script: |
+    mkdir ~/.npm-global
+    export NPM_CONFIG_PREFIX=~/.npm-global
+    npm install -g vsce
+    vsce package
   displayName: Create VSIX
 
 - task: PublishBuildArtifacts@1
