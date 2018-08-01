@@ -4,7 +4,7 @@ steps:
   continueOnError: true
 
 - script: |
-    CI_VERSION_STRING=$(node -p "require('./package.json').version")-ci
+    CI_VERSION_STRING=$(node -p "require('./package.json').version")-ci-$(git rev-parse --short HEAD)
     npm --no-git-tag-version version $CI_VERSION_STRING
   displayName: Indicate CI version
 
