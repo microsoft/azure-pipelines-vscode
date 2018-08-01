@@ -1,5 +1,5 @@
 steps:
-- script: npm test
+- script: npm install && npm test
   displayName: Run tests
   continueOnError: true
 
