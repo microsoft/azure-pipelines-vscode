@@ -1,14 +1,38 @@
+# CI and PR build script
+#
+# There should be no deep magic here. The developer experience and CI experience
+# must remain as close to one another as possible.
+#
+# Developer experience:
+#   npm install
+#   (make changes)
+#   npm test
+#   vsce package
+#   (give VSIX to someone for buddy testing)
+
+
 steps:
 - script: npm install && npm test
   displayName: Run tests
   continueOnError: true
 
+# for convenience, we tag CI-produced packages with a version number
+# pointing to the commit which was built. for PRs, also include the PR #.
 - script: |
-    CI_VERSION_STRING=$(node -p "require('./package.json').version")-ci-$(git rev-parse --short HEAD)
-    npm --no-git-tag-version version $CI_VERSION_STRING
-    echo "##vso[build.updatebuildnumber]${CI_VERSION_STRING}_${BUILD_BUILDID}"
-  displayName: Indicate CI version
+    PACKAGE_VERSION=$(node -p "require('./package.json').version")
 
+    if [ -n "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER" ]; then
+      VERSION_STRING=${PACKAGE_VERSION}-pr-${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}-$(git rev-parse --short HEAD)
+    else
+      VERSION_STRING=${PACKAGE_VERSION}-ci-$(git rev-parse --short HEAD)
+    fi
+
+    npm --no-git-tag-version version $VERSION_STRING
+    echo "##vso[build.updatebuildnumber]${VERSION_STRING}_${BUILD_BUILDID}"
+  displayName: Indicate CI or PR version
+
+# This is nothing more than `npm install -g vsce && vsce package`, but
+# we don't have sudo on the CI system.
 - script: |
     mkdir ~/.npm-global
     export NPM_CONFIG_PREFIX=~/.npm-global
@@ -17,14 +41,16 @@ steps:
     vsce package
   displayName: Create VSIX
 
+# This is how the CI system knows what to publish...
 - task: CopyFiles@2
   displayName: Stage VSIX for publishing
   inputs:
     contents: '*.vsix' 
     targetFolder: $(Build.ArtifactStagingDirectory)
 
+# ...and this is the CI system publishing it.
 - task: PublishBuildArtifacts@1
   displayName: Publish VSIX
   inputs:
     pathToPublish: $(Build.ArtifactStagingDirectory)
-    artifactName: VSIX
+    artifactName: rocket-ship
