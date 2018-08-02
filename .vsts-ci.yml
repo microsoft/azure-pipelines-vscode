@@ -4,9 +4,10 @@ steps:
   continueOnError: true
 
 - script: |
+    set
     PACKAGE_VERSION=$(node -p "require('./package.json').version")
-    
-    if [ -n $SYSTEM_PULLREQUEST_PULLREQUESTNUMBER ]; then
+
+    if [ -n "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER" ]; then
       VERSION_STRING=${PACKAGE_VERSION}-pr-${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}-$(git rev-parse --short HEAD)
     else
       VERSION_STRING=${PACKAGE_VERSION}-ci-$(git rev-parse --short HEAD)
