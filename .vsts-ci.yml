@@ -4,7 +4,6 @@ steps:
   continueOnError: true
 
 - script: |
-    set
     PACKAGE_VERSION=$(node -p "require('./package.json').version")
 
     if [ -n "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER" ]; then
