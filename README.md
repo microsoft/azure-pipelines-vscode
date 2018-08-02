@@ -1,4 +1,10 @@
 
+# Pipelines for VS Code
+
+This VS Code extension brings syntax highlighting and autocompletion for Pipelines YAML to VS Code.
+By default, it will highlight `.vsts-ci.yml` files, and you can configure it to look at other
+files and folders as well.
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
