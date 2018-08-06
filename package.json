@@ -1,5 +1,5 @@
 {
-    "name": "yaml-rocket-ship",
+    "name": "yaml-rocket-ship-2",
     "displayName": "YAML Rocket Ship",
     "description": "TODO description",
     "version": "0.0.1",
@@ -12,8 +12,6 @@
         "Other"
     ],
     "activationEvents": [
-        "*",
-        "onLanguage:yaml",
         "onLanguage:azure-pipelines"
     ],
     "main": "./out/extension",
@@ -28,7 +26,7 @@
                     ".yaml"
                 ],
                 "configuration": "./language-configuration.json"
-            },            
+            },
             {
                 "id": "azure-pipelines",
                 "configuration": "./language-configuration.json",
@@ -41,6 +39,11 @@
             }
         ],
         "grammars": [
+            {
+                "language": "yaml",
+                "scopeName": "source.yaml",
+                "path": "./syntaxes/yaml.tmLanguage.json"
+            },
             {
                 "language": "azure-pipelines",
                 "scopeName": "source.yaml",
