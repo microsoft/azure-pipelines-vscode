@@ -14,4 +14,4 @@ steps:
 
     npm --no-git-tag-version version $VERSION_STRING
     echo "##vso[build.updatebuildnumber]${VERSION_STRING}_${BUILD_BUILDID}"
-  displayName: CI/PR version
+  displayName: Set version number of package and build

@@ -16,8 +16,11 @@ steps:
   displayName: Run tests
   continueOnError: true
 
-# Set version number
-- template: ci/version-ci.yml
+# Set version number for PR/CI or release
+- ${{ if startswith(variables.Build.SourceBranch, 'refs/heads/releases/') }}:
+  - template: ci/version-release.yml
+- ${{ if not(startswith(variables.Build.SourceBranch, 'refs/heads/releases/')) }}:
+  - template: ci/version-ci.yml
 
 # This is nothing more than `npm install -g vsce && vsce package`, but
 # we don't have sudo on the CI system.

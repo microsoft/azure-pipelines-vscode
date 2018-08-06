@@ -1,0 +1,6 @@
+# release version should be correctly set in package.json
+steps:
+- script: |
+    PACKAGE_VERSION=$(node -p "require('./package.json').version")
+    echo "##vso[build.updatebuildnumber]${PACKAGE_VERSION}_${BUILD_BUILDID}"
+  displayName: Set version number of build
