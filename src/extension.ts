@@ -1,15 +1,9 @@
 'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-
-//import * as fs from 'fs';
-
-//fs.writeFileSync('C:\stuff.txt', '');
-
 import * as languageclient from 'vscode-languageclient';
+
 import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from './schema-contributor'
 
 export interface ISchemaAssociations {
@@ -20,8 +14,6 @@ namespace SchemaAssociationNotification {
 	export const type: languageclient.NotificationType<ISchemaAssociations, any> = new languageclient.NotificationType('json/schemaAssociations');
 }
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
@@ -30,7 +22,6 @@ export function activate(context: vscode.ExtensionContext) {
     let serverModule = context.asAbsolutePath(path.join('node_modules', 'yaml-language-server', 'out', 'server', 'src', 'server.js'));
     //log('2. Server module defined.');
 
-    // The debug options for the server
     let debugOptions = { execArgv: ["--nolazy", "--debug=6009"] };
     //log('3. Debug options defined.');
 
@@ -81,8 +72,6 @@ export function activate(context: vscode.ExtensionContext) {
         log('9. Client ready.');
 
         client.sendNotification(SchemaAssociationNotification.type, getSchemaAssociation(context));
-        // TODO: Very important, can we use this to send schema association ourselves?
-
         //log('9.a. Schema association notification sent.')
 
         client.onRequest(CUSTOM_SCHEMA_REQUEST, (resource: any) => {
@@ -95,20 +84,11 @@ export function activate(context: vscode.ExtensionContext) {
         });
     });
 
-    //fs.writeFileSync('E:\\stufffffff.txt', 'sdfsadfasdf');
-    //fs.appendFileSync()
-
-    
-    //log('10. Setting language configuration.');
-    // vscode.languages.setLanguageConfiguration('yaml', {
-    //     wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/
-    // });
-
     vscode.languages.setLanguageConfiguration('azure-pipelines', {
         wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/
     });
 
-    log('11. Returning schema contributor.');
+    //log('11. Returning schema contributor.');
     return schemaContributor;
 }
 
@@ -160,8 +140,8 @@ function getSchemaAssociation(context: vscode.ExtensionContext): ISchemaAssociat
 	return associations;
 }
 
+// easily turn logging on and off
 function log(message: string){
-    // easily turn logging on and off
     console.log(message);
 }
 
