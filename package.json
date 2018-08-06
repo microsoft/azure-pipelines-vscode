@@ -6,17 +6,27 @@
     "publisher": "nc-rocket",
     "repository": "https://github.com/Microsoft/pipelines-vscode",
     "icon": "assets/ymlfile.png",
-    "engines": { "vscode": "^1.25.0" },
-    "categories": [ "Other" ],
-    "activationEvents": [ "onLanguage:azure-pipelines" ],
+    "engines": {
+        "vscode": "^1.25.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onLanguage:azure-pipelines"
+    ],
     "main": "./out/extension",
     "contributes": {
         "languages": [
             {
                 "id": "azure-pipelines",
                 "configuration": "./language-configuration.json",
-                "filenamePatterns": [ ".vsts-ci.yml" ],
-                "aliases": [ "Azure Pipelines" ]
+                "filenamePatterns": [
+                    ".vsts-ci.yml"
+                ],
+                "aliases": [
+                    "Azure Pipelines"
+                ]
             }
         ],
         "grammars": [
@@ -35,26 +45,6 @@
         "configuration": {
             "title": "My extension configuration - TODO: Rename",
             "properties": {
-                "yaml.trace.server": {
-                    "type": "string",
-                    "enum": [
-                        "off",
-                        "messages",
-                        "verbose"
-                    ],
-                    "default": "off",
-                    "description": "Traces the communication between VSCode and the languageServerExample service."
-                },
-                "yaml.schemas": {
-                    "type": "object",
-                    "default": {},
-                    "description": "Associate schemas to Yaml files in the current workspace"
-                },
-                "yaml.format.enable": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Enable/disable default YAML formatter (requires restart)"
-                },
                 "yaml.validate": {
                     "type": "boolean",
                     "default": true,
@@ -80,9 +70,9 @@
         "@types/mocha": "2.2.42"
     },
     "dependencies": {
-        "vscode-languageclient": "3.5.1",
-        "vscode-nls": "3.2.1",
-        "vscode-uri": "1.0.3",
+        "vscode-languageclient": "4.4.0",
+        "vscode-nls": "3.2.4",
+        "vscode-uri": "1.0.5",
         "yaml-language-server": "0.0.17"
     }
 }
