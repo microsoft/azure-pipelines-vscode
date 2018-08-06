@@ -1,8 +1,7 @@
 {
 	"information_for_contributors": [
 		"This file has been converted from https://github.com/textmate/yaml.tmbundle/blob/master/Syntaxes/YAML.tmLanguage",
-		"If you want to provide a fix or improvement, please create a pull request against the original repository.",
-		"Once accepted there, we are happy to receive an update request."
+		"It came by way of https://github.com/vscode and should track to that file."
 	],
 	"version": "https://github.com/textmate/yaml.tmbundle/commit/efc96efafe5e48480cf55a2ed124b388cbea4440",
 	"name": "YAML",
