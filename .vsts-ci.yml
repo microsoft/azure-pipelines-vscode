@@ -12,14 +12,17 @@
 
 
 steps:
-- script: npm install && npm test
-  displayName: Run tests
-  continueOnError: true
+- script: npm install
+  displayName: npm install
+
+# - script: npm test
+#   displayName: npm test
+#   continueOnError: true
 
 # Set version number for PR/CI or release
-- ${{ if startswith(variables.Build.SourceBranch, 'refs/heads/releases/') }}:
+- ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/') }}:
   - template: ci/version-release.yml
-- ${{ if not(startswith(variables.Build.SourceBranch, 'refs/heads/releases/')) }}:
+- ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/')) }}:
   - template: ci/version-ci.yml
 
 # This is nothing more than `npm install -g vsce && vsce package`, but

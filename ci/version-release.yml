@@ -2,5 +2,5 @@
 steps:
 - script: |
     PACKAGE_VERSION=$(node -p "require('./package.json').version")
-    echo "##vso[build.updatebuildnumber]${PACKAGE_VERSION}_${BUILD_BUILDID}"
+    echo "##vso[build.updatebuildnumber]${PACKAGE_VERSION}_release_${BUILD_BUILDID}"
   displayName: Set version number of build
