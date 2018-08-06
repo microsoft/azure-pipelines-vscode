@@ -41,7 +41,17 @@
                 "fileMatch": "*.yml",
                 "url": "./local-schema-old.json"
             }
-        ]
+        ],
+        "configuration": {
+            "title": "My extension configuration - TODO: Rename",
+            "properties": {
+                "yaml.validate": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable/disable validation feature"
+                }
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
