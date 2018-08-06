@@ -16,22 +16,8 @@ steps:
   displayName: Run tests
   continueOnError: true
 
-# for convenience, we tag CI-produced packages with a version number
-# pointing to the commit which was built. for PRs, also include the PR #.
-# also, the CI system is always working on the next version, so we bump the patch first.
-- script: |
-    npm --no-git-tag-version version patch
-    PACKAGE_VERSION=$(node -p "require('./package.json').version")
-
-    if [ -n "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER" ]; then
-      VERSION_STRING=${PACKAGE_VERSION}-pr-${SYSTEM_PULLREQUEST_PULLREQUESTNUMBER}-$(git rev-parse --short HEAD)
-    else
-      VERSION_STRING=${PACKAGE_VERSION}-ci-$(git rev-parse --short HEAD)
-    fi
-
-    npm --no-git-tag-version version $VERSION_STRING
-    echo "##vso[build.updatebuildnumber]${VERSION_STRING}_${BUILD_BUILDID}"
-  displayName: Indicate CI or PR version
+# Set version number
+- template: ci/version-ci.yml
 
 # This is nothing more than `npm install -g vsce && vsce package`, but
 # we don't have sudo on the CI system.
