@@ -6,27 +6,17 @@
     "publisher": "nc-rocket",
     "repository": "https://github.com/Microsoft/pipelines-vscode",
     "icon": "assets/ymlfile.png",
-    "engines": {
-        "vscode": "^1.25.0"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "onLanguage:azure-pipelines"
-    ],
+    "engines": { "vscode": "^1.25.0" },
+    "categories": [ "Other" ],
+    "activationEvents": [ "onLanguage:azure-pipelines" ],
     "main": "./out/extension",
     "contributes": {
         "languages": [
             {
                 "id": "azure-pipelines",
                 "configuration": "./language-configuration.json",
-                "filenamePatterns": [
-                    ".vsts-ci.yml"
-                ],
-                "aliases": [
-                    "Azure Pipelines"
-                ]
+                "filenamePatterns": [ ".vsts-ci.yml" ],
+                "aliases": [ "Azure Pipelines" ]
             }
         ],
         "grammars": [
@@ -83,7 +73,7 @@
     },
     "devDependencies": {
         "typescript": "2.6.1",
-        "vscode": "1.1.6",
+        "vscode": "1.1.18",
         "tslint": "5.8.0",
         "ts-node": "3.3.0",
         "@types/node": "7.0.43",
