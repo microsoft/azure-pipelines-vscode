@@ -6,26 +6,37 @@
 // In this script we comment out the loading of schema store settings so 
 //  that an HTTP request isn't made in the first place and unexpected 
 //  schema files are not loaded.
+// 
+// This function is called in two places so we want to comment both.
+// 
 
-import * as fs from 'fs';
+var fs = require('fs');
 
-var filePath = 'node_modules\\yaml-language-server\\out\\server\\src';
+var filePath = 'node_modules\\yaml-language-server\\out\\server\\src\\server.js';
 var fileContents = fs.readFileSync(filePath).toString().split("\n");
 
 var errorText = 'setSchemaStoreSettingsIfNotSet();';
-var replaceResults = 'Error text not found';
+var replaceResults = [];
 
 for(i in fileContents) {
-    if (fileContents[i] === errorText) {
+    var lineContent = fileContents[i].trim();
+
+    if (lineContent === errorText) {
         fileContents[i] = '//' + errorText;
-        replaceResults = 'Error text replaced'
+        replaceResults.push('Error text replaced');
+        continue;
     }
 
-    if (fileContents[i].indexOf(errorText) === 2) {
-        replaceResults = 'Error text was already replaced'
+    if (lineContent.indexOf(errorText) === 2) {
+        replaceResults.push('Error text was already replaced');
+        continue;
     }
+}
+
+if (replaceResults.length === 1) {
+    replaceResults.push('Error text not found');
 }
 
 fs.writeFileSync(filePath, fileContents.join('\n'));
 
-console.log(`File update complete. Result: ${replaceResults}`);
+console.log(`File update complete. \nResult(s):\n${replaceResults.join('\n')}`);
