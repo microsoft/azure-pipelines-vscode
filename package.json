@@ -1,8 +1,8 @@
 {
-    "name": "yaml-rocket-ship-2",
+    "name": "yaml-rocket-ship",
     "displayName": "YAML Rocket Ship",
     "description": "TODO description",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "publisher": "nc-rocket",
     "repository": "https://github.com/Microsoft/pipelines-vscode",
     "engines": {
