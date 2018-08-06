@@ -39,7 +39,7 @@
         "yamlValidation": [
             {
                 "fileMatch": "*.yml",
-                "url": "./local-schema-old.json"
+                "url": "./local-schema.json"
             }
         ],
         "configuration": {
