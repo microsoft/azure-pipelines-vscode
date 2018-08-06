@@ -12,7 +12,7 @@
 
 var fs = require('fs');
 
-var filePath = 'node_modules\\yaml-language-server\\out\\server\\src\\server.js';
+var filePath = 'node_modules/yaml-language-server/out/server/src/server.js';
 var fileContents = fs.readFileSync(filePath).toString().split("\n");
 
 var errorText = 'setSchemaStoreSettingsIfNotSet();';
