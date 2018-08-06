@@ -12,11 +12,23 @@
         "Other"
     ],
     "activationEvents": [
+        "*",
+        "onLanguage:yaml",
         "onLanguage:azure-pipelines"
     ],
     "main": "./out/extension",
     "contributes": {
         "languages": [
+            {
+                "id": "yaml",
+                "extensions": [
+                    ".yml",
+                    ".eyaml",
+                    ".eyml",
+                    ".yaml"
+                ],
+                "configuration": "./language-configuration.json"
+            },            
             {
                 "id": "azure-pipelines",
                 "configuration": "./language-configuration.json",

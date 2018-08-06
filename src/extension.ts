@@ -85,11 +85,11 @@ export function activate(context: vscode.ExtensionContext) {
 
         //log('9.a. Schema association notification sent.')
 
-        client.onRequest(CUSTOM_SCHEMA_REQUEST, (resource) => {
+        client.onRequest(CUSTOM_SCHEMA_REQUEST, (resource: any) => {
             log('Custom schema request. Resource: ' + JSON.stringify(resource));
             return schemaContributor.requestCustomSchema(resource);
         });
-        client.onRequest(CUSTOM_CONTENT_REQUEST, (uri) => {
+        client.onRequest(CUSTOM_CONTENT_REQUEST, (uri: any) => {
             log('Custom content request.');
             return schemaContributor.requestCustomSchemaContent(uri);
         });
