@@ -2,41 +2,87 @@
     "name": "yaml-rocket-ship",
     "displayName": "YAML Rocket Ship",
     "description": "TODO description",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "nc-rocket",
     "repository": "https://github.com/Microsoft/pipelines-vscode",
     "icon": "assets/ymlfile.png",
-    "engines": {
-        "vscode": "^1.25.0"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "onCommand:extension.sayHello",
-        "onLanguage:yaml"
-    ],
+    "engines": { "vscode": "^1.25.0" },
+    "categories": [ "Other" ],
+    "activationEvents": [ "onLanguage:azure-pipelines" ],
     "main": "./out/extension",
     "contributes": {
-        "commands": [
+        "languages": [
             {
-                "command": "extension.sayHello",
-                "title": "Hello World"
+                "id": "azure-pipelines",
+                "configuration": "./language-configuration.json",
+                "filenamePatterns": [ ".vsts-ci.yml" ],
+                "aliases": [ "Azure Pipelines" ]
             }
-        ]
+        ],
+        "grammars": [
+            {
+                "language": "azure-pipelines",
+                "scopeName": "source.yaml",
+                "path": "./syntaxes/yaml.tmLanguage.json"
+            }
+        ],
+        "yamlValidation": [
+            {
+                "fileMatch": "*.yml",
+                "url": "./local-schema.json"
+            }
+        ],
+        "configuration": {
+            "title": "My extension configuration - TODO: Rename",
+            "properties": {
+                "yaml.trace.server": {
+                    "type": "string",
+                    "enum": [
+                        "off",
+                        "messages",
+                        "verbose"
+                    ],
+                    "default": "off",
+                    "description": "Traces the communication between VSCode and the languageServerExample service."
+                },
+                "yaml.schemas": {
+                    "type": "object",
+                    "default": {},
+                    "description": "Associate schemas to Yaml files in the current workspace"
+                },
+                "yaml.format.enable": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable/disable default YAML formatter (requires restart)"
+                },
+                "yaml.validate": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable/disable validation feature"
+                }
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+        "test": "npm run compile && node ./node_modules/vscode/bin/test",
+        "removeschemastore": "node remove-schema-store-settings.js"
     },
     "devDependencies": {
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
-        "tslint": "^5.8.0",
-        "@types/node": "^7.0.43",
-        "@types/mocha": "^2.2.42"
+        "typescript": "2.6.1",
+        "vscode": "1.1.18",
+        "tslint": "5.8.0",
+        "ts-node": "3.3.0",
+        "@types/node": "7.0.43",
+        "@types/mocha": "2.2.42"
+    },
+    "dependencies": {
+        "vscode-languageclient": "3.5.1",
+        "vscode-nls": "3.2.1",
+        "vscode-uri": "1.0.3",
+        "yaml-language-server": "0.0.17"
     }
 }
