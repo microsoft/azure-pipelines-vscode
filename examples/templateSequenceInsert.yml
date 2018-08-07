@@ -1,0 +1,16 @@
+parameters:
+  preBuild: []
+  preTest: []
+  preSign: []
+
+phases:
+- phase: Build
+  queue: Hosted VS2017
+  steps:
+  - script: cred-scan
+  - ${{ parameters.preBuild }}
+  - task: MSBuild@1
+  - ${{ parameters.preTest }}
+  - task: VSTest@2
+  - ${{ parameters.preSign }}
+  - script: sign

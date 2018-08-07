@@ -50,7 +50,12 @@
             }
           },
           "trigger": {
+            "description": "TODO",
             "$ref": "#/definitions/trigger"
+          },
+          "parameters": {
+            "description": "Parameters used in a pipeline template",
+            "$ref": "#/definitions/parameters"
           }
         }
       },
@@ -86,7 +91,7 @@
             "description": "Evaluate this condition expression to determine whether to run this phase"
           },
           "continueOnError": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Continue running this phase even on failure?"
           },
           "queue": {
@@ -103,7 +108,7 @@
             ]
           },
           "server": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "True if this is an agent-less phase (runs on server)"
           },
           "variables": {
@@ -114,14 +119,7 @@
             "type": "array",
             "description": "A list of steps to run",
             "items": {
-              "oneOf": [
-                { "$ref": "#/definitions/script" },
-                { "$ref": "#/definitions/bash" },
-                { "$ref": "#/definitions/powershell" },
-                { "$ref": "#/definitions/checkout" },
-                { "$ref": "#/definitions/task" },
-                { "$ref": "#/definitions/templateReference" }
-              ]
+              "$ref": "#/definitions/stepOrTemplateExpression"
             }
           },
           "template": {
@@ -151,18 +149,15 @@
             "description": "List of demands (for a private pool)"
           },
           "timeoutInMinutes": {
-            "type": "integer",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "TODO"
           },
           "cancelTimeoutInMinutes": {
-            "type": "integer",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "TODO"
           },
           "parallel": {
-            "oneOf": [
-              { "type": "string", "pattern": "\\$\\[(.)+]" },
-              { "type": "integer" }
-            ],
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Maximum number of parallel agent executions"
           },
           "matrix": {
@@ -176,15 +171,15 @@
         "additionalProperties": false,
         "properties": {
           "timeoutInMinutes": {
-            "type": "integer",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "TODO"
           },
           "cancelTimeoutInMinutes": {
-            "type": "integer",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "TODO"
           },
           "parallel": {
-            "type": "integer",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Maximum number of parallel agent executions"
           },
           "matrix": {
@@ -223,7 +218,7 @@
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "failOnStderr": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "workingDirectory": {
@@ -235,15 +230,15 @@
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Continue running the parent phase even on failure?"
           },
           "enabled": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Run this script when the phase runs?"
           },
           "timeoutInMinutes": {
-            "type": "integer",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Time to wait for this script to complete before the server kills it"
           },
           "env": {
@@ -270,7 +265,7 @@
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "failOnStderr": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "workingDirectory": {
@@ -282,15 +277,15 @@
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Continue running the parent phase even on failure?"
           },
           "enabled": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Run this script when the phase runs?"
           },
           "timeoutInMinutes": {
-            "type": "integer",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Time to wait for this script to complete before the server kills it"
           },
           "env": {
@@ -322,11 +317,11 @@
             "description": "Strategy for dealing with script errors"
           },
           "failOnStderr": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "ignoreLASTEXITCODE": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "TODO"
           },
           "workingDirectory": {
@@ -338,15 +333,15 @@
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Continue running the parent phase even on failure?"
           },
           "enabled": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Run this script when the phase runs?"
           },
           "timeoutInMinutes": {
-            "type": "integer",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Time to wait for this script to complete before the server kills it"
           },
           "env": {
@@ -365,15 +360,15 @@
             "description": "Whether or not to check out the repository containing this pipeline definition"
           },
           "clean": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Start from a clean, freshly-fetched workdir?"
           },
           "fetchDepth": {
-            "type": "integer",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Depth of Git graph to fetch"
           },
           "lfs": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Fetch Git-LFS objects?"
           }  
         }
@@ -455,7 +450,7 @@
             "description": "Options to pass into container host"
           },
           "localImage": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "TODO - document localImage"
           },
           "env": {
@@ -463,6 +458,108 @@
             "description": "Variables to map into the container's environment"
           }
         }
+      },
+      "trigger": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }, 
+          {
+            "type": "object",
+            "properties": {
+              "branches": {
+                "type": "object",
+                "properties": {
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "paths": {
+                "type": "object",
+                "properties": {
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "parameters": {
+        "type": "object"
+      },
+      "stepOrTemplateExpression": {
+        "oneOf": [
+          { "$ref": "#/definitions/step" },
+          { "$ref": "#/definitions/templateInsertExpression" },
+          { "$ref": "#/definitions/templateConditionalStepInsertExpression" }
+        ]
+      },
+      "step": {
+        "oneOf": [
+          { "$ref": "#/definitions/script" },
+          { "$ref": "#/definitions/bash" },
+          { "$ref": "#/definitions/powershell" },
+          { "$ref": "#/definitions/checkout" },
+          { "$ref": "#/definitions/templateReference" },
+          { "$ref": "#/definitions/task" }
+        ]
+      },
+      "booleanMacroExpression": {
+        "oneOf": [
+          { "type": "boolean" },
+          { "$ref": "#/definitions/macroExpression" }
+        ]
+      },
+      "integerMacroExpression": {
+        "oneOf": [
+          { "type": "integer" },
+          { "$ref": "#/definitions/macroExpression" }
+        ]
+      },
+      "macroExpression": {
+        "type": "string",
+        "pattern": "^\\$\\(.*\\)$"
+      },
+      "templateInsertExpression": {
+        "type": "string",
+        "pattern": "^\\${{.*}}$"
+      },
+      "templateConditionalStepInsertExpression": {
+        "type": "object",
+        "patternProperties": {
+          "^\\${{.*}}$": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/step"
+            }
+          }
+        },
+        "minProperties": 1,
+        "maxProperties": 1
       },
       "task": {
         "type": "object",
@@ -10826,56 +10923,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "trigger": {
-        "oneOf": [
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }, 
-          {
-            "type": "object",
-            "properties": {
-              "branches": {
-                "type": "object",
-                "properties": {
-                  "include": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "exclude": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "paths": {
-                "type": "object",
-                "properties": {
-                  "include": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "exclude": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ]
       }
-
     }
   }
