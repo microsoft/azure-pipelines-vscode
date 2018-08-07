@@ -50,7 +50,12 @@
             }
           },
           "trigger": {
+            "description": "TODO",
             "$ref": "#/definitions/trigger"
+          },
+          "parameters": {
+            "description": "Parameters used in a pipeline template",
+            "$ref": "#/definitions/parameters"
           }
         }
       },
@@ -460,6 +465,58 @@
             "description": "Variables to map into the container's environment"
           }
         }
+      },
+      "trigger": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }, 
+          {
+            "type": "object",
+            "properties": {
+              "branches": {
+                "type": "object",
+                "properties": {
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "paths": {
+                "type": "object",
+                "properties": {
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "parameters": {
+        "type": "object"
       },
       "booleanTemplateExpression": {
         "oneOf": [
@@ -10839,56 +10896,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "trigger": {
-        "oneOf": [
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }, 
-          {
-            "type": "object",
-            "properties": {
-              "branches": {
-                "type": "object",
-                "properties": {
-                  "include": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "exclude": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "paths": {
-                "type": "object",
-                "properties": {
-                  "include": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "exclude": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ]
       }
-
     }
   }
