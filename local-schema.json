@@ -119,15 +119,7 @@
             "type": "array",
             "description": "A list of steps to run",
             "items": {
-              "oneOf": [
-                { "$ref": "#/definitions/script" },
-                { "$ref": "#/definitions/bash" },
-                { "$ref": "#/definitions/powershell" },
-                { "$ref": "#/definitions/checkout" },
-                { "$ref": "#/definitions/templateReference" },
-                { "$ref": "#/definitions/templateInsertExpression" },
-                { "$ref": "#/definitions/task" }
-              ]
+              "$ref": "#/definitions/step"
             }
           },
           "template": {
@@ -519,6 +511,18 @@
       "parameters": {
         "type": "object"
       },
+      "step": {
+        "oneOf": [
+          { "$ref": "#/definitions/script" },
+          { "$ref": "#/definitions/bash" },
+          { "$ref": "#/definitions/powershell" },
+          { "$ref": "#/definitions/checkout" },
+          { "$ref": "#/definitions/templateReference" },
+          { "$ref": "#/definitions/templateInsertExpression" },
+          { "$ref": "#/definitions/templateConditionalStepInsertExpression" },
+          { "$ref": "#/definitions/task" }
+        ]
+      },
       "booleanMacroExpression": {
         "oneOf": [
           { "type": "boolean" },
@@ -538,6 +542,19 @@
       "templateInsertExpression": {
         "type": "string",
         "pattern": "^\\${{.*}}$"
+      },
+      "templateConditionalStepInsertExpression": {
+        "type": "object",
+        "patternProperties": {
+          "^\\${{.*}}$": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/step"
+            }
+          }
+        },
+        "minProperties": 1,
+        "maxProperties": 1
       },
       "task": {
         "type": "object",
