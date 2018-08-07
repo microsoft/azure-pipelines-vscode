@@ -55,8 +55,12 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
+        "compile:extension": "tsc -p ./",
+        "compile:langserv": "tsc -p ./vendor/yaml-language-server",
+        "compile": "npm run compile:langserv && npm run compile:extension",
+        "watch:extension": "tsc -watch -p ./",
+        "watch:langserv": "tsc -watch -p ./vendor/yaml-language-server",
+        "watch": "npm run watch:langserv && npm run watch:extension",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
         "removeschemastore": "node remove-schema-store-settings.js"
@@ -73,6 +77,6 @@
         "vscode-languageclient": "4.4.0",
         "vscode-nls": "3.2.4",
         "vscode-uri": "1.0.5",
-        "yaml-language-server": "0.0.17"
+        "yaml-language-server": "file:vendor/yaml-language-server"
     }
 }

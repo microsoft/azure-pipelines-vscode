@@ -19,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
     // This line of code will only be executed once when your extension is activated
     log('1. Extension has been activated!');
 
-    let serverModule = context.asAbsolutePath(path.join('node_modules', 'yaml-language-server', 'out', 'server', 'src', 'server.js'));
+    let serverModule = context.asAbsolutePath(path.join('out', 'vendor', 'yaml-language-server', 'src', 'server.js'));
     //log('2. Server module defined.');
 
     let debugOptions = { execArgv: ["--nolazy", "--debug=6009"] };
