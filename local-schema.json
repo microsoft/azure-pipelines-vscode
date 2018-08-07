@@ -91,7 +91,7 @@
             "description": "Evaluate this condition expression to determine whether to run this phase"
           },
           "continueOnError": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Continue running this phase even on failure?"
           },
           "queue": {
@@ -108,7 +108,7 @@
             ]
           },
           "server": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "True if this is an agent-less phase (runs on server)"
           },
           "variables": {
@@ -124,8 +124,9 @@
                 { "$ref": "#/definitions/bash" },
                 { "$ref": "#/definitions/powershell" },
                 { "$ref": "#/definitions/checkout" },
-                { "$ref": "#/definitions/task" },
-                { "$ref": "#/definitions/templateReference" }
+                { "$ref": "#/definitions/templateReference" },
+                { "$ref": "#/definitions/templateInsertExpression" },
+                { "$ref": "#/definitions/task" }
               ]
             }
           },
@@ -156,15 +157,15 @@
             "description": "List of demands (for a private pool)"
           },
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerTemplateExpression",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "TODO"
           },
           "cancelTimeoutInMinutes": {
-            "$ref": "#/definitions/integerTemplateExpression",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "TODO"
           },
           "parallel": {
-            "$ref": "#/definitions/integerTemplateExpression",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Maximum number of parallel agent executions"
           },
           "matrix": {
@@ -178,15 +179,15 @@
         "additionalProperties": false,
         "properties": {
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerTemplateExpression",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "TODO"
           },
           "cancelTimeoutInMinutes": {
-            "$ref": "#/definitions/integerTemplateExpression",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "TODO"
           },
           "parallel": {
-            "$ref": "#/definitions/integerTemplateExpression",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Maximum number of parallel agent executions"
           },
           "matrix": {
@@ -225,7 +226,7 @@
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "failOnStderr": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "workingDirectory": {
@@ -237,15 +238,15 @@
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Continue running the parent phase even on failure?"
           },
           "enabled": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Run this script when the phase runs?"
           },
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerTemplateExpression",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Time to wait for this script to complete before the server kills it"
           },
           "env": {
@@ -272,7 +273,7 @@
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "failOnStderr": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "workingDirectory": {
@@ -284,15 +285,15 @@
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Continue running the parent phase even on failure?"
           },
           "enabled": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Run this script when the phase runs?"
           },
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerTemplateExpression",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Time to wait for this script to complete before the server kills it"
           },
           "env": {
@@ -324,11 +325,11 @@
             "description": "Strategy for dealing with script errors"
           },
           "failOnStderr": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "ignoreLASTEXITCODE": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "TODO"
           },
           "workingDirectory": {
@@ -340,15 +341,15 @@
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Continue running the parent phase even on failure?"
           },
           "enabled": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Run this script when the phase runs?"
           },
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerTemplateExpression",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Time to wait for this script to complete before the server kills it"
           },
           "env": {
@@ -367,15 +368,15 @@
             "description": "Whether or not to check out the repository containing this pipeline definition"
           },
           "clean": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Start from a clean, freshly-fetched workdir?"
           },
           "fetchDepth": {
-            "$ref": "#/definitions/integerTemplateExpression",
+            "$ref": "#/definitions/integerMacroExpression",
             "description": "Depth of Git graph to fetch"
           },
           "lfs": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "Fetch Git-LFS objects?"
           }  
         }
@@ -457,7 +458,7 @@
             "description": "Options to pass into container host"
           },
           "localImage": {
-            "$ref": "#/definitions/booleanTemplateExpression",
+            "$ref": "#/definitions/booleanMacroExpression",
             "description": "TODO - document localImage"
           },
           "env": {
@@ -518,13 +519,13 @@
       "parameters": {
         "type": "object"
       },
-      "booleanTemplateExpression": {
+      "booleanMacroExpression": {
         "oneOf": [
           { "type": "boolean" },
           { "$ref": "#/definitions/macroExpression" }
         ]
       },
-      "integerTemplateExpression": {
+      "integerMacroExpression": {
         "oneOf": [
           { "type": "integer" },
           { "$ref": "#/definitions/macroExpression" }
@@ -533,6 +534,10 @@
       "macroExpression": {
         "type": "string",
         "pattern": "^\\$\\(.*\\)$"
+      },
+      "templateInsertExpression": {
+        "type": "string",
+        "pattern": "^\\${{.*}}$"
       },
       "task": {
         "type": "object",
