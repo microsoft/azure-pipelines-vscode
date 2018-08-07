@@ -218,7 +218,7 @@ connection.onDidChangeConfiguration((change) => {
 		schemaConfigurationSettings.push(schemaObj);
 	}
 
-	setSchemaStoreSettingsIfNotSet();
+	//setSchemaStoreSettingsIfNotSet();
 
 	updateConfiguration();
 
@@ -283,7 +283,7 @@ function getSchemaStoreMatchingSchemas(){
 connection.onNotification(SchemaAssociationNotification.type, associations => {
 	schemaAssociations = associations;
 	specificValidatorPaths = [];
-	setSchemaStoreSettingsIfNotSet();
+	//setSchemaStoreSettingsIfNotSet();
 	updateConfiguration();
 });
 

@@ -62,8 +62,7 @@
         "watch:langserv": "tsc -watch -p ./vendor/yaml-language-server",
         "watch": "npm run watch:langserv && npm run watch:extension",
         "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test",
-        "removeschemastore": "node remove-schema-store-settings.js"
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
         "typescript": "2.6.1",
