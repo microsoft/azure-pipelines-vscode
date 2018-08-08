@@ -38,6 +38,11 @@ let DELTA_WEEKS=$DELTA_SECONDS/604800
 let DELTA_SPRINTS=$DELTA_WEEKS/3
 let COMPUTED_SPRINT=$SPRINT_ERA+$DELTA_SPRINTS
 
+PACKAGE_SPRINT_NUMBER=$(node -p "require('./package.json').version.split('.')[1]")
+if [[ $COMPUTED_SPRINT == $PACKAGE_SPRINT_NUMBER ]]; then
+    let COMPUTED_SPRINT=$COMPUTED_SPRINT+1
+fi
+
 read -p "Sprint (default: ${COMPUTED_SPRINT}): " RELEASE_SPRINT
 
 # trim whitespace
@@ -81,5 +86,6 @@ if [ $? -ne 0 ]; then
     exit 5
 fi
 
+echo
 echo "Pushed ${PR_BRANCH} to origin"
 echo Next step: PR to master.
