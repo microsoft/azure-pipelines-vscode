@@ -127,6 +127,7 @@
             "description": "Reference to a template for this phase"
           },
           "parameters": {
+            "description": "Parameters used in a pipeline template",
             "type": "object"
           }
         }
