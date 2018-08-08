@@ -4,7 +4,7 @@
 CURRENT_BRANCH=$(git symbolic-ref -q HEAD)
 if [[ $CURRENT_BRANCH != "refs/heads/master" ]]; then
     echo
-    echo This script only supports shipping from master.
+    echo You need to be on master to start a sprint.
     echo You are on $CURRENT_BRANCH.
     echo Checkout master and try again.
     exit 1
@@ -23,7 +23,7 @@ fi
 HAVE_NPM=$(which npm)
 if [ -z "${HAVE_NPM}" ]; then
     echo
-    echo Releasing requires npm.
+    echo This requires npm.
     echo Could not find an npm installed.
     echo Install npm and try again.
     exit 3
@@ -55,7 +55,6 @@ echo Creating a release for sprint $RELEASE_SPRINT
 
 # update the version number
 NEW_VERSION_NUMBER="1.${RELEASE_SPRINT}.0"
-RELEASE_BRANCH="releases/${RELEASE_SPRINT}"
 PR_BRANCH="versionbump/${RELEASE_SPRINT}"
 
 git checkout -b $PR_BRANCH
@@ -73,18 +72,14 @@ git commit -m "Version bump to ${NEW_VERSION_NUMBER}"
 echo
 echo "Bumped version number and committed it to ${PR_BRANCH}"
 
-# create a new releases/ branch
-git branch $RELEASE_BRANCH
+git push -u origin ${PR_BRANCH}
+
 if [ $? -ne 0 ]; then
     echo
-    echo Something went wrong creating the release branch for this new version number.
-    echo There is nothing magical here; you can fix it by creating a branch called
-    echo "${RELEASE_BRANCH} starting from ${PR_BRANCH}."
-    exit 4
+    echo Something went wrong pushing the PR branch to origin.
+    echo Fix it and push again, then PR to master.
+    exit 5
 fi
 
-echo "Also created ${RELEASE_BRANCH} for ongoing servicing in this branch"
-echo
-echo Next steps:
-echo "- Push both branches to the main repo"
-echo "- PR ${PR_BRANCH} into master"
+echo "Pushed ${PR_BRANCH} to origin"
+echo Next step: PR to master.
