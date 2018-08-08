@@ -65,3 +65,5 @@ fi
 echo
 echo "Pushed ${RELEASE_BRANCH} to origin"
 echo DO NOT MERGE THIS BRANCH BACK TO MASTER.
+echo
+echo Next step: checkout master and run start-sprint.sh for the next sprint.
