@@ -81,5 +81,6 @@ if [ $? -ne 0 ]; then
     exit 5
 fi
 
+echo
 echo "Pushed ${PR_BRANCH} to origin"
 echo Next step: PR to master.

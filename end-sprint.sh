@@ -62,5 +62,6 @@ if [ $? -ne 0 ]; then
     exit 5
 fi
 
+echo
 echo "Pushed ${RELEASE_BRANCH} to origin"
 echo DO NOT MERGE THIS BRANCH BACK TO MASTER.
