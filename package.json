@@ -2,7 +2,7 @@
     "name": "yaml-rocket-ship",
     "displayName": "YAML Rocket Ship",
     "description": "TODO description",
-    "version": "0.0.2",
+    "version": "1.139.0",
     "publisher": "nc-rocket",
     "repository": "https://github.com/Microsoft/pipelines-vscode",
     "icon": "assets/ymlfile.png",
