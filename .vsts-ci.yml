@@ -9,7 +9,9 @@
 #   npm test
 #   vsce package
 #   (give VSIX to someone for buddy testing)
-
+trigger:
+- master
+- releases/*
 
 steps:
 - script: npm install
