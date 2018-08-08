@@ -11,16 +11,20 @@
 // 
 
 var fs = require('fs');
-
 var filePath = 'node_modules/yaml-language-server/out/server/src/server.js';
 var fileContents = fs.readFileSync(filePath).toString().split("\n");
 
 var errorText = 'setSchemaStoreSettingsIfNotSet();';
 var replaceResults = [];
+var injectionResults = [];
+
+var injectionHackOriginalContent = 'newText = document.getText().substring(0, start + textLine.length) + "holder:\\r\\n" + document.getText().substr(lineOffset[linePos + 1] || document.getText().length);'
+var injectionHackReplacementContent = 'newText = document.getText().substring(0, start + textLine.length) + "h:\\r\\n" + document.getText().substr(lineOffset[linePos + 1] || document.getText().length);'
 
 for(i in fileContents) {
     var lineContent = fileContents[i].trim();
 
+    // Hack #1
     if (lineContent === errorText) {
         fileContents[i] = '//' + errorText;
         replaceResults.push('Error text replaced');
@@ -31,12 +35,32 @@ for(i in fileContents) {
         replaceResults.push('Error text was already replaced');
         continue;
     }
+
+    // Hack #2
+    if (lineContent === injectionHackOriginalContent) {
+        fileContents[i] = injectionHackReplacementContent;
+        injectionResults.push('Injection text replaced');
+        continue;
+    }
+
+    if (lineContent === injectionHackReplacementContent) {
+        injectionResults.push('Injection text was already replaced');
+        continue;
+    }
 }
 
 if (replaceResults.length === 1) {
     replaceResults.push('Error text not found');
 }
 
+if (injectionResults.length === 0) {
+    injectionResults.push('Injection text not found');
+}
+
 fs.writeFileSync(filePath, fileContents.join('\n'));
 
-console.log(`File update complete. \nResult(s):\n${replaceResults.join('\n')}`);
+console.log(`Hacking complete. \nResult(s):\n${replaceResults.join('\n')}\n${injectionResults.join('\n')}`);
+
+
+
+// newText = document.getText().substring(0, start + textLine.length) + "h:\r\n" + document.getText().substr(lineOffset[linePos + 1] || document.getText().length);
