@@ -4,8 +4,12 @@ out/test/**
 out/**/*.map
 src/**
 .gitignore
+.gitattributes
 tsconfig.json
 vsc-extension-quickstart.md
 tslint.json
+.vsts-ci.yml
 ci/**
 examples/**
+remove-schema-store-settings.js
+*.sh
