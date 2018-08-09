@@ -50,7 +50,7 @@
             }
           },
           "trigger": {
-            "description": "TODO",
+            "description": "Continuous integration triggers",
             "$ref": "#/definitions/trigger"
           },
           "parameters": {
@@ -89,7 +89,7 @@
             }
           },
           "trigger": {
-            "description": "TODO",
+            "description": "Continuous integration triggers",
             "$ref": "#/definitions/trigger"
           },
           "displayName": {
@@ -229,11 +229,11 @@
           },
           "timeoutInMinutes": {
             "$ref": "#/definitions/integerMacroExpression",
-            "description": "TODO"
+            "description": "Time to wait before cancelling the phase"
           },
           "cancelTimeoutInMinutes": {
             "$ref": "#/definitions/integerMacroExpression",
-            "description": "TODO"
+            "description": "Time to wait for the phase to cancel before forcibly terminating it"
           },
           "parallel": {
             "$ref": "#/definitions/integerMacroExpression",
@@ -251,11 +251,11 @@
         "properties": {
           "timeoutInMinutes": {
             "$ref": "#/definitions/integerMacroExpression",
-            "description": "TODO"
+            "description": "Time to wait before cancelling the phase"
           },
           "cancelTimeoutInMinutes": {
             "$ref": "#/definitions/integerMacroExpression",
-            "description": "TODO"
+            "description": "Time to wait for the phase to cancel before forcibly terminating it"
           },
           "parallel": {
             "$ref": "#/definitions/integerMacroExpression",
@@ -401,7 +401,7 @@
           },
           "ignoreLASTEXITCODE": {
             "$ref": "#/definitions/booleanMacroExpression",
-            "description": "TODO"
+            "description": "Check the final exit code of the script to determine whether the step succeeded?"
           },
           "workingDirectory": {
             "type": "string",
@@ -530,7 +530,7 @@
           },
           "localImage": {
             "$ref": "#/definitions/booleanMacroExpression",
-            "description": "TODO - document localImage"
+            "description": "Build the image locally?"
           },
           "env": {
             "type": "object",
