@@ -1,20 +1,25 @@
 
 # Pipelines for VS Code
 
-This VS Code extension brings syntax highlighting and autocompletion for Pipelines YAML to VS Code.
-By default, it will highlight `.vsts-ci.yml` files, and you can configure it to look at other
-files and folders as well.
+This VS Code extension brings syntax highlighting and autocompletion for
+Pipelines YAML to VS Code. Basic YAML validation is built in to VS Code, but
+now you can have syntax highlighting that's aware of the Pipelines YAML schema.
+This means that you get red squigglies if you say `tasks:` where you meant `task:`.
+Intellisense is also schema-aware. Wherever you are in the file, press Ctrl-Space
+(Cmd-Space on macOS) to see what options you have at that point.
+
+By default, the extension will highlight `.vsts-ci.yml` files. You can change the
+language mode at the lower right to work with one file at a time. Click the
+language picker, then choose "Azure Pipelines". If you have files which should
+always use this extension, set your user or workspace settings to match those
+file paths with this extension. For example:
+
+```yaml
+"files.associations": {
+  "**/ci/*.yml": "azure-pipelines"
+}
+```
 
 # Contributing
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.microsoft.com.
-
-When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
-
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+See [CONTRIBUTING.md](CONTRIBUTING.md) if you want to jump in!
