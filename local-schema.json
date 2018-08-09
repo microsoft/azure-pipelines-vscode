@@ -5,11 +5,11 @@
     "title": "Pipeline schema",
     "description": "A pipeline definition",
     "oneOf": [
-      { "$ref": "#/definitions/pipeline" },
-      { "$ref": "#/definitions/phase"}
+      { "$ref": "#/definitions/fullPipeline" },
+      { "$ref": "#/definitions/singlePhasePipeline" }
     ],
     "definitions": {
-      "pipeline": {
+      "fullPipeline": {
         "type": "object",
         "required": [],
         "additionalProperties": false,
@@ -50,12 +50,90 @@
             }
           },
           "trigger": {
-            "description": "TODO",
+            "description": "Continuous integration triggers",
             "$ref": "#/definitions/trigger"
           },
           "parameters": {
             "description": "Parameters used in a pipeline template",
             "$ref": "#/definitions/parameters"
+          }
+        }
+      },
+      "singlePhasePipeline": {
+        "type": "object",
+        "required": [],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "Pipeline name",
+            "type": "string"
+          },
+          "resources": {
+            "description": "Containers and repositories used in the build",
+            "type": "object",
+            "properties": {
+              "containers": {
+                "description": "Container images",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/containerReference"
+                }
+              },
+              "repositories": {
+                "description": "External repositories",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/repositoryReference"
+                }
+              }
+            }
+          },
+          "trigger": {
+            "description": "Continuous integration triggers",
+            "$ref": "#/definitions/trigger"
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Human-readable name for the sole phase"
+          },
+          "condition": {
+            "type": "string",
+            "description": "Evaluate this condition expression to determine whether to run the pipeline"
+          },
+          "queue": {
+            "oneOf": [
+              { "type": "string" },
+              { "$ref": "#/definitions/queue" }
+            ],
+            "description": "Queue where the pipeline will run",
+            "examples": [
+              "Hosted VS2017",
+              "Hosted macOS Preview",
+              "Hosted Linux Preview"
+            ]
+          },
+          "server": {
+            "$ref": "#/definitions/booleanMacroExpression",
+            "description": "True if this is an agent-less build (runs on server)"
+          },
+          "variables": {
+            "type": "object",
+            "description": "Variables for the phase"
+          },
+          "steps": {
+            "type": "array",
+            "description": "A list of steps to run",
+            "items": {
+              "$ref": "#/definitions/stepOrTemplateExpression"
+            }
+          },
+          "template": {
+            "type": "string",
+            "description": "Reference to a template for the phase"
+          },
+          "parameters": {
+            "description": "Parameters used in a pipeline template",
+            "type": "object"
           }
         }
       },
@@ -100,7 +178,7 @@
               { "$ref": "#/definitions/queue" }
             ],
 
-            "description": "Definition of the queue in which to run this phase",
+            "description": "Queue where this phase will run",
             "examples": [
               "Hosted VS2017",
               "Hosted macOS Preview",
@@ -127,6 +205,7 @@
             "description": "Reference to a template for this phase"
           },
           "parameters": {
+            "description": "Parameters used in a pipeline template",
             "type": "object"
           }
         }
@@ -150,11 +229,11 @@
           },
           "timeoutInMinutes": {
             "$ref": "#/definitions/integerMacroExpression",
-            "description": "TODO"
+            "description": "Time to wait before cancelling the phase"
           },
           "cancelTimeoutInMinutes": {
             "$ref": "#/definitions/integerMacroExpression",
-            "description": "TODO"
+            "description": "Time to wait for the phase to cancel before forcibly terminating it"
           },
           "parallel": {
             "$ref": "#/definitions/integerMacroExpression",
@@ -172,11 +251,11 @@
         "properties": {
           "timeoutInMinutes": {
             "$ref": "#/definitions/integerMacroExpression",
-            "description": "TODO"
+            "description": "Time to wait before cancelling the phase"
           },
           "cancelTimeoutInMinutes": {
             "$ref": "#/definitions/integerMacroExpression",
-            "description": "TODO"
+            "description": "Time to wait for the phase to cancel before forcibly terminating it"
           },
           "parallel": {
             "$ref": "#/definitions/integerMacroExpression",
@@ -322,7 +401,7 @@
           },
           "ignoreLASTEXITCODE": {
             "$ref": "#/definitions/booleanMacroExpression",
-            "description": "TODO"
+            "description": "Check the final exit code of the script to determine whether the step succeeded?"
           },
           "workingDirectory": {
             "type": "string",
@@ -451,7 +530,7 @@
           },
           "localImage": {
             "$ref": "#/definitions/booleanMacroExpression",
-            "description": "TODO - document localImage"
+            "description": "Build the image locally?"
           },
           "env": {
             "type": "object",
