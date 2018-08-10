@@ -1,0 +1,22 @@
+{
+	"pipeline_singlephase": {
+		"prefix": "steps",
+		"body": [
+			"steps:",
+			"- script: ${1:echo Hello!}"
+		],
+		"description": "Pipeline phase"
+	},
+
+	"pipeline_multiphase": {
+		"prefix": "phases",
+		"body": [
+			"phases:",
+			"- phase: ${1:Debug}",
+			"  ${2:steps:\n  - script: ${3:echo Hello!}}",
+			"",
+			"- phase: ${4:Release}"
+		],
+		"description": "Multiphase pipeline"
+	}
+}
