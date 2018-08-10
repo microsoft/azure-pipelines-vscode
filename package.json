@@ -51,7 +51,13 @@
                     "description": "Enable/disable validation feature"
                 }
             }
-        }
+        },
+        "snippets": [
+            {
+                "language": "azure-pipelines",
+                "path": "./snippets/ci-snippets.json"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

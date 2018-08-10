@@ -1,0 +1,50 @@
+{
+	"pipeline_singlephase": {
+		"prefix": "steps",
+		"body": [
+			"steps:",
+			"- script: ${1:echo Hello!}"
+		],
+		"description": "Pipeline phase"
+	},
+
+	"pipeline_multiphase": {
+		"prefix": "phases",
+		"body": [
+			"phases:",
+			"- phase: ${1:Debug}",
+			"  ${2:steps:\n  - script: ${3:echo Hello!}}",
+			"",
+			"- phase: ${4:Release}"
+		],
+		"description": "Multiphase pipeline"
+	},
+
+	"pipeline_container": {
+		"prefix": "containers",
+		"body": [
+			"resources:",
+			"  containers:",
+			"  - container: ${1:myContainer}",
+			"    image: ${2:ubuntu:16.04}",
+			"",
+			"queue:",
+			"  name: Hosted Ubuntu 1604",
+			"  container: ${1}",
+			"",
+			"steps:",
+			"- script: ${3:echo Hello!}"
+		],
+		"description": "Containerized pipeline"
+	},
+
+	"task": {
+		"prefix": "task",
+		"body": [
+			"- task: ${1:CmdLine@2}",
+			"  ${2:inputs:\n    ${3:foo}: ${4:bar}}",
+			""
+		],
+		"description": "Task"
+	}
+}
