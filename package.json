@@ -64,7 +64,15 @@
                             "document"
                         ]
                     }
-                ]
+                ],
+                "editor.insertSpaces": true,
+                "editor.tabSize": 2,
+                "editor.quickSuggestions": {
+                  "other": true,
+                  "comments": false,
+                  "strings": true
+                },
+                "editor.autoIndent": false
             }
         },
         "snippets": [
