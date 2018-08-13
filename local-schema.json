@@ -158,7 +158,8 @@
               {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "string",
+                  "uniqueItems": true
                 }
               }
             ],
