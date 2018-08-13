@@ -1,7 +1,7 @@
 {
-    "name": "yaml-rocket-ship",
-    "displayName": "YAML Rocket Ship",
-    "description": "TODO description",
+    "name": "azure-pipelines",
+    "displayName": "Azure Pipelines",
+    "description": "Syntax highlighting, Intellisense, and more",
     "version": "1.139.0",
     "publisher": "nc-rocket",
     "repository": "https://github.com/Microsoft/pipelines-vscode",
