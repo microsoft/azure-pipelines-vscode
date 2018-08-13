@@ -52,6 +52,18 @@
                 }
             }
         },
+        "configurationDefaults": {
+            "[azure-pipelines]": {
+                "gitlens.codeLens.scopesByLanguage": [
+                    {
+                        "language": "azure-pipelines",
+                        "scopes": [
+                            "document"
+                        ]
+                    }
+                ]
+            }
+        },
         "snippets": [
             {
                 "language": "azure-pipelines",
