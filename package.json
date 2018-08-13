@@ -5,7 +5,7 @@
     "version": "1.139.0",
     "publisher": "nc-rocket",
     "repository": "https://github.com/Microsoft/pipelines-vscode",
-    "icon": "assets/ymlfile.png",
+    "icon": "assets/pipelines.png",
     "engines": {
         "vscode": "^1.25.0"
     },
