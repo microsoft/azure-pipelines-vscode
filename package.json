@@ -22,7 +22,10 @@
                 "id": "azure-pipelines",
                 "configuration": "./language-configuration.json",
                 "filenamePatterns": [
-                    ".vsts-ci.yml"
+                    "azure-pipelines.yml",
+                    "azure-pipelines.yaml",
+                    ".vsts-ci.yml",
+                    "vsts-ci.yml"
                 ],
                 "aliases": [
                     "Azure Pipelines"
