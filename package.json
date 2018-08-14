@@ -1,11 +1,11 @@
 {
-    "name": "yaml-rocket-ship",
-    "displayName": "YAML Rocket Ship",
-    "description": "TODO description",
+    "name": "azure-pipelines",
+    "displayName": "Azure Pipelines",
+    "description": "Syntax highlighting, Intellisense, and more",
     "version": "1.139.0",
     "publisher": "nc-rocket",
     "repository": "https://github.com/Microsoft/pipelines-vscode",
-    "icon": "assets/ymlfile.png",
+    "icon": "assets/pipelines.png",
     "engines": {
         "vscode": "^1.25.0"
     },
@@ -22,7 +22,10 @@
                 "id": "azure-pipelines",
                 "configuration": "./language-configuration.json",
                 "filenamePatterns": [
-                    ".vsts-ci.yml"
+                    "azure-pipelines.yml",
+                    "azure-pipelines.yaml",
+                    ".vsts-ci.yml",
+                    "vsts-ci.yml"
                 ],
                 "aliases": [
                     "Azure Pipelines"
@@ -61,7 +64,15 @@
                             "document"
                         ]
                     }
-                ]
+                ],
+                "editor.insertSpaces": true,
+                "editor.tabSize": 2,
+                "editor.quickSuggestions": {
+                  "other": true,
+                  "comments": false,
+                  "strings": true
+                },
+                "editor.autoIndent": false
             }
         },
         "snippets": [
