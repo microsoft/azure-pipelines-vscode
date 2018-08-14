@@ -142,9 +142,16 @@
         "additionalProperties": false,
         "properties": {
           "phase": {
-            "type": "string",
-            "description": "ID of the phase",
-            "pattern": "^[_A-Za-z0-9]*$"
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "ID of the phase",
+                "pattern": "^[_A-Za-z0-9]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "displayName": {
             "type": "string",
