@@ -42,16 +42,6 @@
                 "url": "./local-schema.json"
             }
         ],
-        "configuration": {
-            "title": "My extension configuration - TODO: Rename",
-            "properties": {
-                "yaml.validate": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable/disable validation feature"
-                }
-            }
-        },
         "configurationDefaults": {
             "[azure-pipelines]": {
                 "gitlens.codeLens.scopesByLanguage": [
