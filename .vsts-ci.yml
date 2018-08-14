@@ -14,6 +14,10 @@ trigger:
 - releases/*
 
 steps:
+- task: NpmAuthenticate@0
+  inputs:
+    workingFile: .npmrc
+
 - script: npm install
   displayName: npm install
 
