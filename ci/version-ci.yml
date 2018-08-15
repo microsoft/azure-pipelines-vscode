@@ -1,7 +1,7 @@
 # for convenience, we tag CI-produced packages with a version number
 # pointing to the commit which was built. for PRs, also include the PR #.
 steps:
-- script: |
+- bash: |
     PACKAGE_VERSION=$(node -p "require('./package.json').version")
 
     if [ -n "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER" ]; then

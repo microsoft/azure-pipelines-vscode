@@ -14,6 +14,10 @@ trigger:
 - releases/*
 
 steps:
+- task: NpmAuthenticate@0
+  inputs:
+    workingFile: .npmrc
+
 - script: npm install
   displayName: npm install
 
@@ -27,15 +31,15 @@ steps:
 - ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/')) }}:
   - template: ci/version-ci.yml
 
-# HACK: comment out the magic schema imports that yaml-language-server adds
-- script: npm run-script removeschemastore
-  displayName: De-magic
-
 # Acquire the `vsce` tool and use it to package
 - script: |
     sudo npm install -g vsce
     vsce package
   displayName: Create VSIX
+
+# - script: cat /root/.npm/_logs/*.log
+#   displayName: Echo npm error logs on failure
+#   condition: failed()
 
 # This is how the CI system knows what to publish...
 - task: CopyFiles@2

@@ -45,16 +45,6 @@
                 "url": "./local-schema.json"
             }
         ],
-        "configuration": {
-            "title": "My extension configuration - TODO: Rename",
-            "properties": {
-                "yaml.validate": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable/disable validation feature"
-                }
-            }
-        },
         "configurationDefaults": {
             "[azure-pipelines]": {
                 "gitlens.codeLens.scopesByLanguage": [
@@ -82,7 +72,7 @@
         "watch": "tsc -watch -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
-        "removeschemastore": "node remove-schema-store-settings.js"
+        "refreshVSToken": "vsts-npm-auth -config .npmrc"
     },
     "devDependencies": {
         "typescript": "2.6.1",
@@ -96,6 +86,6 @@
         "vscode-languageclient": "4.4.0",
         "vscode-nls": "3.2.4",
         "vscode-uri": "1.0.5",
-        "yaml-language-server": "0.0.17"
+        "pipelines-language-server": "0.1.0"
     }
 }
