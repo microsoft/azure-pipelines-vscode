@@ -647,9 +647,6 @@
         },
         {
           "$ref": "#/definitions/templateInsertExpression"
-        },
-        {
-          "$ref": "#/definitions/templateConditionalStepInsertExpression"
         }
       ]
     },
@@ -702,19 +699,6 @@
     "templateInsertExpression": {
       "type": "string",
       "pattern": "^\\${{.*}}$"
-    },
-    "templateConditionalStepInsertExpression": {
-      "type": "object",
-      "patternProperties": {
-        "^\\${{.*}}$": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/step"
-          }
-        }
-      },
-      "minProperties": 1,
-      "maxProperties": 1
     },
     "task": {
       "type": "object",
