@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 if (process.argv.length <= 2) {
     usage();
@@ -57,9 +58,20 @@ function extractYaml(fileData: string, outputDir: string) {
 }
 
 function outputYaml(name: string, body: string, outputDir: string) {
-    console.log('-=-=-=-=-=-=-=-=-=-=-');
-    console.log(outputDir);
+    const testCaseName = name.split('_').slice(1).join('_');
+    const outputBaseName = path.join(outputDir, testCaseName);
 
-    console.log(`name: ${name}`);  // function name
-    console.log(body);  // function body
+    const multilineStringMatcher = /@"([^]*?)"/g;
+    let mlString = multilineStringMatcher.exec(body);
+    let number = 0;
+    while (mlString !== null) {
+        const finalFileName = [outputBaseName, number.toString(), 'yml'].join('.');
+        fs.writeFile(finalFileName, mlString[1].trim(), 'utf8', (err: NodeJS.ErrnoException) => {
+            if (err) {
+                console.error('trouble writing ' + finalFileName);
+            }
+        });
+        mlString = multilineStringMatcher.exec(body);
+        number++;
+    }
 }
