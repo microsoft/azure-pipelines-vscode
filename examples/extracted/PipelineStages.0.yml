@@ -1,0 +1,11 @@
+stages:
+- stage: dev
+  jobs:
+  - job: Default
+    steps:
+    - task: myTask@1
+- stage: test
+  jobs:
+  - job: Default
+    steps:
+    - task: myTask@1

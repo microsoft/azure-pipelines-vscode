@@ -1,0 +1,10 @@
+resources:
+  repositories:
+  - repository: self
+    checkoutOptions:
+      clean: true
+      fetchDepth: 10
+      lfs: true
+      submodules: true
+steps:
+- checkout: self

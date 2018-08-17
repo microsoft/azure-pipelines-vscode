@@ -1,0 +1,3 @@
+jobs:
+- job: myJob
+  displayName: My fancy job name

@@ -1,0 +1,6 @@
+jobs:
+- job: job1
+- job: job2
+  continueOnError: true
+- job: job3
+  continueOnError: $[ foo ]

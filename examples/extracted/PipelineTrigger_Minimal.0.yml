@@ -1,0 +1,5 @@
+trigger:
+- master
+- releases/*
+steps:
+- script: echo hello

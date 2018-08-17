@@ -1,0 +1,19 @@
+resources:
+  repositories:
+  - repository: tools
+stages:
+- stage: bbbStage
+  jobs:
+  - job: bbbJob
+    steps:
+    - script: echo hi from bbb-stages.yml
+- stage: tttStage
+  jobs:
+  - job: tttJob
+    steps:
+    - script: echo hi from ttt-stages.yml
+- stage: zzzStage
+  jobs:
+  - job: zzzJob
+    steps:
+    - script: echo hi from zzz-stages.yml

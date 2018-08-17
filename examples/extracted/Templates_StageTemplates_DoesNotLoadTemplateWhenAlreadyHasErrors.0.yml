@@ -1,0 +1,3 @@
+stages:
+- template: error.yml
+- template: error.yml

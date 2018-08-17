@@ -1,0 +1,8 @@
+resources:
+  repositories:
+  - repository: self
+    clean: true
+    fetchDepth: 10
+    lfs: true
+steps:
+- checkout: self

@@ -1,0 +1,10 @@
+phases:
+- phase: job1
+- phase: job2
+  queue:
+    name: myPool
+    cancelTimeoutInMinutes: 5
+- phase: job3
+  queue:
+    name: myPool
+    cancelTimeoutInMinutes: $[ variables.theCancelTimeoutInMinutes ]

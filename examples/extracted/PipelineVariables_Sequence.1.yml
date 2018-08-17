@@ -1,0 +1,8 @@
+variables:
+  var1: val1
+stages:
+- stage: stageOne
+  jobs:
+  - job: jobOne
+    steps:
+    - script: echo hello

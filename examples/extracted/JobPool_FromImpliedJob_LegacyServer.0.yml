@@ -1,0 +1,3 @@
+server: true
+steps:
+- task: foo@1

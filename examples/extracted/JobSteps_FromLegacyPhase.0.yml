@@ -1,0 +1,5 @@
+phases:
+- phase: myJob
+  steps:
+  - task: foo@1
+  - script: echo hi

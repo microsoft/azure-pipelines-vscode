@@ -1,0 +1,5 @@
+jobs:
+- job: myJob
+  steps:
+  - task: foo@1
+  - script: echo hi

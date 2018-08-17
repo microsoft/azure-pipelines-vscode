@@ -1,0 +1,29 @@
+stages:
+- stage: stage1
+- stage: stage2
+  variables:
+    variableOne: value1
+    variableTwo: value2
+  jobs:
+  - job: job1
+    steps:
+    - script: echo hi
+- stage: stage3
+  variables:
+    variableOne: value1
+    variableTwo: value2
+  jobs:
+  - job: job1
+    steps:
+    - script: echo hey
+- stage: stage4
+  variables:
+  - name: variableOne
+    value: value1
+  - group: myVariableGroup
+  - name: variableTwo
+    value: value2
+  jobs:
+  - job: job1
+    steps:
+    - script: echo hello

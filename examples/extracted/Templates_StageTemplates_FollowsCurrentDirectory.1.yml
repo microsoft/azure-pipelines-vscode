@@ -1,0 +1,7 @@
+resources:
+  repositories:
+  - repository: tools
+stages:
+- template: aaa-stages.yml
+- template: tools-entry-dir\tools-stages.yml@tools
+- template: zzz-stages.yml

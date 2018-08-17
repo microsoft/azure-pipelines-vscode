@@ -1,0 +1,13 @@
+steps:
+- task: myTask@1
+- task: myOtherTask@2
+  displayName: Fancy task
+  name: fancyTask
+  enabled: false
+  condition: always()
+  continueOnError: true
+  timeoutInMinutes: 123
+  inputs:
+    myInput: input value
+  env:
+    MY_VAR: val

@@ -1,0 +1,9 @@
+resources:
+  repositories:
+  - repository: vso
+    clean: true
+    ref: master
+    type: tfsgit
+steps:
+- task: myTask@1
+- template: my-steps.yml

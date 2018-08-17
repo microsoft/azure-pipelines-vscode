@@ -1,0 +1,8 @@
+jobs:
+- job: job1
+- job: job2
+  dependsOn: job1
+- job: job3
+  dependsOn:
+  - job1
+  - job2

@@ -1,0 +1,3 @@
+jobs:
+- job: nestedJob1
+- job: nestedJob2

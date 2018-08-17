@@ -1,0 +1,19 @@
+stages:
+- stage: stage1
+  jobs:
+  - job: job1
+    steps:
+    - script: echo hi
+- stage: stage2
+  dependsOn: stage1
+  condition: variables.condition1
+  jobs:
+  - job: job1
+    steps:
+    - script: echo hey
+- stage: stage3
+  condition: variables.condition2
+  jobs:
+  - job: job1
+    steps:
+    - script: echo hello
