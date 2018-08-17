@@ -24,7 +24,7 @@ if (process.argv.length <= 2) {
             }
 
             // here we do something with the input file
-            console.log(data);
+            extractYaml(data, options.outputDir);
         });
     });
 }
@@ -44,4 +44,22 @@ function parseOptions(rawArgs: string[]) {
         input: interestingArgs[0],
         outputDir: interestingArgs[1] || "./output"
     };
+}
+
+function extractYaml(fileData: string, outputDir: string) {
+    // find the TestMethod-attributed code blocks, extract their name and contents
+    const matcher = /\[TestMethod\][^]*?public void (.*?)\([^]*?\{([^]*?)\}/g;
+    let chunk = matcher.exec(fileData);
+    while (chunk !== null) {
+        outputYaml(chunk[1], chunk[2], outputDir);
+        chunk = matcher.exec(fileData);
+    }
+}
+
+function outputYaml(name: string, body: string, outputDir: string) {
+    console.log('-=-=-=-=-=-=-=-=-=-=-');
+    console.log(outputDir);
+
+    console.log(`name: ${name}`);  // function name
+    console.log(body);  // function body
 }
