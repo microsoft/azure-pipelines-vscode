@@ -3,7 +3,6 @@
 .gitignore
 *.sh
 .vsts-ci.yml
-remove-schema-store-settings.js
 tsconfig.json
 tslint.json
 vsc-extension-quickstart.md
