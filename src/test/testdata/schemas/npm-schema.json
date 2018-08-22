@@ -1,0 +1,25 @@
+{
+  "properties": {
+    "task": {
+      "pattern": "^[nN]pm@0$",
+      "description": "npm\n\nRun an npm command"
+    },
+    "inputs": {
+      "properties": {
+        "cwd": {
+          "description": "working folder",
+          "type": "string"
+        },
+        "command": {
+          "description": "npm command",
+          "type": "string"
+        },
+        "arguments": {
+          "description": "arguments",
+          "type": "string"
+        }
+      },
+      "description": "npm inputs"
+    }
+  }
+}
