@@ -1,0 +1,4 @@
+jobs:
+- job: job1
+- template: nested-jobs.yml
+- job: job2

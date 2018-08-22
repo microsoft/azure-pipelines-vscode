@@ -1,0 +1,12 @@
+jobs:
+- job: job1
+- job: job2
+  cancelTimeoutInMinutes: 5
+  pool: server
+  steps:
+  - task: foo@1
+- job: job3
+  cancelTimeoutInMinutes: $[ variables.theCancelTimeoutInMinutes ]
+  pool: server
+  steps:
+  - task: foo@1

@@ -1,0 +1,4 @@
+workspace:
+  clean: all
+steps:
+- script: echo hi

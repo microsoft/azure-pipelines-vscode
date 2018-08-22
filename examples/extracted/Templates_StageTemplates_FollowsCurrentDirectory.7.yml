@@ -1,0 +1,6 @@
+stages:
+- stage: zzzStage
+  jobs:
+  - job: zzzJob
+    steps:
+    - script: echo hi from zzz-stages.yml

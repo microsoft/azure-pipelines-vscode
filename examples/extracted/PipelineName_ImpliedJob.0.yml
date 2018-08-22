@@ -1,0 +1,3 @@
+name: my pipline name format
+steps:
+- script: echo hello

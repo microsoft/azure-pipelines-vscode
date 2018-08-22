@@ -1,0 +1,6 @@
+stages:
+- stage: tttStage
+  jobs:
+  - job: tttJob
+    steps:
+    - script: echo hi from ttt-stages.yml

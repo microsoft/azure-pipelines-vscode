@@ -37,9 +37,11 @@ steps:
     vsce package
   displayName: Create VSIX
 
-# - script: cat /root/.npm/_logs/*.log
-#   displayName: Echo npm error logs on failure
-#   condition: failed()
+- script: |
+    npm run vscode:prepublish
+    cat /home/vsts/.npm/_logs/*.log
+  displayName: Echo npm error logs on failure
+  condition: failed()
 
 # This is how the CI system knows what to publish...
 - task: CopyFiles@2

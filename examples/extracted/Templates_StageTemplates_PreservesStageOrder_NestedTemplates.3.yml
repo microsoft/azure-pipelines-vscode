@@ -1,0 +1,19 @@
+stages:
+- stage: 1
+  jobs:
+  - job: 1Job
+- stage: stage1
+  jobs:
+  - job: stage1Job
+- stage: nestedStage1
+  jobs:
+  - job: nestedStage1Job
+- stage: nestedStage2
+  jobs:
+  - job: nestedStage2Job
+- stage: stage2
+  jobs:
+  - job: stage2Job
+- stage: 2
+  jobs:
+  - job: 2Job

@@ -1,0 +1,5 @@
+strategy:
+  parallel: 5
+pool: server
+steps:
+- script: echo hi

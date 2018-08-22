@@ -1,0 +1,4 @@
+jobs:
+- job: job1
+  steps:
+  - checkout: none

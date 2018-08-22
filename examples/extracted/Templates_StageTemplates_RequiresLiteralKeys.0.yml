@@ -1,0 +1,2 @@
+steps:
+- template: my-stages.yml

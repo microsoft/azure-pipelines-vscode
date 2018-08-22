@@ -1,0 +1,7 @@
+name: my pipline name format
+stages:
+- stage: stageOne
+  jobs:
+  - job: jobOne
+    steps:
+    - script: echo hello

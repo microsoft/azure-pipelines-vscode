@@ -1,0 +1,4 @@
+timeoutInMinutes: 5
+pool: server
+steps:
+- task: foo@1

@@ -1,0 +1,21 @@
+stages:
+- stage: stage1
+  jobs:
+  - job: job1
+    steps:
+    - script: echo hello from entry file 1
+- stage: nestedStage1
+  jobs:
+  - job: nestedJob1
+    steps:
+    - script: echo hello from template job 1
+- stage: nestedStage2
+  jobs:
+  - job: nestedJob2
+    steps:
+    - script: echo hello from template job 2
+- stage: stage2
+  jobs:
+  - job: job2
+    steps:
+    - script: echo hello from entry file 2

@@ -1,0 +1,16 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - releases/*
+    exclude:
+    - releases/old*
+  paths:
+    include:
+    - '*'
+    exclude:
+    - readme.md
+    - docs/*
+steps:
+- script: echo hello

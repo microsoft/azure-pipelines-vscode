@@ -1,0 +1,5 @@
+phases:
+- phase: job1
+  steps:
+  - checkout: none
+    condition: true

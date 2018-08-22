@@ -1,0 +1,4 @@
+steps:
+- template: my-steps.yml
+  parameters:
+    insertExtraEnv1: true

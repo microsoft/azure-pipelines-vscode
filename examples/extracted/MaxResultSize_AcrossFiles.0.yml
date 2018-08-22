@@ -1,0 +1,4 @@
+steps:
+- template: steps.yml
+- template: steps.yml
+- template: error.yml

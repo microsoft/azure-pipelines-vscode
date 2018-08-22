@@ -1,0 +1,4 @@
+jobs:
+- job: job1
+- job: job2
+  pool: server

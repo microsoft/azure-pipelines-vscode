@@ -1,0 +1,4 @@
+jobs:
+- job: bbb
+  steps:
+  - script: echo hi from bbb-jobs.yml
