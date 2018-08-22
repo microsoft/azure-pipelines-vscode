@@ -126,13 +126,12 @@
         "@types/underscore": "1.8.9"
     },
     "dependencies": {
-        "keytar": "4.2.1",
+        "pipelines-language-server": "0.1.0",
         "q": "1.5.1",
         "typed-rest-client": "1.0.7",
         "underscore": "1.9.1",
         "vscode-languageclient": "4.4.0",
         "vscode-nls": "3.2.4",
-        "vscode-uri": "1.0.5",
-        "pipelines-language-server": "0.1.0"
+        "vscode-uri": "1.0.5"
     }
 }

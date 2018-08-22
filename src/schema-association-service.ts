@@ -9,7 +9,7 @@ import * as fs from 'fs';
 import * as handlers from 'typed-rest-client/Handlers'
 import * as logger from './logger';
 import * as path from 'path';
-import * as typedrestclient from 'typed-rest-client';
+import * as typedrestclient from 'typed-rest-client/RestClient';
 import * as vscode from 'vscode';
 import * as languageclient from 'vscode-languageclient';
 import { IYamlSchemaService, YamlSchemaService } from './yaml-schema-service';
