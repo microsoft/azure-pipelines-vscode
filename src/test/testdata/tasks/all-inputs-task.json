@@ -1,0 +1,197 @@
+{
+    "id": "00000000-0000-0000-0000-000000000000",
+    "name": "AllInputsTask",
+    "version": {
+        "major": 0,
+        "minor": 0,
+        "patch": 0,
+        "isTest": false
+    },
+    "friendlyName": "All Inputs Task",
+    "description": "All inputs task",
+    "inputs": [{
+            "name": "a1",
+            "label": "a1",
+            "defaultValue": "",
+            "type": "int",
+            "helpMarkDown": ""
+        }, 
+        {
+            "name": "a2",
+            "label": "a2",
+            "defaultValue": "",
+            "type": "INT",
+            "helpMarkDown": ""
+        }, 
+        {
+            "name": "a3",
+            "label": "a3",
+            "defaultValue": "",
+            "type": "boolean",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a4",
+            "label": "a4",
+            "defaultValue": "",
+            "type": "BOOLEAN",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a5",
+            "label": "a5",
+            "defaultValue": "",
+            "type": "multiline",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a6",
+            "label": "a6",
+            "defaultValue": "",
+            "type": "MULTILINE",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a7",
+            "label": "a7",
+            "defaultValue": "",
+            "type": "string",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a8",
+            "label": "a8",
+            "defaultValue": "",
+            "type": "STRING",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a9",
+            "label": "a9",
+            "defaultValue": "",
+            "type": "filepath",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a10",
+            "label": "a10",
+            "defaultValue": "",
+            "type": "FILEPATH",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a11",
+            "label": "a11",
+            "defaultValue": "",
+            "type": "securefile",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a12",
+            "label": "a12",
+            "defaultValue": "",
+            "type": "SECUREFILE",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a13",
+            "label": "a13",
+            "defaultValue": "",
+            "type": "identities",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a14",
+            "label": "a14",
+            "defaultValue": "",
+            "type": "IDENTITIES",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a15",
+            "label": "a15",
+            "defaultValue": "",
+            "type": "connectedservice",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a16",
+            "label": "a16",
+            "defaultValue": "",
+            "type": "CONNECTEDSERVICE",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a17",
+            "label": "a17",
+            "defaultValue": "",
+            "type": "connectedservicewithmoretext",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a18",
+            "label": "a18",
+            "defaultValue": "",
+            "type": "CONNECTEDSERVICEWITHMORETEXT",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a21",
+            "label": "a21",
+            "defaultValue": "",
+            "type": "querycontrol",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a22",
+            "label": "a22",
+            "defaultValue": "",
+            "type": "QUERYCONTROL",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a23",
+            "label": "a23",
+            "defaultValue": "",
+            "type": "picklist",
+            "helpMarkDown": "",
+            "options": {
+                "Key 1": "Value 1",
+                "Key 2": "Value 2"
+            }
+        },
+        {
+            "name": "a24",
+            "label": "a24",
+            "defaultValue": "",
+            "type": "PICKLIST",
+            "helpMarkDown": "",
+            "options": {
+                "Key 1": "Value 1",
+                "Key 2": "Value 2"
+            }
+        },
+        {
+            "name": "a25",
+            "label": "a25",
+            "defaultValue": "",
+            "type": "radio",
+            "helpMarkDown": "",
+            "options": {
+                "Key 1": "Value 1",
+                "Key 2": "Value 2"
+            }
+        },
+        {
+            "name": "a26",
+            "label": "a26",
+            "defaultValue": "",
+            "type": "RADIO",
+            "helpMarkDown": "",
+            "options": {
+                "Key 1": "Value 1",
+                "Key 2": "Value 2"
+            }
+        }
+    ]
+}

@@ -1,0 +1,33 @@
+{
+    "id": "fe47e961-9fa8-4106-8639-368c022d43ad",
+    "name": "Npm",
+    "version": {
+        "major": 0,
+        "minor": 2,
+        "patch": 22,
+        "isTest": false
+    },
+    "friendlyName": "npm",
+    "description": "Run an npm command",
+    "inputs": [{
+            "name": "cwd",
+            "label": "working folder",
+            "defaultValue": "",
+            "type": "filePath",
+            "helpMarkDown": "Working directory where the npm command is run. Defaults to the root of the repo."
+        }, {
+            "name": "command",
+            "label": "npm command",
+            "defaultValue": "install",
+            "required": true,
+            "type": "string",
+            "helpMarkDown": ""
+        }, {
+            "name": "arguments",
+            "label": "arguments",
+            "defaultValue": "",
+            "type": "string",
+            "helpMarkDown": "Additional arguments passed to npm."
+        }
+    ]
+}

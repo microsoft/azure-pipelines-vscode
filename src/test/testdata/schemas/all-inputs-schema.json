@@ -1,0 +1,121 @@
+{
+  "properties": {
+    "task": {
+      "pattern": "^[aA]ll[iI]nputs[tT]ask@0$",
+      "description": "All Inputs Task\n\nAll inputs task"
+    },
+    "inputs": {
+      "properties": {
+        "a1": {
+          "description": "a1",
+          "type": "integer"
+        },
+        "a2": {
+          "description": "a2",
+          "type": "integer"
+        },
+        "a3": {
+          "description": "a3",
+          "type": "boolean"
+        },
+        "a4": {
+          "description": "a4",
+          "type": "boolean"
+        },
+        "a5": {
+          "description": "a5",
+          "type": "string"
+        },
+        "a6": {
+          "description": "a6",
+          "type": "string"
+        },
+        "a7": {
+          "description": "a7",
+          "type": "string"
+        },
+        "a8": {
+          "description": "a8",
+          "type": "string"
+        },
+        "a9": {
+          "description": "a9",
+          "type": "string"
+        },
+        "a10": {
+          "description": "a10",
+          "type": "string"
+        },
+        "a11": {
+          "description": "a11",
+          "type": "string"
+        },
+        "a12": {
+          "description": "a12",
+          "type": "string"
+        },
+        "a13": {
+          "description": "a13",
+          "type": "string"
+        },
+        "a14": {
+          "description": "a14",
+          "type": "string"
+        },
+        "a15": {
+          "description": "a15",
+          "type": "string"
+        },
+        "a16": {
+          "description": "a16",
+          "type": "string"
+        },
+        "a17": {
+          "description": "a17",
+          "type": "string"
+        },
+        "a18": {
+          "description": "a18",
+          "type": "string"
+        },
+        "a21": {
+          "description": "a21",
+          "type": "string"
+        },
+        "a22": {
+          "description": "a22",
+          "type": "string"
+        },
+        "a23": {
+          "description": "a23",
+          "enum": [
+            "Key 1",
+            "Key 2"
+          ]
+        },
+        "a24": {
+          "description": "a24",
+          "enum": [
+            "Key 1",
+            "Key 2"
+          ]
+        },
+        "a25": {
+          "description": "a25",
+          "enum": [
+            "Key 1",
+            "Key 2"
+          ]
+        },
+        "a26": {
+          "description": "a26",
+          "enum": [
+            "Key 1",
+            "Key 2"
+          ]
+        }
+      },
+      "description": "All Inputs Task inputs"
+    }
+  }
+}

@@ -50,12 +50,20 @@
                 "path": "./syntaxes/yaml.tmLanguage.json"
             }
         ],
-        "yamlValidation": [
-            {
-                "fileMatch": "*.yml",
-                "url": "./local-schema.json"
+        "configuration": {
+            "title": "Azure Pipelines extension configuration.",
+            "properties": {
+                "yaml.validate": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable/disable validation feature"
+                },
+                "azure-pipelines.account": {
+                    "type": "string",
+                    "description": "Your Azure Pipelines account name"
+                }
             }
-        ],
+        },
         "configurationDefaults": {
             "[azure-pipelines]": {
                 "gitlens.codeLens.scopesByLanguage": [
@@ -75,7 +83,25 @@
                 },
                 "editor.autoIndent": false
             }
-        }
+        },
+        "commands": [
+            {
+                "command": "azure-pipelines.DisplayCurrentSchemaFile",
+                "title": "Azure Pipelines: Display Current Schema File"
+            },
+            {
+                "command": "azure-pipelines.LoadLatestTaskSchema",
+                "title": "Azure Pipelines: Load Latest Task Schema"
+            },
+            {
+                "command": "azure-pipelines.Signin",
+                "title": "Azure Pipelines: Signin"
+            },
+            {
+                "command": "azure-pipelines.Signout",
+                "title": "Azure Pipelines: Signout"
+            }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
@@ -83,17 +109,27 @@
         "watch": "tsc -watch -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
-        "refreshVSToken": "vsts-npm-auth -config .npmrc"
+        "refreshVSToken": "vsts-npm-auth -config .npmrc",
+        "unittest": "node_modules/.bin/mocha -u tdd out/test/*.js",
+        "generateyamlschema": "npm run compile && node ./out/buildtools/generate-yaml-from-json.js"
     },
     "devDependencies": {
+        "assert": "1.4.1",
         "typescript": "2.6.1",
+        "mocha": "5.2.0",
         "vscode": "1.1.18",
         "tslint": "5.8.0",
         "ts-node": "3.3.0",
         "@types/node": "7.0.43",
-        "@types/mocha": "2.2.42"
+        "@types/mocha": "5.2.5",
+        "@types/q": "1.5.0",
+        "@types/underscore": "1.8.9"
     },
     "dependencies": {
+        "keytar": "4.2.1",
+        "q": "1.5.1",
+        "typed-rest-client": "1.0.7",
+        "underscore": "1.9.1",
         "vscode-languageclient": "4.4.0",
         "vscode-nls": "3.2.4",
         "vscode-uri": "1.0.5",
