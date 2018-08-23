@@ -31,9 +31,12 @@ export class CredentialManager implements ICredentialManager {
 
     public async get(key: string): Promise<string | null> {
         const cred: Credential = await this.credentialStore.getCredentialByName(this.service, key);
-        return cred.Password;
-
-        //return null;
+        
+        if (cred) {
+            return cred.Password
+        }
+        
+        return null;
     }    
     
     public async set(key: string, value: string): Promise<void> {
