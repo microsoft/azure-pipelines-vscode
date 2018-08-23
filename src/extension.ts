@@ -129,7 +129,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 function getServerOptions(context: vscode.ExtensionContext): languageclient.ServerOptions {
-    const languageServerPath = context.asAbsolutePath(path.join('node_modules', 'yaml-language-server', 'out', 'server', 'src', 'server.js'));
+    const languageServerPath = context.asAbsolutePath(path.join('node_modules', 'pipelines-language-server', 'out', 'server', 'src', 'server.js'));
 
     return {
         run : { module: languageServerPath, transport: languageclient.TransportKind.ipc },
