@@ -10,7 +10,7 @@ import * as schemacontributor from './schema-contributor'
 import * as vscode from 'vscode';
 import * as schemaassociationservice from './schema-association-service';
 
-export async function activate(context: vscode.ExtensionContext) {
+export function activate(context: vscode.ExtensionContext) {
     logger.log('Extension has been activated!', 'ExtensionActivated'); // TODO: Add extension name.
 
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
@@ -24,7 +24,10 @@ export async function activate(context: vscode.ExtensionContext) {
     
     client.onReady()
     .then(() => {
-        const initialSchemaAssociations: schemaassociationservice.ISchemaAssociations = schemaAssociationService.getSchemaAssociation(); // TODO: Pass in current extension path.
+        // TODO: Can we get away with just this? Do we need custom schema request?
+        const initialSchemaAssociations: schemaassociationservice.ISchemaAssociations = schemaAssociationService.getSchemaAssociation();
+
+
         logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
         client.sendNotification(schemaassociationservice.SchemaAssociationNotification.type, initialSchemaAssociations);
 
@@ -40,7 +43,7 @@ export async function activate(context: vscode.ExtensionContext) {
         // TODO: Can we get rid of this? Never seems to happen.
         client.onRequest(schemacontributor.CUSTOM_CONTENT_REQUEST, (uri: any) => {
             logger.log('Custom content request.', 'CustomContentRequest');
-            
+
             return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
         });
     })
