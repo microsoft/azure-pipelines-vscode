@@ -98,19 +98,19 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register command to sign in using PAT.
     console.log(CommandNames.Signin);
     const signinDisposable = vscode.commands.registerCommand(CommandNames.Signin, async function() {
-        // TODO: Make sure account is setup as workspace setting first.
         const token: string | undefined = await vscode.window.showInputBox({ value: "", prompt: `Provide the personal access token for your account (${account})`, placeHolder: "", password: true });
         console.log('token: ' + token);
 
         if (token) {
             credentialManager.set(CredentialNames.PAT, token);
-            vscode.window.showInformationMessage('PAT saved securely.');
 
-            // TODO: Update pat value in SchemaAssociationService
+            schemaAssociationService.updatePat(token);
+
+            vscode.window.showInformationMessage('PAT saved securely.');
         }
         else {
-            // TODO: Because it's empty? What else could go wrong.
-            vscode.window.showInformationMessage('Unable to save PAT.');
+            // TODO: Because it's empty? What else could go wrong. Make sure this overrides if need be.
+            vscode.window.showInformationMessage('Unable to save PAT, a value must be provided.');
         }
     });
     context.subscriptions.push(signinDisposable);
@@ -118,10 +118,13 @@ export async function activate(context: vscode.ExtensionContext) {
     // Register command to sign out. This deletes the PAT from secure storage.
     // TODO: These need to be stored per account too...
     const signoutDisposable = vscode.commands.registerCommand(CommandNames.Signout, async function() {
+        // Delete the pat from secure storage
         await credentialManager.delete(CredentialNames.PAT);
-        vscode.window.showInformationMessage('Signout successful.');
 
-        // TODO: Update pat value in SchemaAssociationService
+        // Remove the pat that was set in the schema service
+        schemaAssociationService.updatePat(undefined);
+
+        vscode.window.showInformationMessage('Signout successful.');
     });
     context.subscriptions.push(signoutDisposable);
 
