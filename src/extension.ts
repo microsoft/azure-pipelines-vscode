@@ -22,11 +22,9 @@ export async function activate(context: vscode.ExtensionContext) {
     const disposable = client.start();
     context.subscriptions.push(disposable);
 
-    try {
-        const initialSchemaAssociations: schemaassociationservice.ISchemaAssociations = schemaAssociationService.getSchemaAssociation();
+    const initialSchemaAssociations: schemaassociationservice.ISchemaAssociations = schemaAssociationService.getSchemaAssociation();
 
-        await client.onReady();
-
+    await client.onReady().then(() => {
         logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
         client.sendNotification(schemaassociationservice.SchemaAssociationNotification.type, initialSchemaAssociations);
 
@@ -45,10 +43,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
             return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
         });
-    }
-    catch (ex) {
-        logger.log(ex, 'ExtensionActivationError');
-    }
+    }).catch((reason) =>{
+        logger.log(JSON.stringify(reason), 'ClientOnReadyError');
+    });
 
     // TODO: Can we get rid of this since it's set in package.json?
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
@@ -61,7 +58,7 @@ function getServerOptions(context: vscode.ExtensionContext): languageclient.Serv
 
     return {
         run : { module: languageServerPath, transport: languageclient.TransportKind.ipc },
-        debug: { module: languageServerPath, transport: languageclient.TransportKind.ipc, options: { execArgv: ["--nolazy", "--debug=6009"] } }
+        debug: { module: languageServerPath, transport: languageclient.TransportKind.ipc, options: { execArgv: ["--nolazy", "--inspect=6009"] } }
     };
 }
 
