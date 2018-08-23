@@ -53,15 +53,6 @@
         "configuration": {
             "title": "Azure Pipelines extension configuration.",
             "properties": {
-                "yaml.validate": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable/disable validation feature"
-                },
-                "azure-pipelines.account": {
-                    "type": "string",
-                    "description": "Your Azure Pipelines account name"
-                }
             }
         },
         "configurationDefaults": {
@@ -83,29 +74,11 @@
                 },
                 "editor.autoIndent": false
             }
-        },
-        "commands": [
-            {
-                "command": "azure-pipelines.DisplayCurrentSchemaFile",
-                "title": "Azure Pipelines: Display Current Schema File"
-            },
-            {
-                "command": "azure-pipelines.LoadLatestTaskSchema",
-                "title": "Azure Pipelines: Load Latest Task Schema"
-            },
-            {
-                "command": "azure-pipelines.Signin",
-                "title": "Azure Pipelines: Signin"
-            },
-            {
-                "command": "azure-pipelines.Signout",
-                "title": "Azure Pipelines: Signout"
-            }
-        ]
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./ && node copy-exe.js",
+        "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",

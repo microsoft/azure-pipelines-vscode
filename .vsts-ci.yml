@@ -43,6 +43,13 @@ steps:
   displayName: Echo npm error logs on failure
   condition: failed()
 
+# Run unit tests
+- script: npm run unittest
+  displayName: Run unit tests
+
+# TODO: Run acceptance tests
+
+
 # This is how the CI system knows what to publish...
 - task: CopyFiles@2
   displayName: Stage VSIX for publishing

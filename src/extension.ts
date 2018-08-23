@@ -3,51 +3,21 @@
 *  Licensed under the MIT License. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as languageclient from 'vscode-languageclient';
 import * as logger from './logger';
 import * as path from 'path';
 import * as schemacontributor from './schema-contributor'
 import * as vscode from 'vscode';
 import * as schemaassociationservice from './schema-association-service';
-import { CommandNames } from './helpers/constants';
-import { ICredentialManager, CredentialManager, CredentialNames } from './credentials/credential-manager';
-//import { CredentialStore } from './credentialstore/credentialstore';
 
-export interface IAzurePipelinesConfiguration {
-    account: string;
-    pat: string;
-}
-
-// Use the console to output diagnostic information (console.log) and errors (console.error)
-// This line of code will only be executed once when your extension is activated
 export async function activate(context: vscode.ExtensionContext) {
     logger.log('Extension has been activated!', 'ExtensionActivated'); // TODO: Add extension name.
-
-    const credentialManager: ICredentialManager = new CredentialManager();
-
-    const accountFromConfig: string | undefined = vscode.workspace.getConfiguration('azure-pipelines').get('account');
-    let account: string = '';
-    if (accountFromConfig) {
-        account = accountFromConfig;
-    }
-
-    let pat: string = '';
-    const patFromStore = await credentialManager.get(CredentialNames.PAT);
-    if (patFromStore) {
-        pat = patFromStore;
-    }
-
-    // TODO: Disable my pat since it will be in source history.
 
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
     const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Support', serverOptions, clientOptions);
 
-    const requestSchemaFromServer: boolean = true; // TODO: Allow a config setting to make this true. Or assume true if creds provided? Make this auto request from server... Add it as a setting. Default to false. Update readme.
-
-    const schemaAssociationService: schemaassociationservice.ISchemaAssociationService = new schemaassociationservice.SchemaAssociationService(context.storagePath, requestSchemaFromServer, context.extensionPath, { account: account, pat: pat});
+    const schemaAssociationService: schemaassociationservice.ISchemaAssociationService = new schemaassociationservice.SchemaAssociationService(context.extensionPath);
 
     const disposable = client.start();
     context.subscriptions.push(disposable);
@@ -63,7 +33,6 @@ export async function activate(context: vscode.ExtensionContext) {
         client.onRequest(schemacontributor.CUSTOM_SCHEMA_REQUEST, (resource: any) => {
             logger.log('Custom schema request. Resource: ' + JSON.stringify(resource), 'CustomSchemaRequest');
 
-
             // TODO: Can this return the location of the new schema file?
             return schemacontributor.schemaContributor.requestCustomSchema(resource); // TODO: Have a single instance for the extension but dont return a global from this namespace.
         });
@@ -71,6 +40,7 @@ export async function activate(context: vscode.ExtensionContext) {
         // TODO: Can we get rid of this? Never seems to happen.
         client.onRequest(schemacontributor.CUSTOM_CONTENT_REQUEST, (uri: any) => {
             logger.log('Custom content request.', 'CustomContentRequest');
+            
             return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
         });
     })
@@ -80,53 +50,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // TODO: Can we get rid of this since it's set in package.json?
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
-
-
-    // Register command to display current schema file
-    // TODO: This is mostly to help debugging. Maybe remove later?
-    const displayCurrentSchemaFileDisposable = vscode.commands.registerCommand(CommandNames.DisplayCurrentSchemaFile, () => {
-        vscode.window.showInformationMessage('Current schema file: ' + schemaAssociationService.schemaFilePath);
-    });
-    context.subscriptions.push(displayCurrentSchemaFileDisposable);
-
-    // Register command to force load latest task schema from server
-    const loadLatestTaskSchemaDisposable = vscode.commands.registerCommand(CommandNames.LoadLatestTaskSchema, () => {
-        vscode.window.showInformationMessage('Latest task schema loaded.');
-    });
-    context.subscriptions.push(loadLatestTaskSchemaDisposable);
-
-    // Register command to sign in using PAT.
-    console.log(CommandNames.Signin);
-    const signinDisposable = vscode.commands.registerCommand(CommandNames.Signin, async function() {
-        const token: string | undefined = await vscode.window.showInputBox({ value: "", prompt: `Provide the personal access token for your account (${account})`, placeHolder: "", password: true });
-        console.log('token: ' + token);
-
-        if (token) {
-            credentialManager.set(CredentialNames.PAT, token);
-
-            schemaAssociationService.updatePat(token);
-
-            vscode.window.showInformationMessage('PAT saved securely.');
-        }
-        else {
-            // TODO: Because it's empty? What else could go wrong. Make sure this overrides if need be.
-            vscode.window.showInformationMessage('Unable to save PAT, a value must be provided.');
-        }
-    });
-    context.subscriptions.push(signinDisposable);
-
-    // Register command to sign out. This deletes the PAT from secure storage.
-    // TODO: These need to be stored per account too...
-    const signoutDisposable = vscode.commands.registerCommand(CommandNames.Signout, async function() {
-        // Delete the pat from secure storage
-        await credentialManager.delete(CredentialNames.PAT);
-
-        // Remove the pat that was set in the schema service
-        schemaAssociationService.updatePat(undefined);
-
-        vscode.window.showInformationMessage('Signout successful.');
-    });
-    context.subscriptions.push(signoutDisposable);
 
     return schemacontributor.schemaContributor;
 }
