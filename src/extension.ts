@@ -47,7 +47,7 @@ export async function activate(context: vscode.ExtensionContext) {
         });
     }
     catch (ex) {
-        logger.log(ex, 'ClientOnReady.Error');
+        logger.log(ex, 'ExtensionActivationError');
     }
 
     // TODO: Can we get rid of this since it's set in package.json?
