@@ -10,7 +10,7 @@ import * as schemacontributor from './schema-contributor'
 import * as vscode from 'vscode';
 import * as schemaassociationservice from './schema-association-service';
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
     logger.log('Extension has been activated!', 'ExtensionActivated'); // TODO: Add extension name.
 
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
@@ -21,12 +21,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     const disposable = client.start();
     context.subscriptions.push(disposable);
-    
-    client.onReady()
-    .then(() => {
-        // TODO: Can we get away with just this? Do we need custom schema request?
+
+    try {
         const initialSchemaAssociations: schemaassociationservice.ISchemaAssociations = schemaAssociationService.getSchemaAssociation();
 
+        await client.onReady();
 
         logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
         client.sendNotification(schemaassociationservice.SchemaAssociationNotification.type, initialSchemaAssociations);
@@ -46,10 +45,10 @@ export function activate(context: vscode.ExtensionContext) {
 
             return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
         });
-    })
-    .catch((reason) => {
-        logger.log(reason, 'ClientOnReady.Error');
-    });
+    }
+    catch (ex) {
+        logger.log(ex, 'ClientOnReady.Error');
+    }
 
     // TODO: Can we get rid of this since it's set in package.json?
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
