@@ -27,6 +27,8 @@ class SchemaContributor {
     public registerContributor(schema: string,
                                requestSchema: (resource: string) => string,
                                requestSchemaContent: (uri: string) => string): boolean {
+        logger.log('', 'RegisterContributor');
+        
         if (this._customSchemaContributors[schema]) {
             return false;
         }
