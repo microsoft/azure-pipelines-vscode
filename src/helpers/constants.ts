@@ -13,6 +13,7 @@ export class CommandNames {
 
     static DisplayCurrentSchemaFile: string = CommandNames.CommandPrefix + 'DisplayCurrentSchemaFile';
     static LoadLatestTaskSchema: string = CommandNames.CommandPrefix + 'LoadLatestTaskSchema';
+    static PATUpdated: string = CommandNames.CommandPrefix + "PATUpdated";
     static Signin: string = CommandNames.CommandPrefix + 'Signin';
     static Signout: string = CommandNames.CommandPrefix + 'Signout';
 }

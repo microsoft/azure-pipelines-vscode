@@ -22,7 +22,7 @@
         "noUnusedLocals": true,
 
         /* Report errors on unused parameters. */
-        "noUnusedParameters": true,
+        //"noUnusedParameters": true,
 
         /* Redirect output structure to the directory. */
         "outDir": "out",
@@ -42,11 +42,18 @@
                 --strictFunctionTypes
                 --strictPropertyInitialization. 
         */
-        "strict": true,
+        //"strict": true,
 
         /* Specify ECMAScript target version. */
         "target": "es6",
+
+        /*  */
+        "allowJs": true,
     },
+    "include": [
+        "src/**/*",
+        "src/credentialstore/bin/win32/creds.exe"
+    ],
     "exclude": [
         "node_modules",
         ".vscode-test",

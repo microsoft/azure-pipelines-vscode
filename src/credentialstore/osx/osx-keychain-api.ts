@@ -45,7 +45,7 @@ export class OsxKeychainApi implements ICredentialStore {
             }
             if (credential !== undefined) {
                 //Go get the password
-                osxkeychain.get(credential.Username, credential.Service, function(err: any, cred: any) {
+                osxkeychain.get(credential.Username, credential.Service, function(err, cred) {
                     if (err) {
                         deferred.reject(err);
                     }
@@ -67,7 +67,7 @@ export class OsxKeychainApi implements ICredentialStore {
         const deferred: Q.Deferred<void> = Q.defer<void>();
 
         // I'm not supporting a description so pass "" for that parameter
-        osxkeychain.set(username, service, "" /*description*/, password, function(err: any) {
+        osxkeychain.set(username, service, "" /*description*/, password, function(err) {
             if (err) {
                 deferred.reject(err);
             } else {
@@ -106,7 +106,7 @@ export class OsxKeychainApi implements ICredentialStore {
             }
             if (credential !== undefined) {
                 //Go get the password
-                osxkeychain.get(credential.Username, credential.Service, function(err: any, cred: any) {
+                osxkeychain.get(credential.Username, credential.Service, function(err, cred) {
                     if (err) {
                         deferred.reject(err);
                     }
@@ -136,7 +136,7 @@ export class OsxKeychainApi implements ICredentialStore {
                 deferred.reject(reason);
             });
         } else {
-            osxkeychain.remove(username, service, "" /*description*/, function(err: any) {
+            osxkeychain.remove(username, service, "" /*description*/, function(err) {
                 if (err) {
                     if (err.code !== undefined && err.code === 44) {
                         // If credential is not found, don't fail.
@@ -178,7 +178,7 @@ export class OsxKeychainApi implements ICredentialStore {
         const credentials: Array<Credential> = [];
 
         const stream = osxkeychain.list();
-        stream.on("data", (cred: any) => {
+        stream.on("data", (cred) => {
             // Don't return all credentials, just ones that start
             // with our prefix and optional service
             if (cred.svce !== undefined) {
@@ -186,7 +186,7 @@ export class OsxKeychainApi implements ICredentialStore {
                     const svc: string = cred.svce.substring(this._prefix.length);
                     const username: string = cred.acct;
                     //password is undefined because we don't have it yet
-                    const credential: Credential = new Credential(svc, username, '');
+                    const credential: Credential = new Credential(svc, username, undefined);
 
                     // Only add the credential if we want them all or it's a match on service
                     if (service === undefined || service === svc) {
@@ -198,7 +198,7 @@ export class OsxKeychainApi implements ICredentialStore {
         stream.on("end", () => {
             deferred.resolve(credentials);
         });
-        stream.on("error", (error: any) => {
+        stream.on("error", (error) => {
             console.log(error);
             deferred.reject(error);
         });

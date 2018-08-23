@@ -13,12 +13,13 @@ import * as typedrestclient from 'typed-rest-client/RestClient';
 import * as vscode from 'vscode';
 import * as languageclient from 'vscode-languageclient';
 import { IYamlSchemaService, YamlSchemaService } from './yaml-schema-service';
-import { LogEvents, LogMessages, Constants } from './helpers/constants';
+import { LogEvents, LogMessages, Constants, CommandNames } from './helpers/constants';
 
 export interface ISchemaAssociationService {
     schemaFilePath: string;
 
     getSchemaAssociation(): ISchemaAssociations;
+    updatePat(newPat?: string): void;
 }
 
 export class SchemaAssociationService implements ISchemaAssociationService {
@@ -35,7 +36,7 @@ export class SchemaAssociationService implements ISchemaAssociationService {
     /* The last time we tried to request task schema from the server. */
     schemaLastRequestedTime: Date = new Date(1900, 1, 1);
 
-    pat: string;
+    pat?: string;
     accountName: string;
 
     /* Where the schema file is. This could be either the one packaged with the extension or the latest schema loaded from the server. */
@@ -127,10 +128,12 @@ export class SchemaAssociationService implements ISchemaAssociationService {
     downloadLatestTasksAsYaml(): void {
         if (!this.pat) {
             logger.log(LogMessages.PatRequiredToDownloadTasks, LogEvents.SkippingDownloadLatestTasks);
+            return;
         }
 
         if (!this.accountName) {
             logger.log(LogMessages.AccountRequiredToDownloadTasks, LogEvents.SkippingDownloadLatestTasks);
+            return;
         }
 
         const credentialHandler: handlers.BasicCredentialHandler = new handlers.BasicCredentialHandler('', this.pat);
@@ -216,6 +219,18 @@ export class SchemaAssociationService implements ISchemaAssociationService {
 
         // TODO: In this class maintain the location of the schema file. Update when we download a new one from the server. Load the file on startup based on config settings.
         return { '*.*': [this.schemaFilePath] };
+    }
+
+    // TODO: Maybe it makes more sense to inject the credential manager into this class and handle get/set here.
+    public updatePat(newPat?: string): void {
+        this.pat = newPat;
+
+        if (newPat) {
+            logger.log('PAT value has been set.', CommandNames.PATUpdated);
+        }
+        else {
+            logger.log('PAT value has been deleted.', CommandNames.PATUpdated);
+        }
     }
 }
 
