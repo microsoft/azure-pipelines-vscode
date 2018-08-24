@@ -34,11 +34,11 @@ suite('Validation Tests', function() {
         // Arrange
         const emptyFiles: vscode.Uri[] = await vscode.workspace.findFiles('emptyfile.yml');
         const emptyFile: vscode.Uri = emptyFiles[0];
-        const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
-        await vscode.window.showTextDocument(emptyDocument);
-        //await sleep(3000);
 
         // Act
+        const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
+        await vscode.window.showTextDocument(emptyDocument);
+        await sleep(3000); // Give it time to show the validation errors, if any
         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
 
         // Assert
@@ -62,40 +62,15 @@ suite('Validation Tests', function() {
         const invalidfiles: vscode.Uri[] = await vscode.workspace.findFiles('invalidfile.yml');
         const invalidfile: vscode.Uri = invalidfiles[0];
 
-        //console.log('workspace configuration: ' + JSON.stringify(vscode.workspace.getConfiguration()));
-        //console.log('text documents: ' + JSON.stringify(vscode.workspace.textDocuments));
-        //console.log('files: ' + JSON.stringify(await vscode.workspace.findFiles('*.*')));
-        //console.log('invalidfile.yml files: ' + JSON.stringify(await vscode.workspace.findFiles('invalidfile.yml')));
-        //console.log('BROKEN? invalid file: ' + JSON.stringify(invalidfile));
-
-        const invalidDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(invalidfile);
-
-        // THIS IS NOT THE REAL DOCUMENT BEING OPENED, IT'S A NEW DOCUMENT
-        //console.log('invalidDocument(THIS IS OPENING A NEW FILE NOT THE ONE WE WANT): ' + JSON.stringify(invalidDocument));
-
-        const shownDocument = await vscode.window.showTextDocument(invalidDocument);
-
-        //console.log('shown document id: ' + shownDocument.document.languageId);
-        //console.log('shown document text: ' + shownDocument.document.getText());
-
-        //await sleep(3000);
-
-        //console.log('');
-        //shownDocument.document.
-        //console.log('');
-        //console.log('');
-
         // Act
+        const invalidDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(invalidfile);
+        await vscode.window.showTextDocument(invalidDocument);
+        await sleep(3000); // Give it time to show the validation errors, if any
         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(invalidfile);
 
-        console.log('all diagnostics length: ' + vscode.languages.getDiagnostics().length);
-
         // Assert
-        console.log(invalidDocument.languageId);
         assert.equal(invalidDocument.languageId, 'azure-pipelines');
-
-        console.log(JSON.stringify(diagnostics));
-        assert.equal(diagnostics.length, 1000);
+        assert.equal(diagnostics, [{"severity":"Error","message":"Incorrect type. Expected \"object\".","range":[{"line":0,"character":0},{"line":5,"character":0}]}]);
     });
 
     test ('Manually selecting file type as Azure Pipelines works', function() {
