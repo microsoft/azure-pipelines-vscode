@@ -1,0 +1,10 @@
+{
+    "folders": [
+		{
+			"path": "."
+		}
+	],
+    "files.associations": {
+        "**/*.yml": "azure-pipelines"
+    }
+}

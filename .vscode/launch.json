@@ -24,6 +24,7 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
+                "${workspaceRoot}/src/test/workspace/", // https://code.visualstudio.com/docs/extensions/testing-extensions#_passing-arguments-to-the-extension-development-host
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--extensionTestsPath=${workspaceFolder}/out/test"
             ],
