@@ -32,10 +32,11 @@ suite('Validation Tests', function() {
 
     test ('Given an empty document, there should be no validation errors', async () => {
         // Arrange
-        const emptyFile: vscode.Uri = await vscode.workspace.findFiles('emptyfile.yml')[0];
+        const emptyFiles: vscode.Uri[] = await vscode.workspace.findFiles('emptyfile.yml');
+        const emptyFile: vscode.Uri = emptyFiles[0];
         const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
-        //const shownDocument = await vscode.window.showTextDocument(emptyDocument);
-        await sleep(3000);
+        await vscode.window.showTextDocument(emptyDocument);
+        //await sleep(3000);
 
         // Act
         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
@@ -58,30 +59,31 @@ suite('Validation Tests', function() {
 
     test ('Given an invalid document, there should be validation errors', async function() {
         // Arrange
-        const invalidfile: vscode.Uri = await vscode.workspace.findFiles('invalidfile.yml')[0];
+        const invalidfiles: vscode.Uri[] = await vscode.workspace.findFiles('invalidfile.yml');
+        const invalidfile: vscode.Uri = invalidfiles[0];
 
-        console.log('workspace configuration: ' + JSON.stringify(vscode.workspace.getConfiguration()));
-
+        //console.log('workspace configuration: ' + JSON.stringify(vscode.workspace.getConfiguration()));
         //console.log('text documents: ' + JSON.stringify(vscode.workspace.textDocuments));
-
         //console.log('files: ' + JSON.stringify(await vscode.workspace.findFiles('*.*')));
-        console.log('invalidfile.yml files: ' + JSON.stringify(await vscode.workspace.findFiles('emptyfile.yml')));
+        //console.log('invalidfile.yml files: ' + JSON.stringify(await vscode.workspace.findFiles('invalidfile.yml')));
+        //console.log('BROKEN? invalid file: ' + JSON.stringify(invalidfile));
 
         const invalidDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(invalidfile);
 
-        console.log('emptyDocument: ' + JSON.stringify(invalidDocument));
+        // THIS IS NOT THE REAL DOCUMENT BEING OPENED, IT'S A NEW DOCUMENT
+        //console.log('invalidDocument(THIS IS OPENING A NEW FILE NOT THE ONE WE WANT): ' + JSON.stringify(invalidDocument));
 
         const shownDocument = await vscode.window.showTextDocument(invalidDocument);
 
-        console.log('shown document id: ' + shownDocument.document.languageId);
-        console.log('shown document text: ' + shownDocument.document.getText());
+        //console.log('shown document id: ' + shownDocument.document.languageId);
+        //console.log('shown document text: ' + shownDocument.document.getText());
 
-        await sleep(3000);
+        //await sleep(3000);
 
-        console.log('');
+        //console.log('');
         //shownDocument.document.
-        console.log('');
-        console.log('');
+        //console.log('');
+        //console.log('');
 
         // Act
         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(invalidfile);
