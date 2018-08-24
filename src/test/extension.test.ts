@@ -22,57 +22,27 @@ suite ('Extension Setup Tests', function() {
     });
 });
 
+// Helpers
+// 1. Workspace configuration settings are not as expected
+//    console.log('workspace configuration: ' + JSON.stringify(vscode.workspace.getConfiguration()));
+// 2. 
+
 suite('Validation Tests', function() {
+    this.timeout(20000);
+
     test ('Given an empty document, there should be no validation errors', async () => {
-        // load an empty document
-        // mark it as an azure pipelines file
-        // check for validation errors, shouldn't be any
-
-
-
-
-        //const extension = await vscode.extensions.getExtension(extensionId);
-
-
-
-
-
-         // TODO: What is the workspace that is loaded when the extension runs? Should we create one?
-
+        // Arrange
         const emptyFile: vscode.Uri = await vscode.workspace.findFiles('emptyfile.yml')[0];
         const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
-        //const visibleDocument: vscode.TextEditor = await vscode.window.showTextDocument(emptyDocument); // KEEP THIS
-
-        // TODO: This should be azure pipelines.
-        console.log(emptyDocument.languageId);
-
-        // Check the type of the current text document
-        const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
-        console.log(JSON.stringify(diagnostics));
-
-        // Check the type of the current text document
-            
-
-
-        // Check validation errors for current document, check the name of what is set by the server?
-        //visibleDocument.selection
-
-
-        // The file should already be identified as an azure pipelines file, can we validate that?
-
-
-        // Now make sure there are no validation errors
-
-
-
-        // Arrange
-
+        //const shownDocument = await vscode.window.showTextDocument(emptyDocument);
+        await sleep(3000);
 
         // Act
-
+        const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
 
         // Assert
-
+        assert.equal(emptyDocument.languageId, 'azure-pipelines');
+        assert.equal(diagnostics.length, 0);
     });
 
     test ('Given a valid document, there should be no validation errors', function() {
@@ -86,15 +56,44 @@ suite('Validation Tests', function() {
         
     });
 
-    test ('Given an invalid document, there should be validation errors', function() {
+    test ('Given an invalid document, there should be validation errors', async function() {
         // Arrange
+        const invalidfile: vscode.Uri = await vscode.workspace.findFiles('invalidfile.yml')[0];
 
+        console.log('workspace configuration: ' + JSON.stringify(vscode.workspace.getConfiguration()));
+
+        //console.log('text documents: ' + JSON.stringify(vscode.workspace.textDocuments));
+
+        //console.log('files: ' + JSON.stringify(await vscode.workspace.findFiles('*.*')));
+        console.log('invalidfile.yml files: ' + JSON.stringify(await vscode.workspace.findFiles('emptyfile.yml')));
+
+        const invalidDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(invalidfile);
+
+        console.log('emptyDocument: ' + JSON.stringify(invalidDocument));
+
+        const shownDocument = await vscode.window.showTextDocument(invalidDocument);
+
+        console.log('shown document id: ' + shownDocument.document.languageId);
+        console.log('shown document text: ' + shownDocument.document.getText());
+
+        await sleep(3000);
+
+        console.log('');
+        //shownDocument.document.
+        console.log('');
+        console.log('');
 
         // Act
+        const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(invalidfile);
 
+        console.log('all diagnostics length: ' + vscode.languages.getDiagnostics().length);
 
         // Assert
-        
+        console.log(invalidDocument.languageId);
+        assert.equal(invalidDocument.languageId, 'azure-pipelines');
+
+        console.log(JSON.stringify(diagnostics));
+        assert.equal(diagnostics.length, 1000);
     });
 
     test ('Manually selecting file type as Azure Pipelines works', function() {
