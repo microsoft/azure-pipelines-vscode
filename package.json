@@ -82,7 +82,7 @@
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
         "refreshVSToken": "vsts-npm-auth -config .npmrc",
-        "unittest": "node_modules/.bin/mocha -u tdd out/test/*.js",
+        "unittest": "node_modules/.bin/mocha -u tdd out/unittest/*.js",
         "generateyamlschema": "npm run compile && node ./out/buildtools/generate-yaml-from-json.js"
     },
     "devDependencies": {

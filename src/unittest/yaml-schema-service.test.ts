@@ -5,8 +5,9 @@ import * as path from 'path';
 import { YamlSchemaService } from '../yaml-schema-service';
 
 // TODO: Setup test paths to run from root of tests not from where we are running in cmdline?
-const taskTestDataRoot = 'src/test/testdata/tasks';
-const taskSchemaDataRoot = 'src/test/testdata/schemas';
+const testDataFolder = 'src/unittest/testdata'
+const taskTestDataRoot = path.join(testDataFolder, 'tasks');
+const taskSchemaDataRoot = path.join(testDataFolder, 'schemas');
 
 suite("Yaml Schema Service Tests", function () {
     
