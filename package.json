@@ -24,7 +24,7 @@
         "Formatters"
     ],
     "activationEvents": [
-        "onLanguage:azure-pipelines"
+        "*"
     ],
     "main": "./out/extension",
     "contributes": {

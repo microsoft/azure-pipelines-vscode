@@ -1,18 +1,34 @@
-//import * as assert from 'assert';
-
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
-// import * as vscode from 'vscode';
+import * as assert from 'assert';
+import * as vscode from 'vscode';
 // import * as myExtension from '../extension';
-
-// TODO: When running npm run test we just want integration tests, not unit tests. Move them to separate folders and
-// configure each command to only look in those folders.
 
 // This suite performs validation tests that look at validating yaml files.
 // The tests are looking at if there are any file validation errors, and if there are, what are they.
 // 
 // These tests need to ensure validation errors are propagated to the ui, we do not need to test
 // every type and permutation of validation errors, that should be handled in unit tests.
+suite ('Extension Setup Tests', function() {
+    this.timeout(20000);
+
+    // TODO: Run this before every test?
+    test("Extension is active", async () => {
+        await sleep(2000);
+
+        // Arrange and Act
+        const started = vscode.extensions.getExtension("ms-azure-devops.azure-pipelines").isActive;
+        console.log('pipelines extension started: ' + started);
+
+        // TODO: It's not active because we haven't chosen a file to activate it?
+
+        // Assert
+        assert.equal(started, true);
+    });
+});
+
+async function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 suite('Validation Tests', function() {
     test ('Given an empty document, there should be no validation errors', function() {
         // Arrange
