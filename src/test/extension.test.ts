@@ -70,7 +70,7 @@ suite('Validation Tests', function() {
 
         // Assert
         assert.equal(invalidDocument.languageId, 'azure-pipelines');
-        assert.equal(diagnostics, [{"severity":"Error","message":"Incorrect type. Expected \"object\".","range":[{"line":0,"character":0},{"line":5,"character":0}]}]);
+        assert.deepEqual(diagnostics, [{"severity":"Error","message":"Incorrect type. Expected \"object\".","range":[{"line":0,"character":0},{"line":5,"character":0}]}]);
     });
 
     test ('Manually selecting file type as Azure Pipelines works', function() {
