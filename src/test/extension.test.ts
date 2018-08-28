@@ -27,72 +27,72 @@ suite ('Extension Setup Tests', function() {
 //    console.log('workspace configuration: ' + JSON.stringify(vscode.workspace.getConfiguration()));
 // 2. 
 
-// suite('Validation Tests', function() {
-//     this.timeout(20000);
+suite('Validation Tests', function() {
+    this.timeout(20000);
 
-//     test ('Given an empty document, there should be no validation errors', async () => {
-//         // Arrange
-//         const emptyFiles: vscode.Uri[] = await vscode.workspace.findFiles('emptyfile.yml');
-//         const emptyFile: vscode.Uri = emptyFiles[0];
+    test ('Given an empty document, there should be no validation errors', async () => {
+        // Arrange
+        const emptyFiles: vscode.Uri[] = await vscode.workspace.findFiles('emptyfile.yml');
+        const emptyFile: vscode.Uri = emptyFiles[0];
 
-//         // Act
-//         const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
-//         await vscode.window.showTextDocument(emptyDocument);
-//         await sleep(3000); // Give it time to show the validation errors, if any
-//         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
+        // Act
+        const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
+        await vscode.window.showTextDocument(emptyDocument);
+        await sleep(3000); // Give it time to show the validation errors, if any
+        const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
 
-//         // Assert
-//         assert.equal(emptyDocument.languageId, 'azure-pipelines');
-//         assert.equal(diagnostics.length, 0);
-//     });
+        // Assert
+        assert.equal(emptyDocument.languageId, 'azure-pipelines');
+        assert.equal(diagnostics.length, 0);
+    });
 
-//     test ('Given a valid document, there should be no validation errors', async () => {
-//         // Arrange
-//         const emptyFiles: vscode.Uri[] = await vscode.workspace.findFiles('validfile.yml');
-//         const emptyFile: vscode.Uri = emptyFiles[0];
+    test ('Given a valid document, there should be no validation errors', async () => {
+        // Arrange
+        const emptyFiles: vscode.Uri[] = await vscode.workspace.findFiles('validfile.yml');
+        const emptyFile: vscode.Uri = emptyFiles[0];
 
-//         // Act
-//         const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
-//         await vscode.window.showTextDocument(emptyDocument);
-//         await sleep(3000); // Give it time to show the validation errors, if any
-//         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
+        // Act
+        const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
+        await vscode.window.showTextDocument(emptyDocument);
+        await sleep(3000); // Give it time to show the validation errors, if any
+        const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
 
-//         // Assert
-//         assert.equal(emptyDocument.languageId, 'azure-pipelines');
-//         assert.equal(diagnostics.length, 0);
-//     });
+        // Assert
+        assert.equal(emptyDocument.languageId, 'azure-pipelines');
+        assert.equal(diagnostics.length, 0);
+    });
 
-//     test ('Given an invalid document, there should be validation errors', async function() {
-//         // Arrange
-//         const invalidfiles: vscode.Uri[] = await vscode.workspace.findFiles('invalidfile.yml');
-//         const invalidfile: vscode.Uri = invalidfiles[0];
+    test ('Given an invalid document, there should be validation errors', async function() {
+        // Arrange
+        const invalidfiles: vscode.Uri[] = await vscode.workspace.findFiles('invalidfile.yml');
+        const invalidfile: vscode.Uri = invalidfiles[0];
 
-//         // Act
-//         const invalidDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(invalidfile);
-//         await vscode.window.showTextDocument(invalidDocument);
-//         await sleep(3000); // Give it time to show the validation errors, if any
-//         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(invalidfile);
+        // Act
+        const invalidDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(invalidfile);
+        await vscode.window.showTextDocument(invalidDocument);
+        await sleep(3000); // Give it time to show the validation errors, if any
+        const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(invalidfile);
 
-//         // Assert
-//         assert.equal(invalidDocument.languageId, 'azure-pipelines');
-//         assert.deepEqual(diagnostics, [{"severity":"Error","message":"Incorrect type. Expected \"object\".","range":[{"line":0,"character":0},{"line":5,"character":0}]}]);
-//     });
+        // Assert
+        assert.equal(invalidDocument.languageId, 'azure-pipelines');
+        assert.deepEqual(diagnostics, [{"severity":"Error","message":"Incorrect type. Expected \"object\".","range":[{"line":0,"character":0},{"line":5,"character":0}]}]);
+    });
 
-//     test ('Manually selecting file type as Azure Pipelines works', function() {
-//         // TODO: Write this test. I have not been able to find a way to manually set the file type through the vscode api.
+    test ('Manually selecting file type as Azure Pipelines works', function() {
+        // TODO: Write this test. I have not been able to find a way to manually set the file type through the vscode api.
 
-//     });
+    });
 
-//     test ('When manually activating an invalid file there should be validation errors', async () => {
-//         // TODO: Write this test. I have not been able to find a way to manually set the file type through the vscode api.
+    test ('When manually activating an invalid file there should be validation errors', async () => {
+        // TODO: Write this test. I have not been able to find a way to manually set the file type through the vscode api.
         
-//     });
+    });
 
-//     test ('When manually activating a valid file there should not be validation errors', function() {
-//         // TODO: Write this test. I have not been able to find a way to manually set the file type through the vscode api.
+    test ('When manually activating a valid file there should not be validation errors', function() {
+        // TODO: Write this test. I have not been able to find a way to manually set the file type through the vscode api.
         
-//     });
-// });
+    });
+});
 
 // This suite performs autocomplete tests that look for what options are available for autocompletion
 // depending on where we are in a file, what the contents of that file are, and what the schema is.
