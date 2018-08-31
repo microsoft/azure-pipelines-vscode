@@ -75,7 +75,13 @@ suite('Validation Tests', function() {
 
         // Assert
         assert.equal(invalidDocument.languageId, 'azure-pipelines');
-        assert.deepEqual(diagnostics, [{"severity":"Error","message":"Incorrect type. Expected \"object\".","range":[{"line":0,"character":0},{"line":5,"character":0}]}]);
+        assert.equal(diagnostics.length, 1);
+        assert.equal(diagnostics[0].range.start.line, 0);
+        assert.equal(diagnostics[0].range.start.character, 0);
+        assert.equal(diagnostics[0].range.end.line, 5);
+        assert.equal(diagnostics[0].range.end.character, 0);
+
+        //assert.deepEqual(diagnostics, [{"severity":"Error","message":"Incorrect type. Expected \"object\".","range":[{"line":0,"character":0},{"line":5,"character":0}]}]);
     });
 
     test ('Manually selecting file type as Azure Pipelines works', function() {
@@ -155,6 +161,7 @@ async function triggerIntellisense() {
 // After you have called triggerIntellisense you can use this to accept the suggestion from intellisense.
 async function acceptSuggestion() {
     await vscode.commands.executeCommand('acceptSelectedSuggestion');
+    await sleep(500);
 }
 
 async function sleep(ms: number) {
