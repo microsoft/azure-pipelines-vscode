@@ -28,7 +28,7 @@ steps:
   displayName: npm install
 
 # Run unit tests
-- script: npm run unittest
+- script: npm run compile && npm run unittest
   displayName: Run unit tests
 
 # Acquire the `vsce` tool and use it to package
