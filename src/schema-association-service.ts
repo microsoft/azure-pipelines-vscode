@@ -11,12 +11,10 @@ export class SchemaAssociationService implements ISchemaAssociationService {
     /* Where the schema file is on disk. This is packaged with the extension, in the root, at local-schema.json. */
     schemaFilePath: string;
 
-    // TODO: Move request from server first?
     constructor(extensionPath: string) {
         this.schemaFilePath = vscode.Uri.file(path.join(extensionPath, './local-schema.json')).toString();
     }
 
-    // TODO: Extract to schema association service
     public getSchemaAssociation(): ISchemaAssociations {
         return { '*.*': [this.schemaFilePath] };
     }

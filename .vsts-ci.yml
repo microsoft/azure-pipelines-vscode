@@ -47,7 +47,7 @@ steps:
 - script: npm run unittest
   displayName: Run unit tests
 
-# TODO: Run acceptance tests
+# TODO: Run integration tests
 
 
 # This is how the CI system knows what to publish...

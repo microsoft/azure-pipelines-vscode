@@ -58,9 +58,6 @@ class SchemaContributor {
 
         // Check relationship with result of getSchemaAssociationFromYamlValidationNode. Does this load the files specified there? Make sure this code is needed.
 
-        //logger.log(`requestCustomSchema customSchemaContributors list: ${JSON.stringify(this._customSchemaContributors)}`);
-        //logger.log(`requestCustomSchema customSchemaContributors: ${resource}`);
-
         for (let customKey of Object.keys(this._customSchemaContributors)) {
             const contributor = this._customSchemaContributors[customKey];
             const uri = contributor.requestSchema(resource);

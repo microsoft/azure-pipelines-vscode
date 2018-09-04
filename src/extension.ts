@@ -11,7 +11,7 @@ import * as vscode from 'vscode';
 import * as schemaassociationservice from './schema-association-service';
 
 export async function activate(context: vscode.ExtensionContext) {
-    logger.log('Extension has been activated!', 'ExtensionActivated'); // TODO: Add extension name.
+    logger.log('Extension has been activated!', 'ExtensionActivated');
 
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
@@ -70,7 +70,7 @@ function getClientOptions(): languageclient.LanguageClientOptions {
         ],
         synchronize: {
             // Synchronize the setting section 'languageServerExample' to the server
-            // TODO: Are these what settings we want to pass through to the server? Would be good to see this happening... And see initializeOptions
+            // TODO: Are these what settings we want to pass through to the server? Would be good to see this happening... And see initializeOptions. Maybe remove them?
             configurationSection: ['yaml', 'http.proxy', 'http.proxyStrictSSL'],
             // Notify the server about file changes to '.clientrc files contain in the workspace
             fileEvents: [

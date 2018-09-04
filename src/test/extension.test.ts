@@ -11,7 +11,6 @@ const extensionId = 'ms-azure-devops.azure-pipelines';
 suite ('Extension Setup Tests', function() {
     this.timeout(20000);
 
-    // TODO: Run this before every test?
     test("Extension is active", async () => {
         // Arrange and Act
         await sleep(2000);
