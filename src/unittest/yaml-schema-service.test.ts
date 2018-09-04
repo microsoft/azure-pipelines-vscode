@@ -11,24 +11,15 @@ const taskSchemaDataRoot = path.join(testDataFolder, 'schemas');
 suite("Yaml Schema Service Tests", function () {
     
     test('Task yaml is structured correctly', function() {
-        const taskJsonPath: string = path.join(taskTestDataRoot, 'npm-task.json');
-        const schemaPath: string = path.join(taskSchemaDataRoot, 'npm-schema.json');
-
-        runTaskTest(taskJsonPath, schemaPath);
+        runTaskTest('npm-task.json', 'npm-schema.json');
     });
 
     test('Input types are correctly mapped to json schema types', function() {
-        const taskJsonPath: string = path.join(taskTestDataRoot, 'all-inputs-task.json');
-        const schemaPath: string = path.join(taskSchemaDataRoot, 'all-inputs-schema.json');
-
-        runTaskTest(taskJsonPath, schemaPath);
+        runTaskTest('all-inputs-task.json', 'all-inputs-schema.json');
     });
 
     test('Task name pattern uses regex for any characters that are uppercase in task name', function() {
-        const taskJsonPath: string = path.join(taskTestDataRoot, 'nameregex-task.json');
-        const schemaPath: string = path.join(taskSchemaDataRoot, 'nameregex-schema.json');
-
-        runTaskTest(taskJsonPath, schemaPath);
+        runTaskTest('nameregex-task.json', 'nameregex-schema.json');
     });
 
     // test('Special characters are escaped', function() {
@@ -44,8 +35,11 @@ suite("Yaml Schema Service Tests", function () {
     // });
 });
 
-function runTaskTest(taskJsonPath: string, schemaPath: string) {
+function runTaskTest(taskJsonFile: string, schemaFile: string) {
     // Arrange
+    const taskJsonPath: string = path.join(taskTestDataRoot, taskJsonFile);
+    const schemaPath: string = path.join(taskSchemaDataRoot, schemaFile);
+    
     const npmTask: string = fs.readFileSync(taskJsonPath, 'utf8');
     const task: DTTask = JSON.parse(npmTask);
     
