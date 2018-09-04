@@ -1,0 +1,17 @@
+{
+    "properties": {
+      "task": {
+        "pattern": "^[sS]pecial[cC]haracters[tT]ask@0$",
+        "description": "friendly name\n\ndescription details"
+      },
+      "inputs": {
+        "properties": {
+          "input name": {
+            "description": "my input label",
+            "type": "string"
+          }
+        },
+        "description": "friendly name inputs"
+      }
+    }
+  }

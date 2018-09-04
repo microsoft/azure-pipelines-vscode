@@ -11,42 +11,36 @@ const taskSchemaDataRoot = path.join(testDataFolder, 'schemas');
 suite("Yaml Schema Service Tests", function () {
     
     test('Task yaml is structured correctly', function() {
-        const taskJsonPath: string = path.join(taskTestDataRoot, 'npm-task.json');
-        const schemaPath: string = path.join(taskSchemaDataRoot, 'npm-schema.json');    
-
-        runTaskTest(taskJsonPath, schemaPath);
+        runTaskTest('npm-task.json', 'npm-schema.json');
     });
 
     test('Input types are correctly mapped to json schema types', function() {
-        const taskJsonPath: string = path.join(taskTestDataRoot, 'all-inputs-task.json');
-        const schemaPath: string = path.join(taskSchemaDataRoot, 'all-inputs-schema.json');    
-
-        runTaskTest(taskJsonPath, schemaPath);
+        runTaskTest('all-inputs-task.json', 'all-inputs-schema.json');
     });
 
-    // test('Task name pattern uses regex for any characters that are uppercase in task name', function() {
+    test('Task name pattern uses regex for any characters that are uppercase in task name', function() {
+        runTaskTest('nameregex-task.json', 'nameregex-schema.json');
+    });
 
-    // });
+    test('Special characters are removed', function() {
+        runTaskTest('special-characters-task.json', 'special-characters-schema.json');
+    });
 
-    // test('Special characters are escaped', function() {
-
-    // });
-
-    // test('Missing input type mapping throws exception', function() {
-        
-    // });
-
-    // test('Picklist or radio with no options throws exception', function() {
-        
-    // });
+    test('Missing input type mapping throws exception', function() {
+        // throw new Error(`Unable to find input type mapping '${input.type}'.`);
+       runExceptionTest('missing-input-mapping-exception-task.json', 'Unable to find input type mapping X.');
+    });
 
     // test('Missing task fields throws exception', function() {
-        
+    //     runExceptionTest();
     // });
 });
 
-function runTaskTest(taskJsonPath: string, schemaPath: string) {
+function runTaskTest(taskJsonFile: string, schemaFile: string) {
     // Arrange
+    const taskJsonPath: string = path.join(taskTestDataRoot, taskJsonFile);
+    const schemaPath: string = path.join(taskSchemaDataRoot, schemaFile);
+    
     const npmTask: string = fs.readFileSync(taskJsonPath, 'utf8');
     const task: DTTask = JSON.parse(npmTask);
     
@@ -60,4 +54,15 @@ function runTaskTest(taskJsonPath: string, schemaPath: string) {
 
     // Assert
     assert.equal(schema, JSON.stringify(expectedSchema, null, 2));
+}
+
+function runExceptionTest(taskJsonFile: string, message: string) {
+    // Arrange
+    const taskJsonPath: string = path.join(taskTestDataRoot, taskJsonFile);
+    const npmTask: string = fs.readFileSync(taskJsonPath, 'utf8');
+    const task: DTTask = JSON.parse(npmTask);
+    const yamlSchemaService = new YamlSchemaService();
+
+    // Act and Assert
+    assert.throws(() => yamlSchemaService.getSchemaFromTask(task), message);
 }

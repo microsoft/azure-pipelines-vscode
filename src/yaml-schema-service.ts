@@ -729,6 +729,9 @@ export class YamlSchemaService implements IYamlSchemaService {
     }
 
     public getSchemaFromTask(task: DTTask): string {
+        // task.name, task.friendlyName, task.description
+        // throw or fall back to empty string? this is only for generation so prob just throw
+
         let schema: any = {
             properties: {
                 task: {},
@@ -772,7 +775,7 @@ export class YamlSchemaService implements IYamlSchemaService {
                     || inputType == 'identities'
                     || inputType.startsWith('connectedservice')
                     || inputType == 'picklist'
-                    || inputType == 'radio' // TODO: Is it true that radio with no input.options becomes a string? Seems wrong. It does exist in dt-tasks-json-response.json
+                    || inputType == 'radio'
                     || inputType == 'querycontrol') {
                     thisProp.type = 'string';
                 }
