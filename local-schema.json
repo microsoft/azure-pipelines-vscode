@@ -572,7 +572,7 @@
           "$ref": "#/definitions/step"
         },
         {
-          "$ref": "#/definitions/templateInsertExpression"
+          "$ref": "#/definitions/stepInsertExpression"
         }
       ]
     },
@@ -622,9 +622,19 @@
       "type": "string",
       "pattern": "^\\$\\(.*\\)$"
     },
-    "templateInsertExpression": {
-      "type": "string",
-      "pattern": "^\\${{.*}}$"
+    "stepInsertExpression": {
+      "type": "object",
+      "description": "Conditionally insert one or more steps",
+      "maxProperties": 1,
+      "minProperties": 1,
+      "patternProperties": {
+        "^\\${{.*}}$": {
+          "type":"array",
+          "items": {
+            "$ref": "#/definitions/step"
+          }
+        }
+      }
     },
     "task": {
       "type": "object",
