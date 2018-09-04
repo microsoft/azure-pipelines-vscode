@@ -39,8 +39,6 @@ suite("Yaml Schema Service Tests", function () {
         
     // });
 
-    // TODO: Radio with no options becomes a string -- Add this to input mapping test above
-
     // test('Missing task fields throws exception', function() {
         
     // });

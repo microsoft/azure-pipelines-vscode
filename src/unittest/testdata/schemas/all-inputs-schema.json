@@ -113,6 +113,14 @@
             "Key 1",
             "Key 2"
           ]
+        },
+        "a27": {
+          "description": "a27",
+          "type": "string"
+        },
+        "a28": {
+          "description": "a28",
+          "type": "string"
         }
       },
       "description": "All Inputs Task inputs"

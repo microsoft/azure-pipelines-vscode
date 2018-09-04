@@ -192,6 +192,20 @@
                 "Key 1": "Value 1",
                 "Key 2": "Value 2"
             }
+        },
+        {
+            "name": "a27",
+            "label": "a27",
+            "defaultValue": "",
+            "type": "RADIO",
+            "helpMarkDown": ""
+        },
+        {
+            "name": "a28",
+            "label": "a28",
+            "defaultValue": "",
+            "type": "radio",
+            "helpMarkDown": ""
         }
     ]
 }
