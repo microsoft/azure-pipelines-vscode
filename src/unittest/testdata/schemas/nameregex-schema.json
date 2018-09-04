@@ -1,0 +1,17 @@
+{
+    "properties": {
+      "task": {
+        "pattern": "^[tT]h[iI]s[tT]a[sS]k[hH]a[sS]m[iI]x[eE]d[cC]a[sS]i[nN]g[sS]@0$",
+        "description": "name\n\nTest with multiple upper and lower case letters"
+      },
+      "inputs": {
+        "properties": {
+          "command": {
+            "description": "npm command",
+            "type": "string"
+          }
+        },
+        "description": "name inputs"
+      }
+    }
+  }

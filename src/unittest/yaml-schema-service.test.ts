@@ -12,21 +12,24 @@ suite("Yaml Schema Service Tests", function () {
     
     test('Task yaml is structured correctly', function() {
         const taskJsonPath: string = path.join(taskTestDataRoot, 'npm-task.json');
-        const schemaPath: string = path.join(taskSchemaDataRoot, 'npm-schema.json');    
+        const schemaPath: string = path.join(taskSchemaDataRoot, 'npm-schema.json');
 
         runTaskTest(taskJsonPath, schemaPath);
     });
 
     test('Input types are correctly mapped to json schema types', function() {
         const taskJsonPath: string = path.join(taskTestDataRoot, 'all-inputs-task.json');
-        const schemaPath: string = path.join(taskSchemaDataRoot, 'all-inputs-schema.json');    
+        const schemaPath: string = path.join(taskSchemaDataRoot, 'all-inputs-schema.json');
 
         runTaskTest(taskJsonPath, schemaPath);
     });
 
-    // test('Task name pattern uses regex for any characters that are uppercase in task name', function() {
+    test('Task name pattern uses regex for any characters that are uppercase in task name', function() {
+        const taskJsonPath: string = path.join(taskTestDataRoot, 'nameregex-task.json');
+        const schemaPath: string = path.join(taskSchemaDataRoot, 'nameregex-schema.json');
 
-    // });
+        runTaskTest(taskJsonPath, schemaPath);
+    });
 
     // test('Special characters are escaped', function() {
 
@@ -36,9 +39,7 @@ suite("Yaml Schema Service Tests", function () {
         
     // });
 
-    // test('Picklist or radio with no options throws exception', function() {
-        
-    // });
+    // TODO: Radio with no options becomes a string -- Add this to input mapping test above
 
     // test('Missing task fields throws exception', function() {
         
