@@ -15,31 +15,6 @@ export interface DTTask {
     friendlyName: string;
     description: string;
     inputs?: InputsEntity[];
-
-    //visibility?: (string)[] | null;
-    //runsOn?: (string)[] | null;
-    //serverOwned: boolean;
-    //contentsUploaded: boolean;
-    //iconUrl: string;
-    //minimumAgentVersion?: string | null;
-    //category: string;
-    //helpMarkDown: string;
-    //releaseNotes?: string | null;
-    //definitionType: string;
-    //author: string;
-    //demands?: (string | null)[] | null;
-    //groups?: (GroupsEntity | null)[] | null;
-    //satisfies?: (string | null)[] | null;
-    //sourceDefinitions?: (SourceDefinitionsEntity | null)[] | null;
-    //dataSourceBindings?: (DataSourceBindingsEntity | null)[] | null;
-    //instanceNameFormat: string;
-    //preJobExecution: PreJobExecutionOrPostJobExecution;
-    //execution: Execution;
-    //postJobExecution: PreJobExecutionOrPostJobExecution;
-    //preview?: boolean | null;
-    //deprecated?: boolean | null;
-    //outputVariables?: (OutputVariablesEntity)[] | null;
-    //showEnvironmentVariables?: boolean | null;
 }
 
 export interface Version {

@@ -11,7 +11,7 @@ import * as vscode from 'vscode';
 import * as schemaassociationservice from './schema-association-service';
 
 export async function activate(context: vscode.ExtensionContext) {
-    logger.log('Extension has been activated!', 'ExtensionActivated'); // TODO: Add extension name.
+    logger.log('Extension has been activated!', 'ExtensionActivated');
 
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
@@ -25,13 +25,12 @@ export async function activate(context: vscode.ExtensionContext) {
     const initialSchemaAssociations: schemaassociationservice.ISchemaAssociations = schemaAssociationService.getSchemaAssociation();
 
     await client.onReady().then(() => {
-        logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
+        //logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
         client.sendNotification(schemaassociationservice.SchemaAssociationNotification.type, initialSchemaAssociations);
 
-        // TODO: Should we get rid of these events and handle other events like Ctrl + Space? See when this event gets fired.
-        // It's a hack but we could hijack this event to load latest server content.
+        // TODO: Should we get rid of these events and handle other events like Ctrl + Space? See when this event gets fired and send updated schema on that event.
         client.onRequest(schemacontributor.CUSTOM_SCHEMA_REQUEST, (resource: any) => {
-            logger.log('Custom schema request. Resource: ' + JSON.stringify(resource), 'CustomSchemaRequest');
+            //logger.log('Custom schema request. Resource: ' + JSON.stringify(resource), 'CustomSchemaRequest');
 
             // TODO: Can this return the location of the new schema file?
             return schemacontributor.schemaContributor.requestCustomSchema(resource); // TODO: Have a single instance for the extension but dont return a global from this namespace.
@@ -39,7 +38,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
         // TODO: Can we get rid of this? Never seems to happen.
         client.onRequest(schemacontributor.CUSTOM_CONTENT_REQUEST, (uri: any) => {
-            logger.log('Custom content request.', 'CustomContentRequest');
+            //logger.log('Custom content request.', 'CustomContentRequest');
 
             return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
         });
@@ -71,7 +70,7 @@ function getClientOptions(): languageclient.LanguageClientOptions {
         ],
         synchronize: {
             // Synchronize the setting section 'languageServerExample' to the server
-            // TODO: Are these what settings we want to pass through to the server? Would be good to see this happening... And see initializeOptions
+            // TODO: Are these what settings we want to pass through to the server? Would be good to see this happening... And see initializeOptions. Maybe remove them?
             configurationSection: ['yaml', 'http.proxy', 'http.proxyStrictSSL'],
             // Notify the server about file changes to '.clientrc files contain in the workspace
             fileEvents: [

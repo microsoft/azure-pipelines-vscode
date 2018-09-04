@@ -27,7 +27,7 @@ class SchemaContributor {
     public registerContributor(schema: string,
                                requestSchema: (resource: string) => string,
                                requestSchemaContent: (uri: string) => string): boolean {
-        logger.log('', 'RegisterContributor');
+        //logger.log('', 'RegisterContributor');
         
         if (this._customSchemaContributors[schema]) {
             return false;
@@ -58,24 +58,15 @@ class SchemaContributor {
 
         // Check relationship with result of getSchemaAssociationFromYamlValidationNode. Does this load the files specified there? Make sure this code is needed.
 
-        logger.log(`requestCustomSchema customSchemaContributors list: ${JSON.stringify(this._customSchemaContributors)}`);
-        logger.log(`requestCustomSchema customSchemaContributors: ${resource}`);
-
-        logger.log('1');
         for (let customKey of Object.keys(this._customSchemaContributors)) {
-            logger.log('2');
             const contributor = this._customSchemaContributors[customKey];
             const uri = contributor.requestSchema(resource);
             if (uri) {
-                logger.log('2.a');
-                logger.log(`Uri found for resource (${resource}): ${uri}`);
                 return uri;
             } else {
-                logger.log('2.b');
                 logger.log(`Uri NOT found for resource (${resource})`);
             }
         }
-        logger.log('3');
 
         throw `Unable to find custom schema for resource: '${resource}'`;
     }

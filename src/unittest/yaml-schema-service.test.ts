@@ -4,9 +4,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { YamlSchemaService } from '../yaml-schema-service';
 
-// TODO: Setup test paths to run from root of tests not from where we are running in cmdline?
-const taskTestDataRoot = 'src/test/testdata/tasks';
-const taskSchemaDataRoot = 'src/test/testdata/schemas';
+const testDataFolder = 'src/unittest/testdata'
+const taskTestDataRoot = path.join(testDataFolder, 'tasks');
+const taskSchemaDataRoot = path.join(testDataFolder, 'schemas');
 
 suite("Yaml Schema Service Tests", function () {
     
@@ -18,18 +18,6 @@ suite("Yaml Schema Service Tests", function () {
     });
 
     test('Input types are correctly mapped to json schema types', function() {
-        // int => integer
-        // boolean =? boolean
-        // multiline => string
-        // string => string
-        // filepath => string
-        // securefile => string
-        // identities => string
-        // startsWith('connectedservice') => string
-        // picklist => string
-        // querycontrol => string
-        // if ((inputType == 'picklist' || inputType == 'radio') && input.options) { thisProp['enum'] = Object.keys(input.options); }
-
         const taskJsonPath: string = path.join(taskTestDataRoot, 'all-inputs-task.json');
         const schemaPath: string = path.join(taskSchemaDataRoot, 'all-inputs-schema.json');    
 

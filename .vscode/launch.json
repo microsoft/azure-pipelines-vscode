@@ -24,6 +24,7 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
+                "${workspaceRoot}/src/test/workspace/",
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--extensionTestsPath=${workspaceFolder}/out/test"
             ],
