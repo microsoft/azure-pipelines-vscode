@@ -14,6 +14,12 @@ trigger:
 - releases/*
 
 steps:
+# Set version number for PR/CI or release
+- ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/') }}:
+  - template: ci/version-release.yml
+- ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/')) }}:
+  - template: ci/version-ci.yml
+
 - task: NpmAuthenticate@0
   inputs:
     workingFile: .npmrc
@@ -21,15 +27,9 @@ steps:
 - script: npm install
   displayName: npm install
 
-# - script: npm test
-#   displayName: npm test
-#   continueOnError: true
-
-# Set version number for PR/CI or release
-- ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/') }}:
-  - template: ci/version-release.yml
-- ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/')) }}:
-  - template: ci/version-ci.yml
+# Run unit tests
+- script: npm run unittest
+  displayName: Run unit tests
 
 # Acquire the `vsce` tool and use it to package
 - script: |
@@ -42,13 +42,6 @@ steps:
     cat /home/vsts/.npm/_logs/*.log
   displayName: Echo npm error logs on failure
   condition: failed()
-
-# Run unit tests
-- script: npm run unittest
-  displayName: Run unit tests
-
-# TODO: Run integration tests
-
 
 # This is how the CI system knows what to publish...
 - task: CopyFiles@2
