@@ -26,12 +26,13 @@ suite("Yaml Schema Service Tests", function () {
         runTaskTest('special-characters-task.json', 'special-characters-schema.json');
     });
 
-    // test('Missing input type mapping throws exception', function() {
-        
-    // });
+    test('Missing input type mapping throws exception', function() {
+        // throw new Error(`Unable to find input type mapping '${input.type}'.`);
+       runExceptionTest('missing-input-mapping-exception-task.json', 'Unable to find input type mapping X.');
+    });
 
     // test('Missing task fields throws exception', function() {
-        
+    //     runExceptionTest();
     // });
 });
 
@@ -53,4 +54,15 @@ function runTaskTest(taskJsonFile: string, schemaFile: string) {
 
     // Assert
     assert.equal(schema, JSON.stringify(expectedSchema, null, 2));
+}
+
+function runExceptionTest(taskJsonFile: string, message: string) {
+    // Arrange
+    const taskJsonPath: string = path.join(taskTestDataRoot, taskJsonFile);
+    const npmTask: string = fs.readFileSync(taskJsonPath, 'utf8');
+    const task: DTTask = JSON.parse(npmTask);
+    const yamlSchemaService = new YamlSchemaService();
+
+    // Act and Assert
+    assert.throws(() => yamlSchemaService.getSchemaFromTask(task), message);
 }
