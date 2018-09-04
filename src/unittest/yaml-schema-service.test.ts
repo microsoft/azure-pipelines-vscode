@@ -22,9 +22,9 @@ suite("Yaml Schema Service Tests", function () {
         runTaskTest('nameregex-task.json', 'nameregex-schema.json');
     });
 
-    // test('Special characters are escaped', function() {
-
-    // });
+    test('Special characters are removed', function() {
+        runTaskTest('special-characters-task.json', 'special-characters-schema.json');
+    });
 
     // test('Missing input type mapping throws exception', function() {
         

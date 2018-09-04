@@ -729,6 +729,9 @@ export class YamlSchemaService implements IYamlSchemaService {
     }
 
     public getSchemaFromTask(task: DTTask): string {
+        // task.name, task.friendlyName, task.description
+        // throw or fall back to empty string? this is only for generation so prob just throw
+
         let schema: any = {
             properties: {
                 task: {},
