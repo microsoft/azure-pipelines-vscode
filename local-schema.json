@@ -92,6 +92,10 @@
             }
           }
         },
+        "trigger": {
+          "description": "Continuous integration triggers",
+          "$ref": "#/definitions/trigger"
+        },
         "displayName": {
           "type": "string",
           "description": "Human-readable name for the sole phase"
