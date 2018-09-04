@@ -107,25 +107,24 @@
           "$ref": "#/definitions/booleanMacroExpression",
           "description": "Continue running this job even on failure?"
         },
-        "queue": {
+        "pool": {
           "oneOf": [
             {
               "type": "string"
             },
             {
-              "$ref": "#/definitions/queue"
+              "$ref": "#/definitions/pool"
             }
           ],
-          "description": "Queue where this job will run",
-          "examples": [
-            "Hosted VS2017",
-            "Hosted macOS Preview",
-            "Hosted Linux Preview"
-          ]
+          "description": "Pool where this job will run"
         },
         "server": {
           "$ref": "#/definitions/booleanMacroExpression",
           "description": "True if this is an agent-less job (runs on server)"
+        },
+        "strategy": {
+          "$ref": "#/definitions/strategy",
+          "description": "Execution strategy for this job"
         },
         "variables": {
           "type": "object",
@@ -148,9 +147,9 @@
         }
       }
     },
-    "queue": {
+    "pool": {
       "type": "object",
-      "description": "Queue details",
+      "description": "Pool details",
       "additionalProperties": false,
       "required": [
         "name"
@@ -158,7 +157,11 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "Name of a queue"
+          "description": "Name of a pool"
+        },
+        "vmImage": {
+          "type": "string",
+          "description": "For the Azure Pipelines pool, the name of the VM image to use"
         },
         "demands": {
           "oneOf": [
@@ -178,14 +181,18 @@
         "cancelTimeoutInMinutes": {
           "$ref": "#/definitions/integerMacroExpression",
           "description": "Time to wait for the job to cancel before forcibly terminating it"
-        },
-        "parallel": {
-          "$ref": "#/definitions/integerMacroExpression",
-          "description": "Maximum number of parallel agent executions"
-        },
-        "matrix": {
-          "$ref": "#/definitions/matrix"
         }
+      }
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxParallel": {
+        "$ref": "#/definitions/integerMacroExpression",
+        "description": "Maximum number of parallel agent executions"
+      },
+      "matrix": {
+        "$ref": "#/definitions/matrix"
       }
     },
     "server": {
