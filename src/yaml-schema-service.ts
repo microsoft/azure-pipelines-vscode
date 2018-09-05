@@ -222,15 +222,16 @@ export class YamlSchemaService implements IYamlSchemaService {
               "strategy": {
                 "type": "object",
                 "additionalProperties": false,
-                "maxParallel": {
-                  "$ref": "#/definitions/integerMacroExpression",
-                  "description": "Maximum number of parallel agent executions"
-                },
-                "matrix": {
-                  "$ref": "#/definitions/matrix"
+                "properties": {
+                  "maxParallel": {
+                    "$ref": "#/definitions/integerMacroExpression",
+                    "description": "Maximum number of parallel agent executions"
+                  },
+                  "matrix": {
+                    "$ref": "#/definitions/matrix"
+                  }
                 }
-              },
-              "server": {
+              },              "server": {
                 "type": "object",
                 "description": "Server job details",
                 "additionalProperties": false,
