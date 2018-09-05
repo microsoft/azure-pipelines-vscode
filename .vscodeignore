@@ -10,7 +10,7 @@ vsc-extension-quickstart.md
 .vscode-test/**
 ci/**
 examples/**
-out/buildtools/**
+out/genschema/**
 out/test/**
 out/**/*.map
 src/**

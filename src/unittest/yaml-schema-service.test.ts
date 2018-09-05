@@ -45,15 +45,15 @@ function runTaskTest(taskJsonFile: string, schemaFile: string) {
     const task: DTTask = JSON.parse(npmTask);
     
     const npmSchema: string = fs.readFileSync(schemaPath, 'utf8');
-    const expectedSchema: any = JSON.parse(npmSchema);
+    const expectedSchema: object = JSON.parse(npmSchema);
 
     const yamlSchemaService = new YamlSchemaService();
 
     // Act
-    const schema: string = yamlSchemaService.getSchemaFromTask(task);
+    const schema: object = yamlSchemaService.getSchemaFromTask(task);
 
     // Assert
-    assert.equal(schema, JSON.stringify(expectedSchema, null, 2));
+    assert.deepEqual(schema, expectedSchema);
 }
 
 function runExceptionTest(taskJsonFile: string, message: string) {

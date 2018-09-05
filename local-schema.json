@@ -1,159 +1,78 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/Microsoft/vsts-agent/blob/master/src/Misc/ci-schema.json",
-  "$comment": "v1.137.0",
+  "$comment": "v1.140.0",
   "title": "Pipeline schema",
   "description": "A pipeline definition",
-  "oneOf": [
-    {
-      "$ref": "#/definitions/fullPipeline"
+  "type": "object",
+  "required": [],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "description": "Pipeline name",
+      "type": "string"
     },
-    {
-      "$ref": "#/definitions/singlePhasePipeline"
+    "resources": {
+      "description": "Containers and repositories used in the build",
+      "$ref": "#/definitions/resources"
+    },
+    "variables": {
+      "description": "Pipeline-wide variables",
+      "type": "object"
+    },
+    "jobs": {
+      "description": "Jobs which make up the pipeline",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/job"
+      }
+    },
+    "steps": {
+      "type": "array",
+      "description": "A list of steps to run",
+      "items": {
+        "$ref": "#/definitions/stepOrTemplateExpression"
+      }
+    },
+    "trigger": {
+      "description": "Continuous integration triggers",
+      "$ref": "#/definitions/trigger"
+    },
+    "parameters": {
+      "description": "Parameters used in a pipeline template",
+      "$ref": "#/definitions/parameters"
     }
-  ],
+  },
   "definitions": {
-    "fullPipeline": {
+    "resources": {
       "type": "object",
-      "required": [],
       "additionalProperties": false,
       "properties": {
-        "name": {
-          "description": "Pipeline name",
-          "type": "string"
-        },
-        "resources": {
-          "description": "Containers and repositories used in the build",
-          "type": "object",
-          "properties": {
-            "containers": {
-              "description": "Container images",
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/containerReference"
-              }
-            },
-            "repositories": {
-              "description": "External repositories",
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/repositoryReference"
-              }
-            }
-          }
-        },
-        "variables": {
-          "description": "Pipeline-wide variables",
-          "type": "object"
-        },
-        "phases": {
-          "description": "Phases of the pipeline",
+        "containers": {
+          "description": "Container images",
           "type": "array",
           "items": {
-            "$ref": "#/definitions/phase"
+            "$ref": "#/definitions/containerReference"
           }
         },
-        "trigger": {
-          "description": "Continuous integration triggers",
-          "$ref": "#/definitions/trigger"
-        },
-        "parameters": {
-          "description": "Parameters used in a pipeline template",
-          "$ref": "#/definitions/parameters"
+        "repositories": {
+          "description": "External repositories",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/repositoryReference"
+          }
         }
       }
     },
-    "singlePhasePipeline": {
-      "type": "object",
-      "required": [],
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "description": "Pipeline name",
-          "type": "string"
-        },
-        "resources": {
-          "description": "Containers and repositories used in the build",
-          "type": "object",
-          "properties": {
-            "containers": {
-              "description": "Container images",
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/containerReference"
-              }
-            },
-            "repositories": {
-              "description": "External repositories",
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/repositoryReference"
-              }
-            }
-          }
-        },
-        "trigger": {
-          "description": "Continuous integration triggers",
-          "$ref": "#/definitions/trigger"
-        },
-        "displayName": {
-          "type": "string",
-          "description": "Human-readable name for the sole phase"
-        },
-        "condition": {
-          "type": "string",
-          "description": "Evaluate this condition expression to determine whether to run the pipeline"
-        },
-        "queue": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "#/definitions/queue"
-            }
-          ],
-          "description": "Queue where the pipeline will run",
-          "examples": [
-            "Hosted VS2017",
-            "Hosted macOS Preview",
-            "Hosted Linux Preview"
-          ]
-        },
-        "server": {
-          "$ref": "#/definitions/booleanMacroExpression",
-          "description": "True if this is an agent-less build (runs on server)"
-        },
-        "variables": {
-          "type": "object",
-          "description": "Variables for the phase"
-        },
-        "steps": {
-          "type": "array",
-          "description": "A list of steps to run",
-          "items": {
-            "$ref": "#/definitions/stepOrTemplateExpression"
-          }
-        },
-        "template": {
-          "type": "string",
-          "description": "Reference to a template for the phase"
-        },
-        "parameters": {
-          "description": "Parameters used in a pipeline template",
-          "type": "object"
-        }
-      }
-    },
-    "phase": {
+    "job": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "phase": {
+        "job": {
           "oneOf": [
             {
               "type": "string",
-              "description": "ID of the phase",
+              "description": "ID of the job",
               "pattern": "^[_A-Za-z0-9]*$"
             },
             {
@@ -163,7 +82,7 @@
         },
         "displayName": {
           "type": "string",
-          "description": "Human-readable name of the phase"
+          "description": "Human-readable name of the job"
         },
         "dependsOn": {
           "oneOf": [
@@ -178,39 +97,38 @@
               }
             }
           ],
-          "description": "Any phases which must complete before this one"
+          "description": "Any jobs which must complete before this one"
         },
         "condition": {
           "type": "string",
-          "description": "Evaluate this condition expression to determine whether to run this phase"
+          "description": "Evaluate this condition expression to determine whether to run this job"
         },
         "continueOnError": {
           "$ref": "#/definitions/booleanMacroExpression",
-          "description": "Continue running this phase even on failure?"
+          "description": "Continue running this job even on failure?"
         },
-        "queue": {
+        "pool": {
           "oneOf": [
             {
               "type": "string"
             },
             {
-              "$ref": "#/definitions/queue"
+              "$ref": "#/definitions/pool"
             }
           ],
-          "description": "Queue where this phase will run",
-          "examples": [
-            "Hosted VS2017",
-            "Hosted macOS Preview",
-            "Hosted Linux Preview"
-          ]
+          "description": "Pool where this job will run"
         },
         "server": {
           "$ref": "#/definitions/booleanMacroExpression",
-          "description": "True if this is an agent-less phase (runs on server)"
+          "description": "True if this is an agent-less job (runs on server)"
+        },
+        "strategy": {
+          "$ref": "#/definitions/strategy",
+          "description": "Execution strategy for this job"
         },
         "variables": {
           "type": "object",
-          "description": "Phase-specific variables"
+          "description": "Job-specific variables"
         },
         "steps": {
           "type": "array",
@@ -221,7 +139,7 @@
         },
         "template": {
           "type": "string",
-          "description": "Reference to a template for this phase"
+          "description": "Reference to a template for this job"
         },
         "parameters": {
           "description": "Parameters used in a pipeline template",
@@ -229,9 +147,9 @@
         }
       }
     },
-    "queue": {
+    "pool": {
       "type": "object",
-      "description": "Queue details",
+      "description": "Pool details",
       "additionalProperties": false,
       "required": [
         "name"
@@ -239,7 +157,11 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "Name of a queue"
+          "description": "Name of a pool"
+        },
+        "vmImage": {
+          "type": "string",
+          "description": "For the Azure Pipelines pool, the name of the VM image to use"
         },
         "demands": {
           "oneOf": [
@@ -254,33 +176,37 @@
         },
         "timeoutInMinutes": {
           "$ref": "#/definitions/integerMacroExpression",
-          "description": "Time to wait before cancelling the phase"
+          "description": "Time to wait before cancelling the job"
         },
         "cancelTimeoutInMinutes": {
           "$ref": "#/definitions/integerMacroExpression",
-          "description": "Time to wait for the phase to cancel before forcibly terminating it"
-        },
-        "parallel": {
-          "$ref": "#/definitions/integerMacroExpression",
-          "description": "Maximum number of parallel agent executions"
-        },
-        "matrix": {
-          "$ref": "#/definitions/matrix"
+          "description": "Time to wait for the job to cancel before forcibly terminating it"
         }
+      }
+    },
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "maxParallel": {
+        "$ref": "#/definitions/integerMacroExpression",
+        "description": "Maximum number of parallel agent executions"
+      },
+      "matrix": {
+        "$ref": "#/definitions/matrix"
       }
     },
     "server": {
       "type": "object",
-      "description": "Server phase details",
+      "description": "Server job details",
       "additionalProperties": false,
       "properties": {
         "timeoutInMinutes": {
           "$ref": "#/definitions/integerMacroExpression",
-          "description": "Time to wait before cancelling the phase"
+          "description": "Time to wait before cancelling the job"
         },
         "cancelTimeoutInMinutes": {
           "$ref": "#/definitions/integerMacroExpression",
-          "description": "Time to wait for the phase to cancel before forcibly terminating it"
+          "description": "Time to wait for the job to cancel before forcibly terminating it"
         },
         "parallel": {
           "$ref": "#/definitions/integerMacroExpression",
@@ -337,11 +263,11 @@
         },
         "continueOnError": {
           "$ref": "#/definitions/booleanMacroExpression",
-          "description": "Continue running the parent phase even on failure?"
+          "description": "Continue running the parent job even on failure?"
         },
         "enabled": {
           "$ref": "#/definitions/booleanMacroExpression",
-          "description": "Run this script when the phase runs?"
+          "description": "Run this script when the job runs?"
         },
         "timeoutInMinutes": {
           "$ref": "#/definitions/integerMacroExpression",
@@ -386,11 +312,11 @@
         },
         "continueOnError": {
           "$ref": "#/definitions/booleanMacroExpression",
-          "description": "Continue running the parent phase even on failure?"
+          "description": "Continue running the parent job even on failure?"
         },
         "enabled": {
           "$ref": "#/definitions/booleanMacroExpression",
-          "description": "Run this script when the phase runs?"
+          "description": "Run this script when the job runs?"
         },
         "timeoutInMinutes": {
           "$ref": "#/definitions/integerMacroExpression",
@@ -448,11 +374,11 @@
         },
         "continueOnError": {
           "$ref": "#/definitions/booleanMacroExpression",
-          "description": "Continue running the parent phase even on failure?"
+          "description": "Continue running the parent job even on failure?"
         },
         "enabled": {
           "$ref": "#/definitions/booleanMacroExpression",
-          "description": "Run this script when the phase runs?"
+          "description": "Run this script when the job runs?"
         },
         "timeoutInMinutes": {
           "$ref": "#/definitions/integerMacroExpression",
@@ -646,7 +572,7 @@
           "$ref": "#/definitions/step"
         },
         {
-          "$ref": "#/definitions/templateInsertExpression"
+          "$ref": "#/definitions/stepInsertExpression"
         }
       ]
     },
@@ -696,9 +622,19 @@
       "type": "string",
       "pattern": "^\\$\\(.*\\)$"
     },
-    "templateInsertExpression": {
-      "type": "string",
-      "pattern": "^\\${{.*}}$"
+    "stepInsertExpression": {
+      "type": "object",
+      "description": "Conditionally insert one or more steps",
+      "maxProperties": 1,
+      "minProperties": 1,
+      "patternProperties": {
+        "^\\${{.*}}$": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/step"
+          }
+        }
+      }
     },
     "task": {
       "type": "object",
@@ -11706,13 +11642,14 @@
       ],
       "properties": {
         "task": {
-          "$comments": "TODO: generate all of these",
           "enum": [
             "AndroidBuild@1",
+            "AndroidSigning@3",
             "AndroidSigning@2",
             "AndroidSigning@1",
             "Ant@1",
             "ApacheJMeterLoadTest@1",
+            "AppCenterDistribute@1",
             "AppCenterDistribute@0",
             "AppCenterTest@1",
             "ArchiveFiles@2",
@@ -11721,6 +11658,7 @@
             "AzureCLI@1",
             "AzureCLI@0",
             "AzureCloudPowerShellDeployment@1",
+            "AzureFileCopy@2",
             "AzureFileCopy@1",
             "AzureFunction@1",
             "AzureFunction@0",
@@ -11741,24 +11679,25 @@
             "AzureWebPowerShellDeployment@1",
             "Bash@3",
             "BatchScript@1",
+            "CMake@1",
             "Chef@1",
             "ChefKnife@1",
             "CloudLoadTest@1",
-            "CMake@1",
             "CmdLine@2",
             "CmdLine@1",
             "CocoaPods@0",
+            "CondaEnvironment@1",
+            "CondaEnvironment@0",
             "CopyFiles@2",
             "CopyFiles@1",
             "CopyFilesOverSSH@0",
             "CopyPublishBuildArtifacts@1",
-            "cURLUploader@2",
-            "cURLUploader@1",
             "DecryptFile@1",
             "Delay@1",
             "DeleteFiles@1",
             "DeployVisualStudioTestAgent@2",
             "DeployVisualStudioTestAgent@1",
+            "Docker@1",
             "Docker@0",
             "DockerCompose@0",
             "DotNetCoreCLI@2",
@@ -11766,6 +11705,7 @@
             "DotNetCoreCLI@0",
             "DotNetCoreInstaller@0",
             "DownloadBuildArtifacts@0",
+            "DownloadFileshareArtifacts@1",
             "DownloadPackage@0",
             "DownloadSecureFile@1",
             "ExtractFiles@1",
@@ -11777,9 +11717,11 @@
             "Grunt@0",
             "Gulp@0",
             "HelmDeploy@0",
+            "HelmInstaller@0",
             "IISWebAppDeployment@1",
             "IISWebAppDeploymentOnMachineGroup@0",
             "IISWebAppManagementOnMachineGroup@0",
+            "InstallAppleCertificate@2",
             "InstallAppleCertificate@1",
             "InstallAppleCertificate@0",
             "InstallAppleProvisioningProfile@1",
@@ -11791,15 +11733,15 @@
             "JenkinsDownloadArtifacts@1",
             "JenkinsQueueJob@2",
             "JenkinsQueueJob@1",
+            "Kubernetes@1",
             "Kubernetes@0",
+            "MSBuild@1",
             "ManualIntervention@8",
             "Maven@2",
             "Maven@1",
-            "MSBuild@1",
             "NodeTool@0",
             "Npm@1",
             "Npm@0",
-            "npmAuthenticate@0",
             "NuGet@0",
             "NuGetCommand@2",
             "NuGetInstaller@0",
@@ -11810,6 +11752,7 @@
             "PackerBuild@0",
             "PowerShell@2",
             "PowerShell@1",
+            "PowerShellOnTargetMachines@3",
             "PowerShellOnTargetMachines@2",
             "PowerShellOnTargetMachines@1",
             "PublishBuildArtifacts@1",
@@ -11821,9 +11764,10 @@
             "PublishToAzureServiceBus@1",
             "PublishToAzureServiceBus@0",
             "PyPIPublisher@0",
-            "queryWorkItems@0",
+            "PythonScript@0",
             "QuickPerfTest@1",
             "RunVisualStudioTestsusingTestAgent@1",
+            "SSH@0",
             "ServiceFabricComposeDeploy@0",
             "ServiceFabricDeploy@1",
             "ServiceFabricPowerShell@1",
@@ -11835,23 +11779,30 @@
             "SqlAzureDacpacDeployment@1",
             "SqlDacpacDeploymentOnMachineGroup@0",
             "SqlServerDacpacDeployment@1",
-            "SSH@0",
-            "VisualStudioTestPlatformInstaller@1",
+            "UsePythonVersion@0",
+            "UseRubyVersion@0",
             "VSBuild@1",
             "VSMobileCenterTest@0",
             "VSTest@2",
             "VSTest@1",
+            "VisualStudioTestPlatformInstaller@1",
             "WindowsMachineFileCopy@2",
             "WindowsMachineFileCopy@1",
             "XamarinAndroid@1",
             "XamarinComponentRestore@0",
-            "XamariniOS@1",
             "XamarinLicense@1",
             "XamarinTestCloud@1",
+            "XamariniOS@2",
+            "XamariniOS@1",
+            "Xcode@5",
             "Xcode@4",
             "Xcode@3",
             "Xcode@2",
-            "XcodePackageiOS@0"
+            "XcodePackageiOS@0",
+            "cURLUploader@2",
+            "cURLUploader@1",
+            "npmAuthenticate@0",
+            "queryWorkItems@0"
           ],
           "description": "Task reference including major version"
         },
@@ -11870,11 +11821,11 @@
         },
         "continueOnError": {
           "type": "boolean",
-          "description": "Continue running the parent phase even on failure?"
+          "description": "Continue running the parent job even on failure?"
         },
         "enabled": {
           "type": "boolean",
-          "description": "Run this task when the phase runs?"
+          "description": "Run this task when the job runs?"
         },
         "timeoutInMinutes": {
           "type": "integer",
