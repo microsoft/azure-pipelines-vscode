@@ -14,12 +14,25 @@ export interface IYamlSchemaService {
 export class YamlSchemaService implements IYamlSchemaService {
     public getSchemaFromTasks(tasks: DTTask[]): string {
         logger.log('getSchemaFromTasks');
-        let anyOf: any = [];
+        let anyOf: object[] = [];
+        let taskVersions: [string, number][] = [];
 
         for (var i = 0; i < tasks.length; i++) {
-            const taskSchema: string = this.getSchemaFromTask(tasks[i]);
-            anyOf.push(JSON.parse(taskSchema));
+            const taskSchema: any = this.getSchemaFromTask(tasks[i]);
+            anyOf.push(taskSchema);
+            taskVersions.push([tasks[i].name, tasks[i].version.major]);
         }
+
+        taskVersions.sort((a, b) => {
+            // first compare strings
+            if (a[0] > b[0]) { return 1; }
+            if (a[0] < b[0]) { return -1; }
+
+            // strings are the same, so compare version number
+            return a[1] - b[1];
+        });
+
+        const taskNames = taskVersions.map((item) => item[0] + "@" + item[1]);
 
         // TODO: Find a cleaner way to do this... breakdown definitions to their own
         let fullSchema = {
@@ -668,153 +681,7 @@ export class YamlSchemaService implements IYamlSchemaService {
                 "anyOf": anyOf,
                 "properties": {
                   "task": {
-                    "$comments": "TODO: generate all of these",
-                    "enum": [
-                      "AndroidBuild@1",
-                      "AndroidSigning@2",
-                      "AndroidSigning@1",
-                      "Ant@1",
-                      "ApacheJMeterLoadTest@1",
-                      "AppCenterDistribute@0",
-                      "AppCenterTest@1",
-                      "ArchiveFiles@2",
-                      "ArchiveFiles@1",
-                      "AzureAppServiceManage@0",
-                      "AzureCLI@1",
-                      "AzureCLI@0",
-                      "AzureCloudPowerShellDeployment@1",
-                      "AzureFileCopy@1",
-                      "AzureFunction@1",
-                      "AzureFunction@0",
-                      "AzureKeyVault@1",
-                      "AzureMonitor@0",
-                      "AzureMonitorAlerts@0",
-                      "AzureMysqlDeployment@1",
-                      "AzureNLBManagement@1",
-                      "AzurePowerShell@3",
-                      "AzurePowerShell@2",
-                      "AzurePowerShell@1",
-                      "AzureResourceGroupDeployment@2",
-                      "AzureResourceGroupDeployment@1",
-                      "AzureRmWebAppDeployment@4",
-                      "AzureRmWebAppDeployment@3",
-                      "AzureRmWebAppDeployment@2",
-                      "AzureVmssDeployment@0",
-                      "AzureWebPowerShellDeployment@1",
-                      "Bash@3",
-                      "BatchScript@1",
-                      "Chef@1",
-                      "ChefKnife@1",
-                      "CloudLoadTest@1",
-                      "CMake@1",
-                      "CmdLine@2",
-                      "CmdLine@1",
-                      "CocoaPods@0",
-                      "CopyFiles@2",
-                      "CopyFiles@1",
-                      "CopyFilesOverSSH@0",
-                      "CopyPublishBuildArtifacts@1",
-                      "cURLUploader@2",
-                      "cURLUploader@1",
-                      "DecryptFile@1",
-                      "Delay@1",
-                      "DeleteFiles@1",
-                      "DeployVisualStudioTestAgent@2",
-                      "DeployVisualStudioTestAgent@1",
-                      "Docker@0",
-                      "DockerCompose@0",
-                      "DotNetCoreCLI@2",
-                      "DotNetCoreCLI@1",
-                      "DotNetCoreCLI@0",
-                      "DotNetCoreInstaller@0",
-                      "DownloadBuildArtifacts@0",
-                      "DownloadPackage@0",
-                      "DownloadSecureFile@1",
-                      "ExtractFiles@1",
-                      "FtpUpload@1",
-                      "Go@0",
-                      "GoTool@0",
-                      "Gradle@2",
-                      "Gradle@1",
-                      "Grunt@0",
-                      "Gulp@0",
-                      "HelmDeploy@0",
-                      "IISWebAppDeployment@1",
-                      "IISWebAppDeploymentOnMachineGroup@0",
-                      "IISWebAppManagementOnMachineGroup@0",
-                      "InstallAppleCertificate@1",
-                      "InstallAppleCertificate@0",
-                      "InstallAppleProvisioningProfile@1",
-                      "InstallAppleProvisioningProfile@0",
-                      "InstallSSHKey@0",
-                      "InvokeRESTAPI@1",
-                      "InvokeRESTAPI@0",
-                      "JavaToolInstaller@0",
-                      "JenkinsDownloadArtifacts@1",
-                      "JenkinsQueueJob@2",
-                      "JenkinsQueueJob@1",
-                      "Kubernetes@0",
-                      "ManualIntervention@8",
-                      "Maven@2",
-                      "Maven@1",
-                      "MSBuild@1",
-                      "NodeTool@0",
-                      "Npm@1",
-                      "Npm@0",
-                      "npmAuthenticate@0",
-                      "NuGet@0",
-                      "NuGetCommand@2",
-                      "NuGetInstaller@0",
-                      "NuGetPackager@0",
-                      "NuGetPublisher@0",
-                      "NuGetRestore@1",
-                      "NuGetToolInstaller@0",
-                      "PackerBuild@0",
-                      "PowerShell@2",
-                      "PowerShell@1",
-                      "PowerShellOnTargetMachines@2",
-                      "PowerShellOnTargetMachines@1",
-                      "PublishBuildArtifacts@1",
-                      "PublishCodeCoverageResults@1",
-                      "PublishSymbols@2",
-                      "PublishSymbols@1",
-                      "PublishTestResults@2",
-                      "PublishTestResults@1",
-                      "PublishToAzureServiceBus@1",
-                      "PublishToAzureServiceBus@0",
-                      "PyPIPublisher@0",
-                      "queryWorkItems@0",
-                      "QuickPerfTest@1",
-                      "RunVisualStudioTestsusingTestAgent@1",
-                      "ServiceFabricComposeDeploy@0",
-                      "ServiceFabricDeploy@1",
-                      "ServiceFabricPowerShell@1",
-                      "ServiceFabricUpdateAppVersions@1",
-                      "ServiceFabricUpdateManifests@2",
-                      "ShellScript@2",
-                      "SonarQubePostTest@1",
-                      "SonarQubePreBuild@1",
-                      "SqlAzureDacpacDeployment@1",
-                      "SqlDacpacDeploymentOnMachineGroup@0",
-                      "SqlServerDacpacDeployment@1",
-                      "SSH@0",
-                      "VisualStudioTestPlatformInstaller@1",
-                      "VSBuild@1",
-                      "VSMobileCenterTest@0",
-                      "VSTest@2",
-                      "VSTest@1",
-                      "WindowsMachineFileCopy@2",
-                      "WindowsMachineFileCopy@1",
-                      "XamarinAndroid@1",
-                      "XamarinComponentRestore@0",
-                      "XamariniOS@1",
-                      "XamarinLicense@1",
-                      "XamarinTestCloud@1",
-                      "Xcode@4",
-                      "Xcode@3",
-                      "Xcode@2",
-                      "XcodePackageiOS@0"
-                    ],
+                    "enum": taskNames,
                     "description": "Task reference including major version"
                   },
                   "displayName": {
@@ -859,10 +726,7 @@ export class YamlSchemaService implements IYamlSchemaService {
         return JSON.stringify(fullSchema, null, 2);
     }
 
-    public getSchemaFromTask(task: DTTask): string {
-        // task.name, task.friendlyName, task.description
-        // throw or fall back to empty string? this is only for generation so prob just throw
-
+    public getSchemaFromTask(task: DTTask): object {
         let schema: any = {
             properties: {
                 task: {},
@@ -893,24 +757,24 @@ export class YamlSchemaService implements IYamlSchemaService {
 
                 // map input types to those that are allowed by json-schema
                 const inputType: string = input.type.toLowerCase();
-                if ((inputType == 'picklist' || inputType == 'radio') && input.options) {
+                if ((inputType === 'picklist' || inputType === 'radio') && input.options) {
                     thisProp['enum'] = Object.keys(input.options);
                 }
-                else if (inputType == 'boolean') {
+                else if (inputType === 'boolean') {
                     thisProp.type = 'boolean';
                 }
-                else if (inputType == 'multiline'
-                    || inputType == 'string'
-                    || inputType == 'filepath'
-                    || inputType == 'securefile'
-                    || inputType == 'identities'
+                else if (inputType === 'multiline'
+                    || inputType === 'string'
+                    || inputType === 'filepath'
+                    || inputType === 'securefile'
+                    || inputType === 'identities'
                     || inputType.startsWith('connectedservice')
-                    || inputType == 'picklist'
-                    || inputType == 'radio'
-                    || inputType == 'querycontrol') {
+                    || inputType === 'picklist'
+                    || inputType === 'radio'
+                    || inputType === 'querycontrol') {
                     thisProp.type = 'string';
                 }
-                else if (inputType == 'int') {
+                else if (inputType === 'int') {
                     thisProp.type = 'integer';
                 } 
                 else {
@@ -921,7 +785,7 @@ export class YamlSchemaService implements IYamlSchemaService {
             });
         }
 
-        return JSON.stringify(schema, null, 2);
+        return schema;
     }
 
     // Allow either upper or lowercase for characters that are uppercase in task definition.
