@@ -65,6 +65,17 @@ export class YamlSchemaService implements IYamlSchemaService {
                   "$ref": "#/definitions/job"
                 }
               },
+              "pool": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/pool"
+                  }
+                ],
+                "description": "Pool where this job will run"
+              },
               "steps": {
                 "type": "array",
                 "description": "A list of steps to run",
