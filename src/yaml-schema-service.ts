@@ -18,7 +18,7 @@ export class YamlSchemaService implements IYamlSchemaService {
         let taskVersions: [string, number][] = [];
 
         for (var i = 0; i < tasks.length; i++) {
-            const taskSchema: any = this.getSchemaFromTask(tasks[i]);
+            const taskSchema: object = this.getSchemaFromTask(tasks[i]);
             anyOf.push(taskSchema);
             taskVersions.push([tasks[i].name, tasks[i].version.major]);
         }
@@ -28,8 +28,9 @@ export class YamlSchemaService implements IYamlSchemaService {
             if (a[0] > b[0]) { return 1; }
             if (a[0] < b[0]) { return -1; }
 
-            // strings are the same, so compare version number
-            return a[1] - b[1];
+            // strings are the same, so compare version number.
+            // we want to reverse sort so that Foo@2 shows up earlier than Foo@1
+            return b[1] - a[1];
         });
 
         const taskNames = taskVersions.map((item) => item[0] + "@" + item[1]);
