@@ -20,7 +20,7 @@ steps:
 - ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/')) }}:
   - template: ci/version-ci.yml
 
-- task: NpmAuthenticate@0
+- task: npmAuthenticate@0
   inputs:
     workingFile: .npmrc
 
