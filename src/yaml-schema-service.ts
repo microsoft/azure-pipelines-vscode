@@ -802,7 +802,7 @@ export class YamlSchemaService implements IYamlSchemaService {
         }
 
         return response;
-    };
+    }
 
     cleanString(str: string): string {
         if (str) {
