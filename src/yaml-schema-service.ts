@@ -65,12 +65,27 @@ export class YamlSchemaService implements IYamlSchemaService {
                   "$ref": "#/definitions/job"
                 }
               },
+              "pool": {
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "$ref": "#/definitions/pool"
+                  }
+                ],
+                "description": "Pool where this build will run"
+              },
               "steps": {
                 "type": "array",
                 "description": "A list of steps to run",
                 "items": {
                   "$ref": "#/definitions/stepOrTemplateExpression"
                 }
+              },
+              "strategy": {
+                "$ref": "#/definitions/strategy",
+                "description": "Execution strategy for this build"
               },
               "trigger": {
                 "description": "Continuous integration triggers",
@@ -189,9 +204,6 @@ export class YamlSchemaService implements IYamlSchemaService {
                 "type": "object",
                 "description": "Pool details",
                 "additionalProperties": false,
-                "required": [
-                  "name"
-                ],
                 "properties": {
                   "name": {
                     "type": "string",
@@ -225,15 +237,16 @@ export class YamlSchemaService implements IYamlSchemaService {
               "strategy": {
                 "type": "object",
                 "additionalProperties": false,
-                "maxParallel": {
-                  "$ref": "#/definitions/integerMacroExpression",
-                  "description": "Maximum number of parallel agent executions"
-                },
-                "matrix": {
-                  "$ref": "#/definitions/matrix"
+                "properties": {
+                  "maxParallel": {
+                    "$ref": "#/definitions/integerMacroExpression",
+                    "description": "Maximum number of parallel agent executions"
+                  },
+                  "matrix": {
+                    "$ref": "#/definitions/matrix"
+                  }
                 }
-              },
-              "server": {
+              },              "server": {
                 "type": "object",
                 "description": "Server job details",
                 "additionalProperties": false,
