@@ -189,9 +189,6 @@ export class YamlSchemaService implements IYamlSchemaService {
                 "type": "object",
                 "description": "Pool details",
                 "additionalProperties": false,
-                "required": [
-                  "name"
-                ],
                 "properties": {
                   "name": {
                     "type": "string",
