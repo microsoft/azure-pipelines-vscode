@@ -74,7 +74,7 @@ export class YamlSchemaService implements IYamlSchemaService {
                     "$ref": "#/definitions/pool"
                   }
                 ],
-                "description": "Pool where this job will run"
+                "description": "Pool where this build will run"
               },
               "steps": {
                 "type": "array",
@@ -82,6 +82,10 @@ export class YamlSchemaService implements IYamlSchemaService {
                 "items": {
                   "$ref": "#/definitions/stepOrTemplateExpression"
                 }
+              },
+              "strategy": {
+                "$ref": "#/definitions/strategy",
+                "description": "Execution strategy for this build"
               },
               "trigger": {
                 "description": "Continuous integration triggers",
