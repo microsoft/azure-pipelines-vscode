@@ -30,23 +30,26 @@ suite('Validation Tests From Server', function() {
     this.timeout(200000);
 
     test ('Validate all files from server', async () => {
-        // Arrange
         const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('**/*.yml');
+        //const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('extracted/JobCancelTimeoutInMinutes_FromImpliedJob_LegacyQueue.0.yml');
 
-        validFiles.forEach(async (validFile) => {
-            // Act
-            console.log(`Validating file ${validFile}`);
-            const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(validFile);
-            await vscode.window.showTextDocument(emptyDocument);
-            await sleep(500); // Give it time to show the validation errors, if any
-            const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(validFile);
-
-            // Assert
-            assert.equal(emptyDocument.languageId, 'azure-pipelines');
-            assert.equal(diagnostics.length, 0);
-        });
+        for (var i = 0; i < validFiles.length; i++) {
+            await testFileIsValid(validFiles[i]);
+        }
     });
 });
+
+async function testFileIsValid(file: vscode.Uri) {
+    // Arrange and Act
+    const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(file);
+    await vscode.window.showTextDocument(emptyDocument);
+    await sleep(1000); // Give it time to show the validation errors, if any
+    const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(file);
+
+    // Assert
+    assert.equal(emptyDocument.languageId, 'azure-pipelines');
+    assert.equal(diagnostics.length, 0);
+}
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
