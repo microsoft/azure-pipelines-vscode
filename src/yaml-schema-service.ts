@@ -141,11 +141,16 @@ export class YamlSchemaService implements IYamlSchemaService {
         "pipeline": {
           "type": "object",
           "required": [],
-          "additionalProperties": false,
+          //"additionalProperties": false,
           "properties": {
+            /* Common pipeline-global values */
             "name": {
               "description": "Pipeline name",
               "type": "string"
+            },
+            "trigger": {
+              "description": "Continuous integration triggers",
+              "$ref": "#/definitions/trigger"
             },
             "resources": {
               "description": "Containers and repositories used in the build",
@@ -154,63 +159,51 @@ export class YamlSchemaService implements IYamlSchemaService {
             "variables": {
               "description": "Pipeline-wide variables",
               "type": "object"
-            },
-            "phases": {
-              "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
+            }
+          },
+          "oneOf": [
+            { "$ref": "#/definitions/stagesAtRoot" },
+            { "$ref": "#/definitions/jobsAtRoot" },
+            { "$ref": "#/definitions/phasesAtRoot" },
+            { "$ref": "#/definitions/job" },
+            { "$ref": "#/definitions/phase" }
+          ]
+        },
+        "stagesAtRoot": {
+          "properties": {
+            "stages": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/phase"
+                "$ref": "#/definitions/stage"
               }
-            },
+            }
+          }
+        },
+        "jobsAtRoot": {
+          "properties": {
             "jobs": {
               "description": "Jobs which make up the pipeline",
               "type": "array",
               "items": {
                 "$ref": "#/definitions/job"
               }
-            },
-            "pool": {
-              "oneOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "$ref": "#/definitions/pool"
-                }
-              ],
-              "description": "Pool where this build will run"
-            },
-            "queue": {
-              "oneOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "$ref": "#/definitions/queue"
-                }
-              ],
-              "description": "[DEPRECATED] Use `pool` instead.\n\nQueue where this build will run"
-            },
-            "steps": {
-              "type": "array",
-              "description": "A list of steps to run",
-              "items": {
-                "$ref": "#/definitions/stepOrTemplateExpression"
-              }
-            },
-            "strategy": {
-              "$ref": "#/definitions/strategy",
-              "description": "Execution strategy for this build"
-            },
-            "trigger": {
-              "description": "Continuous integration triggers",
-              "$ref": "#/definitions/trigger"
-            },
-            "parameters": {
-              "description": "Parameters used in a pipeline template",
-              "$ref": "#/definitions/parameters"
             }
           }
+        },
+        "phasesAtRoot": {
+          "properties": {
+            "phases": {
+              "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/phase"
+              }
+            }
+          }
+        },
+        "stage": {
+          /* Stages aren't implemented fully yet, so this is a placeholder */
+          "type": "object"
         },
         "resources": {
           "type": "object",
@@ -235,7 +228,7 @@ export class YamlSchemaService implements IYamlSchemaService {
         "phase": {
           "type": "object",
           "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
-          "additionalProperties": false,
+          //"additionalProperties": false,
           "properties": {
             "phase": {
               "oneOf": [
@@ -318,7 +311,7 @@ export class YamlSchemaService implements IYamlSchemaService {
         },
         "job": {
           "type": "object",
-          "additionalProperties": false,
+          //"additionalProperties": false,
           "properties": {
             "job": {
               "oneOf": [
