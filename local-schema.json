@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/Microsoft/vsts-agent/blob/master/src/Misc/ci-schema.json",
-  "$comment": "v1.140.0",
+  "$comment": "v1.140.1",
   "title": "Pipeline schema",
   "description": "A pipeline definition",
   "type": "object",
@@ -20,11 +20,11 @@
       "description": "Pipeline-wide variables",
       "type": "object"
     },
-    "jobs": {
-      "description": "Jobs which make up the pipeline",
+    "phases": {
+      "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/job"
+        "$ref": "#/definitions/phase"
       }
     },
     "pool": {
@@ -76,6 +76,90 @@
           "items": {
             "$ref": "#/definitions/repositoryReference"
           }
+        }
+      }
+    },
+    "phase": {
+      "type": "object",
+      "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
+      "additionalProperties": false,
+      "properties": {
+        "phase": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "ID of the phase",
+              "pattern": "^[_A-Za-z0-9]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable name of the phase"
+        },
+        "dependsOn": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "uniqueItems": true
+              }
+            }
+          ],
+          "description": "Any phases which must complete before this one"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Evaluate this condition expression to determine whether to run this phase"
+        },
+        "continueOnError": {
+          "$ref": "#/definitions/booleanMacroExpression",
+          "description": "Continue running this phase even on failure?"
+        },
+        "queue": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/queue"
+            }
+          ],
+          "description": "Pool where this phase will run"
+        },
+        "server": {
+          "$ref": "#/definitions/booleanMacroExpression",
+          "description": "True if this is an agent-less phase (runs on server)"
+        },
+        "matrix": {
+          "$ref": "#/definitions/matrix",
+          "description": "Matrix strategy for this phase"
+        },
+        "variables": {
+          "type": "object",
+          "description": "Phase-specific variables"
+        },
+        "steps": {
+          "type": "array",
+          "description": "A list of steps to run",
+          "items": {
+            "$ref": "#/definitions/stepOrTemplateExpression"
+          }
+        },
+        "template": {
+          "type": "string",
+          "description": "Reference to a template for this phase"
+        },
+        "parameters": {
+          "description": "Parameters used in a pipeline template",
+          "type": "object"
         }
       }
     },
