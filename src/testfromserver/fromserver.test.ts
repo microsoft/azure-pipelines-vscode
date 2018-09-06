@@ -30,7 +30,7 @@ suite('Validation Tests From Server', function() {
     this.timeout(200000);
 
     test ('Validate all files from server', async () => {
-        const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('**/*.yml');
+        const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('**/JobCancelTimeoutInMinutes_*.yml');
         //const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('extracted/JobCancelTimeoutInMinutes_FromImpliedJob_LegacyQueue.0.yml');
 
         for (var i = 0; i < validFiles.length; i++) {
@@ -48,7 +48,7 @@ async function testFileIsValid(file: vscode.Uri) {
 
     // Assert
     assert.equal(emptyDocument.languageId, 'azure-pipelines');
-    assert.equal(diagnostics.length, 0);
+    assert.equal(diagnostics.length, 0, 'File: ' + file.path + ' Error: ' +  JSON.stringify(diagnostics));
 }
 
 async function sleep(ms: number) {
