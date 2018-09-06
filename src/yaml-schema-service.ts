@@ -170,6 +170,17 @@ export class YamlSchemaService implements IYamlSchemaService {
           ],
           "description": "Pool where this build will run"
         },
+        "queue": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/queue"
+            }
+          ],
+          "description": "[DEPRECATED] Use `pool` instead.\n\nQueue where this build will run"
+        },
         "steps": {
           "type": "array",
           "description": "A list of steps to run",
@@ -264,7 +275,7 @@ export class YamlSchemaService implements IYamlSchemaService {
                   "$ref": "#/definitions/queue"
                 }
               ],
-              "description": "Pool where this phase will run"
+              "description": "Queue where this phase will run"
             },
             "server": {
               "$ref": "#/definitions/booleanMacroExpression",
@@ -409,6 +420,46 @@ export class YamlSchemaService implements IYamlSchemaService {
             "cancelTimeoutInMinutes": {
               "$ref": "#/definitions/integerMacroExpression",
               "description": "Time to wait for the job to cancel before forcibly terminating it"
+            }
+          }
+        },
+        "queue": {
+          "type": "object",
+          "description": "[DEPRECATED] Use `pool` (with `jobs`) instead.\n\nQueue details",
+          "additionalProperties": false,
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of a queue"
+            },
+            "demands": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object"
+                }
+              ],
+              "description": "List of demands (for a private queue)"
+            },
+            "timeoutInMinutes": {
+              "$ref": "#/definitions/integerMacroExpression",
+              "description": "Time to wait before cancelling the phase"
+            },
+            "cancelTimeoutInMinutes": {
+              "$ref": "#/definitions/integerMacroExpression",
+              "description": "Time to wait for the phase to cancel before forcibly terminating it"
+            },
+            "parallel": {
+              "$ref": "#/definitions/integerMacroExpression",
+              "description": "Maximum number of parallel agent executions"
+            },
+            "matrix": {
+              "$ref": "#/definitions/matrix"
             }
           }
         },
