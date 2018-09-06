@@ -136,79 +136,82 @@ export class YamlSchemaService implements IYamlSchemaService {
       "$comment": "v1.140.1",
       "title": "Pipeline schema",
       "description": "A pipeline definition",
-      "type": "object",
-      "required": [],
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "description": "Pipeline name",
-          "type": "string"
-        },
-        "resources": {
-          "description": "Containers and repositories used in the build",
-          "$ref": "#/definitions/resources"
-        },
-        "variables": {
-          "description": "Pipeline-wide variables",
-          "type": "object"
-        },
-        "phases": {
-          "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/phase"
-          }
-        },
-        "jobs": {
-          "description": "Jobs which make up the pipeline",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/job"
-          }
-        },
-        "pool": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "#/definitions/pool"
-            }
-          ],
-          "description": "Pool where this build will run"
-        },
-        "queue": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "#/definitions/queue"
-            }
-          ],
-          "description": "[DEPRECATED] Use `pool` instead.\n\nQueue where this build will run"
-        },
-        "steps": {
-          "type": "array",
-          "description": "A list of steps to run",
-          "items": {
-            "$ref": "#/definitions/stepOrTemplateExpression"
-          }
-        },
-        "strategy": {
-          "$ref": "#/definitions/strategy",
-          "description": "Execution strategy for this build"
-        },
-        "trigger": {
-          "description": "Continuous integration triggers",
-          "$ref": "#/definitions/trigger"
-        },
-        "parameters": {
-          "description": "Parameters used in a pipeline template",
-          "$ref": "#/definitions/parameters"
-        }
-      },
+      "$ref": "#/definitions/pipeline",
       "definitions": {
+        "pipeline": {
+          "type": "object",
+          "required": [],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "description": "Pipeline name",
+              "type": "string"
+            },
+            "resources": {
+              "description": "Containers and repositories used in the build",
+              "$ref": "#/definitions/resources"
+            },
+            "variables": {
+              "description": "Pipeline-wide variables",
+              "type": "object"
+            },
+            "phases": {
+              "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/phase"
+              }
+            },
+            "jobs": {
+              "description": "Jobs which make up the pipeline",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/job"
+              }
+            },
+            "pool": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/definitions/pool"
+                }
+              ],
+              "description": "Pool where this build will run"
+            },
+            "queue": {
+              "oneOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "$ref": "#/definitions/queue"
+                }
+              ],
+              "description": "[DEPRECATED] Use `pool` instead.\n\nQueue where this build will run"
+            },
+            "steps": {
+              "type": "array",
+              "description": "A list of steps to run",
+              "items": {
+                "$ref": "#/definitions/stepOrTemplateExpression"
+              }
+            },
+            "strategy": {
+              "$ref": "#/definitions/strategy",
+              "description": "Execution strategy for this build"
+            },
+            "trigger": {
+              "description": "Continuous integration triggers",
+              "$ref": "#/definitions/trigger"
+            },
+            "parameters": {
+              "description": "Parameters used in a pipeline template",
+              "$ref": "#/definitions/parameters"
+            }
+          }
+        },
         "resources": {
           "type": "object",
           "additionalProperties": false,
