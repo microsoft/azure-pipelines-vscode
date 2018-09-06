@@ -344,7 +344,14 @@ export class YamlSchemaService implements IYamlSchemaService {
               "description": "Queue where this phase will run"
             },
             "server": {
-              "$ref": "#/definitions/booleanMacroExpression",
+              "oneOf": [
+                {
+                  "$ref": "#/definitions/booleanMacroExpression"
+                },
+                {
+                  "$ref": "#/definitions/legacyServer"
+                }
+              ],
               "description": "True if this is an agent-less phase (runs on server)"
             },
             "matrix": {
@@ -454,11 +461,11 @@ export class YamlSchemaService implements IYamlSchemaService {
               "type": "object"
             },
             "timeoutInMinutes": {
-              "$ref": "#/definitions/integerMacroExpression",
+              "$ref": "#/definitions/integerMacroRuntimeExpression",
               "description": "Time to wait before cancelling the job"
             },
             "cancelTimeoutInMinutes": {
-              "$ref": "#/definitions/integerMacroExpression",
+              "$ref": "#/definitions/integerMacroRuntimeExpression",
               "description": "Time to wait for the job to cancel before forcibly terminating it"
             }
           }
@@ -513,15 +520,15 @@ export class YamlSchemaService implements IYamlSchemaService {
               "description": "List of demands (for a private queue)"
             },
             "timeoutInMinutes": {
-              "$ref": "#/definitions/integerMacroExpression",
+              "$ref": "#/definitions/integerMacroRuntimeExpression",
               "description": "Time to wait before cancelling the phase"
             },
             "cancelTimeoutInMinutes": {
-              "$ref": "#/definitions/integerMacroExpression",
+              "$ref": "#/definitions/integerMacroRuntimeExpression",
               "description": "Time to wait for the phase to cancel before forcibly terminating it"
             },
             "parallel": {
-              "$ref": "#/definitions/integerMacroExpression",
+              "$ref": "#/definitions/integerMacroRuntimeExpression",
               "description": "Maximum number of parallel agent executions"
             },
             "matrix": {
@@ -556,7 +563,7 @@ export class YamlSchemaService implements IYamlSchemaService {
             }
           ]
         },
-        "server": {
+        "legacyServer": {
           "type": "object",
           "description": "Server job details",
           "additionalProperties": false,
@@ -566,11 +573,11 @@ export class YamlSchemaService implements IYamlSchemaService {
               "description": "Time to wait before cancelling the job"
             },
             "cancelTimeoutInMinutes": {
-              "$ref": "#/definitions/integerMacroExpression",
+              "$ref": "#/definitions/integerMacroRuntimeExpression",
               "description": "Time to wait for the job to cancel before forcibly terminating it"
             },
             "parallel": {
-              "$ref": "#/definitions/integerMacroExpression",
+              "$ref": "#/definitions/integerMacroRuntimeExpression",
               "description": "Maximum number of parallel agent executions"
             },
             "matrix": {
@@ -979,9 +986,26 @@ export class YamlSchemaService implements IYamlSchemaService {
             }
           ]
         },
+        "integerMacroRuntimeExpression": {
+          "oneOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "$ref": "#/definitions/runtimeExpression"
+            },
+            {
+              "$ref": "#/definitions/macroExpression"
+            }
+          ]
+        },
         "macroExpression": {
           "type": "string",
           "pattern": "^\\$\\(.*\\)$"
+        },
+        "runtimeExpression": {
+          "type": "string",
+          "pattern": "^\\$\\[.*\\]$"
         },
         "stepInsertExpression": {
           "type": "object",
