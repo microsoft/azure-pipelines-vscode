@@ -159,6 +159,13 @@ export class YamlSchemaService implements IYamlSchemaService {
             "$ref": "#/definitions/phase"
           }
         },
+        "jobs": {
+          "description": "Jobs which make up the pipeline",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/job"
+          }
+        },
         "pool": {
           "oneOf": [
             {
