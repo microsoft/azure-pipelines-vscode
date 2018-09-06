@@ -268,26 +268,6 @@ export class YamlSchemaService implements IYamlSchemaService {
           /* Stages aren't implemented fully yet, so this is a placeholder */
           "type": "object"
         },
-        "resources": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "containers": {
-              "description": "Container images",
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/containerReference"
-              }
-            },
-            "repositories": {
-              "description": "External repositories",
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/repositoryReference"
-              }
-            }
-          }
-        },
         "phase": {
           "type": "object",
           "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
@@ -470,6 +450,26 @@ export class YamlSchemaService implements IYamlSchemaService {
             }
           }
         },
+        "resources": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "containers": {
+              "description": "Container images",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/containerReference"
+              }
+            },
+            "repositories": {
+              "description": "External repositories",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/repositoryReference"
+              }
+            }
+          }
+        },
         "pool": {
           "type": "object",
           "description": "Pool details",
@@ -533,6 +533,10 @@ export class YamlSchemaService implements IYamlSchemaService {
             },
             "matrix": {
               "$ref": "#/definitions/matrix"
+            },
+            "container": {
+              "type": "string",
+              "description": "Container resource name"
             }
           }
         },
@@ -879,6 +883,10 @@ export class YamlSchemaService implements IYamlSchemaService {
             "env": {
               "type": "object",
               "description": "Variables to map into the container's environment"
+            },
+            "type": {
+              "type": "string",
+              "description": "Container type"
             }
           }
         },
