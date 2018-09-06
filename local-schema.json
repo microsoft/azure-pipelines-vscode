@@ -8,7 +8,105 @@
   "definitions": {
     "pipeline": {
       "type": "object",
-      "required": [],
+      "oneOf": [
+        {
+          "$ref": "#/definitions/stagesAtRoot"
+        },
+        {
+          "$ref": "#/definitions/jobsAtRoot"
+        },
+        {
+          "$ref": "#/definitions/phasesAtRoot"
+        },
+        {
+          "$ref": "#/definitions/jobOrPhaseAtRoot"
+        }
+      ]
+    },
+    "stagesAtRoot": {
+      "additionalProperties": false,
+      "properties": {
+        "stages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stage"
+          }
+        },
+        "name": {
+          "description": "Pipeline name",
+          "type": "string"
+        },
+        "trigger": {
+          "description": "Continuous integration triggers",
+          "$ref": "#/definitions/trigger"
+        },
+        "resources": {
+          "description": "Containers and repositories used in the build",
+          "$ref": "#/definitions/resources"
+        },
+        "variables": {
+          "description": "Pipeline-wide variables",
+          "type": "object"
+        }
+      }
+    },
+    "jobsAtRoot": {
+      "additionalProperties": false,
+      "properties": {
+        "jobs": {
+          "description": "Jobs which make up the pipeline",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/job"
+          }
+        },
+        "name": {
+          "description": "Pipeline name",
+          "type": "string"
+        },
+        "trigger": {
+          "description": "Continuous integration triggers",
+          "$ref": "#/definitions/trigger"
+        },
+        "resources": {
+          "description": "Containers and repositories used in the build",
+          "$ref": "#/definitions/resources"
+        },
+        "variables": {
+          "description": "Pipeline-wide variables",
+          "type": "object"
+        }
+      }
+    },
+    "phasesAtRoot": {
+      "additionalProperties": false,
+      "properties": {
+        "phases": {
+          "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/phase"
+          }
+        },
+        "name": {
+          "description": "Pipeline name",
+          "type": "string"
+        },
+        "trigger": {
+          "description": "Continuous integration triggers",
+          "$ref": "#/definitions/trigger"
+        },
+        "resources": {
+          "description": "Containers and repositories used in the build",
+          "$ref": "#/definitions/resources"
+        },
+        "variables": {
+          "description": "Pipeline-wide variables",
+          "type": "object"
+        }
+      }
+    },
+    "jobOrPhaseAtRoot": {
       "properties": {
         "name": {
           "description": "Pipeline name",
@@ -27,16 +125,7 @@
           "type": "object"
         }
       },
-      "oneOf": [
-        {
-          "$ref": "#/definitions/stagesAtRoot"
-        },
-        {
-          "$ref": "#/definitions/jobsAtRoot"
-        },
-        {
-          "$ref": "#/definitions/phasesAtRoot"
-        },
+      "anyOf": [
         {
           "$ref": "#/definitions/job"
         },
@@ -44,38 +133,6 @@
           "$ref": "#/definitions/phase"
         }
       ]
-    },
-    "stagesAtRoot": {
-      "properties": {
-        "stages": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/stage"
-          }
-        }
-      }
-    },
-    "jobsAtRoot": {
-      "properties": {
-        "jobs": {
-          "description": "Jobs which make up the pipeline",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/job"
-          }
-        }
-      }
-    },
-    "phasesAtRoot": {
-      "properties": {
-        "phases": {
-          "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/phase"
-          }
-        }
-      }
     },
     "stage": {
       "type": "object"
@@ -103,6 +160,7 @@
     "phase": {
       "type": "object",
       "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
+      "additionalProperties": false,
       "properties": {
         "phase": {
           "oneOf": [
@@ -185,6 +243,7 @@
     },
     "job": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "job": {
           "oneOf": [

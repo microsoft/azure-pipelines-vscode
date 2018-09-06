@@ -140,7 +140,104 @@ export class YamlSchemaService implements IYamlSchemaService {
       "definitions": {
         "pipeline": {
           "type": "object",
-          "required": [],
+          "oneOf": [
+            { "$ref": "#/definitions/stagesAtRoot" },
+            { "$ref": "#/definitions/jobsAtRoot" },
+            { "$ref": "#/definitions/phasesAtRoot" },
+            { "$ref": "#/definitions/jobOrPhaseAtRoot" }
+          ]
+        },
+        "stagesAtRoot": {
+          "additionalProperties": false,
+          "properties": {
+            "stages": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/stage"
+              }
+            },
+            /* Common pipeline-global values */
+            "name": {
+              "description": "Pipeline name",
+              "type": "string"
+            },
+            "trigger": {
+              "description": "Continuous integration triggers",
+              "$ref": "#/definitions/trigger"
+            },
+            "resources": {
+              "description": "Containers and repositories used in the build",
+              "$ref": "#/definitions/resources"
+            },
+            "variables": {
+              "description": "Pipeline-wide variables",
+              "type": "object"
+            }
+            /* End common */
+          }
+        },
+        "jobsAtRoot": {
+          "additionalProperties": false,
+          "properties": {
+            "jobs": {
+              "description": "Jobs which make up the pipeline",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/job"
+              }
+            },
+            /* Common pipeline-global values */
+            "name": {
+              "description": "Pipeline name",
+              "type": "string"
+            },
+            "trigger": {
+              "description": "Continuous integration triggers",
+              "$ref": "#/definitions/trigger"
+            },
+            "resources": {
+              "description": "Containers and repositories used in the build",
+              "$ref": "#/definitions/resources"
+            },
+            "variables": {
+              "description": "Pipeline-wide variables",
+              "type": "object"
+            }
+            /* End common */
+          }
+        },
+        "phasesAtRoot": {
+          "additionalProperties": false,
+          "properties": {
+            "phases": {
+              "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/phase"
+              }
+            },
+            /* Common pipeline-global values */
+            "name": {
+              "description": "Pipeline name",
+              "type": "string"
+            },
+            "trigger": {
+              "description": "Continuous integration triggers",
+              "$ref": "#/definitions/trigger"
+            },
+            "resources": {
+              "description": "Containers and repositories used in the build",
+              "$ref": "#/definitions/resources"
+            },
+            "variables": {
+              "description": "Pipeline-wide variables",
+              "type": "object"
+            }
+            /* End common */
+
+          }
+        },
+        "jobOrPhaseAtRoot": {
           //"additionalProperties": false,
           "properties": {
             /* Common pipeline-global values */
@@ -160,46 +257,12 @@ export class YamlSchemaService implements IYamlSchemaService {
               "description": "Pipeline-wide variables",
               "type": "object"
             }
+            /* End common */
           },
-          "oneOf": [
-            { "$ref": "#/definitions/stagesAtRoot" },
-            { "$ref": "#/definitions/jobsAtRoot" },
-            { "$ref": "#/definitions/phasesAtRoot" },
+          "anyOf": [
             { "$ref": "#/definitions/job" },
             { "$ref": "#/definitions/phase" }
           ]
-        },
-        "stagesAtRoot": {
-          "properties": {
-            "stages": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/stage"
-              }
-            }
-          }
-        },
-        "jobsAtRoot": {
-          "properties": {
-            "jobs": {
-              "description": "Jobs which make up the pipeline",
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/job"
-              }
-            }
-          }
-        },
-        "phasesAtRoot": {
-          "properties": {
-            "phases": {
-              "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/phase"
-              }
-            }
-          }
         },
         "stage": {
           /* Stages aren't implemented fully yet, so this is a placeholder */
@@ -228,7 +291,7 @@ export class YamlSchemaService implements IYamlSchemaService {
         "phase": {
           "type": "object",
           "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
-          //"additionalProperties": false,
+          "additionalProperties": false,
           "properties": {
             "phase": {
               "oneOf": [
@@ -311,7 +374,7 @@ export class YamlSchemaService implements IYamlSchemaService {
         },
         "job": {
           "type": "object",
-          //"additionalProperties": false,
+          "additionalProperties": false,
           "properties": {
             "job": {
               "oneOf": [
