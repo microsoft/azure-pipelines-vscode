@@ -386,6 +386,14 @@ export class YamlSchemaService implements IYamlSchemaService {
             "parameters": {
               "description": "Parameters used in a pipeline template",
               "type": "object"
+            },
+            "timeoutInMinutes": {
+              "$ref": "#/definitions/integerMacroExpression",
+              "description": "Time to wait before cancelling the job"
+            },
+            "cancelTimeoutInMinutes": {
+              "$ref": "#/definitions/integerMacroExpression",
+              "description": "Time to wait for the job to cancel before forcibly terminating it"
             }
           }
         },
@@ -412,14 +420,6 @@ export class YamlSchemaService implements IYamlSchemaService {
                 }
               ],
               "description": "List of demands (for a private pool)"
-            },
-            "timeoutInMinutes": {
-              "$ref": "#/definitions/integerMacroExpression",
-              "description": "Time to wait before cancelling the job"
-            },
-            "cancelTimeoutInMinutes": {
-              "$ref": "#/definitions/integerMacroExpression",
-              "description": "Time to wait for the job to cancel before forcibly terminating it"
             }
           }
         },

@@ -254,6 +254,14 @@
         "parameters": {
           "description": "Parameters used in a pipeline template",
           "type": "object"
+        },
+        "timeoutInMinutes": {
+          "$ref": "#/definitions/integerMacroExpression",
+          "description": "Time to wait before cancelling the job"
+        },
+        "cancelTimeoutInMinutes": {
+          "$ref": "#/definitions/integerMacroExpression",
+          "description": "Time to wait for the job to cancel before forcibly terminating it"
         }
       }
     },
@@ -280,14 +288,6 @@
             }
           ],
           "description": "List of demands (for a private pool)"
-        },
-        "timeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroExpression",
-          "description": "Time to wait before cancelling the job"
-        },
-        "cancelTimeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroExpression",
-          "description": "Time to wait for the job to cancel before forcibly terminating it"
         }
       }
     },
