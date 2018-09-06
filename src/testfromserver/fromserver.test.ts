@@ -31,10 +31,11 @@ suite('Validation Tests From Server', function() {
 
     test ('Validate all files from server', async () => {
         // Arrange
-        const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('*/**.yml');
+        const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('**/*.yml');
 
         validFiles.forEach(async (validFile) => {
             // Act
+            console.log(`Validating file ${validFile}`);
             const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(validFile);
             await vscode.window.showTextDocument(emptyDocument);
             await sleep(500); // Give it time to show the validation errors, if any
