@@ -29,26 +29,23 @@ suite ('Extension Setup Tests', function() {
 suite('Validation Tests From Server', function() {
     this.timeout(200000);
 
-    test ('Given a valid document, there should be no validation errors', async () => {
+    test ('Validate all files from server', async () => {
         // Arrange
-        const emptyFiles: vscode.Uri[] = await vscode.workspace.findFiles('validfile.yml');
-        const emptyFile: vscode.Uri = emptyFiles[0];
+        const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('*/**.yml');
 
-        // Act
-        const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
-        await vscode.window.showTextDocument(emptyDocument);
-        await sleep(3100); // Give it time to show the validation errors, if any
-        const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
+        validFiles.forEach(async (validFile) => {
+            // Act
+            const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(validFile);
+            await vscode.window.showTextDocument(emptyDocument);
+            await sleep(500); // Give it time to show the validation errors, if any
+            const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(validFile);
 
-        // Assert
-        assert.equal(emptyDocument.languageId, 'azure-pipelines');
-        assert.equal(diagnostics.length, 0);
+            // Assert
+            assert.equal(emptyDocument.languageId, 'azure-pipelines');
+            assert.equal(diagnostics.length, 0);
+        });
     });
 });
-
-async function verifyDocumentIsValid() {
-
-}
 
 async function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
