@@ -8,7 +8,7 @@
   "definitions": {
     "pipeline": {
       "type": "object",
-      "oneOf": [
+      "anyOf": [
         {
           "$ref": "#/definitions/jobsAtRoot"
         },

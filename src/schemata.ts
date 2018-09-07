@@ -284,7 +284,7 @@ export const schema140: string = JSON.stringify({
     "definitions": {
       "pipeline": {
         "type": "object",
-        "oneOf": [
+        "anyOf": [
           //{ "$ref": "#/definitions/stagesAtRoot" },
           { "$ref": "#/definitions/jobsAtRoot" },
           { "$ref": "#/definitions/phasesAtRoot" },
