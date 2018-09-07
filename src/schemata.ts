@@ -357,9 +357,6 @@ export const schema140: string = JSON.stringify({
         "type": "object",
         "description": "[DEPRECATED] Use `pool` (with `jobs`) instead.\n\nQueue details",
         "additionalProperties": false,
-        "required": [
-          "name"
-        ],
         "properties": {
           "name": {
             "type": "string",
