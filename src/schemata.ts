@@ -118,6 +118,10 @@ const job140 = {
     "cancelTimeoutInMinutes": {
       "$ref": "#/definitions/integerMacroRuntimeExpression",
       "description": "Time to wait for the job to cancel before forcibly terminating it"
+    },
+    "container": {
+      "type": "string",
+      "description": "Container resource name"
     }
   }
 };
@@ -236,6 +240,7 @@ const stagesAtRoot140 = augment({
 
 const jobsAtRoot140 = augment({
   "additionalProperties": false,
+  "required": ["jobs"],
   "properties": {
     "jobs": {
       "description": "Jobs which make up the pipeline",
@@ -246,13 +251,14 @@ const jobsAtRoot140 = augment({
     },
     "variables": {
       "type": "object",
-      "description": "Variables for this pipeline"
+      "description": "Variables for this multi-job pipeline"
     }
   }
 }, "properties", commonPipelineValues);
 
 const phasesAtRoot140 = augment({
   "additionalProperties": false,
+  "required": ["phases"],
   "properties": {
     "phases": {
       "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
@@ -263,7 +269,7 @@ const phasesAtRoot140 = augment({
     },
     "variables": {
       "type": "object",
-      "description": "Variables for this pipeline"
+      "description": "Variables for this multi-phase pipeline"
     }
   }
 }, "properties", commonPipelineValues);
@@ -279,7 +285,7 @@ export const schema140: string = JSON.stringify({
       "pipeline": {
         "type": "object",
         "oneOf": [
-          { "$ref": "#/definitions/stagesAtRoot" },
+          //{ "$ref": "#/definitions/stagesAtRoot" },
           { "$ref": "#/definitions/jobsAtRoot" },
           { "$ref": "#/definitions/phasesAtRoot" },
           { "$ref": "#/definitions/jobAtRoot" },
@@ -293,7 +299,8 @@ export const schema140: string = JSON.stringify({
       "phaseAtRoot": phaseAtRoot140,
       "stage": {
         /* Stages aren't implemented fully yet, so this is a placeholder */
-        "type": "object"
+        "type": "object",
+        "additionalProperties": false
       },
       "job": job140,
       "phase": phase140,

@@ -10,9 +10,6 @@
       "type": "object",
       "oneOf": [
         {
-          "$ref": "#/definitions/stagesAtRoot"
-        },
-        {
           "$ref": "#/definitions/jobsAtRoot"
         },
         {
@@ -55,6 +52,9 @@
     },
     "jobsAtRoot": {
       "additionalProperties": false,
+      "required": [
+        "jobs"
+      ],
       "properties": {
         "jobs": {
           "description": "Jobs which make up the pipeline",
@@ -65,7 +65,7 @@
         },
         "variables": {
           "type": "object",
-          "description": "Variables for this pipeline"
+          "description": "Variables for this multi-job pipeline"
         },
         "name": {
           "description": "Pipeline name",
@@ -83,6 +83,9 @@
     },
     "phasesAtRoot": {
       "additionalProperties": false,
+      "required": [
+        "phases"
+      ],
       "properties": {
         "phases": {
           "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
@@ -93,7 +96,7 @@
         },
         "variables": {
           "type": "object",
-          "description": "Variables for this pipeline"
+          "description": "Variables for this multi-phase pipeline"
         },
         "name": {
           "description": "Pipeline name",
@@ -197,6 +200,10 @@
         "cancelTimeoutInMinutes": {
           "$ref": "#/definitions/integerMacroRuntimeExpression",
           "description": "Time to wait for the job to cancel before forcibly terminating it"
+        },
+        "container": {
+          "type": "string",
+          "description": "Container resource name"
         },
         "name": {
           "description": "Pipeline name",
@@ -316,7 +323,8 @@
       }
     },
     "stage": {
-      "type": "object"
+      "type": "object",
+      "additionalProperties": false
     },
     "job": {
       "type": "object",
@@ -406,6 +414,10 @@
         "cancelTimeoutInMinutes": {
           "$ref": "#/definitions/integerMacroRuntimeExpression",
           "description": "Time to wait for the job to cancel before forcibly terminating it"
+        },
+        "container": {
+          "type": "string",
+          "description": "Container resource name"
         }
       }
     },
