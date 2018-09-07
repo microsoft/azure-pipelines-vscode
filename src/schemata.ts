@@ -1,3 +1,223 @@
+const augment = function(base: object, property: string, augmentation: object) : object {
+  let baseCopy = JSON.parse(JSON.stringify(base));
+  const attachmentPoint = property ? baseCopy[property] : baseCopy;
+  for (let commonProp in augmentation) {
+    if (attachmentPoint[commonProp] === undefined) {
+      attachmentPoint[commonProp] = augmentation[commonProp];
+    }
+  }
+  return baseCopy;
+}
+
+const commonPipelineValues = {
+  /* Common pipeline-global values */
+  "name": {
+    "description": "Pipeline name",
+    "type": "string"
+  },
+  "trigger": {
+    "description": "Continuous integration triggers",
+    "$ref": "#/definitions/trigger"
+  },
+  "resources": {
+    "description": "Containers and repositories used in the build",
+    "$ref": "#/definitions/resources"
+  },
+  "variables": {
+    "description": "Variables passed into the build",
+    "type": "object"
+  }
+  /* End common */
+};
+
+const job140 = {
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "job": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "ID of the job",
+          "pattern": "^[_A-Za-z0-9]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "displayName": {
+      "type": "string",
+      "description": "Human-readable name of the job"
+    },
+    "dependsOn": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "uniqueItems": true
+          }
+        }
+      ],
+      "description": "Any jobs which must complete before this one"
+    },
+    "condition": {
+      "type": "string",
+      "description": "Evaluate this condition expression to determine whether to run this job"
+    },
+    "continueOnError": {
+      "$ref": "#/definitions/booleanMacroExpression",
+      "description": "Continue running this job even on failure?"
+    },
+    "pool": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/pool"
+        }
+      ],
+      "description": "Pool where this job will run"
+    },
+    "server": {
+      "$ref": "#/definitions/booleanMacroExpression",
+      "description": "True if this is an agent-less job (runs on server)"
+    },
+    "strategy": {
+      "$ref": "#/definitions/strategy",
+      "description": "Execution strategy for this job"
+    },
+    "variables": {
+      "type": "object",
+      "description": "Job-specific variables"
+    },
+    "steps": {
+      "type": "array",
+      "description": "A list of steps to run",
+      "items": {
+        "$ref": "#/definitions/stepOrTemplateExpression"
+      }
+    },
+    "template": {
+      "type": "string",
+      "description": "Reference to a template for this job"
+    },
+    "parameters": {
+      "description": "Parameters used in a pipeline template",
+      "type": "object"
+    },
+    "timeoutInMinutes": {
+      "$ref": "#/definitions/integerMacroRuntimeExpression",
+      "description": "Time to wait before cancelling the job"
+    },
+    "cancelTimeoutInMinutes": {
+      "$ref": "#/definitions/integerMacroRuntimeExpression",
+      "description": "Time to wait for the job to cancel before forcibly terminating it"
+    }
+  }
+};
+
+const jobAtRoot140 = augment(job140, "properties", commonPipelineValues);
+
+const phase140 = {
+  "type": "object",
+  "additionalProperties": false,
+  "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
+  "properties": {
+    "phase": {
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "ID of the phase",
+          "pattern": "^[_A-Za-z0-9]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "displayName": {
+      "type": "string",
+      "description": "Human-readable name of the phase"
+    },
+    "dependsOn": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "uniqueItems": true
+          }
+        }
+      ],
+      "description": "Any phases which must complete before this one"
+    },
+    "condition": {
+      "type": "string",
+      "description": "Evaluate this condition expression to determine whether to run this phase"
+    },
+    "continueOnError": {
+      "$ref": "#/definitions/booleanMacroExpression",
+      "description": "Continue running this phase even on failure?"
+    },
+    "queue": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/queue"
+        }
+      ],
+      "description": "Queue where this phase will run"
+    },
+    "server": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/booleanMacroExpression"
+        },
+        {
+          "$ref": "#/definitions/legacyServer"
+        }
+      ],
+      "description": "True if this is an agent-less phase (runs on server)"
+    },
+    "matrix": {
+      "$ref": "#/definitions/matrix",
+      "description": "Matrix strategy for this phase"
+    },
+    "variables": {
+      "type": "object",
+      "description": "Phase-specific variables"
+    },
+    "steps": {
+      "type": "array",
+      "description": "A list of steps to run",
+      "items": {
+        "$ref": "#/definitions/stepOrTemplateExpression"
+      }
+    },
+    "template": {
+      "type": "string",
+      "description": "Reference to a template for this phase"
+    },
+    "parameters": {
+      "description": "Parameters used in a pipeline template",
+      "type": "object"
+    }
+  }
+};
+
+const phaseAtRoot140 = augment(phase140, "properties", commonPipelineValues);
+
 export const schema140: string = JSON.stringify({
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://github.com/Microsoft/vsts-agent/blob/master/src/Misc/ci-schema.json",
@@ -12,7 +232,8 @@ export const schema140: string = JSON.stringify({
           { "$ref": "#/definitions/stagesAtRoot" },
           { "$ref": "#/definitions/jobsAtRoot" },
           { "$ref": "#/definitions/phasesAtRoot" },
-          { "$ref": "#/definitions/jobOrPhaseAtRoot" }
+          { "$ref": "#/definitions/jobAtRoot" },
+          { "$ref": "#/definitions/phaseAtRoot" }
         ]
       },
       "stagesAtRoot": {
@@ -51,7 +272,7 @@ export const schema140: string = JSON.stringify({
             "description": "Jobs which make up the pipeline",
             "type": "array",
             "items": {
-              "$ref": "#/definitions/jobOnly"
+              "$ref": "#/definitions/job"
             }
           },
           /* Common pipeline-global values */
@@ -81,7 +302,7 @@ export const schema140: string = JSON.stringify({
             "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
             "type": "array",
             "items": {
-              "$ref": "#/definitions/phaseOnly"
+              "$ref": "#/definitions/phase"
             }
           },
           /* Common pipeline-global values */
@@ -105,229 +326,14 @@ export const schema140: string = JSON.stringify({
 
         }
       },
-      "jobOrPhaseAtRoot": {
-        //"additionalProperties": false,
-        "properties": {
-          /* Common pipeline-global values */
-          "name": {
-            "description": "Pipeline name",
-            "type": "string"
-          },
-          "trigger": {
-            "description": "Continuous integration triggers",
-            "$ref": "#/definitions/trigger"
-          },
-          "resources": {
-            "description": "Containers and repositories used in the build",
-            "$ref": "#/definitions/resources"
-          },
-          "variables": {
-            "description": "Pipeline-wide variables",
-            "type": "object"
-          }
-          /* End common */
-        },
-        "anyOf": [
-          { "$ref": "#/definitions/job" },
-          { "$ref": "#/definitions/phase" }
-        ]
-      },
+      "jobAtRoot": jobAtRoot140,
+      "phaseAtRoot": phaseAtRoot140,
       "stage": {
         /* Stages aren't implemented fully yet, so this is a placeholder */
         "type": "object"
       },
-      "phaseOnly": {
-        "oneOf": [
-          { "$ref": "#/definitions/phase" }
-        ],
-        "additionalProperties": false
-      },
-      "phase": {
-        "type": "object",
-        "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
-        "properties": {
-          "phase": {
-            "oneOf": [
-              {
-                "type": "string",
-                "description": "ID of the phase",
-                "pattern": "^[_A-Za-z0-9]*$"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "displayName": {
-            "type": "string",
-            "description": "Human-readable name of the phase"
-          },
-          "dependsOn": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "uniqueItems": true
-                }
-              }
-            ],
-            "description": "Any phases which must complete before this one"
-          },
-          "condition": {
-            "type": "string",
-            "description": "Evaluate this condition expression to determine whether to run this phase"
-          },
-          "continueOnError": {
-            "$ref": "#/definitions/booleanMacroExpression",
-            "description": "Continue running this phase even on failure?"
-          },
-          "queue": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "$ref": "#/definitions/queue"
-              }
-            ],
-            "description": "Queue where this phase will run"
-          },
-          "server": {
-            "oneOf": [
-              {
-                "$ref": "#/definitions/booleanMacroExpression"
-              },
-              {
-                "$ref": "#/definitions/legacyServer"
-              }
-            ],
-            "description": "True if this is an agent-less phase (runs on server)"
-          },
-          "matrix": {
-            "$ref": "#/definitions/matrix",
-            "description": "Matrix strategy for this phase"
-          },
-          "variables": {
-            "type": "object",
-            "description": "Phase-specific variables"
-          },
-          "steps": {
-            "type": "array",
-            "description": "A list of steps to run",
-            "items": {
-              "$ref": "#/definitions/stepOrTemplateExpression"
-            }
-          },
-          "template": {
-            "type": "string",
-            "description": "Reference to a template for this phase"
-          },
-          "parameters": {
-            "description": "Parameters used in a pipeline template",
-            "type": "object"
-          }
-        }
-      },
-      "jobOnly": {
-        "oneOf": [
-          { "$ref": "#/definitions/job" }
-        ],
-        "additionalProperties": false
-      },
-      "job": {
-        "type": "object",
-        "properties": {
-          "job": {
-            "oneOf": [
-              {
-                "type": "string",
-                "description": "ID of the job",
-                "pattern": "^[_A-Za-z0-9]*$"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "displayName": {
-            "type": "string",
-            "description": "Human-readable name of the job"
-          },
-          "dependsOn": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "uniqueItems": true
-                }
-              }
-            ],
-            "description": "Any jobs which must complete before this one"
-          },
-          "condition": {
-            "type": "string",
-            "description": "Evaluate this condition expression to determine whether to run this job"
-          },
-          "continueOnError": {
-            "$ref": "#/definitions/booleanMacroExpression",
-            "description": "Continue running this job even on failure?"
-          },
-          "pool": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "$ref": "#/definitions/pool"
-              }
-            ],
-            "description": "Pool where this job will run"
-          },
-          "server": {
-            "$ref": "#/definitions/booleanMacroExpression",
-            "description": "True if this is an agent-less job (runs on server)"
-          },
-          "strategy": {
-            "$ref": "#/definitions/strategy",
-            "description": "Execution strategy for this job"
-          },
-          "variables": {
-            "type": "object",
-            "description": "Job-specific variables"
-          },
-          "steps": {
-            "type": "array",
-            "description": "A list of steps to run",
-            "items": {
-              "$ref": "#/definitions/stepOrTemplateExpression"
-            }
-          },
-          "template": {
-            "type": "string",
-            "description": "Reference to a template for this job"
-          },
-          "parameters": {
-            "description": "Parameters used in a pipeline template",
-            "type": "object"
-          },
-          "timeoutInMinutes": {
-            "$ref": "#/definitions/integerMacroRuntimeExpression",
-            "description": "Time to wait before cancelling the job"
-          },
-          "cancelTimeoutInMinutes": {
-            "$ref": "#/definitions/integerMacroRuntimeExpression",
-            "description": "Time to wait for the job to cancel before forcibly terminating it"
-          }
-        }
-      },
+      "job": job140,
+      "phase": phase140,
       "resources": {
         "type": "object",
         "additionalProperties": false,
