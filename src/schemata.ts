@@ -644,6 +644,18 @@ export const schema140: string = JSON.stringify({
           "lfs": {
             "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Fetch Git-LFS objects?"
+          },
+          "submodules": {
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "description": "Check out Git submodules?"
+          },
+          "persistCredentials": {
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "description": "Keep credentials available for later use?"
+          },
+          "condition": {
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "description": "Is this step enabled?"
           }
         }
       },
