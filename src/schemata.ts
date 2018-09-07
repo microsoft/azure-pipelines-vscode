@@ -309,14 +309,14 @@ export const schema140: string = JSON.stringify({
         "additionalProperties": false,
         "properties": {
           "containers": {
-            "description": "Container images",
+            "description": "List of container images",
             "type": "array",
             "items": {
               "$ref": "#/definitions/containerReference"
             }
           },
           "repositories": {
-            "description": "External repositories",
+            "description": "List of external repositories",
             "type": "array",
             "items": {
               "$ref": "#/definitions/repositoryReference"
@@ -716,7 +716,7 @@ export const schema140: string = JSON.stringify({
           },
           "image": {
             "type": "string",
-            "description": "Container image name",
+            "description": "Container image tag",
             "examples": [
               "ubuntu:16.04",
               "windows:1803"
