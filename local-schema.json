@@ -35,6 +35,10 @@
             "$ref": "#/definitions/stage"
           }
         },
+        "variables": {
+          "type": "object",
+          "description": "Variables for the entire pipeline"
+        },
         "name": {
           "description": "Pipeline name",
           "type": "string"
@@ -46,10 +50,6 @@
         "resources": {
           "description": "Containers and repositories used in the build",
           "$ref": "#/definitions/resources"
-        },
-        "variables": {
-          "description": "Pipeline-wide variables",
-          "type": "object"
         }
       }
     },
@@ -63,6 +63,10 @@
             "$ref": "#/definitions/job"
           }
         },
+        "variables": {
+          "type": "object",
+          "description": "Variables for this pipeline"
+        },
         "name": {
           "description": "Pipeline name",
           "type": "string"
@@ -74,10 +78,6 @@
         "resources": {
           "description": "Containers and repositories used in the build",
           "$ref": "#/definitions/resources"
-        },
-        "variables": {
-          "description": "Pipeline-wide variables",
-          "type": "object"
         }
       }
     },
@@ -91,6 +91,10 @@
             "$ref": "#/definitions/phase"
           }
         },
+        "variables": {
+          "type": "object",
+          "description": "Variables for this pipeline"
+        },
         "name": {
           "description": "Pipeline name",
           "type": "string"
@@ -102,10 +106,6 @@
         "resources": {
           "description": "Containers and repositories used in the build",
           "$ref": "#/definitions/resources"
-        },
-        "variables": {
-          "description": "Pipeline-wide variables",
-          "type": "object"
         }
       }
     },

@@ -218,6 +218,56 @@ const phase140 = {
 
 const phaseAtRoot140 = augment(phase140, "properties", commonPipelineValues);
 
+const stagesAtRoot140 = augment({
+  "additionalProperties": false,
+  "properties": {
+    "stages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/stage"
+      }
+    },
+    "variables": {
+      "type": "object",
+      "description": "Variables for the entire pipeline"
+    }
+  }
+}, "properties", commonPipelineValues);
+
+const jobsAtRoot140 = augment({
+  "additionalProperties": false,
+  "properties": {
+    "jobs": {
+      "description": "Jobs which make up the pipeline",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/job"
+      }
+    },
+    "variables": {
+      "type": "object",
+      "description": "Variables for this pipeline"
+    }
+  }
+}, "properties", commonPipelineValues);
+
+const phasesAtRoot140 = augment({
+  "additionalProperties": false,
+  "properties": {
+    "phases": {
+      "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/phase"
+      }
+    },
+    "variables": {
+      "type": "object",
+      "description": "Variables for this pipeline"
+    }
+  }
+}, "properties", commonPipelineValues);
+
 export const schema140: string = JSON.stringify({
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://github.com/Microsoft/vsts-agent/blob/master/src/Misc/ci-schema.json",
@@ -236,96 +286,9 @@ export const schema140: string = JSON.stringify({
           { "$ref": "#/definitions/phaseAtRoot" }
         ]
       },
-      "stagesAtRoot": {
-        "additionalProperties": false,
-        "properties": {
-          "stages": {
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/stage"
-            }
-          },
-          /* Common pipeline-global values */
-          "name": {
-            "description": "Pipeline name",
-            "type": "string"
-          },
-          "trigger": {
-            "description": "Continuous integration triggers",
-            "$ref": "#/definitions/trigger"
-          },
-          "resources": {
-            "description": "Containers and repositories used in the build",
-            "$ref": "#/definitions/resources"
-          },
-          "variables": {
-            "description": "Pipeline-wide variables",
-            "type": "object"
-          }
-          /* End common */
-        }
-      },
-      "jobsAtRoot": {
-        "additionalProperties": false,
-        "properties": {
-          "jobs": {
-            "description": "Jobs which make up the pipeline",
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/job"
-            }
-          },
-          /* Common pipeline-global values */
-          "name": {
-            "description": "Pipeline name",
-            "type": "string"
-          },
-          "trigger": {
-            "description": "Continuous integration triggers",
-            "$ref": "#/definitions/trigger"
-          },
-          "resources": {
-            "description": "Containers and repositories used in the build",
-            "$ref": "#/definitions/resources"
-          },
-          "variables": {
-            "description": "Pipeline-wide variables",
-            "type": "object"
-          }
-          /* End common */
-        }
-      },
-      "phasesAtRoot": {
-        "additionalProperties": false,
-        "properties": {
-          "phases": {
-            "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/phase"
-            }
-          },
-          /* Common pipeline-global values */
-          "name": {
-            "description": "Pipeline name",
-            "type": "string"
-          },
-          "trigger": {
-            "description": "Continuous integration triggers",
-            "$ref": "#/definitions/trigger"
-          },
-          "resources": {
-            "description": "Containers and repositories used in the build",
-            "$ref": "#/definitions/resources"
-          },
-          "variables": {
-            "description": "Pipeline-wide variables",
-            "type": "object"
-          }
-          /* End common */
-
-        }
-      },
+      "stagesAtRoot": stagesAtRoot140,
+      "jobsAtRoot": jobsAtRoot140,
+      "phasesAtRoot": phasesAtRoot140,
       "jobAtRoot": jobAtRoot140,
       "phaseAtRoot": phaseAtRoot140,
       "stage": {
