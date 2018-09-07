@@ -304,25 +304,34 @@ export const schema140: string = JSON.stringify({
       },
       "job": job140,
       "phase": phase140,
-      "resources": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "containers": {
-            "description": "List of container images",
-            "type": "array",
-            "items": {
-              "$ref": "#/definitions/containerReference"
+      "resources":
+      {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "containers": {
+                "description": "List of container images",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/containerReference"
+                }
+              },
+              "repositories": {
+                "description": "List of external repositories",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/repositoryReference"
+                }
+              }
             }
           },
-          "repositories": {
-            "description": "List of external repositories",
+          {
             "type": "array",
-            "items": {
-              "$ref": "#/definitions/repositoryReference"
-            }
+            "description": "[DEPRECATED] Use `repositories` or `checkout` instead.\n\nRepository options"
           }
-        }
+        ]
       },
       "pool": {
         "type": "object",
