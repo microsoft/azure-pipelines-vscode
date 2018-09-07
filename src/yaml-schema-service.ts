@@ -183,7 +183,7 @@ export class YamlSchemaService implements IYamlSchemaService {
               "description": "Jobs which make up the pipeline",
               "type": "array",
               "items": {
-                "$ref": "#/definitions/job"
+                "$ref": "#/definitions/jobOnly"
               }
             },
             /* Common pipeline-global values */
@@ -213,7 +213,7 @@ export class YamlSchemaService implements IYamlSchemaService {
               "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
               "type": "array",
               "items": {
-                "$ref": "#/definitions/phase"
+                "$ref": "#/definitions/phaseOnly"
               }
             },
             /* Common pipeline-global values */
@@ -268,10 +268,15 @@ export class YamlSchemaService implements IYamlSchemaService {
           /* Stages aren't implemented fully yet, so this is a placeholder */
           "type": "object"
         },
+        "phaseOnly": {
+          "oneOf": [
+            { "$ref": "#/definitions/phase" }
+          ],
+          "additionalProperties": false
+        },
         "phase": {
           "type": "object",
           "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
-          "additionalProperties": false,
           "properties": {
             "phase": {
               "oneOf": [
@@ -359,9 +364,14 @@ export class YamlSchemaService implements IYamlSchemaService {
             }
           }
         },
+        "jobOnly": {
+          "oneOf": [
+            { "$ref": "#/definitions/job" }
+          ],
+          "additionalProperties": false
+        },
         "job": {
           "type": "object",
-          "additionalProperties": false,
           "properties": {
             "job": {
               "oneOf": [
