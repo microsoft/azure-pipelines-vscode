@@ -32,6 +32,21 @@
                 "${workspaceFolder}/out/test/**/*.js"
             ],
             "preLaunchTask": "npm: watch"
+        },
+        {
+            "name": "Extension Tests From Server",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "${workspaceRoot}/examples/",
+                "--extensionDevelopmentPath=${workspaceFolder}",
+                "--extensionTestsPath=${workspaceFolder}/out/testfromserver"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/out/testfromserver/**/*.js"
+            ],
+            "preLaunchTask": "npm: watch"
         }
     ]
 }
