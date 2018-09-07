@@ -70,7 +70,7 @@ const job140 = {
       "description": "Evaluate this condition expression to determine whether to run this job"
     },
     "continueOnError": {
-      "$ref": "#/definitions/booleanMacroExpression",
+      "$ref": "#/definitions/booleanMacroRuntimeExpression",
       "description": "Continue running this job even on failure?"
     },
     "pool": {
@@ -85,7 +85,7 @@ const job140 = {
       "description": "Pool where this job will run"
     },
     "server": {
-      "$ref": "#/definitions/booleanMacroExpression",
+      "$ref": "#/definitions/booleanMacroRuntimeExpression",
       "description": "True if this is an agent-less job (runs on server)"
     },
     "strategy": {
@@ -169,7 +169,7 @@ const phase140 = {
       "description": "Evaluate this condition expression to determine whether to run this phase"
     },
     "continueOnError": {
-      "$ref": "#/definitions/booleanMacroExpression",
+      "$ref": "#/definitions/booleanMacroRuntimeExpression",
       "description": "Continue running this phase even on failure?"
     },
     "queue": {
@@ -186,7 +186,7 @@ const phase140 = {
     "server": {
       "oneOf": [
         {
-          "$ref": "#/definitions/booleanMacroExpression"
+          "$ref": "#/definitions/booleanMacroRuntimeExpression"
         },
         {
           "$ref": "#/definitions/legacyServer"
@@ -476,7 +476,7 @@ export const schema140: string = JSON.stringify({
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "failOnStderr": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "workingDirectory": {
@@ -488,11 +488,11 @@ export const schema140: string = JSON.stringify({
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Continue running the parent job even on failure?"
           },
           "enabled": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Run this script when the job runs?"
           },
           "timeoutInMinutes": {
@@ -525,7 +525,7 @@ export const schema140: string = JSON.stringify({
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "failOnStderr": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "workingDirectory": {
@@ -537,11 +537,11 @@ export const schema140: string = JSON.stringify({
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Continue running the parent job even on failure?"
           },
           "enabled": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Run this script when the job runs?"
           },
           "timeoutInMinutes": {
@@ -583,11 +583,11 @@ export const schema140: string = JSON.stringify({
             "description": "Strategy for dealing with script errors"
           },
           "failOnStderr": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "ignoreLASTEXITCODE": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Check the final exit code of the script to determine whether the step succeeded?"
           },
           "workingDirectory": {
@@ -599,11 +599,11 @@ export const schema140: string = JSON.stringify({
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Continue running the parent job even on failure?"
           },
           "enabled": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Run this script when the job runs?"
           },
           "timeoutInMinutes": {
@@ -631,7 +631,7 @@ export const schema140: string = JSON.stringify({
             "description": "Whether or not to check out the repository containing this pipeline definition"
           },
           "clean": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Start from a clean, freshly-fetched workdir?"
           },
           "fetchDepth": {
@@ -639,7 +639,7 @@ export const schema140: string = JSON.stringify({
             "description": "Depth of Git graph to fetch"
           },
           "lfs": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Fetch Git-LFS objects?"
           }
         }
@@ -731,7 +731,7 @@ export const schema140: string = JSON.stringify({
             "description": "Options to pass into container host"
           },
           "localImage": {
-            "$ref": "#/definitions/booleanMacroExpression",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Build the image locally?"
           },
           "env": {
@@ -832,6 +832,19 @@ export const schema140: string = JSON.stringify({
         "oneOf": [
           {
             "type": "boolean"
+          },
+          {
+            "$ref": "#/definitions/macroExpression"
+          }
+        ]
+      },
+      "booleanMacroRuntimeExpression": {
+        "oneOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "$ref": "#/definitions/runtimeExpression"
           },
           {
             "$ref": "#/definitions/macroExpression"
