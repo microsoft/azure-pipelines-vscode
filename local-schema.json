@@ -551,7 +551,10 @@
               "type": "string"
             },
             {
-              "type": "object"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           ],
           "description": "List of demands (for a private pool)"
@@ -576,7 +579,10 @@
               "type": "string"
             },
             {
-              "type": "object"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           ],
           "description": "List of demands (for a private queue)"

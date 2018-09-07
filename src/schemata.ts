@@ -343,7 +343,10 @@ export const schema140: string = JSON.stringify({
                 "type": "string"
               },
               {
-                "type": "object"
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               }
             ],
             "description": "List of demands (for a private pool)"
@@ -368,7 +371,10 @@ export const schema140: string = JSON.stringify({
                 "type": "string"
               },
               {
-                "type": "object"
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
               }
             ],
             "description": "List of demands (for a private queue)"
