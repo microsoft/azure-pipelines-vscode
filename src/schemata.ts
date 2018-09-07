@@ -722,6 +722,10 @@ export const schema140: string = JSON.stringify({
               "refs/heads/master",
               "refs/tags/lkg"
             ]
+          },
+          "clean": {
+            "description": "Scorch the repo before fetching?",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression"
           }
         }
       },
