@@ -27,8 +27,13 @@ steps:
 - script: npm install
   displayName: npm install
 
-# Run unit tests
-- script: npm run compile && npm run unittest
+- script: npm run compile
+  displayName: Build extension
+
+- script: npm run generateyamlschema
+  displayName: Regenerate local-schema.json
+
+- script: npm run unittest
   displayName: Run unit tests
 
 # Acquire the `vsce` tool and use it to package
