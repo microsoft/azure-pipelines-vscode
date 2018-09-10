@@ -66,7 +66,10 @@ function outputYaml(name: string, body: string, outputDir: string) {
     let number = 0;
     while (mlString !== null) {
         const finalFileName = [outputBaseName, number.toString(), 'yml'].join('.');
-        fs.writeFile(finalFileName, mlString[1].trim(), 'utf8', (err: NodeJS.ErrnoException) => {
+        const rawContents = mlString[1].trim();
+        // replace tasks called "foo@1" with a real task name
+        const cookedContents = rawContents.replace(/foo@1/gi, "Bash@3");
+        fs.writeFile(finalFileName, cookedContents, 'utf8', (err: NodeJS.ErrnoException) => {
             if (err) {
                 console.error('trouble writing ' + finalFileName);
             }

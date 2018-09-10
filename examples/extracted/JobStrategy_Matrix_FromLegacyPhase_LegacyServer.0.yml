@@ -24,4 +24,4 @@ phases:
     matrix: $[ variables.matrix ]
     parallel: $[ variables.maxParallel ]
   steps:
-  - task: foo@1
+  - task: Bash@3

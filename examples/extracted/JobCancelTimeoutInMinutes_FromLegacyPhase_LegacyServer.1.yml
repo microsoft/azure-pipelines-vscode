@@ -4,9 +4,9 @@ jobs:
   cancelTimeoutInMinutes: 5
   pool: server
   steps:
-  - task: foo@1
+  - task: Bash@3
 - job: job3
   cancelTimeoutInMinutes: $[ variables.theCancelTimeoutInMinutes ]
   pool: server
   steps:
-  - task: foo@1
+  - task: Bash@3

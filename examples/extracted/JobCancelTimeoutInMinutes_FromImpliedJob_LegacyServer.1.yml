@@ -1,4 +1,4 @@
 cancelTimeoutInMinutes: 5
 pool: server
 steps:
-- task: foo@1
+- task: Bash@3
