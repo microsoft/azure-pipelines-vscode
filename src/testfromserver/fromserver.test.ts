@@ -30,7 +30,7 @@ suite('Validation Tests From Server', async function() {
     this.timeout(1000000);
 
     test ('Validate all files from server', async () => {
-        const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('**/JobCancelTimeoutInMinutes_*.yml');
+        const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('**/extracted/*.yml');
         //const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('extracted/JobCancelTimeoutInMinutes_FromImpliedJob_LegacyQueue.0.yml');
 
         for (var i = 0; i < validFiles.length; i++) {

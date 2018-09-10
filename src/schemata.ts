@@ -408,28 +408,31 @@ export const schema140: string = JSON.stringify({
       },
       "strategy": {
         "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "maxParallel": {
-            "$ref": "#/definitions/integerMacroExpression",
-            "description": "Maximum number of jobs running in parallel"
-          }
-        },
-        "oneOf": [
+        "anyOf": [
           {
             "properties": {
               "matrix": {
                 "$ref": "#/definitions/matrix"
-              }    
-            }
+              },
+              "maxParallel": {
+                "$ref": "#/definitions/integerMacroRuntimeExpression",
+                "description": "Maximum number of jobs running in parallel"
+              }
+            },
+            "additionalProperties": false,
           },
           {
             "properties": {
               "parallel": {
-                "$ref": "#/definitions/integerMacroExpression",
+                "$ref": "#/definitions/integerMacroRuntimeExpression",
                 "description": "Run the job this many times"
-              }    
-            }
+              },
+              "maxParallel": {
+                "$ref": "#/definitions/integerMacroRuntimeExpression",
+                "description": "Maximum number of jobs running in parallel"
+              }
+            },
+            "additionalProperties": false,
           }
         ]
       },
@@ -456,15 +459,22 @@ export const schema140: string = JSON.stringify({
         }
       },
       "matrix": {
-        "type": "object",
         "description": "List of permutations of variable values to run",
-        "minProperties": 1,
-        "patternProperties": {
-          "^[A-Za-z0-9_]+$": {
+        "oneOf": [
+          {
             "type": "object",
-            "description": "Variable-value pair to pass in this matrix instance"
+            "minProperties": 1,
+            "patternProperties": {
+              "^[A-Za-z0-9_]+$": {
+                "type": "object",
+                "description": "Variable-value pair to pass in this matrix instance"
+              }
+            }
+          },
+          {
+            "$ref": "#/definitions/runtimeExpression"
           }
-        }
+        ]
       },
       "script": {
         "type": "object",
