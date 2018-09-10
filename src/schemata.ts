@@ -75,6 +75,10 @@ const job140 = {
           "pattern": "^[_A-Za-z0-9]*$"
         },
         {
+          "type": "integer",
+          "description": "ID of the job"
+        },
+        {
           "type": "null"
         }
       ]
