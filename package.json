@@ -83,7 +83,7 @@
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
         "refreshVSToken": "vsts-npm-auth -config .npmrc",
         "unittest": "node_modules/.bin/mocha -u tdd out/unittest/*.js",
-        "generateyamlschema": "npm run compile && node ./out/buildtools/generate-yaml-from-json.js"
+        "generateyamlschema": "npm run compile && node ./out/genschema/generate-yaml-from-json.js"
     },
     "devDependencies": {
         "assert": "1.4.1",

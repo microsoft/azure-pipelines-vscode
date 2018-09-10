@@ -8,21 +8,85 @@
   "definitions": {
     "pipeline": {
       "type": "object",
-      "required": [],
+      "anyOf": [
+        {
+          "$ref": "#/definitions/jobsAtRoot"
+        },
+        {
+          "$ref": "#/definitions/phasesAtRoot"
+        },
+        {
+          "$ref": "#/definitions/jobAtRoot"
+        },
+        {
+          "$ref": "#/definitions/phaseAtRoot"
+        }
+      ]
+    },
+    "stagesAtRoot": {
       "additionalProperties": false,
       "properties": {
+        "stages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/stage"
+          }
+        },
+        "variables": {
+          "type": "object",
+          "description": "Variables for the entire pipeline"
+        },
         "name": {
           "description": "Pipeline name",
           "type": "string"
         },
+        "trigger": {
+          "description": "Continuous integration triggers",
+          "$ref": "#/definitions/trigger"
+        },
         "resources": {
           "description": "Containers and repositories used in the build",
           "$ref": "#/definitions/resources"
+        }
+      }
+    },
+    "jobsAtRoot": {
+      "additionalProperties": false,
+      "required": [
+        "jobs"
+      ],
+      "properties": {
+        "jobs": {
+          "description": "Jobs which make up the pipeline",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/job"
+          }
         },
         "variables": {
-          "description": "Pipeline-wide variables",
-          "type": "object"
+          "type": "object",
+          "description": "Variables for this multi-job pipeline"
         },
+        "name": {
+          "description": "Pipeline name",
+          "type": "string"
+        },
+        "trigger": {
+          "description": "Continuous integration triggers",
+          "$ref": "#/definitions/trigger"
+        },
+        "resources": {
+          "description": "Containers and repositories used in the build",
+          "$ref": "#/definitions/resources"
+        }
+      }
+    },
+    "phasesAtRoot": {
+      "additionalProperties": false,
+      "required": [
+        "phases"
+      ],
+      "properties": {
         "phases": {
           "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
           "type": "array",
@@ -30,12 +94,66 @@
             "$ref": "#/definitions/phase"
           }
         },
-        "jobs": {
-          "description": "Jobs which make up the pipeline",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/job"
-          }
+        "variables": {
+          "type": "object",
+          "description": "Variables for this multi-phase pipeline"
+        },
+        "name": {
+          "description": "Pipeline name",
+          "type": "string"
+        },
+        "trigger": {
+          "description": "Continuous integration triggers",
+          "$ref": "#/definitions/trigger"
+        },
+        "resources": {
+          "description": "Containers and repositories used in the build",
+          "$ref": "#/definitions/resources"
+        }
+      }
+    },
+    "jobAtRoot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "job": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "ID of the job",
+              "pattern": "^[_A-Za-z0-9]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable name of the job"
+        },
+        "dependsOn": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "uniqueItems": true
+              }
+            }
+          ],
+          "description": "Any jobs which must complete before this one"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Evaluate this condition expression to determine whether to run this job"
+        },
+        "continueOnError": {
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
+          "description": "Continue running this job even on failure?"
         },
         "pool": {
           "oneOf": [
@@ -46,18 +164,19 @@
               "$ref": "#/definitions/pool"
             }
           ],
-          "description": "Pool where this build will run"
+          "description": "Pool where this job will run"
         },
-        "queue": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "$ref": "#/definitions/queue"
-            }
-          ],
-          "description": "[DEPRECATED] Use `pool` instead.\n\nQueue where this build will run"
+        "server": {
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
+          "description": "True if this is an agent-less job (runs on server)"
+        },
+        "strategy": {
+          "$ref": "#/definitions/strategy",
+          "description": "Execution strategy for this job"
+        },
+        "variables": {
+          "type": "object",
+          "description": "Job-specific variables"
         },
         "steps": {
           "type": "array",
@@ -66,44 +185,44 @@
             "$ref": "#/definitions/stepOrTemplateExpression"
           }
         },
-        "strategy": {
-          "$ref": "#/definitions/strategy",
-          "description": "Execution strategy for this build"
+        "template": {
+          "type": "string",
+          "description": "Reference to a template for this job"
+        },
+        "parameters": {
+          "description": "Parameters used in a pipeline template",
+          "type": "object"
+        },
+        "timeoutInMinutes": {
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
+          "description": "Time to wait before cancelling the job"
+        },
+        "cancelTimeoutInMinutes": {
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
+          "description": "Time to wait for the job to cancel before forcibly terminating it"
+        },
+        "container": {
+          "type": "string",
+          "description": "Container resource name"
+        },
+        "name": {
+          "description": "Pipeline name",
+          "type": "string"
         },
         "trigger": {
           "description": "Continuous integration triggers",
           "$ref": "#/definitions/trigger"
         },
-        "parameters": {
-          "description": "Parameters used in a pipeline template",
-          "$ref": "#/definitions/parameters"
+        "resources": {
+          "description": "Containers and repositories used in the build",
+          "$ref": "#/definitions/resources"
         }
       }
     },
-    "resources": {
+    "phaseAtRoot": {
       "type": "object",
       "additionalProperties": false,
-      "properties": {
-        "containers": {
-          "description": "Container images",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/containerReference"
-          }
-        },
-        "repositories": {
-          "description": "External repositories",
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/repositoryReference"
-          }
-        }
-      }
-    },
-    "phase": {
-      "type": "object",
       "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
-      "additionalProperties": false,
       "properties": {
         "phase": {
           "oneOf": [
@@ -141,7 +260,7 @@
           "description": "Evaluate this condition expression to determine whether to run this phase"
         },
         "continueOnError": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Continue running this phase even on failure?"
         },
         "queue": {
@@ -156,7 +275,14 @@
           "description": "Queue where this phase will run"
         },
         "server": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/booleanMacroRuntimeExpression"
+            },
+            {
+              "$ref": "#/definitions/legacyServer"
+            }
+          ],
           "description": "True if this is an agent-less phase (runs on server)"
         },
         "matrix": {
@@ -181,8 +307,24 @@
         "parameters": {
           "description": "Parameters used in a pipeline template",
           "type": "object"
+        },
+        "name": {
+          "description": "Pipeline name",
+          "type": "string"
+        },
+        "trigger": {
+          "description": "Continuous integration triggers",
+          "$ref": "#/definitions/trigger"
+        },
+        "resources": {
+          "description": "Containers and repositories used in the build",
+          "$ref": "#/definitions/resources"
         }
       }
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false
     },
     "job": {
       "type": "object",
@@ -224,7 +366,7 @@
           "description": "Evaluate this condition expression to determine whether to run this job"
         },
         "continueOnError": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Continue running this job even on failure?"
         },
         "pool": {
@@ -239,7 +381,7 @@
           "description": "Pool where this job will run"
         },
         "server": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "True if this is an agent-less job (runs on server)"
         },
         "strategy": {
@@ -266,14 +408,137 @@
           "type": "object"
         },
         "timeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroExpression",
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
           "description": "Time to wait before cancelling the job"
         },
         "cancelTimeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroExpression",
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
           "description": "Time to wait for the job to cancel before forcibly terminating it"
+        },
+        "container": {
+          "type": "string",
+          "description": "Container resource name"
         }
       }
+    },
+    "phase": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
+      "properties": {
+        "phase": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "ID of the phase",
+              "pattern": "^[_A-Za-z0-9]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable name of the phase"
+        },
+        "dependsOn": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "uniqueItems": true
+              }
+            }
+          ],
+          "description": "Any phases which must complete before this one"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Evaluate this condition expression to determine whether to run this phase"
+        },
+        "continueOnError": {
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
+          "description": "Continue running this phase even on failure?"
+        },
+        "queue": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/queue"
+            }
+          ],
+          "description": "Queue where this phase will run"
+        },
+        "server": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/booleanMacroRuntimeExpression"
+            },
+            {
+              "$ref": "#/definitions/legacyServer"
+            }
+          ],
+          "description": "True if this is an agent-less phase (runs on server)"
+        },
+        "matrix": {
+          "$ref": "#/definitions/matrix",
+          "description": "Matrix strategy for this phase"
+        },
+        "variables": {
+          "type": "object",
+          "description": "Phase-specific variables"
+        },
+        "steps": {
+          "type": "array",
+          "description": "A list of steps to run",
+          "items": {
+            "$ref": "#/definitions/stepOrTemplateExpression"
+          }
+        },
+        "template": {
+          "type": "string",
+          "description": "Reference to a template for this phase"
+        },
+        "parameters": {
+          "description": "Parameters used in a pipeline template",
+          "type": "object"
+        }
+      }
+    },
+    "resources": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "containers": {
+              "description": "List of container images",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/containerReference"
+              }
+            },
+            "repositories": {
+              "description": "List of external repositories",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/repositoryReference"
+              }
+            }
+          }
+        },
+        {
+          "type": "array",
+          "description": "[DEPRECATED] Use `repositories` or `checkout` instead.\n\nRepository options"
+        }
+      ]
     },
     "pool": {
       "type": "object",
@@ -294,7 +559,10 @@
               "type": "string"
             },
             {
-              "type": "object"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           ],
           "description": "List of demands (for a private pool)"
@@ -305,9 +573,6 @@
       "type": "object",
       "description": "[DEPRECATED] Use `pool` (with `jobs`) instead.\n\nQueue details",
       "additionalProperties": false,
-      "required": [
-        "name"
-      ],
       "properties": {
         "name": {
           "type": "string",
@@ -319,25 +584,32 @@
               "type": "string"
             },
             {
-              "type": "object"
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           ],
           "description": "List of demands (for a private queue)"
         },
         "timeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroExpression",
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
           "description": "Time to wait before cancelling the phase"
         },
         "cancelTimeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroExpression",
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
           "description": "Time to wait for the phase to cancel before forcibly terminating it"
         },
         "parallel": {
-          "$ref": "#/definitions/integerMacroExpression",
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
           "description": "Maximum number of parallel agent executions"
         },
         "matrix": {
           "$ref": "#/definitions/matrix"
+        },
+        "container": {
+          "type": "string",
+          "description": "Container resource name"
         }
       }
     },
@@ -368,7 +640,7 @@
         }
       ]
     },
-    "server": {
+    "legacyServer": {
       "type": "object",
       "description": "Server job details",
       "additionalProperties": false,
@@ -378,11 +650,11 @@
           "description": "Time to wait before cancelling the job"
         },
         "cancelTimeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroExpression",
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
           "description": "Time to wait for the job to cancel before forcibly terminating it"
         },
         "parallel": {
-          "$ref": "#/definitions/integerMacroExpression",
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
           "description": "Maximum number of parallel agent executions"
         },
         "matrix": {
@@ -423,7 +695,7 @@
           "pattern": "^[_A-Za-z0-9]*$"
         },
         "failOnStderr": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Fail the task if output is sent to Stderr?"
         },
         "workingDirectory": {
@@ -435,11 +707,11 @@
           "description": "Evaluate this condition expression to determine whether to run this script"
         },
         "continueOnError": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Continue running the parent job even on failure?"
         },
         "enabled": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Run this script when the job runs?"
         },
         "timeoutInMinutes": {
@@ -472,7 +744,7 @@
           "pattern": "^[_A-Za-z0-9]*$"
         },
         "failOnStderr": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Fail the task if output is sent to Stderr?"
         },
         "workingDirectory": {
@@ -484,11 +756,11 @@
           "description": "Evaluate this condition expression to determine whether to run this script"
         },
         "continueOnError": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Continue running the parent job even on failure?"
         },
         "enabled": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Run this script when the job runs?"
         },
         "timeoutInMinutes": {
@@ -522,19 +794,26 @@
           "pattern": "^[_A-Za-z0-9]*$"
         },
         "errorActionPreference": {
-          "enum": [
-            "stop",
-            "continue",
-            "silentlyContinue"
+          "oneOf": [
+            {
+              "enum": [
+                "stop",
+                "continue",
+                "silentlyContinue"
+              ]
+            },
+            {
+              "$ref": "#/definitions/macroRuntimeExpression"
+            }
           ],
           "description": "Strategy for dealing with script errors"
         },
         "failOnStderr": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Fail the task if output is sent to Stderr?"
         },
         "ignoreLASTEXITCODE": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Check the final exit code of the script to determine whether the step succeeded?"
         },
         "workingDirectory": {
@@ -546,11 +825,11 @@
           "description": "Evaluate this condition expression to determine whether to run this script"
         },
         "continueOnError": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Continue running the parent job even on failure?"
         },
         "enabled": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Run this script when the job runs?"
         },
         "timeoutInMinutes": {
@@ -578,7 +857,7 @@
           "description": "Whether or not to check out the repository containing this pipeline definition"
         },
         "clean": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Start from a clean, freshly-fetched workdir?"
         },
         "fetchDepth": {
@@ -586,8 +865,20 @@
           "description": "Depth of Git graph to fetch"
         },
         "lfs": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Fetch Git-LFS objects?"
+        },
+        "submodules": {
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
+          "description": "Check out Git submodules?"
+        },
+        "persistCredentials": {
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
+          "description": "Keep credentials available for later use?"
+        },
+        "condition": {
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
+          "description": "Is this step enabled?"
         }
       }
     },
@@ -645,6 +936,10 @@
             "refs/heads/master",
             "refs/tags/lkg"
           ]
+        },
+        "clean": {
+          "description": "Scorch the repo before fetching?",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression"
         }
       }
     },
@@ -663,7 +958,7 @@
         },
         "image": {
           "type": "string",
-          "description": "Container image name",
+          "description": "Container image tag",
           "examples": [
             "ubuntu:16.04",
             "windows:1803"
@@ -678,12 +973,16 @@
           "description": "Options to pass into container host"
         },
         "localImage": {
-          "$ref": "#/definitions/booleanMacroExpression",
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
           "description": "Build the image locally?"
         },
         "env": {
           "type": "object",
           "description": "Variables to map into the container's environment"
+        },
+        "type": {
+          "type": "string",
+          "description": "Container type"
         }
       }
     },
@@ -781,6 +1080,19 @@
         }
       ]
     },
+    "booleanMacroRuntimeExpression": {
+      "oneOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "$ref": "#/definitions/runtimeExpression"
+        },
+        {
+          "$ref": "#/definitions/macroExpression"
+        }
+      ]
+    },
     "integerMacroExpression": {
       "oneOf": [
         {
@@ -791,9 +1103,36 @@
         }
       ]
     },
+    "integerMacroRuntimeExpression": {
+      "oneOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "$ref": "#/definitions/runtimeExpression"
+        },
+        {
+          "$ref": "#/definitions/macroExpression"
+        }
+      ]
+    },
+    "macroRuntimeExpression": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/runtimeExpression"
+        },
+        {
+          "$ref": "#/definitions/macroExpression"
+        }
+      ]
+    },
     "macroExpression": {
       "type": "string",
       "pattern": "^\\$\\(.*\\)$"
+    },
+    "runtimeExpression": {
+      "type": "string",
+      "pattern": "^\\$\\[.*\\]$"
     },
     "stepInsertExpression": {
       "type": "object",
@@ -807,7 +1146,8 @@
             "$ref": "#/definitions/step"
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "task": {
       "type": "object",
