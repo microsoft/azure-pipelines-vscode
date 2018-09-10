@@ -1,9 +1,0 @@
-resources:
-  builds:
-  - build: pr
-    definition: test.pr
-  - build: ci
-    branch: releases/ci
-    definition: test.ci
-steps:
-- task: Bash@3
