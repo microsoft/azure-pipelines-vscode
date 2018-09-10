@@ -1,6 +1,0 @@
-stages:
-- stage: bbbStage
-  jobs:
-  - job: bbbJob
-    steps:
-    - script: echo hi from bbb-stages.yml

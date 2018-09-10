@@ -1,8 +1,0 @@
-stages:
-- stage: 1
-  jobs:
-  - job: 1Job
-- template: stages.yml
-- stage: 2
-  jobs:
-  - job: 2Job

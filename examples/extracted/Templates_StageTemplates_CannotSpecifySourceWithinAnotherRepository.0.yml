@@ -1,9 +1,0 @@
-resources:
-  repositories:
-  - repository: tools
-stages:
-- template: my-stages.yml@tools
-  parameters:
-    env:
-      entryfile1: aaa
-      entryfile2: bbb
