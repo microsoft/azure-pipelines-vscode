@@ -821,11 +821,11 @@ export const schema140: string = JSON.stringify({
           "repository": {
             "type": "string",
             "description": "ID for the external repository",
-            "pattern": "^[A-Za-z0-9_]+$"
+            "pattern": "^[A-Za-z0-9_.]+$"
           },
           "type": {
             "enum": [
-              "github"
+              "github", "tfsgit", "tfsversioncontrol"
             ],
             "description": "Type of external repository"
           },
@@ -859,6 +859,21 @@ export const schema140: string = JSON.stringify({
           "lfs": {
             "description": "Fetch and checkout Git LFS objects?",
             "$ref": "#/definitions/booleanMacroRuntimeExpression"
+          },
+          "mappings": {
+            "description": "Workspace mappings for TFVC",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/tfvcMappings"
+            }
+          },
+          "submodules": {
+            "description": "Fetch and checkout submodules?",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression"
+          },
+          "checkoutOptions": {
+            "description": "[DEPRECATED] Move these up a level as peers of the `repository` keyword.",
+            "type": "object"
           }
         }
       },
@@ -902,6 +917,10 @@ export const schema140: string = JSON.stringify({
           "type": {
             "type": "string",
             "description": "Container type"
+          },
+          "registry": {
+            "type": "string",
+            "description": "[DEPRECATED] Don't use"
           }
         }
       },
@@ -956,6 +975,23 @@ export const schema140: string = JSON.stringify({
       },
       "parameters": {
         "type": "object"
+      },
+      "tfvcMappings": {
+        "type": "object",
+        "properties": {
+          "localPath": {
+            "description": "On-disk path",
+            "type": "string"
+          },
+          "serverPath": {
+            "description": "TFVC server-side path",
+            "type": "string"
+          },
+          "cloak": {
+            "description": "Cloak this path?",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression"
+          },
+        }
       },
       "stepOrTemplateExpression": {
         "oneOf": [
