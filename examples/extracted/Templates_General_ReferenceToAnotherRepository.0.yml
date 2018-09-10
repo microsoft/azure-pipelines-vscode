@@ -5,5 +5,5 @@ resources:
     ref: master
     type: tfsgit
 steps:
-- task: myTask@1
+- task: Bash@3
 - template: my-steps.yml@vso

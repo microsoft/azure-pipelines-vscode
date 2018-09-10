@@ -695,8 +695,7 @@ export const schema140: string = JSON.stringify({
       "repositoryReference": {
         "type": "object",
         "required": [
-          "repository",
-          "type"
+          "repository"
         ],
         "additionalProperties": false,
         "properties": {

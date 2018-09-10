@@ -902,8 +902,7 @@
     "repositoryReference": {
       "type": "object",
       "required": [
-        "repository",
-        "type"
+        "repository"
       ],
       "additionalProperties": false,
       "properties": {

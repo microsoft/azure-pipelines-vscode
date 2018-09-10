@@ -3,9 +3,9 @@ stages:
   jobs:
   - job: Default
     steps:
-    - task: myTask@1
+    - task: Bash@3
 - stage: test
   jobs:
   - job: Default
     steps:
-    - task: myTask@1
+    - task: Bash@3

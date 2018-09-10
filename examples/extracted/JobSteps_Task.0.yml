@@ -1,6 +1,6 @@
 steps:
-- task: myTask@1
-- task: myOtherTask@2
+- task: Bash@3
+- task: Bash@3
   displayName: Fancy task
   name: fancyTask
   enabled: false

@@ -6,4 +6,4 @@ resources:
     branch: releases/ci
     definition: test.ci
 steps:
-- task: myTask@1
+- task: Bash@3
