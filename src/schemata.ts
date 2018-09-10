@@ -24,8 +24,39 @@ const commonPipelineValues = {
     "$ref": "#/definitions/resources"
   },
   "variables": {
-    "description": "Variables passed into the build",
-    "type": "object"
+    "oneOf": [
+      {
+        "type": "object"
+      },
+      {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "oneOf": [
+            {
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "properties": {
+                "group": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        }
+      }
+    ],
+    "description": "Variables passed into the build"    
   }
   /* End common */
 };
@@ -93,12 +124,43 @@ const job140 = {
       "description": "Execution strategy for this job"
     },
     "variables": {
-      "type": "object",
-      "description": "Job-specific variables"
+      "oneOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "oneOf": [
+              {
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              {
+                "properties": {
+                  "group": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      ],
+      "description": "Job-specific variables"    
     },
     "steps": {
       "type": "array",
-      "description": "A list of steps to run",
+      "description": "A list of steps to run in this job",
       "items": {
         "$ref": "#/definitions/stepOrTemplateExpression"
       }
@@ -199,12 +261,43 @@ const phase140 = {
       "description": "Matrix strategy for this phase"
     },
     "variables": {
-      "type": "object",
-      "description": "Phase-specific variables"
+      "oneOf": [
+        {
+          "type": "object"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "oneOf": [
+              {
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              },
+              {
+                "properties": {
+                  "group": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      ],
+      "description": "Phase-specific variables"    
     },
     "steps": {
       "type": "array",
-      "description": "A list of steps to run",
+      "description": "A list of steps to run in this phase",
       "items": {
         "$ref": "#/definitions/stepOrTemplateExpression"
       }
@@ -442,7 +535,7 @@ export const schema140: string = JSON.stringify({
         "additionalProperties": false,
         "properties": {
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerMacroExpression",
+            "$ref": "#/definitions/integerMacroRuntimeExpression",
             "description": "Time to wait before cancelling the job"
           },
           "cancelTimeoutInMinutes": {

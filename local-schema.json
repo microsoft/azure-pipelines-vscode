@@ -175,12 +175,43 @@
           "description": "Execution strategy for this job"
         },
         "variables": {
-          "type": "object",
+          "oneOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "oneOf": [
+                  {
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  {
+                    "properties": {
+                      "group": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          ],
           "description": "Job-specific variables"
         },
         "steps": {
           "type": "array",
-          "description": "A list of steps to run",
+          "description": "A list of steps to run in this job",
           "items": {
             "$ref": "#/definitions/stepOrTemplateExpression"
           }
@@ -290,12 +321,43 @@
           "description": "Matrix strategy for this phase"
         },
         "variables": {
-          "type": "object",
+          "oneOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "oneOf": [
+                  {
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  {
+                    "properties": {
+                      "group": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          ],
           "description": "Phase-specific variables"
         },
         "steps": {
           "type": "array",
-          "description": "A list of steps to run",
+          "description": "A list of steps to run in this phase",
           "items": {
             "$ref": "#/definitions/stepOrTemplateExpression"
           }
@@ -389,12 +451,43 @@
           "description": "Execution strategy for this job"
         },
         "variables": {
-          "type": "object",
+          "oneOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "oneOf": [
+                  {
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  {
+                    "properties": {
+                      "group": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          ],
           "description": "Job-specific variables"
         },
         "steps": {
           "type": "array",
-          "description": "A list of steps to run",
+          "description": "A list of steps to run in this job",
           "items": {
             "$ref": "#/definitions/stepOrTemplateExpression"
           }
@@ -492,12 +585,43 @@
           "description": "Matrix strategy for this phase"
         },
         "variables": {
-          "type": "object",
+          "oneOf": [
+            {
+              "type": "object"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "oneOf": [
+                  {
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  {
+                    "properties": {
+                      "group": {
+                        "type": "string"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          ],
           "description": "Phase-specific variables"
         },
         "steps": {
           "type": "array",
-          "description": "A list of steps to run",
+          "description": "A list of steps to run in this phase",
           "items": {
             "$ref": "#/definitions/stepOrTemplateExpression"
           }
@@ -649,7 +773,7 @@
       "additionalProperties": false,
       "properties": {
         "timeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroExpression",
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
           "description": "Time to wait before cancelling the job"
         },
         "cancelTimeoutInMinutes": {
