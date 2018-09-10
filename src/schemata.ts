@@ -184,6 +184,9 @@ const job140 = {
     "container": {
       "type": "string",
       "description": "Container resource name"
+    },
+    "workspace": {
+      "$ref": "#/definitions/workspace"
     }
   }
 };
@@ -496,6 +499,9 @@ export const schema140: string = JSON.stringify({
           "container": {
             "type": "string",
             "description": "Container resource name"
+          },
+          "workspace": {
+            "$ref": "#/definitions/workspace"
           }
         }
       },
@@ -528,6 +534,16 @@ export const schema140: string = JSON.stringify({
             "additionalProperties": false,
           }
         ]
+      },
+      "workspace": {
+        "description": "Workspace settings",
+        "type": "object",
+        "properties": {
+          "clean": {
+            "type": "string",
+            "description": "Clean source?"
+          }
+        }
       },
       "legacyServer": {
         "type": "object",

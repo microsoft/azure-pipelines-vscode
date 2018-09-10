@@ -236,6 +236,9 @@
           "type": "string",
           "description": "Container resource name"
         },
+        "workspace": {
+          "$ref": "#/definitions/workspace"
+        },
         "name": {
           "description": "Pipeline name",
           "type": "string"
@@ -511,6 +514,9 @@
         "container": {
           "type": "string",
           "description": "Container resource name"
+        },
+        "workspace": {
+          "$ref": "#/definitions/workspace"
         }
       }
     },
@@ -734,6 +740,9 @@
         "container": {
           "type": "string",
           "description": "Container resource name"
+        },
+        "workspace": {
+          "$ref": "#/definitions/workspace"
         }
       }
     },
@@ -766,6 +775,16 @@
           "additionalProperties": false
         }
       ]
+    },
+    "workspace": {
+      "description": "Workspace settings",
+      "type": "object",
+      "properties": {
+        "clean": {
+          "type": "string",
+          "description": "Clean source?"
+        }
+      }
     },
     "legacyServer": {
       "type": "object",
