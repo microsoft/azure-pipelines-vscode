@@ -851,6 +851,14 @@ export const schema140: string = JSON.stringify({
           "clean": {
             "description": "Scorch the repo before fetching?",
             "$ref": "#/definitions/booleanMacroRuntimeExpression"
+          },
+          "fetchDepth": {
+            "description": "Depth of Git graph to fetch",
+            "$ref": "#/definitions/integerMacroRuntimeExpression",
+          },
+          "lfs": {
+            "description": "Fetch and checkout Git LFS objects?",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression"
           }
         }
       },
