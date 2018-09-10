@@ -1170,6 +1170,10 @@
     "trigger": {
       "oneOf": [
         {
+          "type": "string",
+          "pattern": "^none$"
+        },
+        {
           "type": "array",
           "items": {
             "type": "string"

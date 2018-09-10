@@ -927,6 +927,10 @@ export const schema140: string = JSON.stringify({
       "trigger": {
         "oneOf": [
           {
+            "type": "string",
+            "pattern": "^none$"
+          },
+          {
             "type": "array",
             "items": {
               "type": "string"
