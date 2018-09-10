@@ -587,10 +587,17 @@ export const schema140: string = JSON.stringify({
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "errorActionPreference": {
-            "enum": [
-              "stop",
-              "continue",
-              "silentlyContinue"
+            "oneOf": [
+              {
+                "enum": [
+                  "stop",
+                  "continue",
+                  "silentlyContinue"
+                ],
+              },
+              {
+                "$ref": "#/definitions/macroRuntimeExpression"
+              }
             ],
             "description": "Strategy for dealing with script errors"
           },
@@ -894,6 +901,16 @@ export const schema140: string = JSON.stringify({
           {
             "type": "integer"
           },
+          {
+            "$ref": "#/definitions/runtimeExpression"
+          },
+          {
+            "$ref": "#/definitions/macroExpression"
+          }
+        ]
+      },
+      "macroRuntimeExpression": {
+        "oneOf": [
           {
             "$ref": "#/definitions/runtimeExpression"
           },
