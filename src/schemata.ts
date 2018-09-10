@@ -7,7 +7,40 @@ const augment = function(base: object, property: string, augmentation: object) :
     }
   }
   return baseCopy;
-}
+};
+
+const commonVariablesOneOf = [
+  {
+    "type": "object"
+  },
+  {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "oneOf": [
+        {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "group": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+];
 
 const commonPipelineValues = {
   /* Common pipeline-global values */
@@ -24,38 +57,7 @@ const commonPipelineValues = {
     "$ref": "#/definitions/resources"
   },
   "variables": {
-    "oneOf": [
-      {
-        "type": "object"
-      },
-      {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "oneOf": [
-            {
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "value": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false
-            },
-            {
-              "properties": {
-                "group": {
-                  "type": "string"
-                }
-              },
-              "additionalProperties": false
-            }
-          ]
-        }
-      }
-    ],
+    "oneOf": commonVariablesOneOf,
     "description": "Variables passed into the build"    
   }
   /* End common */
@@ -124,38 +126,7 @@ const job140 = {
       "description": "Execution strategy for this job"
     },
     "variables": {
-      "oneOf": [
-        {
-          "type": "object"
-        },
-        {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "oneOf": [
-              {
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "value": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false
-              },
-              {
-                "properties": {
-                  "group": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false
-              }
-            ]
-          }
-        }
-      ],
+      "oneOf": commonVariablesOneOf,
       "description": "Job-specific variables"    
     },
     "steps": {
@@ -264,38 +235,7 @@ const phase140 = {
       "description": "Matrix strategy for this phase"
     },
     "variables": {
-      "oneOf": [
-        {
-          "type": "object"
-        },
-        {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "oneOf": [
-              {
-                "properties": {
-                  "name": {
-                    "type": "string"
-                  },
-                  "value": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false
-              },
-              {
-                "properties": {
-                  "group": {
-                    "type": "string"
-                  }
-                },
-                "additionalProperties": false
-              }
-            ]
-          }
-        }
-      ],
+      "oneOf": commonVariablesOneOf,
       "description": "Phase-specific variables"    
     },
     "steps": {
@@ -328,7 +268,7 @@ const stagesAtRoot140 = augment({
       }
     },
     "variables": {
-      "type": "object",
+      "oneOf": commonVariablesOneOf,
       "description": "Variables for the entire pipeline"
     }
   }
@@ -346,7 +286,7 @@ const jobsAtRoot140 = augment({
       }
     },
     "variables": {
-      "type": "object",
+      "oneOf": commonVariablesOneOf,
       "description": "Variables for this multi-job pipeline"
     }
   }
@@ -364,7 +304,7 @@ const phasesAtRoot140 = augment({
       }
     },
     "variables": {
-      "type": "object",
+      "oneOf": commonVariablesOneOf,
       "description": "Variables for this multi-phase pipeline"
     }
   }
