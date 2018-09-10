@@ -1146,7 +1146,8 @@
             "$ref": "#/definitions/step"
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "task": {
       "type": "object",

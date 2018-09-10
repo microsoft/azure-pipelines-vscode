@@ -939,7 +939,8 @@ export const schema140: string = JSON.stringify({
               "$ref": "#/definitions/step"
             }
           }
-        }
+        },
+        "additionalProperties": false
       },
       "task": {
         "type": "object",
