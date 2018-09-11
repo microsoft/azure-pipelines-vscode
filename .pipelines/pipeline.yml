@@ -16,9 +16,9 @@ trigger:
 steps:
 # Set version number for PR/CI or release
 - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/') }}:
-  - template: ci/version-release.yml
+  - template: version-release.yml
 - ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/')) }}:
-  - template: ci/version-ci.yml
+  - template: version-ci.yml
 
 - task: npmAuthenticate@0
   inputs:
@@ -60,4 +60,4 @@ steps:
   displayName: Publish VSIX
   inputs:
     pathToPublish: $(Build.ArtifactStagingDirectory)
-    artifactName: rocket-ship
+    artifactName: azure-pipelines-vscode

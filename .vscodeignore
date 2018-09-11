@@ -8,9 +8,12 @@ tslint.json
 vsc-extension-quickstart.md
 .vscode/**
 .vscode-test/**
-ci/**
+.pipelines/**
 examples/**
 out/genschema/**
 out/test/**
+out/testfromserver/**
+out/unittest/**
 out/**/*.map
 src/**
+tools/**
