@@ -29,11 +29,11 @@ suite ('Extension Setup Tests', function() {
 suite('Validation Tests From Server', async function() {
     this.timeout(1000000);
 
-    test ('Validate all files from server', async () => {
+    test ('Validate all files from server', async function () {
         const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('**/extracted/*.yml');
         //const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('extracted/JobCancelTimeoutInMinutes_FromImpliedJob_LegacyQueue.0.yml');
 
-        const promises = validFiles.map(async (testFile) => {
+        const promises = validFiles.map(async function(testFile) {
             await testFileIsValid(testFile);
         });
         await Promise.all(promises);
