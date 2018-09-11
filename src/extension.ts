@@ -6,12 +6,24 @@
 import * as languageclient from 'vscode-languageclient';
 import * as logger from './logger';
 import * as path from 'path';
-import * as schemacontributor from './schema-contributor'
+import * as schemacontributor from './schema-contributor';
 import * as vscode from 'vscode';
 import * as schemaassociationservice from './schema-association-service';
+import TelemetryReporter from 'vscode-extension-telemetry';
+
+const telemetryExtensionId = 'azure-pipelines';
+const telemetryExtensionVersion = '0.1.0';
+const telemetryKey = 'ae672644-d394-497c-8c57-98f6eac32342';
+
+let reporter;
 
 export async function activate(context: vscode.ExtensionContext) {
     logger.log('Extension has been activated!', 'ExtensionActivated');
+
+    reporter = new TelemetryReporter(telemetryExtensionId, telemetryExtensionVersion, telemetryKey);
+    context.subscriptions.push(reporter);
+
+    reporter.sendTelemetryEvent('extension.activate');
 
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
@@ -44,6 +56,7 @@ export async function activate(context: vscode.ExtensionContext) {
         });
     }).catch((reason) =>{
         logger.log(JSON.stringify(reason), 'ClientOnReadyError');
+        reporter.sendTelemetryEvent('extension.languageserver.onReadyError', {'reason': JSON.stringify(reason)});
     });
 
     // TODO: Can we get rid of this since it's set in package.json?
@@ -83,4 +96,5 @@ function getClientOptions(): languageclient.LanguageClientOptions {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
+    reporter.dispose();
 }

@@ -102,6 +102,7 @@
         "shelljs": "^0.3.0",
         "typed-rest-client": "1.0.7",
         "underscore": "1.9.1",
+        "vscode-extension-telemetry": "0.0.18",
         "vscode-languageclient": "5.0.1",
         "vscode-nls": "3.2.4",
         "vscode-uri": "1.0.6"
