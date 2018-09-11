@@ -20,10 +20,6 @@ steps:
 - ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/')) }}:
   - template: version-ci.yml
 
-- task: npmAuthenticate@0
-  inputs:
-    workingFile: .npmrc
-
 - script: npm install
   displayName: npm install
 
