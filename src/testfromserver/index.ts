@@ -17,7 +17,8 @@ import * as testrunner from 'vscode/lib/testrunner';
 testrunner.configure({
     ui: 'tdd', 		    // the TDD UI is being used in extension.test.ts (suite, test, etc.)
     useColors: true,    // colored output from test results
-    bail: false         // bail on the first test failure
+    bail: false,        // bail on the first test failure
+    reporter: 'list'    // explicitly set to list reporter so we can see any failing filenames
 });
 
 module.exports = testrunner;
