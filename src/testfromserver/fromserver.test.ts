@@ -33,9 +33,10 @@ suite('Validation Tests From Server', async function() {
         const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('**/extracted/*.yml');
         //const validFiles: vscode.Uri[] = await vscode.workspace.findFiles('extracted/JobCancelTimeoutInMinutes_FromImpliedJob_LegacyQueue.0.yml');
 
-        for (var i = 0; i < validFiles.length; i++) {
-            await testFileIsValid(validFiles[i]);
-        }
+        const promises = validFiles.map(async (testFile) => {
+            await testFileIsValid(testFile);
+        });
+        await Promise.all(promises);
     });
 });
 
