@@ -7,7 +7,40 @@ const augment = function(base: object, property: string, augmentation: object) :
     }
   }
   return baseCopy;
-}
+};
+
+const commonVariablesOneOf = [
+  {
+    "type": "object"
+  },
+  {
+    "type": "array",
+    "items": {
+      "type": "object",
+      "oneOf": [
+        {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "group": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    }
+  }
+];
 
 const commonPipelineValues = {
   /* Common pipeline-global values */
@@ -24,8 +57,8 @@ const commonPipelineValues = {
     "$ref": "#/definitions/resources"
   },
   "variables": {
-    "description": "Variables passed into the build",
-    "type": "object"
+    "oneOf": commonVariablesOneOf,
+    "description": "Variables passed into the build"    
   }
   /* End common */
 };
@@ -40,6 +73,10 @@ const job140 = {
           "type": "string",
           "description": "ID of the job",
           "pattern": "^[_A-Za-z0-9]*$"
+        },
+        {
+          "type": "integer",
+          "description": "ID of the job"
         },
         {
           "type": "null"
@@ -93,12 +130,12 @@ const job140 = {
       "description": "Execution strategy for this job"
     },
     "variables": {
-      "type": "object",
-      "description": "Job-specific variables"
+      "oneOf": commonVariablesOneOf,
+      "description": "Job-specific variables"    
     },
     "steps": {
       "type": "array",
-      "description": "A list of steps to run",
+      "description": "A list of steps to run in this job",
       "items": {
         "$ref": "#/definitions/stepOrTemplateExpression"
       }
@@ -122,6 +159,9 @@ const job140 = {
     "container": {
       "type": "string",
       "description": "Container resource name"
+    },
+    "workspace": {
+      "$ref": "#/definitions/workspace"
     }
   }
 };
@@ -199,12 +239,12 @@ const phase140 = {
       "description": "Matrix strategy for this phase"
     },
     "variables": {
-      "type": "object",
-      "description": "Phase-specific variables"
+      "oneOf": commonVariablesOneOf,
+      "description": "Phase-specific variables"    
     },
     "steps": {
       "type": "array",
-      "description": "A list of steps to run",
+      "description": "A list of steps to run in this phase",
       "items": {
         "$ref": "#/definitions/stepOrTemplateExpression"
       }
@@ -232,7 +272,7 @@ const stagesAtRoot140 = augment({
       }
     },
     "variables": {
-      "type": "object",
+      "oneOf": commonVariablesOneOf,
       "description": "Variables for the entire pipeline"
     }
   }
@@ -250,7 +290,7 @@ const jobsAtRoot140 = augment({
       }
     },
     "variables": {
-      "type": "object",
+      "oneOf": commonVariablesOneOf,
       "description": "Variables for this multi-job pipeline"
     }
   }
@@ -268,7 +308,7 @@ const phasesAtRoot140 = augment({
       }
     },
     "variables": {
-      "type": "object",
+      "oneOf": commonVariablesOneOf,
       "description": "Variables for this multi-phase pipeline"
     }
   }
@@ -403,35 +443,51 @@ export const schema140: string = JSON.stringify({
           "container": {
             "type": "string",
             "description": "Container resource name"
+          },
+          "workspace": {
+            "$ref": "#/definitions/workspace"
           }
         }
       },
       "strategy": {
         "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "maxParallel": {
-            "$ref": "#/definitions/integerMacroExpression",
-            "description": "Maximum number of jobs running in parallel"
-          }
-        },
-        "oneOf": [
+        "anyOf": [
           {
             "properties": {
               "matrix": {
                 "$ref": "#/definitions/matrix"
-              }    
-            }
+              },
+              "maxParallel": {
+                "$ref": "#/definitions/integerMacroRuntimeExpression",
+                "description": "Maximum number of jobs running in parallel"
+              }
+            },
+            "additionalProperties": false,
           },
           {
             "properties": {
               "parallel": {
-                "$ref": "#/definitions/integerMacroExpression",
+                "$ref": "#/definitions/integerMacroRuntimeExpression",
                 "description": "Run the job this many times"
-              }    
-            }
+              },
+              "maxParallel": {
+                "$ref": "#/definitions/integerMacroRuntimeExpression",
+                "description": "Maximum number of jobs running in parallel"
+              }
+            },
+            "additionalProperties": false,
           }
         ]
+      },
+      "workspace": {
+        "description": "Workspace settings",
+        "type": "object",
+        "properties": {
+          "clean": {
+            "type": "string",
+            "description": "Clean source?"
+          }
+        }
       },
       "legacyServer": {
         "type": "object",
@@ -439,7 +495,7 @@ export const schema140: string = JSON.stringify({
         "additionalProperties": false,
         "properties": {
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerMacroExpression",
+            "$ref": "#/definitions/integerMacroRuntimeExpression",
             "description": "Time to wait before cancelling the job"
           },
           "cancelTimeoutInMinutes": {
@@ -456,15 +512,22 @@ export const schema140: string = JSON.stringify({
         }
       },
       "matrix": {
-        "type": "object",
         "description": "List of permutations of variable values to run",
-        "minProperties": 1,
-        "patternProperties": {
-          "^[A-Za-z0-9_]+$": {
+        "oneOf": [
+          {
             "type": "object",
-            "description": "Variable-value pair to pass in this matrix instance"
+            "minProperties": 1,
+            "patternProperties": {
+              "^[A-Za-z0-9_]+$": {
+                "type": "object",
+                "description": "Variable-value pair to pass in this matrix instance"
+              }
+            }
+          },
+          {
+            "$ref": "#/definitions/runtimeExpression"
           }
-        }
+        ]
       },
       "script": {
         "type": "object",
@@ -695,19 +758,18 @@ export const schema140: string = JSON.stringify({
       "repositoryReference": {
         "type": "object",
         "required": [
-          "repository",
-          "type"
+          "repository"
         ],
         "additionalProperties": false,
         "properties": {
           "repository": {
             "type": "string",
             "description": "ID for the external repository",
-            "pattern": "^[A-Za-z0-9_]+$"
+            "pattern": "^[A-Za-z0-9_.]+$"
           },
           "type": {
             "enum": [
-              "github"
+              "github", "tfsgit", "tfsversioncontrol"
             ],
             "description": "Type of external repository"
           },
@@ -733,6 +795,29 @@ export const schema140: string = JSON.stringify({
           "clean": {
             "description": "Scorch the repo before fetching?",
             "$ref": "#/definitions/booleanMacroRuntimeExpression"
+          },
+          "fetchDepth": {
+            "description": "Depth of Git graph to fetch",
+            "$ref": "#/definitions/integerMacroRuntimeExpression",
+          },
+          "lfs": {
+            "description": "Fetch and checkout Git LFS objects?",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression"
+          },
+          "mappings": {
+            "description": "Workspace mappings for TFVC",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/tfvcMappings"
+            }
+          },
+          "submodules": {
+            "description": "Fetch and checkout submodules?",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression"
+          },
+          "checkoutOptions": {
+            "description": "[DEPRECATED] Move these up a level as peers of the `repository` keyword.",
+            "type": "object"
           }
         }
       },
@@ -776,11 +861,19 @@ export const schema140: string = JSON.stringify({
           "type": {
             "type": "string",
             "description": "Container type"
+          },
+          "registry": {
+            "type": "string",
+            "description": "[DEPRECATED] Don't use"
           }
         }
       },
       "trigger": {
         "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^none$"
+          },
           {
             "type": "array",
             "items": {
@@ -830,6 +923,23 @@ export const schema140: string = JSON.stringify({
       },
       "parameters": {
         "type": "object"
+      },
+      "tfvcMappings": {
+        "type": "object",
+        "properties": {
+          "localPath": {
+            "description": "On-disk path",
+            "type": "string"
+          },
+          "serverPath": {
+            "description": "TFVC server-side path",
+            "type": "string"
+          },
+          "cloak": {
+            "description": "Cloak this path?",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression"
+          },
+        }
       },
       "stepOrTemplateExpression": {
         "oneOf": [

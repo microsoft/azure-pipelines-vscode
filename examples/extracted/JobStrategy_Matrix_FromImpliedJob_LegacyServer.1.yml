@@ -9,4 +9,4 @@ strategy:
   maxParallel: 2
 pool: server
 steps:
-- task: foo@1
+- task: Bash@3

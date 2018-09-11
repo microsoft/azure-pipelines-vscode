@@ -1,7 +1,0 @@
-stages:
-- stage: myStage
-  displayName: My fancy stage name
-  jobs:
-  - job: myJob
-    steps:
-    - script: echo hi

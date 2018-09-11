@@ -1,5 +1,5 @@
 phases:
 - phase: myJob
   steps:
-  - task: foo@1
+  - task: Bash@3
   - script: echo hi

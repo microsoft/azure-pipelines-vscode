@@ -8,4 +8,4 @@ server:
       config: debug
   parallel: 2
 steps:
-- task: foo@1
+- task: Bash@3

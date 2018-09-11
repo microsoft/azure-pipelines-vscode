@@ -1,6 +1,0 @@
-stages:
-- template: my-stages.yml
-  parameters:
-    env:
-      ccc: ddd
-      eee: fff

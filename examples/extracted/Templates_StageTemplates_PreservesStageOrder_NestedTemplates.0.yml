@@ -1,7 +1,0 @@
-stages:
-- stage: nestedStage1
-  jobs:
-  - job: nestedStage1Job
-- stage: nestedStage2
-  jobs:
-  - job: nestedStage2Job

@@ -4,9 +4,9 @@ phases:
   server:
     cancelTimeoutInMinutes: 5
   steps:
-  - task: foo@1
+  - task: Bash@3
 - phase: job3
   server:
     cancelTimeoutInMinutes: $[ variables.theCancelTimeoutInMinutes ]
   steps:
-  - task: foo@1
+  - task: Bash@3

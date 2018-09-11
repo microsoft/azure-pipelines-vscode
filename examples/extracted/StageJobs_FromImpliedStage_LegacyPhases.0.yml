@@ -1,7 +1,0 @@
-phases:
-- phase: one
-  steps:
-  - script: echo hi
-- phase: two
-  steps:
-  - script: echo hey

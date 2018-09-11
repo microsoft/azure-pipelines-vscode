@@ -1,8 +1,0 @@
-stages:
-- stage: stage1
-  jobs:
-  - job: stage1Job
-- template: nested-stages.yml
-- stage: stage2
-  jobs:
-  - job: stage2Job
