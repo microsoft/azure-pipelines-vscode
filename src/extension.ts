@@ -16,7 +16,7 @@ const myExtensionId = 'azure-pipelines';
 const telemetryVersion = generateVersionString(vscode.extensions.getExtension(`ms-azure-devops.${myExtensionId}`));
 const telemetryKey = 'ae672644-d394-497c-8c57-98f6eac32342';
 
-let reporter;
+let reporter: TelemetryReporter;
 
 export async function activate(context: vscode.ExtensionContext) {
     logger.log('Extension has been activated!', 'ExtensionActivated');
@@ -25,7 +25,12 @@ export async function activate(context: vscode.ExtensionContext) {
     reporter = new TelemetryReporter(myExtensionId, telemetryVersion, telemetryKey);
     context.subscriptions.push(reporter);
 
-    reporter.sendTelemetryEvent('extension.activate');
+    try {
+        reporter.sendTelemetryEvent('extension.activate');
+    } catch(e) {
+        // if something bad happens reporting telemetry, swallow it and move on
+        logger.log(e.toString());
+    }
 
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
@@ -101,7 +106,7 @@ export function deactivate() {
     reporter.dispose();
 }
 
-function generateVersionString(extension: vscode.Extension<any>) {
+function generateVersionString(extension: vscode.Extension<any>): string {
     // if the extensionPath is a Git repo, this is probably an extension developer
     const isDevMode: boolean = extension ? fs.existsSync(extension.extensionPath + '/.git') : false;
     const baseVersion: string = extension ? extension.packageJSON.version : "0.0.0";
