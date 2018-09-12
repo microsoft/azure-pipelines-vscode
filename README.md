@@ -20,6 +20,23 @@ workspace settings to match those file paths with this extension. For example:
 }
 ```
 
+## Telemetry
+
+This extension collects telemetry data to help us build a better experience for
+using VS Code with Azure Pipelines. We use [vscode-extension-telemetry](https://github.com/Microsoft/vscode-extension-telemetry),
+which reports the following data:
+
+- Extension name
+- Extension version
+- Machine ID and session ID from VS Code
+- Operating system
+- Platform version
+
+Additionally, if the language server fails to activate, we report the diagnostic
+data the language server produces. The extension respects the `telemetry.enableTelemetry`
+setting, which you can learn more about at VS Code's
+[telemetry FAQ](https://code.visualstudio.com/docs/supporting/faq#_how-to-disable-telemetry-reporting).
+
 # Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) if you want to jump in!
