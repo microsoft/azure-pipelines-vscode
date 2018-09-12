@@ -10,9 +10,10 @@ import * as schemacontributor from './schema-contributor';
 import * as vscode from 'vscode';
 import * as schemaassociationservice from './schema-association-service';
 import TelemetryReporter from 'vscode-extension-telemetry';
+const fs = require('fs');
 
-const telemetryExtensionId = 'azure-pipelines';
-const telemetryExtensionVersion = '0.1.0';
+const myExtensionId = 'azure-pipelines';
+const telemetryVersion = generateVersionString(vscode.extensions.getExtension(`ms-azure-devops.${myExtensionId}`));
 const telemetryKey = 'ae672644-d394-497c-8c57-98f6eac32342';
 
 let reporter;
@@ -20,7 +21,8 @@ let reporter;
 export async function activate(context: vscode.ExtensionContext) {
     logger.log('Extension has been activated!', 'ExtensionActivated');
 
-    reporter = new TelemetryReporter(telemetryExtensionId, telemetryExtensionVersion, telemetryKey);
+    logger.log(`Spinning up telemetry client for id ${myExtensionId}, version ${telemetryVersion}`);
+    reporter = new TelemetryReporter(myExtensionId, telemetryVersion, telemetryKey);
     context.subscriptions.push(reporter);
 
     reporter.sendTelemetryEvent('extension.activate');
@@ -97,4 +99,12 @@ function getClientOptions(): languageclient.LanguageClientOptions {
 // this method is called when your extension is deactivated
 export function deactivate() {
     reporter.dispose();
+}
+
+function generateVersionString(extension: vscode.Extension<any>) {
+    // if the extensionPath is a Git repo, this is probably an extension developer
+    const isDevMode: boolean = extension ? fs.existsSync(extension.extensionPath + '/.git') : false;
+    const baseVersion: string = extension ? extension.packageJSON.version : "0.0.0";
+
+    return isDevMode ? `${baseVersion}-dev` : baseVersion;
 }
