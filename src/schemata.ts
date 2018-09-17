@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+*  Copyright (c) Microsoft Corporation. All rights reserved.
+*  Licensed under the MIT License.
+*--------------------------------------------------------------------------------------------*/
+
 const augment = function(base: object, property: string, augmentation: object) : object {
   let baseCopy = JSON.parse(JSON.stringify(base));
   const attachmentPoint = property ? baseCopy[property] : baseCopy;

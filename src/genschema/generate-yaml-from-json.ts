@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+*  Copyright (c) Microsoft Corporation. All rights reserved.
+*  Licensed under the MIT License.
+*--------------------------------------------------------------------------------------------*/
+
 // This script lets us generate yaml schema from the task json returned from the server.
 // We will use this when we update the local-schema that is packaged with the extension.
 // Before running this we will want to get the latest tasks json (not to be confused with task.json)
@@ -17,10 +22,11 @@ const tasksData: DTData = JSON.parse(tasksJsonFromServer) as DTData;
 const yamlSchemaService: IYamlSchemaService = new YamlSchemaService();
 
 if (tasksData.value) {
-    const schema: string = yamlSchemaService.getSchemaFromTasks(tasksData.value);
+    const schema: object = yamlSchemaService.getFullSchema(tasksData.value);
+    const schemaAsString: string = JSON.stringify(schema, null, 2);
 
     //  Store the yaml schema file in local-schema.json.
-    fs.writeFileSync('local-schema.json', schema);
+    fs.writeFileSync('local-schema.json', schemaAsString);
 
     console.log('Yaml generation complete.');
 } else {
