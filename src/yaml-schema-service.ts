@@ -8,12 +8,11 @@ import * as logger from './logger';
 import * as schemata from './schemata';
 
 export interface IYamlSchemaService {
-    getSchemaFromTasks(tasks: DTTask[]): string;
+    getFullSchema(tasks: DTTask[]): object;
 }
 
-// TODO: Add unit tests. Refactor if needed.
 export class YamlSchemaService implements IYamlSchemaService {
-    public getSchemaFromTasks(tasks: DTTask[]): string {
+    public getFullSchema(tasks: DTTask[]): object {
         logger.log('getSchemaFromTasks');
         let anyOf: object[] = [];
         let taskVersions: [string, number][] = [];
@@ -34,14 +33,13 @@ export class YamlSchemaService implements IYamlSchemaService {
             return b[1] - a[1];
         });
 
-        const taskNames = taskVersions.map((item) => item[0] + "@" + item[1]);
+        const taskNames: string[] = taskVersions.map((item) => item[0] + "@" + item[1]);
 
-        let fullSchema = schemata.schema140
-                         .replace('"{{{anyOf}}}"', JSON.stringify(anyOf))
-                         .replace('"{{{taskNames}}}"', JSON.stringify(taskNames));
+        const fullSchema = schemata.schema140
+                                   .replace('"{{{anyOf}}}"', JSON.stringify(anyOf))
+                                   .replace('"{{{taskNames}}}"', JSON.stringify(taskNames));
 
-        // prettify before returning. TODO: make this optional
-        return JSON.stringify(JSON.parse(fullSchema), null, 2);
+        return JSON.parse(fullSchema);
     }
 
     public getSchemaFromTask(task: DTTask): object {

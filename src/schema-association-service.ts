@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+*  Copyright (c) Microsoft Corporation. All rights reserved.
+*  Licensed under the MIT License. See License.txt in the project root for license information.
+*--------------------------------------------------------------------------------------------*/
+
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as languageclient from 'vscode-languageclient';
@@ -6,6 +11,7 @@ export interface ISchemaAssociationService {
     getSchemaAssociation(): ISchemaAssociations;
 }
 
+// TODO: I think we can remove this class. Make it simpler?
 export class SchemaAssociationService implements ISchemaAssociationService {
 
     /* Where the schema file is on disk. This is packaged with the extension, in the root, at local-schema.json. */
