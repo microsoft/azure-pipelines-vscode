@@ -56,14 +56,6 @@
         },
         "configurationDefaults": {
             "[azure-pipelines]": {
-                "gitlens.codeLens.scopesByLanguage": [
-                    {
-                        "language": "azure-pipelines",
-                        "scopes": [
-                            "document"
-                        ]
-                    }
-                ],
                 "editor.insertSpaces": true,
                 "editor.tabSize": 2,
                 "editor.quickSuggestions": {
