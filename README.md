@@ -37,13 +37,9 @@ data the language server produces. The extension respects the `telemetry.enableT
 setting, which you can learn more about at VS Code's
 [telemetry FAQ](https://code.visualstudio.com/docs/supporting/faq#_how-to-disable-telemetry-reporting).
 
-## Working with other extensions
+## Working with other extensions: GitLens
 
-Depending on what other extensions you have installed, you may see strange behavior. We will try to document those issues here along with resolutions.
-
-### GitLens
-
-GitLens may show too much information. If you want to reduce to just document level information, add the following to your user or workspace settings:
+GitLens may show too much history information. We recommend reducing it to just document-level information by adding this to your user or workspace settings:
 
 ```json
 "gitlens.codeLens.scopesByLanguage": [
