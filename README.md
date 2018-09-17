@@ -43,7 +43,7 @@ Depending on what other extensions you have installed, you may see strange behav
 
 ### GitLens
 
-GitLens may show too much information with code lens. If you want to reduce to just document level information, add the following to your user or workspace settings:
+GitLens may show too much information. If you want to reduce to just document level information, add the following to your user or workspace settings:
 
 ```json
 "gitlens.codeLens.scopesByLanguage": [
