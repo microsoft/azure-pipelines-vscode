@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/Microsoft/vsts-agent/blob/master/src/Misc/ci-schema.json",
-  "$comment": "v1.140.1",
+  "$id": "https://github.com/Microsoft/azure-pipelines-vscode/blob/master/local-schema.json",
+  "$comment": "v1.140.2",
   "title": "Pipeline schema",
   "description": "A pipeline definition",
   "$ref": "#/definitions/pipeline",
@@ -1705,6 +1705,31 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[dD]ownload[bB]uild[dD]rop@0$",
+              "description": "Download Build Drop\n\nDownload Build Drop"
+            },
+            "inputs": {
+              "properties": {
+                "buildid": {
+                  "description": "The specific build to download from",
+                  "type": "string"
+                },
+                "artifactname": {
+                  "description": "The name of artifact to download.",
+                  "type": "string"
+                },
+                "targetpath": {
+                  "description": "Path to download to",
+                  "type": "string"
+                }
+              },
+              "description": "Download Build Drop inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[gG]o@0$",
               "description": "Go\n\nGet, build, or test a Go application, or run a custom Go command."
             },
@@ -1820,6 +1845,125 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[uU]niversal[pP]ackages@0$",
+              "description": "Universal Packages\n\nDownload or publish Universal Packages."
+            },
+            "inputs": {
+              "properties": {
+                "command": {
+                  "description": "Command",
+                  "enum": [
+                    "download",
+                    "publish"
+                  ]
+                },
+                "downloadDirectory": {
+                  "description": "Destination directory",
+                  "type": "string"
+                },
+                "internalOrExternalDownload": {
+                  "description": "Feed location",
+                  "enum": [
+                    "internal",
+                    "external"
+                  ]
+                },
+                "externalEndpoint": {
+                  "description": "Account/collection connection",
+                  "type": "string"
+                },
+                "feedListDownload": {
+                  "description": "Feed",
+                  "type": "string"
+                },
+                "packageListDownload": {
+                  "description": "Package name",
+                  "type": "string"
+                },
+                "versionListDownload": {
+                  "description": "Version",
+                  "type": "string"
+                },
+                "feedDownloadExternal": {
+                  "description": "Feed",
+                  "type": "string"
+                },
+                "packageDownloadExternal": {
+                  "description": "Package name",
+                  "type": "string"
+                },
+                "versionDownloadExternal": {
+                  "description": "Version",
+                  "type": "string"
+                },
+                "publishDirectory": {
+                  "description": "Path to file(s) to publish",
+                  "type": "string"
+                },
+                "internalOrExternalPublish": {
+                  "description": "Feed location",
+                  "enum": [
+                    "internal",
+                    "external"
+                  ]
+                },
+                "externalEndpoints": {
+                  "description": "Account/collection connection",
+                  "type": "string"
+                },
+                "feedListPublish": {
+                  "description": "Destination Feed",
+                  "type": "string"
+                },
+                "packageListPublish": {
+                  "description": "Package name",
+                  "type": "string"
+                },
+                "feedPublishExternal": {
+                  "description": "Feed",
+                  "type": "string"
+                },
+                "packagePublishExternal": {
+                  "description": "Package name",
+                  "type": "string"
+                },
+                "versionPublishSelector": {
+                  "description": "Version",
+                  "enum": [
+                    "major",
+                    "minor",
+                    "patch",
+                    "custom"
+                  ]
+                },
+                "versionPublish": {
+                  "description": "Custom version",
+                  "type": "string"
+                },
+                "packagePublishDescription": {
+                  "description": "Description",
+                  "type": "string"
+                },
+                "verbosity": {
+                  "description": "Verbosity",
+                  "enum": [
+                    "None",
+                    "Trace",
+                    "Debug",
+                    "Information",
+                    "Warning",
+                    "Error",
+                    "Critical"
+                  ]
+                }
+              },
+              "description": "Universal Packages inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[cC]ocoa[pP]ods@0$",
               "description": "CocoaPods\n\nCocoaPods is a dependency manager for Swift and Objective-C Cocoa projects. This task runs 'pod install'."
             },
@@ -1839,39 +1983,6 @@
                 }
               },
               "description": "CocoaPods inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[cC]onda[eE]nvironment@0$",
-              "description": "Conda Environment\n\nCreate and activate a Conda environment."
-            },
-            "inputs": {
-              "properties": {
-                "environmentName": {
-                  "description": "Environment name",
-                  "type": "string"
-                },
-                "packageSpecs": {
-                  "description": "Package specs",
-                  "type": "string"
-                },
-                "updateConda": {
-                  "description": "Update to the latest Conda",
-                  "type": "boolean"
-                },
-                "createOptions": {
-                  "description": "Environment creation options",
-                  "type": "string"
-                },
-                "cleanEnvironment": {
-                  "description": "Clean the environment",
-                  "type": "boolean"
-                }
-              },
-              "description": "Conda Environment inputs"
             }
           }
         },
@@ -1919,13 +2030,46 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[cC]onda[eE]nvironment@0$",
+              "description": "Conda Environment\n\nCreate and activate a Conda environment."
+            },
+            "inputs": {
+              "properties": {
+                "environmentName": {
+                  "description": "Environment name",
+                  "type": "string"
+                },
+                "packageSpecs": {
+                  "description": "Package specs",
+                  "type": "string"
+                },
+                "updateConda": {
+                  "description": "Update to the latest Conda",
+                  "type": "boolean"
+                },
+                "createOptions": {
+                  "description": "Environment creation options",
+                  "type": "string"
+                },
+                "cleanEnvironment": {
+                  "description": "Clean the environment",
+                  "type": "boolean"
+                }
+              },
+              "description": "Conda Environment inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[aA]pp[cC]enter[dD]istribute@1$",
               "description": "App Center Distribute\n\nDistribute app builds to testers and users via App Center"
             },
             "inputs": {
               "properties": {
                 "serverEndpoint": {
-                  "description": "App Center connection",
+                  "description": "App Center service connection",
                   "type": "string"
                 },
                 "appSlug": {
@@ -2154,6 +2298,31 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[nN]pm@0$",
+              "description": "npm\n\nRun an npm command"
+            },
+            "inputs": {
+              "properties": {
+                "cwd": {
+                  "description": "working folder",
+                  "type": "string"
+                },
+                "command": {
+                  "description": "npm command",
+                  "type": "string"
+                },
+                "arguments": {
+                  "description": "arguments",
+                  "type": "string"
+                }
+              },
+              "description": "npm inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[nN]pm@1$",
               "description": "npm\n\nInstall and publish npm packages, or run an npm command. Supports npmjs.com and authenticated registries like Package Management."
             },
@@ -2207,31 +2376,6 @@
                 },
                 "publishEndpoint": {
                   "description": "External Registry",
-                  "type": "string"
-                }
-              },
-              "description": "npm inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[nN]pm@0$",
-              "description": "npm\n\nRun an npm command"
-            },
-            "inputs": {
-              "properties": {
-                "cwd": {
-                  "description": "working folder",
-                  "type": "string"
-                },
-                "command": {
-                  "description": "npm command",
-                  "type": "string"
-                },
-                "arguments": {
-                  "description": "arguments",
                   "type": "string"
                 }
               },
@@ -2393,51 +2537,6 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[wW]indows[mM]achine[fF]ile[cC]opy@2$",
-              "description": "Windows Machine File Copy\n\nCopy files to remote machine(s)"
-            },
-            "inputs": {
-              "properties": {
-                "SourcePath": {
-                  "description": "Source",
-                  "type": "string"
-                },
-                "MachineNames": {
-                  "description": "Machines",
-                  "type": "string"
-                },
-                "AdminUserName": {
-                  "description": "Admin Login",
-                  "type": "string"
-                },
-                "AdminPassword": {
-                  "description": "Password",
-                  "type": "string"
-                },
-                "TargetPath": {
-                  "description": "Destination Folder",
-                  "type": "string"
-                },
-                "CleanTargetBeforeCopy": {
-                  "description": "Clean Target",
-                  "type": "boolean"
-                },
-                "CopyFilesInParallel": {
-                  "description": "Copy Files in Parallel",
-                  "type": "boolean"
-                },
-                "AdditionalArguments": {
-                  "description": "Additional Arguments",
-                  "type": "string"
-                }
-              },
-              "description": "Windows Machine File Copy inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
               "pattern": "^[wW]indows[mM]achine[fF]ile[cC]opy@1$",
               "description": "Windows Machine File Copy\n\nCopy files to remote machine(s)"
             },
@@ -2484,6 +2583,51 @@
                 },
                 "MachineNames": {
                   "description": "Filter Criteria",
+                  "type": "string"
+                }
+              },
+              "description": "Windows Machine File Copy inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[wW]indows[mM]achine[fF]ile[cC]opy@2$",
+              "description": "Windows Machine File Copy\n\nCopy files to remote machine(s)"
+            },
+            "inputs": {
+              "properties": {
+                "SourcePath": {
+                  "description": "Source",
+                  "type": "string"
+                },
+                "MachineNames": {
+                  "description": "Machines",
+                  "type": "string"
+                },
+                "AdminUserName": {
+                  "description": "Admin Login",
+                  "type": "string"
+                },
+                "AdminPassword": {
+                  "description": "Password",
+                  "type": "string"
+                },
+                "TargetPath": {
+                  "description": "Destination Folder",
+                  "type": "string"
+                },
+                "CleanTargetBeforeCopy": {
+                  "description": "Clean Target",
+                  "type": "boolean"
+                },
+                "CopyFilesInParallel": {
+                  "description": "Copy Files in Parallel",
+                  "type": "boolean"
+                },
+                "AdditionalArguments": {
+                  "description": "Additional Arguments",
                   "type": "string"
                 }
               },
@@ -3194,31 +3338,6 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[pP]ublish[tT]o[aA]zure[sS]ervice[bB]us@0$",
-              "description": "Publish To Azure Service Bus\n\nSends a message to azure service bus using a service connection (no agent required)."
-            },
-            "inputs": {
-              "properties": {
-                "connectedServiceName": {
-                  "description": "Azure service bus connection",
-                  "type": "string"
-                },
-                "messageBody": {
-                  "description": "Message body",
-                  "type": "string"
-                },
-                "waitForCompletion": {
-                  "description": "Wait for task completion",
-                  "type": "boolean"
-                }
-              },
-              "description": "Publish To Azure Service Bus inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
               "pattern": "^[pP]ublish[tT]o[aA]zure[sS]ervice[bB]us@1$",
               "description": "Publish To Azure Service Bus\n\nSends a message to azure service bus using a service connection (no agent required)."
             },
@@ -3242,6 +3361,31 @@
                 },
                 "signatureKey": {
                   "description": "Signature Property Key",
+                  "type": "string"
+                },
+                "waitForCompletion": {
+                  "description": "Wait for task completion",
+                  "type": "boolean"
+                }
+              },
+              "description": "Publish To Azure Service Bus inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[pP]ublish[tT]o[aA]zure[sS]ervice[bB]us@0$",
+              "description": "Publish To Azure Service Bus\n\nSends a message to azure service bus using a service connection (no agent required)."
+            },
+            "inputs": {
+              "properties": {
+                "connectedServiceName": {
+                  "description": "Azure service bus connection",
+                  "type": "string"
+                },
+                "messageBody": {
+                  "description": "Message body",
                   "type": "string"
                 },
                 "waitForCompletion": {
@@ -3339,8 +3483,19 @@
             },
             "inputs": {
               "properties": {
+                "connectedServiceNameSelector": {
+                  "description": "Connection type",
+                  "enum": [
+                    "connectedServiceName",
+                    "connectedServiceNameARM"
+                  ]
+                },
                 "connectedServiceName": {
                   "description": "Generic service connection",
+                  "type": "string"
+                },
+                "connectedServiceNameARM": {
+                  "description": "Azure subscription",
                   "type": "string"
                 },
                 "method": {
@@ -3626,74 +3781,6 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[fF]tp[uU]pload@1$",
-              "description": "FTP Upload\n\nFTP Upload"
-            },
-            "inputs": {
-              "properties": {
-                "credsType": {
-                  "description": "Authentication Method",
-                  "enum": [
-                    "serviceEndpoint",
-                    "inputs"
-                  ]
-                },
-                "serverEndpoint": {
-                  "description": "FTP Service Connection",
-                  "type": "string"
-                },
-                "serverUrl": {
-                  "description": "Server URL",
-                  "type": "string"
-                },
-                "username": {
-                  "description": "Username",
-                  "type": "string"
-                },
-                "password": {
-                  "description": "Password",
-                  "type": "string"
-                },
-                "rootFolder": {
-                  "description": "Root folder",
-                  "type": "string"
-                },
-                "filePatterns": {
-                  "description": "File patterns",
-                  "type": "string"
-                },
-                "remotePath": {
-                  "description": "Remote directory",
-                  "type": "string"
-                },
-                "clean": {
-                  "description": "Delete remote directory",
-                  "type": "boolean"
-                },
-                "cleanContents": {
-                  "description": "Clear remote directory contents",
-                  "type": "boolean"
-                },
-                "overwrite": {
-                  "description": "Overwrite",
-                  "type": "boolean"
-                },
-                "preservePaths": {
-                  "description": "Preserve file paths",
-                  "type": "boolean"
-                },
-                "trustSSL": {
-                  "description": "Trust server certificate",
-                  "type": "boolean"
-                }
-              },
-              "description": "FTP Upload inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
               "pattern": "^[kK]ubernetes@0$",
               "description": "Deploy to Kubernetes\n\nDeploy, configure, update your Kubernetes cluster in Azure Container Service by running kubectl commands."
             },
@@ -3875,6 +3962,8 @@
                     "exec",
                     "expose",
                     "get",
+                    "login",
+                    "logout",
                     "logs",
                     "run",
                     "set",
@@ -3989,6 +4078,74 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[fF]tp[uU]pload@1$",
+              "description": "FTP Upload\n\nFTP Upload"
+            },
+            "inputs": {
+              "properties": {
+                "credsType": {
+                  "description": "Authentication Method",
+                  "enum": [
+                    "serviceEndpoint",
+                    "inputs"
+                  ]
+                },
+                "serverEndpoint": {
+                  "description": "FTP Service Connection",
+                  "type": "string"
+                },
+                "serverUrl": {
+                  "description": "Server URL",
+                  "type": "string"
+                },
+                "username": {
+                  "description": "Username",
+                  "type": "string"
+                },
+                "password": {
+                  "description": "Password",
+                  "type": "string"
+                },
+                "rootFolder": {
+                  "description": "Root folder",
+                  "type": "string"
+                },
+                "filePatterns": {
+                  "description": "File patterns",
+                  "type": "string"
+                },
+                "remotePath": {
+                  "description": "Remote directory",
+                  "type": "string"
+                },
+                "clean": {
+                  "description": "Delete remote directory",
+                  "type": "boolean"
+                },
+                "cleanContents": {
+                  "description": "Clear remote directory contents",
+                  "type": "boolean"
+                },
+                "overwrite": {
+                  "description": "Overwrite",
+                  "type": "boolean"
+                },
+                "preservePaths": {
+                  "description": "Preserve file paths",
+                  "type": "boolean"
+                },
+                "trustSSL": {
+                  "description": "Trust server certificate",
+                  "type": "boolean"
+                }
+              },
+              "description": "FTP Upload inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[nN]u[gG]et[iI]nstaller@0$",
               "description": "NuGet Installer\n\nInstalls or restores missing NuGet packages"
             },
@@ -4041,6 +4198,59 @@
                 }
               },
               "description": "NuGet Installer inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[nN]u[gG]et[rR]estore@1$",
+              "description": "NuGet Restore\n\nRestores NuGet packages in preparation for a Visual Studio Build step."
+            },
+            "inputs": {
+              "properties": {
+                "solution": {
+                  "description": "Path to solution, packages.config, or project.json",
+                  "type": "string"
+                },
+                "selectOrConfig": {
+                  "description": "Feeds to use",
+                  "enum": [
+                    "select",
+                    "config"
+                  ]
+                },
+                "feed": {
+                  "description": "Use packages from this VSTS feed",
+                  "type": "string"
+                },
+                "includeNuGetOrg": {
+                  "description": "Use packages from NuGet.org",
+                  "type": "boolean"
+                },
+                "nugetConfigPath": {
+                  "description": "Path to NuGet.config",
+                  "type": "string"
+                },
+                "noCache": {
+                  "description": "Disable local cache",
+                  "type": "boolean"
+                },
+                "packagesDirectory": {
+                  "description": "Destination directory",
+                  "type": "string"
+                },
+                "verbosity": {
+                  "description": "Verbosity",
+                  "enum": [
+                    "-",
+                    "Quiet",
+                    "Normal",
+                    "Detailed"
+                  ]
+                }
+              },
+              "description": "NuGet Restore inputs"
             }
           }
         },
@@ -4223,92 +4433,123 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[nN]u[gG]et[rR]estore@1$",
-              "description": "NuGet Restore\n\nRestores NuGet packages in preparation for a Visual Studio Build step."
+              "pattern": "^[aA]zure[cC][lL][iI]@1$",
+              "description": "Azure CLI\n\nRun a Shell or Batch script with Azure CLI commands against an azure subscription"
             },
             "inputs": {
               "properties": {
-                "solution": {
-                  "description": "Path to solution, packages.config, or project.json",
+                "connectedServiceNameARM": {
+                  "description": "Azure subscription",
                   "type": "string"
                 },
-                "selectOrConfig": {
-                  "description": "Feeds to use",
+                "scriptLocation": {
+                  "description": "Script Location",
                   "enum": [
-                    "select",
-                    "config"
+                    "inlineScript",
+                    "scriptPath"
                   ]
                 },
-                "feed": {
-                  "description": "Use packages from this VSTS feed",
+                "scriptPath": {
+                  "description": "Script Path",
                   "type": "string"
                 },
-                "includeNuGetOrg": {
-                  "description": "Use packages from NuGet.org",
+                "inlineScript": {
+                  "description": "Inline Script",
+                  "type": "string"
+                },
+                "args": {
+                  "description": "Arguments",
+                  "type": "string"
+                },
+                "cwd": {
+                  "description": "Working Directory",
+                  "type": "string"
+                },
+                "failOnStandardError": {
+                  "description": "Fail on Standard Error",
                   "type": "boolean"
-                },
-                "nugetConfigPath": {
-                  "description": "Path to NuGet.config",
-                  "type": "string"
-                },
-                "noCache": {
-                  "description": "Disable local cache",
-                  "type": "boolean"
-                },
-                "packagesDirectory": {
-                  "description": "Destination directory",
-                  "type": "string"
-                },
-                "verbosity": {
-                  "description": "Verbosity",
-                  "enum": [
-                    "-",
-                    "Quiet",
-                    "Normal",
-                    "Detailed"
-                  ]
                 }
               },
-              "description": "NuGet Restore inputs"
+              "description": "Azure CLI inputs"
             }
           }
         },
         {
           "properties": {
             "task": {
-              "pattern": "^[dD]ot[nN]et[cC]ore[cC][lL][iI]@0$",
-              "description": ".NET Core (PREVIEW)\n\nBuild, test and publish using dotnet core command-line."
+              "pattern": "^[aA]zure[cC][lL][iI]@0$",
+              "description": "Azure CLI Preview\n\nRun a Shell or Batch script with Azure CLI commands against an azure subscription"
             },
             "inputs": {
               "properties": {
-                "command": {
-                  "description": "Command",
+                "connectedServiceNameSelector": {
+                  "description": "Azure Connection Type",
                   "enum": [
-                    "build",
-                    "publish",
-                    "restore",
-                    "test",
-                    "run"
+                    "connectedServiceName",
+                    "connectedServiceNameARM"
                   ]
                 },
-                "publishWebProjects": {
-                  "description": "Publish Web Projects",
-                  "type": "boolean"
-                },
-                "projects": {
-                  "description": "Project(s)",
+                "connectedServiceNameARM": {
+                  "description": "AzureRM Subscription",
                   "type": "string"
                 },
-                "arguments": {
+                "connectedServiceName": {
+                  "description": "Azure Classic Subscription",
+                  "type": "string"
+                },
+                "scriptLocation": {
+                  "description": "Script Location",
+                  "enum": [
+                    "inlineScript",
+                    "scriptPath"
+                  ]
+                },
+                "scriptPath": {
+                  "description": "Script Path",
+                  "type": "string"
+                },
+                "inlineScript": {
+                  "description": "Inline Script",
+                  "type": "string"
+                },
+                "args": {
                   "description": "Arguments",
                   "type": "string"
                 },
-                "zipAfterPublish": {
-                  "description": "Zip Published Projects",
+                "cwd": {
+                  "description": "Working Directory",
+                  "type": "string"
+                },
+                "failOnStandardError": {
+                  "description": "Fail on Standard Error",
                   "type": "boolean"
                 }
               },
-              "description": ".NET Core (PREVIEW) inputs"
+              "description": "Azure CLI Preview inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[dD]ot[nN]et[cC]ore[iI]nstaller@0$",
+              "description": ".NET Core Tool Installer\n\nAcquires a specific version of .NET Core from internet or the tools cache and adds it to the PATH. Use this task to change the version of .NET Core used in subsequent tasks."
+            },
+            "inputs": {
+              "properties": {
+                "packageType": {
+                  "description": "Package to install",
+                  "enum": [
+                    "runtime",
+                    "sdk"
+                  ]
+                },
+                "version": {
+                  "description": "Version",
+                  "type": "string"
+                }
+              },
+              "description": ".NET Core Tool Installer inputs"
             }
           }
         },
@@ -4381,7 +4622,7 @@
                   "type": "string"
                 },
                 "externalEndpoints": {
-                  "description": "Credentials for feeds outside this account/collection",
+                  "description": "Credentials for feeds outside this organization/collection",
                   "type": "string"
                 },
                 "noCache": {
@@ -4490,6 +4731,45 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[dD]ot[nN]et[cC]ore[cC][lL][iI]@0$",
+              "description": ".NET Core (PREVIEW)\n\nBuild, test and publish using dotnet core command-line."
+            },
+            "inputs": {
+              "properties": {
+                "command": {
+                  "description": "Command",
+                  "enum": [
+                    "build",
+                    "publish",
+                    "restore",
+                    "test",
+                    "run"
+                  ]
+                },
+                "publishWebProjects": {
+                  "description": "Publish Web Projects",
+                  "type": "boolean"
+                },
+                "projects": {
+                  "description": "Project(s)",
+                  "type": "string"
+                },
+                "arguments": {
+                  "description": "Arguments",
+                  "type": "string"
+                },
+                "zipAfterPublish": {
+                  "description": "Zip Published Projects",
+                  "type": "boolean"
+                }
+              },
+              "description": ".NET Core (PREVIEW) inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[dD]ot[nN]et[cC]ore[cC][lL][iI]@1$",
               "description": ".NET Core\n\nBuild, test and publish using dotnet core command-line."
             },
@@ -4523,129 +4803,6 @@
                 }
               },
               "description": ".NET Core inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[dD]ot[nN]et[cC]ore[iI]nstaller@0$",
-              "description": ".NET Core Tool Installer\n\nAcquires a specific version of .NET Core from internet or the tools cache and adds it to the PATH. Use this task to change the version of .NET Core used in subsequent tasks."
-            },
-            "inputs": {
-              "properties": {
-                "packageType": {
-                  "description": "Package to install",
-                  "enum": [
-                    "runtime",
-                    "sdk"
-                  ]
-                },
-                "version": {
-                  "description": "Version",
-                  "type": "string"
-                }
-              },
-              "description": ".NET Core Tool Installer inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[aA]zure[cC][lL][iI]@1$",
-              "description": "Azure CLI\n\nRun a Shell or Batch script with Azure CLI commands against an azure subscription"
-            },
-            "inputs": {
-              "properties": {
-                "connectedServiceNameARM": {
-                  "description": "Azure subscription",
-                  "type": "string"
-                },
-                "scriptLocation": {
-                  "description": "Script Location",
-                  "enum": [
-                    "inlineScript",
-                    "scriptPath"
-                  ]
-                },
-                "scriptPath": {
-                  "description": "Script Path",
-                  "type": "string"
-                },
-                "inlineScript": {
-                  "description": "Inline Script",
-                  "type": "string"
-                },
-                "args": {
-                  "description": "Arguments",
-                  "type": "string"
-                },
-                "cwd": {
-                  "description": "Working Directory",
-                  "type": "string"
-                },
-                "failOnStandardError": {
-                  "description": "Fail on Standard Error",
-                  "type": "boolean"
-                }
-              },
-              "description": "Azure CLI inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[aA]zure[cC][lL][iI]@0$",
-              "description": "Azure CLI Preview\n\nRun a Shell or Batch script with Azure CLI commands against an azure subscription"
-            },
-            "inputs": {
-              "properties": {
-                "connectedServiceNameSelector": {
-                  "description": "Azure Connection Type",
-                  "enum": [
-                    "connectedServiceName",
-                    "connectedServiceNameARM"
-                  ]
-                },
-                "connectedServiceNameARM": {
-                  "description": "AzureRM Subscription",
-                  "type": "string"
-                },
-                "connectedServiceName": {
-                  "description": "Azure Classic Subscription",
-                  "type": "string"
-                },
-                "scriptLocation": {
-                  "description": "Script Location",
-                  "enum": [
-                    "inlineScript",
-                    "scriptPath"
-                  ]
-                },
-                "scriptPath": {
-                  "description": "Script Path",
-                  "type": "string"
-                },
-                "inlineScript": {
-                  "description": "Inline Script",
-                  "type": "string"
-                },
-                "args": {
-                  "description": "Arguments",
-                  "type": "string"
-                },
-                "cwd": {
-                  "description": "Working Directory",
-                  "type": "string"
-                },
-                "failOnStandardError": {
-                  "description": "Fail on Standard Error",
-                  "type": "boolean"
-                }
-              },
-              "description": "Azure CLI Preview inputs"
             }
           }
         },
@@ -4754,6 +4911,8 @@
                     "get",
                     "init",
                     "install",
+                    "login",
+                    "logout",
                     "ls",
                     "package",
                     "rollback",
@@ -4956,7 +5115,7 @@
           "properties": {
             "task": {
               "pattern": "^[vV][sS][tT]est@2$",
-              "description": "Visual Studio Test\n\nRun unit and functional tests (Selenium, Appium, Coded UI test, etc.) using the Visual Studio Test runner. Test frameworks that have a Visual Studio test adapter such as xUnit, NUnit, Chutzpah, etc. can also be run. Tests can be distributed on multiple agents using this task (version 2)."
+              "description": "Visual Studio Test\n\nRun unit and functional tests (Selenium, Appium, Coded UI test, etc.) using the Visual Studio Test (VsTest) runner. Test frameworks that have a Visual Studio test adapter such as MsTest, xUnit, NUnit, Chutzpah (for JavaScript tests using QUnit, Mocha and Jasmine), etc. can be run. Tests can be distributed on multiple agents using this task (version 2)."
             },
             "inputs": {
               "properties": {
@@ -4969,7 +5128,7 @@
                   ]
                 },
                 "testAssemblyVer2": {
-                  "description": "Test assemblies",
+                  "description": "Test files",
                   "type": "string"
                 },
                 "testPlan": {
@@ -5106,6 +5265,17 @@
                   "description": "Upload test attachments",
                   "type": "boolean"
                 },
+                "diagnosticsEnabled": {
+                  "description": "Collect advanced diagnostics in case of catastrophic failures",
+                  "type": "boolean"
+                },
+                "collectDumpOn": {
+                  "description": "Collect process dump and attach to test run report",
+                  "enum": [
+                    "onAbortOnly",
+                    "always"
+                  ]
+                },
                 "rerunFailedTests": {
                   "description": "Rerun failed tests",
                   "type": "boolean"
@@ -5217,6 +5387,38 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[aA]zure[nN][lL][bB][mM]anagement@1$",
+              "description": "Azure Network Load Balancer\n\nConnect/Disconnect an Azure virtual machine's network interface to a Load Balancer's backend address pool"
+            },
+            "inputs": {
+              "properties": {
+                "ConnectedServiceName": {
+                  "description": "Azure Subscription",
+                  "type": "string"
+                },
+                "ResourceGroupName": {
+                  "description": "Resource Group",
+                  "type": "string"
+                },
+                "LoadBalancer": {
+                  "description": "Load Balancer Name",
+                  "type": "string"
+                },
+                "Action": {
+                  "description": "Action",
+                  "enum": [
+                    "Disconnect",
+                    "Connect"
+                  ]
+                }
+              },
+              "description": "Azure Network Load Balancer inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[pP]ython[sS]cript@0$",
               "description": "Python Script\n\nRun a Python script."
             },
@@ -5255,38 +5457,6 @@
                 }
               },
               "description": "Python Script inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[aA]zure[nN][lL][bB][mM]anagement@1$",
-              "description": "Azure Network Load Balancer\n\nConnect/Disconnect an Azure virtual machine's network interface to a Load Balancer's backend address pool"
-            },
-            "inputs": {
-              "properties": {
-                "ConnectedServiceName": {
-                  "description": "Azure Subscription",
-                  "type": "string"
-                },
-                "ResourceGroupName": {
-                  "description": "Resource Group",
-                  "type": "string"
-                },
-                "LoadBalancer": {
-                  "description": "Load Balancer Name",
-                  "type": "string"
-                },
-                "Action": {
-                  "description": "Action",
-                  "enum": [
-                    "Disconnect",
-                    "Connect"
-                  ]
-                }
-              },
-              "description": "Azure Network Load Balancer inputs"
             }
           }
         },
@@ -5371,6 +5541,47 @@
                 }
               },
               "description": "Run Functional Tests inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[aA]zure[wW]eb[pP]ower[sS]hell[dD]eployment@1$",
+              "description": "Azure App Service: Classic (Deprecated)\n\nCreate or update Azure App Service using Azure PowerShell"
+            },
+            "inputs": {
+              "properties": {
+                "ConnectedServiceName": {
+                  "description": "Azure Subscription (Classic)",
+                  "type": "string"
+                },
+                "WebSiteLocation": {
+                  "description": "Web App Location",
+                  "type": "string"
+                },
+                "WebSiteName": {
+                  "description": "Web App Name",
+                  "type": "string"
+                },
+                "Slot": {
+                  "description": "Slot",
+                  "type": "string"
+                },
+                "Package": {
+                  "description": "Web Deploy Package",
+                  "type": "string"
+                },
+                "doNotDelete": {
+                  "description": "Set DoNotDelete flag",
+                  "type": "boolean"
+                },
+                "AdditionalArguments": {
+                  "description": "Additional Arguments",
+                  "type": "string"
+                }
+              },
+              "description": "Azure App Service: Classic (Deprecated) inputs"
             }
           }
         },
@@ -5799,47 +6010,6 @@
                 }
               },
               "description": "App Center Test inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[aA]zure[wW]eb[pP]ower[sS]hell[dD]eployment@1$",
-              "description": "Azure App Service: Classic (Deprecated)\n\nCreate or update Azure App Service using Azure PowerShell"
-            },
-            "inputs": {
-              "properties": {
-                "ConnectedServiceName": {
-                  "description": "Azure Subscription (Classic)",
-                  "type": "string"
-                },
-                "WebSiteLocation": {
-                  "description": "Web App Location",
-                  "type": "string"
-                },
-                "WebSiteName": {
-                  "description": "Web App Name",
-                  "type": "string"
-                },
-                "Slot": {
-                  "description": "Slot",
-                  "type": "string"
-                },
-                "Package": {
-                  "description": "Web Deploy Package",
-                  "type": "string"
-                },
-                "doNotDelete": {
-                  "description": "Set DoNotDelete flag",
-                  "type": "boolean"
-                },
-                "AdditionalArguments": {
-                  "description": "Additional Arguments",
-                  "type": "string"
-                }
-              },
-              "description": "Azure App Service: Classic (Deprecated) inputs"
             }
           }
         },
@@ -6631,6 +6801,27 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[pP]ublish[bB]uild[dD]rop@0$",
+              "description": "Publish Build Drop\n\nPublish Build Drop"
+            },
+            "inputs": {
+              "properties": {
+                "artifactname": {
+                  "description": "The name of this artifact",
+                  "type": "string"
+                },
+                "targetpath": {
+                  "description": "Path to publish",
+                  "type": "string"
+                }
+              },
+              "description": "Publish Build Drop inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[sS]ervice[fF]abric[uU]pdate[aA]pp[vV]ersions@1$",
               "description": "Update Service Fabric App Versions\n\nAutomatically updates the versions of a packaged Service Fabric application."
             },
@@ -6735,6 +6926,10 @@
                 "overwriteExistingPkgArtifact": {
                   "description": "Overwrite Existing Package Artifact",
                   "type": "boolean"
+                },
+                "imageNamesPath": {
+                  "description": "Image Names Path",
+                  "type": "string"
                 },
                 "imageDigestsPath": {
                   "description": "Image Digests Path",
@@ -6959,90 +7154,152 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[jJ]enkins[qQ]ueue[jJ]ob@1$",
-              "description": "Jenkins Queue Job\n\nQueue a job on a Jenkins server"
+              "pattern": "^[dD]ocker@1$",
+              "description": "Docker\n\nBuild, tag, push, or run Docker images, or run a Docker command. Task can be used with Docker or Azure Container registry."
             },
             "inputs": {
               "properties": {
-                "serverEndpoint": {
-                  "description": "Jenkins service endpoint",
+                "containerregistrytype": {
+                  "description": "Container registry type",
+                  "enum": [
+                    "Azure Container Registry",
+                    "Container Registry"
+                  ]
+                },
+                "dockerRegistryEndpoint": {
+                  "description": "Docker registry service connection",
                   "type": "string"
                 },
-                "jobName": {
-                  "description": "Job name",
+                "azureSubscriptionEndpoint": {
+                  "description": "Azure subscription",
                   "type": "string"
                 },
-                "isMultibranchJob": {
-                  "description": "Job is of Multibranch Pipeline type",
-                  "type": "boolean"
-                },
-                "multibranchPipelineBranch": {
-                  "description": "Multibranch Pipeline Branch",
+                "azureContainerRegistry": {
+                  "description": "Azure container registry",
                   "type": "string"
                 },
-                "captureConsole": {
-                  "description": "Capture console output and wait for completion",
+                "command": {
+                  "description": "Command",
+                  "enum": [
+                    "Build an image",
+                    "Tag image",
+                    "Push an image",
+                    "Run an image",
+                    "login",
+                    "logout"
+                  ]
+                },
+                "dockerFile": {
+                  "description": "Dockerfile",
+                  "type": "string"
+                },
+                "arguments": {
+                  "description": "Arguments",
+                  "type": "string"
+                },
+                "useDefaultContext": {
+                  "description": "Use default build context",
                   "type": "boolean"
                 },
-                "capturePipeline": {
-                  "description": "Capture pipeline output and wait for pipeline completion",
+                "buildContext": {
+                  "description": "Build context",
+                  "type": "string"
+                },
+                "pushMultipleImages": {
+                  "description": "Push multiple images",
                   "type": "boolean"
                 },
-                "parameterizedJob": {
-                  "description": "Parameterized job",
+                "tagMultipleImages": {
+                  "description": "Tag multiple images",
                   "type": "boolean"
                 },
-                "jobParameters": {
-                  "description": "Job parameters",
+                "imageName": {
+                  "description": "Image name",
+                  "type": "string"
+                },
+                "imageNamesPath": {
+                  "description": "Image names path",
+                  "type": "string"
+                },
+                "qualifyImageName": {
+                  "description": "Qualify image name",
+                  "type": "boolean"
+                },
+                "includeSourceTags": {
+                  "description": "Include source tags",
+                  "type": "boolean"
+                },
+                "includeLatestTag": {
+                  "description": "Include latest tag",
+                  "type": "boolean"
+                },
+                "addDefaultLabels": {
+                  "description": "Add default labels",
+                  "type": "boolean"
+                },
+                "imageDigestFile": {
+                  "description": "Image digest file",
+                  "type": "string"
+                },
+                "containerName": {
+                  "description": "Container name",
+                  "type": "string"
+                },
+                "ports": {
+                  "description": "Ports",
+                  "type": "string"
+                },
+                "volumes": {
+                  "description": "Volumes",
+                  "type": "string"
+                },
+                "envVars": {
+                  "description": "Environment variables",
+                  "type": "string"
+                },
+                "workingDirectory": {
+                  "description": "Working directory",
+                  "type": "string"
+                },
+                "entrypointOverride": {
+                  "description": "Entry point override",
+                  "type": "string"
+                },
+                "containerCommand": {
+                  "description": "Command",
+                  "type": "string"
+                },
+                "runInBackground": {
+                  "description": "Run in background",
+                  "type": "boolean"
+                },
+                "restartPolicy": {
+                  "description": "Restart policy",
+                  "enum": [
+                    "no",
+                    "onFailure",
+                    "always",
+                    "unlessStopped"
+                  ]
+                },
+                "maxRestartRetries": {
+                  "description": "Maximum restart retries",
+                  "type": "string"
+                },
+                "dockerHostEndpoint": {
+                  "description": "Docker host service connection",
+                  "type": "string"
+                },
+                "enforceDockerNamingConvention": {
+                  "description": "Force image name to follow Docker naming convention",
+                  "type": "boolean"
+                },
+                "memoryLimit": {
+                  "description": "Memory limit",
                   "type": "string"
                 }
               },
-              "description": "Jenkins Queue Job inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[jJ]enkins[qQ]ueue[jJ]ob@2$",
-              "description": "Jenkins Queue Job\n\nQueue a job on a Jenkins server"
-            },
-            "inputs": {
-              "properties": {
-                "serverEndpoint": {
-                  "description": "Jenkins service connection",
-                  "type": "string"
-                },
-                "jobName": {
-                  "description": "Job name",
-                  "type": "string"
-                },
-                "isMultibranchJob": {
-                  "description": "Job is of multibranch pipeline type",
-                  "type": "boolean"
-                },
-                "multibranchPipelineBranch": {
-                  "description": "Multibranch pipeline branch",
-                  "type": "string"
-                },
-                "captureConsole": {
-                  "description": "Capture console output and wait for completion",
-                  "type": "boolean"
-                },
-                "capturePipeline": {
-                  "description": "Capture pipeline output and wait for pipeline completion",
-                  "type": "boolean"
-                },
-                "parameterizedJob": {
-                  "description": "Parameterized job",
-                  "type": "boolean"
-                },
-                "jobParameters": {
-                  "description": "Job parameters",
-                  "type": "string"
-                }
-              },
-              "description": "Jenkins Queue Job inputs"
+              "description": "Docker inputs"
             }
           }
         },
@@ -7201,150 +7458,90 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[dD]ocker@1$",
-              "description": "Docker\n\nBuild, tag, push, or run Docker images, or run a Docker command. Task can be used with Docker or Azure Container registry."
+              "pattern": "^[jJ]enkins[qQ]ueue[jJ]ob@1$",
+              "description": "Jenkins Queue Job\n\nQueue a job on a Jenkins server"
             },
             "inputs": {
               "properties": {
-                "containerregistrytype": {
-                  "description": "Container registry type",
-                  "enum": [
-                    "Azure Container Registry",
-                    "Container Registry"
-                  ]
-                },
-                "dockerRegistryEndpoint": {
-                  "description": "Docker registry service connection",
+                "serverEndpoint": {
+                  "description": "Jenkins service endpoint",
                   "type": "string"
                 },
-                "azureSubscriptionEndpoint": {
-                  "description": "Azure subscription",
+                "jobName": {
+                  "description": "Job name",
                   "type": "string"
                 },
-                "azureContainerRegistry": {
-                  "description": "Azure container registry",
-                  "type": "string"
-                },
-                "command": {
-                  "description": "Command",
-                  "enum": [
-                    "Build an image",
-                    "Tag image",
-                    "Push an image",
-                    "Run an image"
-                  ]
-                },
-                "dockerFile": {
-                  "description": "Dockerfile",
-                  "type": "string"
-                },
-                "arguments": {
-                  "description": "Arguments",
-                  "type": "string"
-                },
-                "useDefaultContext": {
-                  "description": "Use default build context",
+                "isMultibranchJob": {
+                  "description": "Job is of Multibranch Pipeline type",
                   "type": "boolean"
                 },
-                "buildContext": {
-                  "description": "Build context",
+                "multibranchPipelineBranch": {
+                  "description": "Multibranch Pipeline Branch",
                   "type": "string"
                 },
-                "pushMultipleImages": {
-                  "description": "Push multiple images",
+                "captureConsole": {
+                  "description": "Capture console output and wait for completion",
                   "type": "boolean"
                 },
-                "tagMultipleImages": {
-                  "description": "Tag multiple images",
+                "capturePipeline": {
+                  "description": "Capture pipeline output and wait for pipeline completion",
                   "type": "boolean"
                 },
-                "imageName": {
-                  "description": "Image name",
-                  "type": "string"
-                },
-                "imageNamesPath": {
-                  "description": "Image names path",
-                  "type": "string"
-                },
-                "qualifyImageName": {
-                  "description": "Qualify image name",
+                "parameterizedJob": {
+                  "description": "Parameterized job",
                   "type": "boolean"
                 },
-                "includeSourceTags": {
-                  "description": "Include source tags",
-                  "type": "boolean"
-                },
-                "includeLatestTag": {
-                  "description": "Include latest tag",
-                  "type": "boolean"
-                },
-                "addDefaultLabels": {
-                  "description": "Add default labels",
-                  "type": "boolean"
-                },
-                "imageDigestFile": {
-                  "description": "Image digest file",
-                  "type": "string"
-                },
-                "containerName": {
-                  "description": "Container name",
-                  "type": "string"
-                },
-                "ports": {
-                  "description": "Ports",
-                  "type": "string"
-                },
-                "volumes": {
-                  "description": "Volumes",
-                  "type": "string"
-                },
-                "envVars": {
-                  "description": "Environment variables",
-                  "type": "string"
-                },
-                "workingDirectory": {
-                  "description": "Working directory",
-                  "type": "string"
-                },
-                "entrypointOverride": {
-                  "description": "Entry point override",
-                  "type": "string"
-                },
-                "containerCommand": {
-                  "description": "Command",
-                  "type": "string"
-                },
-                "runInBackground": {
-                  "description": "Run in background",
-                  "type": "boolean"
-                },
-                "restartPolicy": {
-                  "description": "Restart policy",
-                  "enum": [
-                    "no",
-                    "onFailure",
-                    "always",
-                    "unlessStopped"
-                  ]
-                },
-                "maxRestartRetries": {
-                  "description": "Maximum restart retries",
-                  "type": "string"
-                },
-                "dockerHostEndpoint": {
-                  "description": "Docker host service connection",
-                  "type": "string"
-                },
-                "enforceDockerNamingConvention": {
-                  "description": "Force image name to follow Docker naming convention",
-                  "type": "boolean"
-                },
-                "memoryLimit": {
-                  "description": "Memory limit",
+                "jobParameters": {
+                  "description": "Job parameters",
                   "type": "string"
                 }
               },
-              "description": "Docker inputs"
+              "description": "Jenkins Queue Job inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[jJ]enkins[qQ]ueue[jJ]ob@2$",
+              "description": "Jenkins Queue Job\n\nQueue a job on a Jenkins server"
+            },
+            "inputs": {
+              "properties": {
+                "serverEndpoint": {
+                  "description": "Jenkins service connection",
+                  "type": "string"
+                },
+                "jobName": {
+                  "description": "Job name",
+                  "type": "string"
+                },
+                "isMultibranchJob": {
+                  "description": "Job is of multibranch pipeline type",
+                  "type": "boolean"
+                },
+                "multibranchPipelineBranch": {
+                  "description": "Multibranch pipeline branch",
+                  "type": "string"
+                },
+                "captureConsole": {
+                  "description": "Capture console output and wait for completion",
+                  "type": "boolean"
+                },
+                "capturePipeline": {
+                  "description": "Capture pipeline output and wait for pipeline completion",
+                  "type": "boolean"
+                },
+                "parameterizedJob": {
+                  "description": "Parameterized job",
+                  "type": "boolean"
+                },
+                "jobParameters": {
+                  "description": "Job parameters",
+                  "type": "string"
+                }
+              },
+              "description": "Jenkins Queue Job inputs"
             }
           }
         },
@@ -7465,52 +7662,6 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[pP]ublish[tT]est[rR]esults@1$",
-              "description": "Publish Test Results\n\nPublish Test Results to VSTS/TFS"
-            },
-            "inputs": {
-              "properties": {
-                "testRunner": {
-                  "description": "Test Result Format",
-                  "enum": [
-                    "JUnit",
-                    "NUnit",
-                    "VSTest",
-                    "XUnit"
-                  ]
-                },
-                "testResultsFiles": {
-                  "description": "Test Results Files",
-                  "type": "string"
-                },
-                "mergeTestResults": {
-                  "description": "Merge Test Results",
-                  "type": "boolean"
-                },
-                "testRunTitle": {
-                  "description": "Test Run Title",
-                  "type": "string"
-                },
-                "platform": {
-                  "description": "Platform",
-                  "type": "string"
-                },
-                "configuration": {
-                  "description": "Configuration",
-                  "type": "string"
-                },
-                "publishRunAttachments": {
-                  "description": "Upload Test Attachments",
-                  "type": "boolean"
-                }
-              },
-              "description": "Publish Test Results inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
               "pattern": "^[pP]ublish[tT]est[rR]esults@2$",
               "description": "Publish Test Results\n\nPublish Test Results to VSTS/TFS"
             },
@@ -7551,6 +7702,52 @@
                 },
                 "publishRunAttachments": {
                   "description": "Upload test results files",
+                  "type": "boolean"
+                }
+              },
+              "description": "Publish Test Results inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[pP]ublish[tT]est[rR]esults@1$",
+              "description": "Publish Test Results\n\nPublish Test Results to VSTS/TFS"
+            },
+            "inputs": {
+              "properties": {
+                "testRunner": {
+                  "description": "Test Result Format",
+                  "enum": [
+                    "JUnit",
+                    "NUnit",
+                    "VSTest",
+                    "XUnit"
+                  ]
+                },
+                "testResultsFiles": {
+                  "description": "Test Results Files",
+                  "type": "string"
+                },
+                "mergeTestResults": {
+                  "description": "Merge Test Results",
+                  "type": "boolean"
+                },
+                "testRunTitle": {
+                  "description": "Test Run Title",
+                  "type": "string"
+                },
+                "platform": {
+                  "description": "Platform",
+                  "type": "string"
+                },
+                "configuration": {
+                  "description": "Configuration",
+                  "type": "string"
+                },
+                "publishRunAttachments": {
+                  "description": "Upload Test Attachments",
                   "type": "boolean"
                 }
               },
@@ -7741,63 +7938,6 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[sS]onar[qQ]ube[pP]re[bB]uild@1$",
-              "description": "SonarQube for MSBuild - Begin Analysis\n\n[DEPRECATED] Fetch the Quality Profile from SonarQube to configure the analysis"
-            },
-            "inputs": {
-              "properties": {
-                "projectKey": {
-                  "description": "Project Key",
-                  "type": "string"
-                },
-                "projectName": {
-                  "description": "Project Name",
-                  "type": "string"
-                },
-                "projectVersion": {
-                  "description": "Project Version",
-                  "type": "string"
-                },
-                "connectedServiceName": {
-                  "description": "SonarQube Endpoint",
-                  "type": "string"
-                },
-                "dbUrl": {
-                  "description": "Db Connection String",
-                  "type": "string"
-                },
-                "dbUsername": {
-                  "description": "Db UserName",
-                  "type": "string"
-                },
-                "dbPassword": {
-                  "description": "Db User Password",
-                  "type": "string"
-                },
-                "cmdLineArgs": {
-                  "description": "Additional Settings",
-                  "type": "string"
-                },
-                "configFile": {
-                  "description": "Settings File",
-                  "type": "string"
-                },
-                "includeFullReport": {
-                  "description": "Include full analysis report in the build summary (SQ 5.3+)",
-                  "type": "boolean"
-                },
-                "breakBuild": {
-                  "description": "Fail the build on quality gate failure (SQ 5.3+)",
-                  "type": "boolean"
-                }
-              },
-              "description": "SonarQube for MSBuild - Begin Analysis inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
               "pattern": "^[nN]ode[tT]ool@0$",
               "description": "Node Tool Installer\n\nFinds or Downloads and caches specified version spec of Node and adds it to the PATH."
             },
@@ -7855,6 +7995,63 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[sS]onar[qQ]ube[pP]re[bB]uild@1$",
+              "description": "SonarQube for MSBuild - Begin Analysis\n\n[DEPRECATED] Fetch the Quality Profile from SonarQube to configure the analysis"
+            },
+            "inputs": {
+              "properties": {
+                "projectKey": {
+                  "description": "Project Key",
+                  "type": "string"
+                },
+                "projectName": {
+                  "description": "Project Name",
+                  "type": "string"
+                },
+                "projectVersion": {
+                  "description": "Project Version",
+                  "type": "string"
+                },
+                "connectedServiceName": {
+                  "description": "SonarQube Endpoint",
+                  "type": "string"
+                },
+                "dbUrl": {
+                  "description": "Db Connection String",
+                  "type": "string"
+                },
+                "dbUsername": {
+                  "description": "Db UserName",
+                  "type": "string"
+                },
+                "dbPassword": {
+                  "description": "Db User Password",
+                  "type": "string"
+                },
+                "cmdLineArgs": {
+                  "description": "Additional Settings",
+                  "type": "string"
+                },
+                "configFile": {
+                  "description": "Settings File",
+                  "type": "string"
+                },
+                "includeFullReport": {
+                  "description": "Include full analysis report in the build summary (SQ 5.3+)",
+                  "type": "boolean"
+                },
+                "breakBuild": {
+                  "description": "Fail the build on quality gate failure (SQ 5.3+)",
+                  "type": "boolean"
+                }
+              },
+              "description": "SonarQube for MSBuild - Begin Analysis inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[dD]ownload[bB]uild[aA]rtifacts@0$",
               "description": "Download Build Artifacts\n\nDownload Build Artifacts"
             },
@@ -7893,6 +8090,10 @@
                 },
                 "buildId": {
                   "description": "Build",
+                  "type": "string"
+                },
+                "Tags": {
+                  "description": "Build Tags",
                   "type": "string"
                 },
                 "downloadType": {
@@ -8343,31 +8544,6 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[cC]hef[kK]nife@1$",
-              "description": "Chef Knife\n\nRun Scripts with knife commands on your chef workstation"
-            },
-            "inputs": {
-              "properties": {
-                "ConnectedServiceName": {
-                  "description": "Chef Subscription",
-                  "type": "string"
-                },
-                "ScriptPath": {
-                  "description": "Script Path",
-                  "type": "string"
-                },
-                "ScriptArguments": {
-                  "description": "Script Arguments",
-                  "type": "string"
-                }
-              },
-              "description": "Chef Knife inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
               "pattern": "^[dD]ecrypt[fF]ile@1$",
               "description": "Decrypt File (OpenSSL)\n\nA thin utility task for file decryption using OpenSSL."
             },
@@ -8401,6 +8577,31 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[cC]hef[kK]nife@1$",
+              "description": "Chef Knife\n\nRun Scripts with knife commands on your chef workstation"
+            },
+            "inputs": {
+              "properties": {
+                "ConnectedServiceName": {
+                  "description": "Chef Subscription",
+                  "type": "string"
+                },
+                "ScriptPath": {
+                  "description": "Script Path",
+                  "type": "string"
+                },
+                "ScriptArguments": {
+                  "description": "Script Arguments",
+                  "type": "string"
+                }
+              },
+              "description": "Chef Knife inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[sS]onar[qQ]ube[pP]ost[tT]est@1$",
               "description": "SonarQube for MSBuild - End Analysis\n\n[DEPRECATED] Finish the analysis and upload the results to SonarQube"
             },
@@ -8418,19 +8619,276 @@
             },
             "inputs": {
               "properties": {
+                "packageFeedSelector": {
+                  "description": "Package Feed",
+                  "enum": [
+                    "nugetOrg",
+                    "customFeed",
+                    "netShare"
+                  ]
+                },
                 "versionSelector": {
                   "description": "Version",
                   "enum": [
                     "latestPreRelease",
+                    "latestStable",
                     "specificVersion"
                   ]
                 },
                 "testPlatformVersion": {
                   "description": "Test Platform Version",
                   "type": "string"
+                },
+                "customFeed": {
+                  "description": "Package Source",
+                  "type": "string"
+                },
+                "username": {
+                  "description": "User Name",
+                  "type": "string"
+                },
+                "password": {
+                  "description": "Password",
+                  "type": "string"
+                },
+                "netShare": {
+                  "description": "UNC Path",
+                  "type": "string"
                 }
               },
               "description": "Visual Studio Test Platform Installer inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[aA]zure[rR]m[wW]eb[aA]pp[dD]eployment@2$",
+              "description": "Azure App Service Deploy\n\nUpdate Azure App Service using Web Deploy / Kudu REST APIs"
+            },
+            "inputs": {
+              "properties": {
+                "ConnectedServiceName": {
+                  "description": "Azure Subscription",
+                  "type": "string"
+                },
+                "WebAppName": {
+                  "description": "App Service name",
+                  "type": "string"
+                },
+                "DeployToSlotFlag": {
+                  "description": "Deploy to slot",
+                  "type": "boolean"
+                },
+                "ResourceGroupName": {
+                  "description": "Resource group",
+                  "type": "string"
+                },
+                "SlotName": {
+                  "description": "Slot",
+                  "type": "string"
+                },
+                "VirtualApplication": {
+                  "description": "Virtual Application",
+                  "type": "string"
+                },
+                "Package": {
+                  "description": "Package or Folder",
+                  "type": "string"
+                },
+                "WebAppUri": {
+                  "description": "App Service URL",
+                  "type": "string"
+                },
+                "UseWebDeploy": {
+                  "description": "Publish using Web Deploy",
+                  "type": "boolean"
+                },
+                "SetParametersFile": {
+                  "description": "SetParameters File",
+                  "type": "string"
+                },
+                "RemoveAdditionalFilesFlag": {
+                  "description": "Remove Additional Files at Destination",
+                  "type": "boolean"
+                },
+                "ExcludeFilesFromAppDataFlag": {
+                  "description": "Exclude Files from the App_Data Folder",
+                  "type": "boolean"
+                },
+                "AdditionalArguments": {
+                  "description": "Additional Arguments",
+                  "type": "string"
+                },
+                "TakeAppOfflineFlag": {
+                  "description": "Take App Offline",
+                  "type": "boolean"
+                }
+              },
+              "description": "Azure App Service Deploy inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[aA]zure[rR]m[wW]eb[aA]pp[dD]eployment@4$",
+              "description": "Azure App Service Deploy\n\nUpdate Azure App Services on Windows, Web App on Linux with built-in images or Docker containers, ASP.NET, .NET Core, PHP, Python or Node.js based Web applications, Function Apps, Mobile Apps, API applications, Web Jobs using Web Deploy / Kudu REST APIs"
+            },
+            "inputs": {
+              "properties": {
+                "ConnectionType": {
+                  "description": "Connection type",
+                  "enum": [
+                    "AzureRM",
+                    "PublishProfile"
+                  ]
+                },
+                "ConnectedServiceName": {
+                  "description": "Azure subscription",
+                  "type": "string"
+                },
+                "PublishProfilePath": {
+                  "description": "Publish profile path",
+                  "type": "string"
+                },
+                "PublishProfilePassword": {
+                  "description": "Publish profile password",
+                  "type": "string"
+                },
+                "WebAppKind": {
+                  "description": "App Service type",
+                  "enum": [
+                    "webApp",
+                    "webAppLinux",
+                    "webAppContainer",
+                    "functionApp",
+                    "apiApp",
+                    "mobileApp"
+                  ]
+                },
+                "WebAppName": {
+                  "description": "App Service name",
+                  "type": "string"
+                },
+                "DeployToSlotOrASEFlag": {
+                  "description": "Deploy to Slot or App Service Environment",
+                  "type": "boolean"
+                },
+                "ResourceGroupName": {
+                  "description": "Resource group",
+                  "type": "string"
+                },
+                "SlotName": {
+                  "description": "Slot",
+                  "type": "string"
+                },
+                "DockerNamespace": {
+                  "description": "Registry or Namespace",
+                  "type": "string"
+                },
+                "DockerRepository": {
+                  "description": "Image",
+                  "type": "string"
+                },
+                "DockerImageTag": {
+                  "description": "Tag",
+                  "type": "string"
+                },
+                "VirtualApplication": {
+                  "description": "Virtual application",
+                  "type": "string"
+                },
+                "Package": {
+                  "description": "Package or folder",
+                  "type": "string"
+                },
+                "RuntimeStack": {
+                  "description": "Runtime Stack",
+                  "type": "string"
+                },
+                "StartupCommand": {
+                  "description": "Startup command ",
+                  "type": "string"
+                },
+                "ScriptType": {
+                  "description": "Deployment script type",
+                  "enum": [
+                    "",
+                    "Inline Script",
+                    "File Path"
+                  ]
+                },
+                "InlineScript": {
+                  "description": "Inline Script",
+                  "type": "string"
+                },
+                "ScriptPath": {
+                  "description": "Deployment script path",
+                  "type": "string"
+                },
+                "WebConfigParameters": {
+                  "description": "Generate web.config parameters for Python, Node.js, Go and Java apps",
+                  "type": "string"
+                },
+                "AppSettings": {
+                  "description": "App settings",
+                  "type": "string"
+                },
+                "ConfigurationSettings": {
+                  "description": "Configuration settings",
+                  "type": "string"
+                },
+                "UseWebDeploy": {
+                  "description": "Select deployment method",
+                  "type": "boolean"
+                },
+                "DeploymentType": {
+                  "description": "Deployment method",
+                  "enum": [
+                    "webDeploy",
+                    "zipDeploy",
+                    "runFromZip"
+                  ]
+                },
+                "TakeAppOfflineFlag": {
+                  "description": "Take App Offline",
+                  "type": "boolean"
+                },
+                "SetParametersFile": {
+                  "description": "SetParameters file",
+                  "type": "string"
+                },
+                "RemoveAdditionalFilesFlag": {
+                  "description": "Remove additional files at destination",
+                  "type": "boolean"
+                },
+                "ExcludeFilesFromAppDataFlag": {
+                  "description": "Exclude files from the App_Data folder",
+                  "type": "boolean"
+                },
+                "AdditionalArguments": {
+                  "description": "Additional arguments",
+                  "type": "string"
+                },
+                "RenameFilesFlag": {
+                  "description": "Rename locked files",
+                  "type": "boolean"
+                },
+                "XmlTransformation": {
+                  "description": "XML transformation",
+                  "type": "boolean"
+                },
+                "XmlVariableSubstitution": {
+                  "description": "XML variable substitution",
+                  "type": "boolean"
+                },
+                "JSONFiles": {
+                  "description": "JSON variable substitution",
+                  "type": "string"
+                }
+              },
+              "description": "Azure App Service Deploy inputs"
             }
           }
         },
@@ -8604,238 +9062,6 @@
                 },
                 "UseWebDeploy": {
                   "description": "Publish using Web Deploy",
-                  "type": "boolean"
-                },
-                "SetParametersFile": {
-                  "description": "SetParameters file",
-                  "type": "string"
-                },
-                "RemoveAdditionalFilesFlag": {
-                  "description": "Remove additional files at destination",
-                  "type": "boolean"
-                },
-                "ExcludeFilesFromAppDataFlag": {
-                  "description": "Exclude files from the App_Data folder",
-                  "type": "boolean"
-                },
-                "AdditionalArguments": {
-                  "description": "Additional arguments",
-                  "type": "string"
-                },
-                "RenameFilesFlag": {
-                  "description": "Rename locked files",
-                  "type": "boolean"
-                },
-                "XmlTransformation": {
-                  "description": "XML transformation",
-                  "type": "boolean"
-                },
-                "XmlVariableSubstitution": {
-                  "description": "XML variable substitution",
-                  "type": "boolean"
-                },
-                "JSONFiles": {
-                  "description": "JSON variable substitution",
-                  "type": "string"
-                }
-              },
-              "description": "Azure App Service Deploy inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[aA]zure[rR]m[wW]eb[aA]pp[dD]eployment@2$",
-              "description": "Azure App Service Deploy\n\nUpdate Azure App Service using Web Deploy / Kudu REST APIs"
-            },
-            "inputs": {
-              "properties": {
-                "ConnectedServiceName": {
-                  "description": "Azure Subscription",
-                  "type": "string"
-                },
-                "WebAppName": {
-                  "description": "App Service name",
-                  "type": "string"
-                },
-                "DeployToSlotFlag": {
-                  "description": "Deploy to slot",
-                  "type": "boolean"
-                },
-                "ResourceGroupName": {
-                  "description": "Resource group",
-                  "type": "string"
-                },
-                "SlotName": {
-                  "description": "Slot",
-                  "type": "string"
-                },
-                "VirtualApplication": {
-                  "description": "Virtual Application",
-                  "type": "string"
-                },
-                "Package": {
-                  "description": "Package or Folder",
-                  "type": "string"
-                },
-                "WebAppUri": {
-                  "description": "App Service URL",
-                  "type": "string"
-                },
-                "UseWebDeploy": {
-                  "description": "Publish using Web Deploy",
-                  "type": "boolean"
-                },
-                "SetParametersFile": {
-                  "description": "SetParameters File",
-                  "type": "string"
-                },
-                "RemoveAdditionalFilesFlag": {
-                  "description": "Remove Additional Files at Destination",
-                  "type": "boolean"
-                },
-                "ExcludeFilesFromAppDataFlag": {
-                  "description": "Exclude Files from the App_Data Folder",
-                  "type": "boolean"
-                },
-                "AdditionalArguments": {
-                  "description": "Additional Arguments",
-                  "type": "string"
-                },
-                "TakeAppOfflineFlag": {
-                  "description": "Take App Offline",
-                  "type": "boolean"
-                }
-              },
-              "description": "Azure App Service Deploy inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[aA]zure[rR]m[wW]eb[aA]pp[dD]eployment@4$",
-              "description": "Azure App Service Deploy\n\nUpdate Azure WebApp Services On Windows, Web App On Linux with built-in images or docker containers, ASP.NET, .NET Core, PHP, Python or Node based Web applications, Function Apps, Mobile Apps, Api applications, Web Jobs using Web Deploy / Kudu REST APIs"
-            },
-            "inputs": {
-              "properties": {
-                "ConnectionType": {
-                  "description": "Connection type",
-                  "enum": [
-                    "AzureRM",
-                    "PublishProfile"
-                  ]
-                },
-                "ConnectedServiceName": {
-                  "description": "Azure subscription",
-                  "type": "string"
-                },
-                "PublishProfilePath": {
-                  "description": "Publish profile path",
-                  "type": "string"
-                },
-                "PublishProfilePassword": {
-                  "description": "Publish profile password",
-                  "type": "string"
-                },
-                "WebAppKind": {
-                  "description": "App Service type",
-                  "enum": [
-                    "webApp",
-                    "webAppLinux",
-                    "webAppContainer",
-                    "functionApp",
-                    "apiApp",
-                    "mobileApp"
-                  ]
-                },
-                "WebAppName": {
-                  "description": "App Service name",
-                  "type": "string"
-                },
-                "DeployToSlotOrASEFlag": {
-                  "description": "Deploy to Slot or App Service Environment",
-                  "type": "boolean"
-                },
-                "ResourceGroupName": {
-                  "description": "Resource group",
-                  "type": "string"
-                },
-                "SlotName": {
-                  "description": "Slot",
-                  "type": "string"
-                },
-                "DockerNamespace": {
-                  "description": "Registry or Namespace",
-                  "type": "string"
-                },
-                "DockerRepository": {
-                  "description": "Image",
-                  "type": "string"
-                },
-                "DockerImageTag": {
-                  "description": "Tag",
-                  "type": "string"
-                },
-                "VirtualApplication": {
-                  "description": "Virtual application",
-                  "type": "string"
-                },
-                "Package": {
-                  "description": "Package or folder",
-                  "type": "string"
-                },
-                "RuntimeStack": {
-                  "description": "Runtime Stack",
-                  "type": "string"
-                },
-                "StartupCommand": {
-                  "description": "Startup command ",
-                  "type": "string"
-                },
-                "ScriptType": {
-                  "description": "Deployment script type",
-                  "enum": [
-                    "",
-                    "Inline Script",
-                    "File Path"
-                  ]
-                },
-                "InlineScript": {
-                  "description": "Inline Script",
-                  "type": "string"
-                },
-                "ScriptPath": {
-                  "description": "Deployment script path",
-                  "type": "string"
-                },
-                "WebConfigParameters": {
-                  "description": "Generate web.config parameters for Python, Node.js and Go apps",
-                  "type": "string"
-                },
-                "AppSettings": {
-                  "description": "App settings",
-                  "type": "string"
-                },
-                "ConfigurationSettings": {
-                  "description": "Configuration settings",
-                  "type": "string"
-                },
-                "UseWebDeploy": {
-                  "description": "Select deployment method",
-                  "type": "boolean"
-                },
-                "DeploymentType": {
-                  "description": "Deployment method",
-                  "enum": [
-                    "webDeploy",
-                    "zipDeploy",
-                    "runFromZip"
-                  ]
-                },
-                "TakeAppOfflineFlag": {
-                  "description": "Take App Offline",
                   "type": "boolean"
                 },
                 "SetParametersFile": {
@@ -9873,23 +10099,6 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[dD]elay@1$",
-              "description": "Delay\n\nDelay further execution of the workflow by a fixed time."
-            },
-            "inputs": {
-              "properties": {
-                "delayForMinutes": {
-                  "description": "Delay Time (minutes)",
-                  "type": "string"
-                }
-              },
-              "description": "Delay inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
               "pattern": "^[aA]zure[rR]esource[gG]roup[dD]eployment@1$",
               "description": "Azure Resource Group Deployment\n\nDeploy, start, stop, delete Azure Resource Groups"
             },
@@ -10122,105 +10331,17 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[aA]zure[pP]ower[sS]hell@2$",
-              "description": "Azure PowerShell\n\nRun a PowerShell script within an Azure environment"
+              "pattern": "^[dD]elay@1$",
+              "description": "Delay\n\nDelay further execution of the workflow by a fixed time."
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceNameSelector": {
-                  "description": "Azure Connection Type",
-                  "enum": [
-                    "ConnectedServiceName",
-                    "ConnectedServiceNameARM"
-                  ]
-                },
-                "ConnectedServiceName": {
-                  "description": "Azure Classic Subscription",
-                  "type": "string"
-                },
-                "ConnectedServiceNameARM": {
-                  "description": "Azure Subscription",
-                  "type": "string"
-                },
-                "ScriptType": {
-                  "description": "Script Type",
-                  "enum": [
-                    "FilePath",
-                    "InlineScript"
-                  ]
-                },
-                "ScriptPath": {
-                  "description": "Script Path",
-                  "type": "string"
-                },
-                "Inline": {
-                  "description": "Inline Script",
-                  "type": "string"
-                },
-                "ScriptArguments": {
-                  "description": "Script Arguments",
-                  "type": "string"
-                },
-                "TargetAzurePs": {
-                  "description": "Azure PowerShell Version",
-                  "enum": [
-                    "LatestVersion",
-                    "OtherVersion"
-                  ]
-                },
-                "CustomTargetAzurePs": {
-                  "description": "Preferred Azure PowerShell Version",
+                "delayForMinutes": {
+                  "description": "Delay Time (minutes)",
                   "type": "string"
                 }
               },
-              "description": "Azure PowerShell inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[aA]zure[pP]ower[sS]hell@1$",
-              "description": "Azure PowerShell\n\nRun a PowerShell script within an Azure environment"
-            },
-            "inputs": {
-              "properties": {
-                "ConnectedServiceNameSelector": {
-                  "description": "Azure Connection Type",
-                  "enum": [
-                    "ConnectedServiceName",
-                    "ConnectedServiceNameARM"
-                  ]
-                },
-                "ConnectedServiceName": {
-                  "description": "Azure Classic Subscription",
-                  "type": "string"
-                },
-                "ConnectedServiceNameARM": {
-                  "description": "Azure Subscription",
-                  "type": "string"
-                },
-                "ScriptType": {
-                  "description": "Script Type",
-                  "enum": [
-                    "FilePath",
-                    "InlineScript"
-                  ]
-                },
-                "ScriptPath": {
-                  "description": "Script Path",
-                  "type": "string"
-                },
-                "Inline": {
-                  "description": "Inline Script",
-                  "type": "string"
-                },
-                "ScriptArguments": {
-                  "description": "Script Arguments",
-                  "type": "string"
-                }
-              },
-              "description": "Azure PowerShell inputs"
+              "description": "Delay inputs"
             }
           }
         },
@@ -10291,6 +10412,136 @@
                 }
               },
               "description": "Azure PowerShell inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[aA]zure[pP]ower[sS]hell@1$",
+              "description": "Azure PowerShell\n\nRun a PowerShell script within an Azure environment"
+            },
+            "inputs": {
+              "properties": {
+                "ConnectedServiceNameSelector": {
+                  "description": "Azure Connection Type",
+                  "enum": [
+                    "ConnectedServiceName",
+                    "ConnectedServiceNameARM"
+                  ]
+                },
+                "ConnectedServiceName": {
+                  "description": "Azure Classic Subscription",
+                  "type": "string"
+                },
+                "ConnectedServiceNameARM": {
+                  "description": "Azure Subscription",
+                  "type": "string"
+                },
+                "ScriptType": {
+                  "description": "Script Type",
+                  "enum": [
+                    "FilePath",
+                    "InlineScript"
+                  ]
+                },
+                "ScriptPath": {
+                  "description": "Script Path",
+                  "type": "string"
+                },
+                "Inline": {
+                  "description": "Inline Script",
+                  "type": "string"
+                },
+                "ScriptArguments": {
+                  "description": "Script Arguments",
+                  "type": "string"
+                }
+              },
+              "description": "Azure PowerShell inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[aA]zure[pP]ower[sS]hell@2$",
+              "description": "Azure PowerShell\n\nRun a PowerShell script within an Azure environment"
+            },
+            "inputs": {
+              "properties": {
+                "ConnectedServiceNameSelector": {
+                  "description": "Azure Connection Type",
+                  "enum": [
+                    "ConnectedServiceName",
+                    "ConnectedServiceNameARM"
+                  ]
+                },
+                "ConnectedServiceName": {
+                  "description": "Azure Classic Subscription",
+                  "type": "string"
+                },
+                "ConnectedServiceNameARM": {
+                  "description": "Azure Subscription",
+                  "type": "string"
+                },
+                "ScriptType": {
+                  "description": "Script Type",
+                  "enum": [
+                    "FilePath",
+                    "InlineScript"
+                  ]
+                },
+                "ScriptPath": {
+                  "description": "Script Path",
+                  "type": "string"
+                },
+                "Inline": {
+                  "description": "Inline Script",
+                  "type": "string"
+                },
+                "ScriptArguments": {
+                  "description": "Script Arguments",
+                  "type": "string"
+                },
+                "TargetAzurePs": {
+                  "description": "Azure PowerShell Version",
+                  "enum": [
+                    "LatestVersion",
+                    "OtherVersion"
+                  ]
+                },
+                "CustomTargetAzurePs": {
+                  "description": "Preferred Azure PowerShell Version",
+                  "type": "string"
+                }
+              },
+              "description": "Azure PowerShell inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[eE]xtract[fF]iles@1$",
+              "description": "Extract Files\n\nExtract a variety of archive and compression files such as .7z, .rar, .tar.gz, and .zip."
+            },
+            "inputs": {
+              "properties": {
+                "archiveFilePatterns": {
+                  "description": "Archive file patterns",
+                  "type": "string"
+                },
+                "destinationFolder": {
+                  "description": "Destination folder",
+                  "type": "string"
+                },
+                "cleanDestinationFolder": {
+                  "description": "Clean destination folder before extracting",
+                  "type": "boolean"
+                }
+              },
+              "description": "Extract Files inputs"
             }
           }
         },
@@ -10411,31 +10662,6 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[eE]xtract[fF]iles@1$",
-              "description": "Extract Files\n\nExtract a variety of archive and compression files such as .7z, .rar, .tar.gz, and .zip."
-            },
-            "inputs": {
-              "properties": {
-                "archiveFilePatterns": {
-                  "description": "Archive file patterns",
-                  "type": "string"
-                },
-                "destinationFolder": {
-                  "description": "Destination folder",
-                  "type": "string"
-                },
-                "cleanDestinationFolder": {
-                  "description": "Clean destination folder before extracting",
-                  "type": "boolean"
-                }
-              },
-              "description": "Extract Files inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
               "pattern": "^query[wW]ork[iI]tems@0$",
               "description": "Query Work Items\n\nExecutes a work item query and checks for the number of items returned."
             },
@@ -10455,44 +10681,6 @@
                 }
               },
               "description": "Query Work Items inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[aA]zure[mM]onitor@0$",
-              "description": "Query Azure Monitor Alerts\n\nObserve the configured Azure monitor rules for active alerts."
-            },
-            "inputs": {
-              "properties": {
-                "connectedServiceNameARM": {
-                  "description": "Azure subscription",
-                  "type": "string"
-                },
-                "ResourceGroupName": {
-                  "description": "Resource group",
-                  "type": "string"
-                },
-                "ResourceType": {
-                  "description": "Resource type",
-                  "enum": [
-                    "Microsoft.Insights/components",
-                    "Microsoft.Web/sites",
-                    "Microsoft.Storage/storageAccounts",
-                    "Microsoft.Compute/virtualMachines"
-                  ]
-                },
-                "resourceName": {
-                  "description": "Resource name",
-                  "type": "string"
-                },
-                "alertRules": {
-                  "description": "Alert rules",
-                  "type": "string"
-                }
-              },
-              "description": "Query Azure Monitor Alerts inputs"
             }
           }
         },
@@ -10589,6 +10777,123 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[aA]zure[mM]onitor@0$",
+              "description": "Query Azure Monitor Alerts\n\nObserve the configured Azure monitor rules for active alerts."
+            },
+            "inputs": {
+              "properties": {
+                "connectedServiceNameARM": {
+                  "description": "Azure subscription",
+                  "type": "string"
+                },
+                "ResourceGroupName": {
+                  "description": "Resource group",
+                  "type": "string"
+                },
+                "ResourceType": {
+                  "description": "Resource type",
+                  "enum": [
+                    "Microsoft.Insights/components",
+                    "Microsoft.Web/sites",
+                    "Microsoft.Storage/storageAccounts",
+                    "Microsoft.Compute/virtualMachines"
+                  ]
+                },
+                "resourceName": {
+                  "description": "Resource name",
+                  "type": "string"
+                },
+                "alertRules": {
+                  "description": "Alert rules",
+                  "type": "string"
+                }
+              },
+              "description": "Query Azure Monitor Alerts inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^replacetokens@3$",
+              "description": "Replace Tokens\n\nReplace tokens in files"
+            },
+            "inputs": {
+              "properties": {
+                "rootDirectory": {
+                  "description": "Root directory",
+                  "type": "string"
+                },
+                "targetFiles": {
+                  "description": "Target files",
+                  "type": "string"
+                },
+                "encoding": {
+                  "description": "Files encoding",
+                  "enum": [
+                    "auto",
+                    "ascii",
+                    "utf-7",
+                    "utf-8",
+                    "utf-16le",
+                    "utf-16be",
+                    "win1252",
+                    "iso88591"
+                  ]
+                },
+                "writeBOM": {
+                  "description": "Write unicode BOM",
+                  "type": "boolean"
+                },
+                "actionOnMissing": {
+                  "description": "Action",
+                  "enum": [
+                    "continue",
+                    "warn",
+                    "fail"
+                  ]
+                },
+                "keepToken": {
+                  "description": "Keep token",
+                  "type": "boolean"
+                },
+                "tokenPrefix": {
+                  "description": "Token prefix",
+                  "type": "string"
+                },
+                "tokenSuffix": {
+                  "description": "Token suffix",
+                  "type": "string"
+                },
+                "emptyValue": {
+                  "description": "Empty value",
+                  "type": "string"
+                },
+                "escapeType": {
+                  "description": "Escape values type",
+                  "enum": [
+                    "none",
+                    "json",
+                    "xml",
+                    "custom"
+                  ]
+                },
+                "escapeChar": {
+                  "description": "Escape character",
+                  "type": "string"
+                },
+                "charsToEscape": {
+                  "description": "Characters to escape",
+                  "type": "string"
+                }
+              },
+              "description": "Replace Tokens inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[aA]zure[mM]onitor[aA]lerts@0$",
               "description": "Azure Monitor Alerts\n\nConfigure alerts on available metrics for an Azure resource"
             },
@@ -10664,106 +10969,89 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[pP]acker[bB]uild@0$",
-              "description": "Build Machine Image\n\nBuild machine image using Packer. This image can be used for Azure Virtual machine scale set deployment"
+              "pattern": "^c[uU][rR][lL][uU]ploader@1$",
+              "description": "cURL Upload Files\n\nUse cURL to upload files with FTP, FTPS, SFTP, HTTP, and more."
             },
             "inputs": {
               "properties": {
-                "templateType": {
-                  "description": "Packer template",
-                  "enum": [
-                    "builtin",
-                    "custom"
-                  ]
-                },
-                "customTemplateLocation": {
-                  "description": "Packer template location",
+                "files": {
+                  "description": "Files",
                   "type": "string"
                 },
-                "customTemplateParameters": {
-                  "description": "Template parameters",
+                "username": {
+                  "description": "Username",
                   "type": "string"
                 },
-                "ConnectedServiceName": {
-                  "description": "Azure subscription",
+                "password": {
+                  "description": "Password",
                   "type": "string"
                 },
-                "location": {
-                  "description": "Storage location",
+                "url": {
+                  "description": "URL",
                   "type": "string"
                 },
-                "storageAccountName": {
-                  "description": "Storage account",
+                "options": {
+                  "description": "Optional Arguments",
                   "type": "string"
                 },
-                "azureResourceGroup": {
-                  "description": "Resource group",
-                  "type": "string"
-                },
-                "baseImageSource": {
-                  "description": "Base image source",
-                  "enum": [
-                    "default",
-                    "customVhd"
-                  ]
-                },
-                "baseImage": {
-                  "description": "Base image",
-                  "enum": [
-                    "MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter:windows",
-                    "MicrosoftWindowsServer:WindowsServer:2016-Datacenter:windows",
-                    "MicrosoftWindowsServer:WindowsServer:2012-Datacenter:windows",
-                    "MicrosoftWindowsServer:WindowsServer:2008-R2-SP1:windows",
-                    "Canonical:UbuntuServer:14.04.4-LTS:linux",
-                    "Canonical:UbuntuServer:16.04-LTS:linux",
-                    "RedHat:RHEL:7.2:linux",
-                    "RedHat:RHEL:6.8:linux",
-                    "OpenLogic:CentOS:7.2:linux",
-                    "OpenLogic:CentOS:6.8:linux",
-                    "credativ:Debian:8:linux",
-                    "credativ:Debian:7:linux",
-                    "SUSE:openSUSE-Leap:42.2:linux",
-                    "SUSE:SLES:12-SP2:linux",
-                    "SUSE:SLES:11-SP4:linux"
-                  ]
-                },
-                "customImageUrl": {
-                  "description": "Base image URL",
-                  "type": "string"
-                },
-                "customImageOSType": {
-                  "description": "Base image OS",
-                  "enum": [
-                    "windows",
-                    "linux"
-                  ]
-                },
-                "packagePath": {
-                  "description": "Deployment Package",
-                  "type": "string"
-                },
-                "deployScriptPath": {
-                  "description": "Deployment script",
-                  "type": "string"
-                },
-                "deployScriptArguments": {
-                  "description": "Deployment script arguments",
-                  "type": "string"
-                },
-                "additionalBuilderParameters": {
-                  "description": "Additional Builder parameters",
-                  "type": "string"
-                },
-                "skipTempFileCleanupDuringVMDeprovision": {
-                  "description": "Skip temporary file cleanup during deprovision",
+                "redirectStderr": {
+                  "description": "Redirect Standard Error to Standard Out",
                   "type": "boolean"
-                },
-                "imageUri": {
-                  "description": "Image URL",
-                  "type": "string"
                 }
               },
-              "description": "Build Machine Image inputs"
+              "description": "cURL Upload Files inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^c[uU][rR][lL][uU]ploader@2$",
+              "description": "cURL Upload Files\n\nUse cURL to upload files with FTP, FTPS, SFTP, HTTP, and more."
+            },
+            "inputs": {
+              "properties": {
+                "files": {
+                  "description": "Files",
+                  "type": "string"
+                },
+                "authType": {
+                  "description": "Authentication Method",
+                  "enum": [
+                    "ServiceEndpoint",
+                    "UserAndPass"
+                  ]
+                },
+                "serviceEndpoint": {
+                  "description": "Service Connection",
+                  "type": "string"
+                },
+                "username": {
+                  "description": "Username",
+                  "type": "string"
+                },
+                "password": {
+                  "description": "Password",
+                  "type": "string"
+                },
+                "url": {
+                  "description": "URL",
+                  "type": "string"
+                },
+                "remotePath": {
+                  "description": "Remote Directory",
+                  "type": "string"
+                },
+                "options": {
+                  "description": "Optional Arguments",
+                  "type": "string"
+                },
+                "redirectStderr": {
+                  "description": "Redirect Standard Error to Standard Out",
+                  "type": "boolean"
+                }
+              },
+              "description": "cURL Upload Files inputs"
             }
           }
         },
@@ -10948,89 +11236,106 @@
         {
           "properties": {
             "task": {
-              "pattern": "^c[uU][rR][lL][uU]ploader@1$",
-              "description": "cURL Upload Files\n\nUse cURL to upload files with FTP, FTPS, SFTP, HTTP, and more."
+              "pattern": "^[pP]acker[bB]uild@0$",
+              "description": "Build Machine Image\n\nBuild machine image using Packer. This image can be used for Azure Virtual machine scale set deployment"
             },
             "inputs": {
               "properties": {
-                "files": {
-                  "description": "Files",
-                  "type": "string"
-                },
-                "username": {
-                  "description": "Username",
-                  "type": "string"
-                },
-                "password": {
-                  "description": "Password",
-                  "type": "string"
-                },
-                "url": {
-                  "description": "URL",
-                  "type": "string"
-                },
-                "options": {
-                  "description": "Optional Arguments",
-                  "type": "string"
-                },
-                "redirectStderr": {
-                  "description": "Redirect Standard Error to Standard Out",
-                  "type": "boolean"
-                }
-              },
-              "description": "cURL Upload Files inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^c[uU][rR][lL][uU]ploader@2$",
-              "description": "cURL Upload Files\n\nUse cURL to upload files with FTP, FTPS, SFTP, HTTP, and more."
-            },
-            "inputs": {
-              "properties": {
-                "files": {
-                  "description": "Files",
-                  "type": "string"
-                },
-                "authType": {
-                  "description": "Authentication Method",
+                "templateType": {
+                  "description": "Packer template",
                   "enum": [
-                    "ServiceEndpoint",
-                    "UserAndPass"
+                    "builtin",
+                    "custom"
                   ]
                 },
-                "serviceEndpoint": {
-                  "description": "Service Connection",
+                "customTemplateLocation": {
+                  "description": "Packer template location",
                   "type": "string"
                 },
-                "username": {
-                  "description": "Username",
+                "customTemplateParameters": {
+                  "description": "Template parameters",
                   "type": "string"
                 },
-                "password": {
-                  "description": "Password",
+                "ConnectedServiceName": {
+                  "description": "Azure subscription",
                   "type": "string"
                 },
-                "url": {
-                  "description": "URL",
+                "location": {
+                  "description": "Storage location",
                   "type": "string"
                 },
-                "remotePath": {
-                  "description": "Remote Directory",
+                "storageAccountName": {
+                  "description": "Storage account",
                   "type": "string"
                 },
-                "options": {
-                  "description": "Optional Arguments",
+                "azureResourceGroup": {
+                  "description": "Resource group",
                   "type": "string"
                 },
-                "redirectStderr": {
-                  "description": "Redirect Standard Error to Standard Out",
+                "baseImageSource": {
+                  "description": "Base image source",
+                  "enum": [
+                    "default",
+                    "customVhd"
+                  ]
+                },
+                "baseImage": {
+                  "description": "Base image",
+                  "enum": [
+                    "MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter:windows",
+                    "MicrosoftWindowsServer:WindowsServer:2016-Datacenter:windows",
+                    "MicrosoftWindowsServer:WindowsServer:2012-Datacenter:windows",
+                    "MicrosoftWindowsServer:WindowsServer:2008-R2-SP1:windows",
+                    "Canonical:UbuntuServer:14.04.4-LTS:linux",
+                    "Canonical:UbuntuServer:16.04-LTS:linux",
+                    "RedHat:RHEL:7.2:linux",
+                    "RedHat:RHEL:6.8:linux",
+                    "OpenLogic:CentOS:7.2:linux",
+                    "OpenLogic:CentOS:6.8:linux",
+                    "credativ:Debian:8:linux",
+                    "credativ:Debian:7:linux",
+                    "SUSE:openSUSE-Leap:42.2:linux",
+                    "SUSE:SLES:12-SP2:linux",
+                    "SUSE:SLES:11-SP4:linux"
+                  ]
+                },
+                "customImageUrl": {
+                  "description": "Base image URL",
+                  "type": "string"
+                },
+                "customImageOSType": {
+                  "description": "Base image OS",
+                  "enum": [
+                    "windows",
+                    "linux"
+                  ]
+                },
+                "packagePath": {
+                  "description": "Deployment Package",
+                  "type": "string"
+                },
+                "deployScriptPath": {
+                  "description": "Deployment script",
+                  "type": "string"
+                },
+                "deployScriptArguments": {
+                  "description": "Deployment script arguments",
+                  "type": "string"
+                },
+                "additionalBuilderParameters": {
+                  "description": "Additional Builder parameters",
+                  "type": "string"
+                },
+                "skipTempFileCleanupDuringVMDeprovision": {
+                  "description": "Skip temporary file cleanup during deprovision",
                   "type": "boolean"
+                },
+                "imageUri": {
+                  "description": "Image URL",
+                  "type": "string"
                 }
               },
-              "description": "cURL Upload Files inputs"
+              "description": "Build Machine Image inputs"
             }
           }
         },
@@ -11112,6 +11417,142 @@
           "properties": {
             "task": {
               "pattern": "^[mM]aven@2$",
+              "description": "Maven\n\nBuild with Apache Maven"
+            },
+            "inputs": {
+              "properties": {
+                "mavenPOMFile": {
+                  "description": "Maven POM file",
+                  "type": "string"
+                },
+                "goals": {
+                  "description": "Goal(s)",
+                  "type": "string"
+                },
+                "options": {
+                  "description": "Options",
+                  "type": "string"
+                },
+                "publishJUnitResults": {
+                  "description": "Publish to TFS/Team Services",
+                  "type": "boolean"
+                },
+                "testResultsFiles": {
+                  "description": "Test results files",
+                  "type": "string"
+                },
+                "testRunTitle": {
+                  "description": "Test run title",
+                  "type": "string"
+                },
+                "codeCoverageTool": {
+                  "description": "Code coverage tool",
+                  "enum": [
+                    "None",
+                    "Cobertura",
+                    "JaCoCo"
+                  ]
+                },
+                "classFilter": {
+                  "description": "Class inclusion/exclusion filters",
+                  "type": "string"
+                },
+                "classFilesDirectories": {
+                  "description": "Class files directories",
+                  "type": "string"
+                },
+                "srcDirectories": {
+                  "description": "Source files directories",
+                  "type": "string"
+                },
+                "failIfCoverageEmpty": {
+                  "description": "Fail when code coverage results are missing",
+                  "type": "boolean"
+                },
+                "javaHomeSelection": {
+                  "description": "Set JAVA_HOME by",
+                  "enum": [
+                    "JDKVersion",
+                    "Path"
+                  ]
+                },
+                "jdkVersion": {
+                  "description": "JDK version",
+                  "enum": [
+                    "default",
+                    "1.10",
+                    "1.9",
+                    "1.8",
+                    "1.7",
+                    "1.6"
+                  ]
+                },
+                "jdkUserInputPath": {
+                  "description": "JDK path",
+                  "type": "string"
+                },
+                "jdkArchitecture": {
+                  "description": "JDK architecture",
+                  "enum": [
+                    "x86",
+                    "x64"
+                  ]
+                },
+                "mavenVersionSelection": {
+                  "description": "Maven version",
+                  "enum": [
+                    "Default",
+                    "Path"
+                  ]
+                },
+                "mavenPath": {
+                  "description": "Maven path",
+                  "type": "string"
+                },
+                "mavenSetM2Home": {
+                  "description": "Set M2_HOME variable",
+                  "type": "boolean"
+                },
+                "mavenOpts": {
+                  "description": "Set MAVEN_OPTS to",
+                  "type": "string"
+                },
+                "mavenFeedAuthenticate": {
+                  "description": "Authenticate built-in Maven feeds",
+                  "type": "boolean"
+                },
+                "sqAnalysisEnabled": {
+                  "description": "Run SonarQube or SonarCloud analysis",
+                  "type": "boolean"
+                },
+                "sqMavenPluginVersionChoice": {
+                  "description": "SonarQube scanner for Maven version",
+                  "enum": [
+                    "latest",
+                    "pom"
+                  ]
+                },
+                "checkstyleAnalysisEnabled": {
+                  "description": "Run Checkstyle",
+                  "type": "boolean"
+                },
+                "pmdAnalysisEnabled": {
+                  "description": "Run PMD",
+                  "type": "boolean"
+                },
+                "findbugsAnalysisEnabled": {
+                  "description": "Run FindBugs",
+                  "type": "boolean"
+                }
+              },
+              "description": "Maven inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[mM]aven@3$",
               "description": "Maven\n\nBuild with Apache Maven"
             },
             "inputs": {
@@ -11555,6 +11996,10 @@
                 "ApplicationInsightsResourceName": {
                   "description": "Application Insights resource name",
                   "type": "string"
+                },
+                "ApplicationInsightsWebTestName": {
+                  "description": "Application Insights web test name",
+                  "type": "string"
                 }
               },
               "description": "Azure App Service Manage inputs"
@@ -11679,6 +12124,72 @@
         {
           "properties": {
             "task": {
+              "pattern": "^[vV][sS][bB]uild@1$",
+              "description": "Visual Studio Build\n\nBuild with MSBuild and set the Visual Studio version property"
+            },
+            "inputs": {
+              "properties": {
+                "solution": {
+                  "description": "Solution",
+                  "type": "string"
+                },
+                "vsVersion": {
+                  "description": "Visual Studio Version",
+                  "enum": [
+                    "latest",
+                    "15.0",
+                    "14.0",
+                    "12.0",
+                    "11.0"
+                  ]
+                },
+                "msbuildArgs": {
+                  "description": "MSBuild Arguments",
+                  "type": "string"
+                },
+                "platform": {
+                  "description": "Platform",
+                  "type": "string"
+                },
+                "configuration": {
+                  "description": "Configuration",
+                  "type": "string"
+                },
+                "clean": {
+                  "description": "Clean",
+                  "type": "boolean"
+                },
+                "maximumCpuCount": {
+                  "description": "Build in Parallel",
+                  "type": "boolean"
+                },
+                "restoreNugetPackages": {
+                  "description": "Restore NuGet Packages",
+                  "type": "boolean"
+                },
+                "msbuildArchitecture": {
+                  "description": "MSBuild Architecture",
+                  "enum": [
+                    "x86",
+                    "x64"
+                  ]
+                },
+                "logProjectEvents": {
+                  "description": "Record Project Details",
+                  "type": "boolean"
+                },
+                "createLogFile": {
+                  "description": "Create Log File",
+                  "type": "boolean"
+                }
+              },
+              "description": "Visual Studio Build inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
               "pattern": "^[aA]ndroid[bB]uild@1$",
               "description": "Android Build\n\n[Deprecated]  Use Gradle"
             },
@@ -11752,93 +12263,6 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[vV][sS][bB]uild@1$",
-              "description": "Visual Studio Build\n\nBuild with MSBuild and set the Visual Studio version property"
-            },
-            "inputs": {
-              "properties": {
-                "solution": {
-                  "description": "Solution",
-                  "type": "string"
-                },
-                "vsVersion": {
-                  "description": "Visual Studio Version",
-                  "enum": [
-                    "latest",
-                    "15.0",
-                    "14.0",
-                    "12.0",
-                    "11.0"
-                  ]
-                },
-                "msbuildArgs": {
-                  "description": "MSBuild Arguments",
-                  "type": "string"
-                },
-                "platform": {
-                  "description": "Platform",
-                  "type": "string"
-                },
-                "configuration": {
-                  "description": "Configuration",
-                  "type": "string"
-                },
-                "clean": {
-                  "description": "Clean",
-                  "type": "boolean"
-                },
-                "maximumCpuCount": {
-                  "description": "Build in Parallel",
-                  "type": "boolean"
-                },
-                "restoreNugetPackages": {
-                  "description": "Restore NuGet Packages",
-                  "type": "boolean"
-                },
-                "msbuildArchitecture": {
-                  "description": "MSBuild Architecture",
-                  "enum": [
-                    "x86",
-                    "x64"
-                  ]
-                },
-                "logProjectEvents": {
-                  "description": "Record Project Details",
-                  "type": "boolean"
-                },
-                "createLogFile": {
-                  "description": "Create Log File",
-                  "type": "boolean"
-                }
-              },
-              "description": "Visual Studio Build inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
-              "pattern": "^[cC][mM]ake@1$",
-              "description": "CMake\n\nBuild with the CMake cross-platform build system"
-            },
-            "inputs": {
-              "properties": {
-                "cwd": {
-                  "description": "Working Directory",
-                  "type": "string"
-                },
-                "cmakeArgs": {
-                  "description": "Arguments",
-                  "type": "string"
-                }
-              },
-              "description": "CMake inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
               "pattern": "^[bB]ash@3$",
               "description": "Bash\n\nRun a Bash script on macOS, Linux, or Windows"
             },
@@ -11906,6 +12330,27 @@
                 }
               },
               "description": "Shell Script inputs"
+            }
+          }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[cC][mM]ake@1$",
+              "description": "CMake\n\nBuild with the CMake cross-platform build system"
+            },
+            "inputs": {
+              "properties": {
+                "cwd": {
+                  "description": "Working Directory",
+                  "type": "string"
+                },
+                "cmakeArgs": {
+                  "description": "Arguments",
+                  "type": "string"
+                }
+              },
+              "description": "CMake inputs"
             }
           }
         },
@@ -12226,120 +12671,6 @@
         {
           "properties": {
             "task": {
-              "pattern": "^[aA]zure[fF]ile[cC]opy@1$",
-              "description": "Azure File Copy\n\nCopy files to Azure blob or VM(s)"
-            },
-            "inputs": {
-              "properties": {
-                "SourcePath": {
-                  "description": "Source",
-                  "type": "string"
-                },
-                "ConnectedServiceNameSelector": {
-                  "description": "Azure Connection Type",
-                  "enum": [
-                    "ConnectedServiceName",
-                    "ConnectedServiceNameARM"
-                  ]
-                },
-                "ConnectedServiceName": {
-                  "description": "Azure Classic Subscription",
-                  "type": "string"
-                },
-                "ConnectedServiceNameARM": {
-                  "description": "Azure Subscription",
-                  "type": "string"
-                },
-                "Destination": {
-                  "description": "Destination Type",
-                  "enum": [
-                    "AzureBlob",
-                    "AzureVMs"
-                  ]
-                },
-                "StorageAccount": {
-                  "description": "Classic Storage Account",
-                  "type": "string"
-                },
-                "StorageAccountRM": {
-                  "description": "RM Storage Account",
-                  "type": "string"
-                },
-                "ContainerName": {
-                  "description": "Container Name",
-                  "type": "string"
-                },
-                "BlobPrefix": {
-                  "description": "Blob Prefix",
-                  "type": "string"
-                },
-                "EnvironmentName": {
-                  "description": "Cloud Service",
-                  "type": "string"
-                },
-                "EnvironmentNameRM": {
-                  "description": "Resource Group",
-                  "type": "string"
-                },
-                "ResourceFilteringMethod": {
-                  "description": "Select Machines By",
-                  "enum": [
-                    "machineNames",
-                    "tags"
-                  ]
-                },
-                "MachineNames": {
-                  "description": "Filter Criteria",
-                  "type": "string"
-                },
-                "vmsAdminUserName": {
-                  "description": "Admin Login",
-                  "type": "string"
-                },
-                "vmsAdminPassword": {
-                  "description": "Password",
-                  "type": "string"
-                },
-                "TargetPath": {
-                  "description": "Destination Folder",
-                  "type": "string"
-                },
-                "AdditionalArguments": {
-                  "description": "Additional Arguments",
-                  "type": "string"
-                },
-                "enableCopyPrerequisites": {
-                  "description": "Enable Copy Prerequisites",
-                  "type": "boolean"
-                },
-                "CopyFilesInParallel": {
-                  "description": "Copy in Parallel",
-                  "type": "boolean"
-                },
-                "CleanTargetBeforeCopy": {
-                  "description": "Clean Target",
-                  "type": "boolean"
-                },
-                "skipCACheck": {
-                  "description": "Test Certificate",
-                  "type": "boolean"
-                },
-                "outputStorageUri": {
-                  "description": "Storage Container URI",
-                  "type": "string"
-                },
-                "outputStorageContainerSasToken": {
-                  "description": "Storage Container SAS Token",
-                  "type": "string"
-                }
-              },
-              "description": "Azure File Copy inputs"
-            }
-          }
-        },
-        {
-          "properties": {
-            "task": {
               "pattern": "^[aA]zure[fF]ile[cC]opy@2$",
               "description": "Azure File Copy\n\nCopy files to Azure blob or VM(s)"
             },
@@ -12454,6 +12785,120 @@
               "description": "Azure File Copy inputs"
             }
           }
+        },
+        {
+          "properties": {
+            "task": {
+              "pattern": "^[aA]zure[fF]ile[cC]opy@1$",
+              "description": "Azure File Copy\n\nCopy files to Azure blob or VM(s)"
+            },
+            "inputs": {
+              "properties": {
+                "SourcePath": {
+                  "description": "Source",
+                  "type": "string"
+                },
+                "ConnectedServiceNameSelector": {
+                  "description": "Azure Connection Type",
+                  "enum": [
+                    "ConnectedServiceName",
+                    "ConnectedServiceNameARM"
+                  ]
+                },
+                "ConnectedServiceName": {
+                  "description": "Azure Classic Subscription",
+                  "type": "string"
+                },
+                "ConnectedServiceNameARM": {
+                  "description": "Azure Subscription",
+                  "type": "string"
+                },
+                "Destination": {
+                  "description": "Destination Type",
+                  "enum": [
+                    "AzureBlob",
+                    "AzureVMs"
+                  ]
+                },
+                "StorageAccount": {
+                  "description": "Classic Storage Account",
+                  "type": "string"
+                },
+                "StorageAccountRM": {
+                  "description": "RM Storage Account",
+                  "type": "string"
+                },
+                "ContainerName": {
+                  "description": "Container Name",
+                  "type": "string"
+                },
+                "BlobPrefix": {
+                  "description": "Blob Prefix",
+                  "type": "string"
+                },
+                "EnvironmentName": {
+                  "description": "Cloud Service",
+                  "type": "string"
+                },
+                "EnvironmentNameRM": {
+                  "description": "Resource Group",
+                  "type": "string"
+                },
+                "ResourceFilteringMethod": {
+                  "description": "Select Machines By",
+                  "enum": [
+                    "machineNames",
+                    "tags"
+                  ]
+                },
+                "MachineNames": {
+                  "description": "Filter Criteria",
+                  "type": "string"
+                },
+                "vmsAdminUserName": {
+                  "description": "Admin Login",
+                  "type": "string"
+                },
+                "vmsAdminPassword": {
+                  "description": "Password",
+                  "type": "string"
+                },
+                "TargetPath": {
+                  "description": "Destination Folder",
+                  "type": "string"
+                },
+                "AdditionalArguments": {
+                  "description": "Additional Arguments",
+                  "type": "string"
+                },
+                "enableCopyPrerequisites": {
+                  "description": "Enable Copy Prerequisites",
+                  "type": "boolean"
+                },
+                "CopyFilesInParallel": {
+                  "description": "Copy in Parallel",
+                  "type": "boolean"
+                },
+                "CleanTargetBeforeCopy": {
+                  "description": "Clean Target",
+                  "type": "boolean"
+                },
+                "skipCACheck": {
+                  "description": "Test Certificate",
+                  "type": "boolean"
+                },
+                "outputStorageUri": {
+                  "description": "Storage Container URI",
+                  "type": "string"
+                },
+                "outputStorageContainerSasToken": {
+                  "description": "Storage Container SAS Token",
+                  "type": "string"
+                }
+              },
+              "description": "Azure File Copy inputs"
+            }
+          }
         }
       ],
       "properties": {
@@ -12521,6 +12966,7 @@
             "DotNetCoreCLI@0",
             "DotNetCoreInstaller@0",
             "DownloadBuildArtifacts@0",
+            "DownloadBuildDrop@0",
             "DownloadFileshareArtifacts@1",
             "DownloadPackage@0",
             "DownloadSecureFile@1",
@@ -12553,6 +12999,7 @@
             "Kubernetes@0",
             "MSBuild@1",
             "ManualIntervention@8",
+            "Maven@3",
             "Maven@2",
             "Maven@1",
             "NodeTool@0",
@@ -12572,6 +13019,7 @@
             "PowerShellOnTargetMachines@2",
             "PowerShellOnTargetMachines@1",
             "PublishBuildArtifacts@1",
+            "PublishBuildDrop@0",
             "PublishCodeCoverageResults@1",
             "PublishSymbols@2",
             "PublishSymbols@1",
@@ -12595,6 +13043,7 @@
             "SqlAzureDacpacDeployment@1",
             "SqlDacpacDeploymentOnMachineGroup@0",
             "SqlServerDacpacDeployment@1",
+            "UniversalPackages@0",
             "UsePythonVersion@0",
             "UseRubyVersion@0",
             "VSBuild@1",
@@ -12618,7 +13067,8 @@
             "cURLUploader@2",
             "cURLUploader@1",
             "npmAuthenticate@0",
-            "queryWorkItems@0"
+            "queryWorkItems@0",
+            "replacetokens@3"
           ],
           "description": "Task reference including major version"
         },

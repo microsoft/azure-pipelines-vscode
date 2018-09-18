@@ -321,8 +321,8 @@ const phasesAtRoot140 = augment({
 
 export const schema140: string = JSON.stringify({
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://github.com/Microsoft/vsts-agent/blob/master/src/Misc/ci-schema.json",
-    "$comment": "v1.140.1",
+    "$id": "https://github.com/Microsoft/azure-pipelines-vscode/blob/master/local-schema.json",
+    "$comment": "v1.140.2",
     "title": "Pipeline schema",
     "description": "A pipeline definition",
     "$ref": "#/definitions/pipeline",

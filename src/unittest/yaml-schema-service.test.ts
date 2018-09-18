@@ -39,34 +39,7 @@ suite("Yaml Schema Service Tests", function () {
     // test('Missing task fields throws exception', function() {
     //     runExceptionTest();
     // });
-
-    test('Given a list of tasks, the schema is structured as expected', function() {
-        runFullSchemaTest(['npm-task.json', 'all-inputs-task.json', 'nameregex-task.json'], 'full-schema.json');
-    });
 });
-
-function runFullSchemaTest(taskJsonFiles: string[], schemaFile: string) {
-    // Arrange
-    const tasksList: DTTask[] = [];
-    taskJsonFiles.forEach((taskJsonFile) => {
-        const taskJsonPath: string = path.join(taskTestDataRoot, taskJsonFile);
-        const taskContent: string = fs.readFileSync(taskJsonPath, 'utf8');
-        const task: DTTask = JSON.parse(taskContent);
-
-        tasksList.push(task);
-    });
-
-    const schemaPath: string = path.join(taskSchemaDataRoot, schemaFile);
-    const expectedSchemaContents: string = fs.readFileSync(schemaPath, 'utf8');
-    const expectedSchema: object = JSON.parse(expectedSchemaContents);
-    const yamlSchemaService = new YamlSchemaService();
-
-    // Act
-    const fullSchema: object = yamlSchemaService.getFullSchema(tasksList);
-
-    // Assert
-    assert.deepEqual(fullSchema, expectedSchema);
-}
 
 function runTaskTest(taskJsonFile: string, schemaFile: string) {
     // Arrange
