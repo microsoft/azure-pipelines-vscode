@@ -209,49 +209,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "job": {
-          "oneOf": [
-            {
-              "type": "string",
-              "description": "ID of the job",
-              "pattern": "^[_A-Za-z0-9]*$"
-            },
-            {
-              "type": "integer",
-              "description": "ID of the job"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "displayName": {
-          "type": "string",
-          "description": "Human-readable name of the job"
-        },
-        "dependsOn": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "uniqueItems": true
-              }
-            }
-          ],
-          "description": "Any jobs which must complete before this one"
-        },
-        "condition": {
-          "type": "string",
-          "description": "Evaluate this condition expression to determine whether to run this job"
-        },
-        "continueOnError": {
-          "$ref": "#/definitions/booleanMacroRuntimeExpression",
-          "description": "Continue running this job even on failure?"
-        },
         "pool": {
           "oneOf": [
             {
@@ -313,21 +270,9 @@
             "$ref": "#/definitions/stepOrTemplateExpression"
           }
         },
-        "template": {
-          "type": "string",
-          "description": "Reference to a template for this job"
-        },
         "parameters": {
           "description": "Parameters used in a pipeline template",
           "type": "object"
-        },
-        "timeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroRuntimeExpression",
-          "description": "Time to wait before cancelling the job"
-        },
-        "cancelTimeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroRuntimeExpression",
-          "description": "Time to wait for the job to cancel before forcibly terminating it"
         },
         "container": {
           "type": "string",
@@ -355,45 +300,6 @@
       "additionalProperties": false,
       "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
       "properties": {
-        "phase": {
-          "oneOf": [
-            {
-              "type": "string",
-              "description": "ID of the phase",
-              "pattern": "^[_A-Za-z0-9]*$"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "displayName": {
-          "type": "string",
-          "description": "Human-readable name of the phase"
-        },
-        "dependsOn": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "uniqueItems": true
-              }
-            }
-          ],
-          "description": "Any phases which must complete before this one"
-        },
-        "condition": {
-          "type": "string",
-          "description": "Evaluate this condition expression to determine whether to run this phase"
-        },
-        "continueOnError": {
-          "$ref": "#/definitions/booleanMacroRuntimeExpression",
-          "description": "Continue running this phase even on failure?"
-        },
         "queue": {
           "oneOf": [
             {
@@ -403,7 +309,7 @@
               "$ref": "#/definitions/queue"
             }
           ],
-          "description": "Queue where this phase will run"
+          "description": "[DEPRECATED] Queue where this phase will run"
         },
         "server": {
           "oneOf": [
@@ -415,10 +321,6 @@
             }
           ],
           "description": "True if this is an agent-less phase (runs on server)"
-        },
-        "matrix": {
-          "$ref": "#/definitions/matrix",
-          "description": "Matrix strategy for this phase"
         },
         "variables": {
           "oneOf": [
@@ -462,10 +364,6 @@
             "$ref": "#/definitions/stepOrTemplateExpression"
           }
         },
-        "template": {
-          "type": "string",
-          "description": "Reference to a template for this phase"
-        },
         "parameters": {
           "description": "Parameters used in a pipeline template",
           "type": "object"
@@ -492,49 +390,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "job": {
-          "oneOf": [
-            {
-              "type": "string",
-              "description": "ID of the job",
-              "pattern": "^[_A-Za-z0-9]*$"
-            },
-            {
-              "type": "integer",
-              "description": "ID of the job"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "displayName": {
-          "type": "string",
-          "description": "Human-readable name of the job"
-        },
-        "dependsOn": {
-          "oneOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "uniqueItems": true
-              }
-            }
-          ],
-          "description": "Any jobs which must complete before this one"
-        },
-        "condition": {
-          "type": "string",
-          "description": "Evaluate this condition expression to determine whether to run this job"
-        },
-        "continueOnError": {
-          "$ref": "#/definitions/booleanMacroRuntimeExpression",
-          "description": "Continue running this job even on failure?"
-        },
         "pool": {
           "oneOf": [
             {
@@ -596,21 +451,9 @@
             "$ref": "#/definitions/stepOrTemplateExpression"
           }
         },
-        "template": {
-          "type": "string",
-          "description": "Reference to a template for this job"
-        },
         "parameters": {
           "description": "Parameters used in a pipeline template",
           "type": "object"
-        },
-        "timeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroRuntimeExpression",
-          "description": "Time to wait before cancelling the job"
-        },
-        "cancelTimeoutInMinutes": {
-          "$ref": "#/definitions/integerMacroRuntimeExpression",
-          "description": "Time to wait for the job to cancel before forcibly terminating it"
         },
         "container": {
           "type": "string",
@@ -618,29 +461,34 @@
         },
         "workspace": {
           "$ref": "#/definitions/workspace"
-        }
-      }
-    },
-    "phase": {
-      "type": "object",
-      "additionalProperties": false,
-      "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
-      "properties": {
-        "phase": {
+        },
+        "job": {
           "oneOf": [
             {
               "type": "string",
-              "description": "ID of the phase",
+              "description": "ID of the job",
               "pattern": "^[_A-Za-z0-9]*$"
+            },
+            {
+              "type": "integer",
+              "description": "ID of the job"
             },
             {
               "type": "null"
             }
           ]
         },
+        "continueOnError": {
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
+          "description": "Continue running this job even on failure?"
+        },
         "displayName": {
           "type": "string",
-          "description": "Human-readable name of the phase"
+          "description": "Human-readable name of the job"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Evaluate this condition expression to determine whether to run this job"
         },
         "dependsOn": {
           "oneOf": [
@@ -655,16 +503,27 @@
               }
             }
           ],
-          "description": "Any phases which must complete before this one"
+          "description": "Any jobs which must complete before this one"
         },
-        "condition": {
+        "template": {
           "type": "string",
-          "description": "Evaluate this condition expression to determine whether to run this phase"
+          "description": "Reference to a template for this job"
         },
-        "continueOnError": {
-          "$ref": "#/definitions/booleanMacroRuntimeExpression",
-          "description": "Continue running this phase even on failure?"
+        "timeoutInMinutes": {
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
+          "description": "Time to wait before cancelling the job"
         },
+        "cancelTimeoutInMinutes": {
+          "$ref": "#/definitions/integerMacroRuntimeExpression",
+          "description": "Time to wait for the job to cancel before forcibly terminating it"
+        }
+      }
+    },
+    "phase": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
+      "properties": {
         "queue": {
           "oneOf": [
             {
@@ -674,7 +533,7 @@
               "$ref": "#/definitions/queue"
             }
           ],
-          "description": "Queue where this phase will run"
+          "description": "[DEPRECATED] Queue where this phase will run"
         },
         "server": {
           "oneOf": [
@@ -686,10 +545,6 @@
             }
           ],
           "description": "True if this is an agent-less phase (runs on server)"
-        },
-        "matrix": {
-          "$ref": "#/definitions/matrix",
-          "description": "Matrix strategy for this phase"
         },
         "variables": {
           "oneOf": [
@@ -733,13 +588,52 @@
             "$ref": "#/definitions/stepOrTemplateExpression"
           }
         },
-        "template": {
-          "type": "string",
-          "description": "Reference to a template for this phase"
-        },
         "parameters": {
           "description": "Parameters used in a pipeline template",
           "type": "object"
+        },
+        "phase": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "ID of the phase",
+              "pattern": "^[_A-Za-z0-9]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable name of the phase"
+        },
+        "dependsOn": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "uniqueItems": true
+              }
+            }
+          ],
+          "description": "Any phases which must complete before this one"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Evaluate this condition expression to determine whether to run this phase"
+        },
+        "continueOnError": {
+          "$ref": "#/definitions/booleanMacroRuntimeExpression",
+          "description": "Continue running this phase even on failure?"
+        },
+        "template": {
+          "type": "string",
+          "description": "Reference to a template for this phase"
         }
       }
     },
