@@ -888,6 +888,10 @@ export const schema140: string = JSON.stringify({
           {
             "type": "object",
             "properties": {
+              "batch": {
+                "type": "boolean",
+                "description": "Whether to batch changes per branch"
+              },
               "branches": {
                 "type": "object",
                 "properties": {
