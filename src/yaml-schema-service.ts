@@ -14,12 +14,12 @@ export interface IYamlSchemaService {
 export class YamlSchemaService implements IYamlSchemaService {
     public getFullSchema(tasks: DTTask[]): object {
         logger.log('getSchemaFromTasks');
-        let anyOf: object[] = [];
+        let taskDefinitions: object[] = [];
         let taskVersions: [string, number][] = [];
 
         for (var i = 0; i < tasks.length; i++) {
             const taskSchema: object = this.getSchemaFromTask(tasks[i]);
-            anyOf.push(taskSchema);
+            taskDefinitions.push(taskSchema);
             taskVersions.push([tasks[i].name, tasks[i].version.major]);
         }
 
@@ -36,7 +36,7 @@ export class YamlSchemaService implements IYamlSchemaService {
         const taskNames: string[] = taskVersions.map((item) => item[0] + "@" + item[1]);
 
         const fullSchema = schemata.schema140
-                                   .replace('"{{{anyOf}}}"', JSON.stringify(anyOf))
+                                   .replace('"{{{taskDefinitions}}}"', JSON.stringify(taskDefinitions))
                                    .replace('"{{{taskNames}}}"', JSON.stringify(taskNames));
 
         return JSON.parse(fullSchema);
