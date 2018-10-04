@@ -142,7 +142,7 @@ const jobIllegalAtRoot140 = {
     "description": "Human-readable name of the job"
   },
   "condition": {
-    "type": "string",
+    "$ref": "#/definitions/booleanMacroRuntimeExpression",
     "description": "Evaluate this condition expression to determine whether to run this job"
   },
   "dependsOn": {
@@ -256,7 +256,7 @@ const phaseIllegalAtRoot140 = {
     "description": "Any phases which must complete before this one"
   },
   "condition": {
-    "type": "string",
+    "$ref": "#/definitions/booleanMacroRuntimeExpression",
     "description": "Evaluate this condition expression to determine whether to run this phase"
   },
   "continueOnError": {
@@ -570,7 +570,7 @@ export const schema140: string = JSON.stringify({
             "description": "Start the script with this working directory"
           },
           "condition": {
-            "type": "string",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
@@ -619,7 +619,7 @@ export const schema140: string = JSON.stringify({
             "description": "Start the script with this working directory"
           },
           "condition": {
-            "type": "string",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
@@ -688,7 +688,7 @@ export const schema140: string = JSON.stringify({
             "description": "Start the script with this working directory"
           },
           "condition": {
-            "type": "string",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
@@ -1072,7 +1072,7 @@ export const schema140: string = JSON.stringify({
         "required": [
           "task"
         ],
-        "anyOf": "{{{anyOf}}}",
+        "anyOf": "{{{taskDefinitions}}}",
         "properties": {
           "task": {
             "enum": "{{{taskNames}}}",
@@ -1088,7 +1088,7 @@ export const schema140: string = JSON.stringify({
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "condition": {
-            "type": "string",
+            "$ref": "#/definitions/booleanMacroRuntimeExpression",
             "description": "Evaluate this condition expression to determine whether to run this task"
           },
           "continueOnError": {
