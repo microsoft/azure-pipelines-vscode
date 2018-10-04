@@ -68,53 +68,10 @@ const commonPipelineValues = {
   /* End common */
 };
 
-const job140 = {
+const jobLegalAtRoot140 = {
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "job": {
-      "oneOf": [
-        {
-          "type": "string",
-          "description": "ID of the job",
-          "pattern": "^[_A-Za-z0-9]*$"
-        },
-        {
-          "type": "integer",
-          "description": "ID of the job"
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "displayName": {
-      "type": "string",
-      "description": "Human-readable name of the job"
-    },
-    "dependsOn": {
-      "oneOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "uniqueItems": true
-          }
-        }
-      ],
-      "description": "Any jobs which must complete before this one"
-    },
-    "condition": {
-      "type": "string",
-      "description": "Evaluate this condition expression to determine whether to run this job"
-    },
-    "continueOnError": {
-      "$ref": "#/definitions/booleanMacroRuntimeExpression",
-      "description": "Continue running this job even on failure?"
-    },
     "pool": {
       "oneOf": [
         {
@@ -145,21 +102,9 @@ const job140 = {
         "$ref": "#/definitions/stepOrTemplateExpression"
       }
     },
-    "template": {
-      "type": "string",
-      "description": "Reference to a template for this job"
-    },
     "parameters": {
       "description": "Parameters used in a pipeline template",
       "type": "object"
-    },
-    "timeoutInMinutes": {
-      "$ref": "#/definitions/integerMacroRuntimeExpression",
-      "description": "Time to wait before cancelling the job"
-    },
-    "cancelTimeoutInMinutes": {
-      "$ref": "#/definitions/integerMacroRuntimeExpression",
-      "description": "Time to wait for the job to cancel before forcibly terminating it"
     },
     "container": {
       "type": "string",
@@ -171,52 +116,73 @@ const job140 = {
   }
 };
 
-const jobAtRoot140 = augment(job140, "properties", commonPipelineValues);
+const jobIllegalAtRoot140 = {
+  "job": {
+    "oneOf": [
+      {
+        "type": "string",
+        "description": "ID of the job",
+        "pattern": "^[_A-Za-z0-9]*$"
+      },
+      {
+        "type": "integer",
+        "description": "ID of the job"
+      },
+      {
+        "type": "null"
+      }
+    ]
+  },
+  "continueOnError": {
+    "$ref": "#/definitions/booleanMacroRuntimeExpression",
+    "description": "Continue running this job even on failure?"
+  },
+  "displayName": {
+    "type": "string",
+    "description": "Human-readable name of the job"
+  },
+  "condition": {
+    "type": "string",
+    "description": "Evaluate this condition expression to determine whether to run this job"
+  },
+  "dependsOn": {
+    "oneOf": [
+      {
+        "type": "string"
+      },
+      {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "uniqueItems": true
+        }
+      }
+    ],
+    "description": "Any jobs which must complete before this one"
+  },
+  "template": {
+    "type": "string",
+    "description": "Reference to a template for this job"
+  },
+  "timeoutInMinutes": {
+    "$ref": "#/definitions/integerMacroRuntimeExpression",
+    "description": "Time to wait before cancelling the job"
+  },
+  "cancelTimeoutInMinutes": {
+    "$ref": "#/definitions/integerMacroRuntimeExpression",
+    "description": "Time to wait for the job to cancel before forcibly terminating it"
+  },
+};
 
-const phase140 = {
+const job140 = augment(jobLegalAtRoot140, "properties", jobIllegalAtRoot140);
+
+const jobAtRoot140 = augment(jobLegalAtRoot140, "properties", commonPipelineValues);
+
+const phaseLegalAtRoot140 = {
   "type": "object",
   "additionalProperties": false,
   "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
   "properties": {
-    "phase": {
-      "oneOf": [
-        {
-          "type": "string",
-          "description": "ID of the phase",
-          "pattern": "^[_A-Za-z0-9]*$"
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
-    "displayName": {
-      "type": "string",
-      "description": "Human-readable name of the phase"
-    },
-    "dependsOn": {
-      "oneOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "uniqueItems": true
-          }
-        }
-      ],
-      "description": "Any phases which must complete before this one"
-    },
-    "condition": {
-      "type": "string",
-      "description": "Evaluate this condition expression to determine whether to run this phase"
-    },
-    "continueOnError": {
-      "$ref": "#/definitions/booleanMacroRuntimeExpression",
-      "description": "Continue running this phase even on failure?"
-    },
     "queue": {
       "oneOf": [
         {
@@ -226,7 +192,7 @@ const phase140 = {
           "$ref": "#/definitions/queue"
         }
       ],
-      "description": "Queue where this phase will run"
+      "description": "[DEPRECATED] Queue where this phase will run"
     },
     "server": {
       "oneOf": [
@@ -239,10 +205,6 @@ const phase140 = {
       ],
       "description": "True if this is an agent-less phase (runs on server)"
     },
-    "matrix": {
-      "$ref": "#/definitions/matrix",
-      "description": "Matrix strategy for this phase"
-    },
     "variables": {
       "oneOf": commonVariablesOneOf,
       "description": "Phase-specific variables"    
@@ -254,10 +216,6 @@ const phase140 = {
         "$ref": "#/definitions/stepOrTemplateExpression"
       }
     },
-    "template": {
-      "type": "string",
-      "description": "Reference to a template for this phase"
-    },
     "parameters": {
       "description": "Parameters used in a pipeline template",
       "type": "object"
@@ -265,7 +223,55 @@ const phase140 = {
   }
 };
 
-const phaseAtRoot140 = augment(phase140, "properties", commonPipelineValues);
+const phaseIllegalAtRoot140 = {
+  "phase": {
+    "oneOf": [
+      {
+        "type": "string",
+        "description": "ID of the phase",
+        "pattern": "^[_A-Za-z0-9]*$"
+      },
+      {
+        "type": "null"
+      }
+    ]
+  },
+  "displayName": {
+    "type": "string",
+    "description": "Human-readable name of the phase"
+  },
+  "dependsOn": {
+    "oneOf": [
+      {
+        "type": "string"
+      },
+      {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "uniqueItems": true
+        }
+      }
+    ],
+    "description": "Any phases which must complete before this one"
+  },
+  "condition": {
+    "type": "string",
+    "description": "Evaluate this condition expression to determine whether to run this phase"
+  },
+  "continueOnError": {
+    "$ref": "#/definitions/booleanMacroRuntimeExpression",
+    "description": "Continue running this phase even on failure?"
+  },
+  "template": {
+    "type": "string",
+    "description": "Reference to a template for this phase"
+  },
+};
+
+const phase140 = augment(phaseLegalAtRoot140, "properties", phaseIllegalAtRoot140);
+
+const phaseAtRoot140 = augment(phaseLegalAtRoot140, "properties", commonPipelineValues);
 
 const stagesAtRoot140 = augment({
   "additionalProperties": false,
@@ -388,8 +394,8 @@ export const schema140: string = JSON.stringify({
             "description": "Name of a pool"
           },
           "vmImage": {
-            "type": "string",
-            "description": "For the Azure Pipelines pool, the name of the VM image to use"
+            "description": "For the Azure Pipelines pool, the name of the VM image to use",
+            "$ref": "#/definitions/vmImage"
           },
           "demands": {
             "oneOf": [
@@ -888,6 +894,10 @@ export const schema140: string = JSON.stringify({
           {
             "type": "object",
             "properties": {
+              "batch": {
+                "type": "boolean",
+                "description": "Whether to batch changes per branch"
+              },
               "branches": {
                 "type": "object",
                 "properties": {
@@ -1103,6 +1113,22 @@ export const schema140: string = JSON.stringify({
           }
         },
         "additionalProperties": false
+      },
+      "vmImage": {
+        "anyOf": [
+          {
+            "enum": [
+              "ubuntu-16.04",
+              "vs2015-win2012r2",
+              "vs2017-win2016",
+              "win1803",
+              "macos-10.13"    
+            ]
+          },
+          {
+            "type": "string"
+          }
+        ]
       }
     }
   });
