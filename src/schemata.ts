@@ -380,7 +380,7 @@ export const schema140: string = JSON.stringify({
           },
           {
             "type": "array",
-            "description": "[DEPRECATED] Use `repositories` or `checkout` instead.\n\nRepository options"
+            "description": "[DEPRECATED] Use `repositories` or `containers` instead."
           }
         ]
       },
@@ -879,6 +879,18 @@ export const schema140: string = JSON.stringify({
           }
         }
       },
+      "branchFilter": {
+        "type": "string",
+        /* This only covers illegal single characters, it does not enforce .. or .lock rules */
+        "pattern": "^[^\\/~\\^\\: \\[\\]\\*\\\\]+(\\/[^\\/~\\^\\: \\[\\]\\*\\\\]+)*(\\/\\*)?$",
+        "description": "branch name or prefix filter"
+      },
+      "branchFilterArray": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/branchFilter"
+        }
+      },
       "trigger": {
         "oneOf": [
           {
@@ -886,10 +898,7 @@ export const schema140: string = JSON.stringify({
             "pattern": "^none$"
           },
           {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+            "$ref": "#/definitions/branchFilterArray"
           },
           {
             "type": "object",
@@ -902,16 +911,10 @@ export const schema140: string = JSON.stringify({
                 "type": "object",
                 "properties": {
                   "include": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
+                    "$ref": "#/definitions/branchFilterArray"
                   },
                   "exclude": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
+                    "$ref": "#/definitions/branchFilterArray"
                   }
                 }
               },
