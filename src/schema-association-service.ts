@@ -22,7 +22,8 @@ export class SchemaAssociationService implements ISchemaAssociationService {
     }
 
     public getSchemaAssociation(): ISchemaAssociations {
-        return { '*.*': [this.schemaFilePath] };
+        //return { '*.*': [this.schemaFilePath] };
+        return { '*': [this.schemaFilePath] };
     }
 }
 
