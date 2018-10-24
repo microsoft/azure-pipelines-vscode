@@ -84,7 +84,7 @@ const jobLegalAtRoot140 = {
       "description": "Pool where this job will run"
     },
     "server": {
-      "$ref": "#/definitions/booleanMacroRuntimeExpression",
+      "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
       "description": "True if this is an agent-less job (runs on server)"
     },
     "strategy": {
@@ -134,7 +134,7 @@ const jobIllegalAtRoot140 = {
     ]
   },
   "continueOnError": {
-    "$ref": "#/definitions/booleanMacroRuntimeExpression",
+    "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
     "description": "Continue running this job even on failure?"
   },
   "displayName": {
@@ -142,7 +142,7 @@ const jobIllegalAtRoot140 = {
     "description": "Human-readable name of the job"
   },
   "condition": {
-    "$ref": "#/definitions/booleanMacroRuntimeExpression",
+    "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
     "description": "Evaluate this condition expression to determine whether to run this job"
   },
   "dependsOn": {
@@ -165,11 +165,11 @@ const jobIllegalAtRoot140 = {
     "description": "Reference to a template for this job"
   },
   "timeoutInMinutes": {
-    "$ref": "#/definitions/integerMacroRuntimeExpression",
+    "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
     "description": "Time to wait before cancelling the job"
   },
   "cancelTimeoutInMinutes": {
-    "$ref": "#/definitions/integerMacroRuntimeExpression",
+    "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
     "description": "Time to wait for the job to cancel before forcibly terminating it"
   },
 };
@@ -197,7 +197,7 @@ const phaseLegalAtRoot140 = {
     "server": {
       "oneOf": [
         {
-          "$ref": "#/definitions/booleanMacroRuntimeExpression"
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression"
         },
         {
           "$ref": "#/definitions/legacyServer"
@@ -256,11 +256,11 @@ const phaseIllegalAtRoot140 = {
     "description": "Any phases which must complete before this one"
   },
   "condition": {
-    "$ref": "#/definitions/booleanMacroRuntimeExpression",
+    "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
     "description": "Evaluate this condition expression to determine whether to run this phase"
   },
   "continueOnError": {
-    "$ref": "#/definitions/booleanMacroRuntimeExpression",
+    "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
     "description": "Continue running this phase even on failure?"
   },
   "template": {
@@ -437,15 +437,15 @@ export const schema140: string = JSON.stringify({
             "description": "List of demands (for a private queue)"
           },
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerMacroRuntimeExpression",
+            "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
             "description": "Time to wait before cancelling the phase"
           },
           "cancelTimeoutInMinutes": {
-            "$ref": "#/definitions/integerMacroRuntimeExpression",
+            "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
             "description": "Time to wait for the phase to cancel before forcibly terminating it"
           },
           "parallel": {
-            "$ref": "#/definitions/integerMacroRuntimeExpression",
+            "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
             "description": "Maximum number of parallel agent executions"
           },
           "matrix": {
@@ -469,7 +469,7 @@ export const schema140: string = JSON.stringify({
                 "$ref": "#/definitions/matrix"
               },
               "maxParallel": {
-                "$ref": "#/definitions/integerMacroRuntimeExpression",
+                "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
                 "description": "Maximum number of jobs running in parallel"
               }
             },
@@ -478,11 +478,11 @@ export const schema140: string = JSON.stringify({
           {
             "properties": {
               "parallel": {
-                "$ref": "#/definitions/integerMacroRuntimeExpression",
+                "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
                 "description": "Run the job this many times"
               },
               "maxParallel": {
-                "$ref": "#/definitions/integerMacroRuntimeExpression",
+                "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
                 "description": "Maximum number of jobs running in parallel"
               }
             },
@@ -506,15 +506,15 @@ export const schema140: string = JSON.stringify({
         "additionalProperties": false,
         "properties": {
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerMacroRuntimeExpression",
+            "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
             "description": "Time to wait before cancelling the job"
           },
           "cancelTimeoutInMinutes": {
-            "$ref": "#/definitions/integerMacroRuntimeExpression",
+            "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
             "description": "Time to wait for the job to cancel before forcibly terminating it"
           },
           "parallel": {
-            "$ref": "#/definitions/integerMacroRuntimeExpression",
+            "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
             "description": "Maximum number of parallel agent executions"
           },
           "matrix": {
@@ -562,7 +562,7 @@ export const schema140: string = JSON.stringify({
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "failOnStderr": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "workingDirectory": {
@@ -570,19 +570,19 @@ export const schema140: string = JSON.stringify({
             "description": "Start the script with this working directory"
           },
           "condition": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Continue running the parent job even on failure?"
           },
           "enabled": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Run this script when the job runs?"
           },
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerMacroExpression",
+            "$ref": "#/definitions/integerTemplateMacroExpression",
             "description": "Time to wait for this script to complete before the server kills it"
           },
           "env": {
@@ -611,7 +611,7 @@ export const schema140: string = JSON.stringify({
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "failOnStderr": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "workingDirectory": {
@@ -619,19 +619,19 @@ export const schema140: string = JSON.stringify({
             "description": "Start the script with this working directory"
           },
           "condition": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Continue running the parent job even on failure?"
           },
           "enabled": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Run this script when the job runs?"
           },
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerMacroExpression",
+            "$ref": "#/definitions/integerTemplateMacroExpression",
             "description": "Time to wait for this script to complete before the server kills it"
           },
           "env": {
@@ -670,17 +670,17 @@ export const schema140: string = JSON.stringify({
                 ],
               },
               {
-                "$ref": "#/definitions/macroRuntimeExpression"
+                "$ref": "#/definitions/templateMacroRuntimeExpression"
               }
             ],
             "description": "Strategy for dealing with script errors"
           },
           "failOnStderr": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Fail the task if output is sent to Stderr?"
           },
           "ignoreLASTEXITCODE": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Check the final exit code of the script to determine whether the step succeeded?"
           },
           "workingDirectory": {
@@ -688,19 +688,19 @@ export const schema140: string = JSON.stringify({
             "description": "Start the script with this working directory"
           },
           "condition": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Evaluate this condition expression to determine whether to run this script"
           },
           "continueOnError": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Continue running the parent job even on failure?"
           },
           "enabled": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Run this script when the job runs?"
           },
           "timeoutInMinutes": {
-            "$ref": "#/definitions/integerMacroExpression",
+            "$ref": "#/definitions/integerTemplateMacroExpression",
             "description": "Time to wait for this script to complete before the server kills it"
           },
           "env": {
@@ -724,27 +724,27 @@ export const schema140: string = JSON.stringify({
             "description": "Whether or not to check out the repository containing this pipeline definition"
           },
           "clean": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Start from a clean, freshly-fetched workdir?"
           },
           "fetchDepth": {
-            "$ref": "#/definitions/integerMacroExpression",
+            "$ref": "#/definitions/integerTemplateMacroExpression",
             "description": "Depth of Git graph to fetch"
           },
           "lfs": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Fetch Git-LFS objects?"
           },
           "submodules": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Check out Git submodules?"
           },
           "persistCredentials": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Keep credentials available for later use?"
           },
           "condition": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Is this step enabled?"
           }
         }
@@ -805,15 +805,15 @@ export const schema140: string = JSON.stringify({
           },
           "clean": {
             "description": "Scorch the repo before fetching?",
-            "$ref": "#/definitions/booleanMacroRuntimeExpression"
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression"
           },
           "fetchDepth": {
             "description": "Depth of Git graph to fetch",
-            "$ref": "#/definitions/integerMacroRuntimeExpression",
+            "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
           },
           "lfs": {
             "description": "Fetch and checkout Git LFS objects?",
-            "$ref": "#/definitions/booleanMacroRuntimeExpression"
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression"
           },
           "mappings": {
             "description": "Workspace mappings for TFVC",
@@ -824,7 +824,7 @@ export const schema140: string = JSON.stringify({
           },
           "submodules": {
             "description": "Fetch and checkout submodules?",
-            "$ref": "#/definitions/booleanMacroRuntimeExpression"
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression"
           },
           "checkoutOptions": {
             "description": "[DEPRECATED] Move these up a level as peers of the `repository` keyword.",
@@ -862,7 +862,7 @@ export const schema140: string = JSON.stringify({
             "description": "Options to pass into container host"
           },
           "localImage": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Build the image locally?"
           },
           "env": {
@@ -952,7 +952,7 @@ export const schema140: string = JSON.stringify({
           },
           "cloak": {
             "description": "Cloak this path?",
-            "$ref": "#/definitions/booleanMacroRuntimeExpression"
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression"
           },
         }
       },
@@ -988,17 +988,30 @@ export const schema140: string = JSON.stringify({
           }
         ]
       },
-      "booleanMacroExpression": {
+      "booleanTemplateExpression": {
+        "oneOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "$ref": "#/definitions/templateExpression"
+          }
+        ]
+      },
+      "booleanTemplateMacroExpression": {
         "oneOf": [
           {
             "type": "boolean"
           },
           {
             "$ref": "#/definitions/macroExpression"
+          },
+          {
+            "$ref": "#/definitions/templateExpression"
           }
         ]
       },
-      "booleanMacroRuntimeExpression": {
+      "booleanTemplateMacroRuntimeExpression": {
         "oneOf": [
           {
             "type": "boolean"
@@ -1008,20 +1021,36 @@ export const schema140: string = JSON.stringify({
           },
           {
             "$ref": "#/definitions/macroExpression"
+          },
+          {
+            "$ref": "#/definitions/templateExpression"
           }
         ]
       },
-      "integerMacroExpression": {
+      "integerTemplateExpression": {
+        "oneOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "$ref": "#/definitions/templateExpression"
+          }
+        ]
+      },
+      "integerTemplateMacroExpression": {
         "oneOf": [
           {
             "type": "integer"
           },
           {
             "$ref": "#/definitions/macroExpression"
+          },
+          {
+            "$ref": "#/definitions/templateExpression"
           }
         ]
       },
-      "integerMacroRuntimeExpression": {
+      "integerTemplateMacroRuntimeExpression": {
         "oneOf": [
           {
             "type": "integer"
@@ -1031,16 +1060,22 @@ export const schema140: string = JSON.stringify({
           },
           {
             "$ref": "#/definitions/macroExpression"
+          },
+          {
+            "$ref": "#/definitions/templateExpression"
           }
         ]
       },
-      "macroRuntimeExpression": {
+      "templateMacroRuntimeExpression": {
         "oneOf": [
           {
             "$ref": "#/definitions/runtimeExpression"
           },
           {
             "$ref": "#/definitions/macroExpression"
+          },
+          {
+            "$ref": "#/definitions/templateExpression"
           }
         ]
       },
@@ -1052,20 +1087,14 @@ export const schema140: string = JSON.stringify({
         "type": "string",
         "pattern": "^\\$\\[.*\\]$"
       },
+      "templateExpression": {
+        "type": "string",
+        "pattern": "^\\${{.*}}$"
+      },
       "stepInsertExpression": {
-        "type": "object",
+        "type": "string",
         "description": "Conditionally insert one or more steps",
-        "maxProperties": 1,
-        "minProperties": 1,
-        "patternProperties": {
-          "^\\${{.*}}$": {
-            "type":"array",
-            "items": {
-              "$ref": "#/definitions/step"
-            }
-          }
-        },
-        "additionalProperties": false
+        "pattern": "^\\${{.*}}$"
       },
       "task": {
         "type": "object",
@@ -1088,7 +1117,7 @@ export const schema140: string = JSON.stringify({
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "condition": {
-            "$ref": "#/definitions/booleanMacroRuntimeExpression",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Evaluate this condition expression to determine whether to run this task"
           },
           "continueOnError": {
@@ -1096,7 +1125,7 @@ export const schema140: string = JSON.stringify({
             "description": "Continue running the parent job even on failure?"
           },
           "enabled": {
-            "type": "boolean",
+            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
             "description": "Run this task when the job runs?"
           },
           "timeoutInMinutes": {
