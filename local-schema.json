@@ -1164,7 +1164,8 @@
     },
     "branchFilter": {
       "type": "string",
-      "pattern": "^[^\\/~\\^\\: \\[\\]\\*\\\\]+(\\/[^\\/~\\^\\: \\[\\]\\*\\\\]+)*(\\/\\*)?$"
+      "pattern": "^[^\\/~\\^\\: \\[\\]\\*\\\\]+(\\/[^\\/~\\^\\: \\[\\]\\*\\\\]+)*(\\/\\*)?$",
+      "description": "branch name or prefix filter"
     },
     "branchFilterArray": {
       "type": "array",
