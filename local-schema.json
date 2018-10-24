@@ -661,7 +661,7 @@
         },
         {
           "type": "array",
-          "description": "[DEPRECATED] Use `repositories` or `checkout` instead.\n\nRepository options"
+          "description": "[DEPRECATED] Use `repositories` or `containers` instead."
         }
       ]
     },
@@ -1162,6 +1162,17 @@
         }
       }
     },
+    "branchFilter": {
+      "type": "string",
+      "pattern": "^[^\\/~\\^\\: \\[\\]\\*\\\\]+(\\/[^\\/~\\^\\: \\[\\]\\*\\\\]+)*(\\/\\*)?$",
+      "description": "branch name or prefix filter"
+    },
+    "branchFilterArray": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/branchFilter"
+      }
+    },
     "trigger": {
       "oneOf": [
         {
@@ -1169,10 +1180,7 @@
           "pattern": "^none$"
         },
         {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+          "$ref": "#/definitions/branchFilterArray"
         },
         {
           "type": "object",
@@ -1185,16 +1193,10 @@
               "type": "object",
               "properties": {
                 "include": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "$ref": "#/definitions/branchFilterArray"
                 },
                 "exclude": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
+                  "$ref": "#/definitions/branchFilterArray"
                 }
               }
             },
