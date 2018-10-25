@@ -102,10 +102,6 @@ const jobLegalAtRoot140 = {
         "$ref": "#/definitions/stepOrTemplateExpression"
       }
     },
-    "parameters": {
-      "description": "Parameters used in a pipeline template",
-      "type": "object"
-    },
     "container": {
       "type": "string",
       "description": "Container resource name"
@@ -159,10 +155,6 @@ const jobIllegalAtRoot140 = {
       }
     ],
     "description": "Any jobs which must complete before this one"
-  },
-  "template": {
-    "type": "string",
-    "description": "Reference to a template for this job"
   },
   "timeoutInMinutes": {
     "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
@@ -297,7 +289,14 @@ const jobsAtRoot140 = augment({
       "description": "Jobs which make up the pipeline",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/job"
+        "oneOf": [
+          {
+            "$ref": "#/definitions/job"
+          },
+          {
+            "$ref": "#/definitions/templateReference"
+          }
+        ]
       }
     },
     "variables": {
