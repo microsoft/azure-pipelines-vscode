@@ -229,7 +229,7 @@
         },
         "server": {
           "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "True if this is an agent-less job (runs on server)"
+          "description": "[DEPRECATED] True if this is an agent-less job (runs on server)"
         },
         "strategy": {
           "$ref": "#/definitions/strategy",
@@ -323,7 +323,7 @@
               "$ref": "#/definitions/legacyServer"
             }
           ],
-          "description": "True if this is an agent-less phase (runs on server)"
+          "description": "[DEPRECATED] True if this is an agent-less phase (runs on server)"
         },
         "variables": {
           "oneOf": [
@@ -406,7 +406,7 @@
         },
         "server": {
           "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "True if this is an agent-less job (runs on server)"
+          "description": "[DEPRECATED] True if this is an agent-less job (runs on server)"
         },
         "strategy": {
           "$ref": "#/definitions/strategy",
@@ -539,7 +539,7 @@
               "$ref": "#/definitions/legacyServer"
             }
           ],
-          "description": "True if this is an agent-less phase (runs on server)"
+          "description": "[DEPRECATED] True if this is an agent-less phase (runs on server)"
         },
         "variables": {
           "oneOf": [

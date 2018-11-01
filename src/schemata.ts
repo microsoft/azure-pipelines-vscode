@@ -85,7 +85,7 @@ const jobLegalAtRoot140 = {
     },
     "server": {
       "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-      "description": "True if this is an agent-less job (runs on server)"
+      "description": "[DEPRECATED] True if this is an agent-less job (runs on server)"
     },
     "strategy": {
       "$ref": "#/definitions/strategy",
@@ -195,7 +195,7 @@ const phaseLegalAtRoot140 = {
           "$ref": "#/definitions/legacyServer"
         }
       ],
-      "description": "True if this is an agent-less phase (runs on server)"
+      "description": "[DEPRECATED] True if this is an agent-less phase (runs on server)"
     },
     "variables": {
       "oneOf": commonVariablesOneOf,
