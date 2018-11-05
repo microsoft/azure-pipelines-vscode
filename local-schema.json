@@ -771,7 +771,11 @@
       "type": "object",
       "properties": {
         "clean": {
-          "type": "string",
+          "enum": [
+            "outputs",
+            "resources",
+            "all"
+          ],
           "description": "Clean source?"
         }
       }
