@@ -494,7 +494,11 @@ export const schema140: string = JSON.stringify({
         "type": "object",
         "properties": {
           "clean": {
-            "type": "string",
+            "enum": [
+              "outputs",
+              "resources",
+              "all"
+            ],
             "description": "Clean source?"
           }
         }
