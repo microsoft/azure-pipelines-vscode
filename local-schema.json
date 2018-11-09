@@ -157,7 +157,9 @@
       ],
       "properties": {
         "phases": {
-          "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
+          "doNotSuggest": true,
+          "deprecationMessage": "This option is deprecated, use `jobs` instead",
+          "description": "Phases which make up the pipeline",
           "type": "array",
           "items": {
             "$ref": "#/definitions/phase"
@@ -229,7 +231,9 @@
         },
         "server": {
           "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "[DEPRECATED] True if this is an agent-less job (runs on server)"
+          "description": "True if this is an agent-less job (runs on server)",
+          "doNotSuggest": true,
+          "deprecationMessage": "This option is deprecated, use pool:server instead"
         },
         "strategy": {
           "$ref": "#/definitions/strategy",
@@ -301,7 +305,8 @@
     "phaseAtRoot": {
       "type": "object",
       "additionalProperties": false,
-      "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
+      "doNotSuggest": true,
+      "deprecationMessage": "This option is deprecated, use `job` (inside `jobs`) instead",
       "properties": {
         "queue": {
           "oneOf": [
@@ -312,7 +317,9 @@
               "$ref": "#/definitions/queue"
             }
           ],
-          "description": "[DEPRECATED] Queue where this phase will run"
+          "doNotSuggest": true,
+          "deprecationMessage": "This option is deprecated",
+          "description": "Queue where this phase will run"
         },
         "server": {
           "oneOf": [
@@ -323,7 +330,9 @@
               "$ref": "#/definitions/legacyServer"
             }
           ],
-          "description": "[DEPRECATED] True if this is an agent-less phase (runs on server)"
+          "doNotSuggest": true,
+          "deprecationMessage": "This option is deprecated, use pool:server instead",
+          "description": "True if this is an agent-less phase (runs on server)"
         },
         "variables": {
           "oneOf": [
@@ -385,6 +394,256 @@
         }
       }
     },
+    "script": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable name for the step"
+        },
+        "name": {
+          "type": "string",
+          "description": "ID of the step",
+          "pattern": "^[_A-Za-z0-9]*$"
+        },
+        "failOnStderr": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Fail the task if output is sent to Stderr?"
+        },
+        "workingDirectory": {
+          "type": "string",
+          "description": "Start the script with this working directory"
+        },
+        "condition": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Evaluate this condition expression to determine whether to run this script"
+        },
+        "continueOnError": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Continue running the parent job even on failure?"
+        },
+        "enabled": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Run this script when the job runs?"
+        },
+        "timeoutInMinutes": {
+          "$ref": "#/definitions/integerTemplateMacroExpression",
+          "description": "Time to wait for this script to complete before the server kills it"
+        },
+        "env": {
+          "type": "object",
+          "description": "Variables to map into the process's environment"
+        },
+        "script": {
+          "type": "string",
+          "description": "An inline script"
+        }
+      },
+      "required": [
+        "script"
+      ],
+      "firstProperty": [
+        "script"
+      ]
+    },
+    "bash": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable name for the step"
+        },
+        "name": {
+          "type": "string",
+          "description": "ID of the step",
+          "pattern": "^[_A-Za-z0-9]*$"
+        },
+        "failOnStderr": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Fail the task if output is sent to Stderr?"
+        },
+        "workingDirectory": {
+          "type": "string",
+          "description": "Start the script with this working directory"
+        },
+        "condition": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Evaluate this condition expression to determine whether to run this script"
+        },
+        "continueOnError": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Continue running the parent job even on failure?"
+        },
+        "enabled": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Run this script when the job runs?"
+        },
+        "timeoutInMinutes": {
+          "$ref": "#/definitions/integerTemplateMacroExpression",
+          "description": "Time to wait for this script to complete before the server kills it"
+        },
+        "env": {
+          "type": "object",
+          "description": "Variables to map into the process's environment"
+        },
+        "bash": {
+          "type": "string",
+          "description": "An inline script"
+        }
+      },
+      "required": [
+        "bash"
+      ],
+      "firstProperty": [
+        "bash"
+      ]
+    },
+    "powershell": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable name for the step"
+        },
+        "name": {
+          "type": "string",
+          "description": "ID of the step",
+          "pattern": "^[_A-Za-z0-9]*$"
+        },
+        "failOnStderr": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Fail the task if output is sent to Stderr?"
+        },
+        "workingDirectory": {
+          "type": "string",
+          "description": "Start the script with this working directory"
+        },
+        "condition": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Evaluate this condition expression to determine whether to run this script"
+        },
+        "continueOnError": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Continue running the parent job even on failure?"
+        },
+        "enabled": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Run this script when the job runs?"
+        },
+        "timeoutInMinutes": {
+          "$ref": "#/definitions/integerTemplateMacroExpression",
+          "description": "Time to wait for this script to complete before the server kills it"
+        },
+        "env": {
+          "type": "object",
+          "description": "Variables to map into the process's environment"
+        },
+        "errorActionPreference": {
+          "oneOf": [
+            {
+              "enum": [
+                "stop",
+                "continue",
+                "silentlyContinue"
+              ]
+            },
+            {
+              "$ref": "#/definitions/templateMacroRuntimeExpression"
+            }
+          ],
+          "description": "Strategy for dealing with script errors"
+        },
+        "ignoreLASTEXITCODE": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Check the final exit code of the script to determine whether the step succeeded?"
+        },
+        "powershell": {
+          "type": "string",
+          "description": "Inline PowerShell or reference to a PowerShell file"
+        }
+      },
+      "required": [
+        "powershell"
+      ],
+      "firstProperty": [
+        "powershell"
+      ]
+    },
+    "pwsh": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "Human-readable name for the step"
+        },
+        "name": {
+          "type": "string",
+          "description": "ID of the step",
+          "pattern": "^[_A-Za-z0-9]*$"
+        },
+        "failOnStderr": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Fail the task if output is sent to Stderr?"
+        },
+        "workingDirectory": {
+          "type": "string",
+          "description": "Start the script with this working directory"
+        },
+        "condition": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Evaluate this condition expression to determine whether to run this script"
+        },
+        "continueOnError": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Continue running the parent job even on failure?"
+        },
+        "enabled": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Run this script when the job runs?"
+        },
+        "timeoutInMinutes": {
+          "$ref": "#/definitions/integerTemplateMacroExpression",
+          "description": "Time to wait for this script to complete before the server kills it"
+        },
+        "env": {
+          "type": "object",
+          "description": "Variables to map into the process's environment"
+        },
+        "errorActionPreference": {
+          "oneOf": [
+            {
+              "enum": [
+                "stop",
+                "continue",
+                "silentlyContinue"
+              ]
+            },
+            {
+              "$ref": "#/definitions/templateMacroRuntimeExpression"
+            }
+          ],
+          "description": "Strategy for dealing with script errors"
+        },
+        "ignoreLASTEXITCODE": {
+          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+          "description": "Check the final exit code of the script to determine whether the step succeeded?"
+        },
+        "pwsh": {
+          "type": "string",
+          "description": "Inline PowerShell or reference to a PowerShell file"
+        }
+      },
+      "required": [
+        "pwsh"
+      ],
+      "firstProperty": [
+        "pwsh"
+      ]
+    },
     "stage": {
       "type": "object",
       "additionalProperties": false
@@ -406,7 +665,9 @@
         },
         "server": {
           "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "[DEPRECATED] True if this is an agent-less job (runs on server)"
+          "description": "True if this is an agent-less job (runs on server)",
+          "doNotSuggest": true,
+          "deprecationMessage": "This option is deprecated, use pool:server instead"
         },
         "strategy": {
           "$ref": "#/definitions/strategy",
@@ -512,12 +773,16 @@
           "$ref": "#/definitions/integerTemplateMacroRuntimeExpression",
           "description": "Time to wait for the job to cancel before forcibly terminating it"
         }
-      }
+      },
+      "firstProperty": [
+        "job"
+      ]
     },
     "phase": {
       "type": "object",
       "additionalProperties": false,
-      "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
+      "doNotSuggest": true,
+      "deprecationMessage": "This option is deprecated, use `job` (inside `jobs`) instead",
       "properties": {
         "queue": {
           "oneOf": [
@@ -528,7 +793,9 @@
               "$ref": "#/definitions/queue"
             }
           ],
-          "description": "[DEPRECATED] Queue where this phase will run"
+          "doNotSuggest": true,
+          "deprecationMessage": "This option is deprecated",
+          "description": "Queue where this phase will run"
         },
         "server": {
           "oneOf": [
@@ -539,7 +806,9 @@
               "$ref": "#/definitions/legacyServer"
             }
           ],
-          "description": "[DEPRECATED] True if this is an agent-less phase (runs on server)"
+          "doNotSuggest": true,
+          "deprecationMessage": "This option is deprecated, use pool:server instead",
+          "description": "True if this is an agent-less phase (runs on server)"
         },
         "variables": {
           "oneOf": [
@@ -656,7 +925,8 @@
         },
         {
           "type": "array",
-          "description": "[DEPRECATED] Use `repositories` or `containers` instead."
+          "doNotSuggest": true,
+          "deprecationMessage": "This option is deprecated, use `repositories` or `containers` instead"
         }
       ]
     },
@@ -691,7 +961,9 @@
     },
     "queue": {
       "type": "object",
-      "description": "[DEPRECATED] Use `pool` (with `jobs`) instead.\n\nQueue details",
+      "doNotSuggest": true,
+      "deprecationMessage": "This option is deprecated, use `pool` under `jobs` instead",
+      "description": "Queue details",
       "additionalProperties": false,
       "properties": {
         "name": {
@@ -820,178 +1092,12 @@
         }
       ]
     },
-    "script": {
-      "type": "object",
-      "description": "An inline script step",
-      "additionalProperties": false,
-      "required": [
-        "script"
-      ],
-      "properties": {
-        "script": {
-          "type": "string",
-          "description": "An inline script"
-        },
-        "displayName": {
-          "type": "string",
-          "description": "Human-readable name for the step"
-        },
-        "name": {
-          "type": "string",
-          "description": "ID of the step",
-          "pattern": "^[_A-Za-z0-9]*$"
-        },
-        "failOnStderr": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Fail the task if output is sent to Stderr?"
-        },
-        "workingDirectory": {
-          "type": "string",
-          "description": "Start the script with this working directory"
-        },
-        "condition": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Evaluate this condition expression to determine whether to run this script"
-        },
-        "continueOnError": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Continue running the parent job even on failure?"
-        },
-        "enabled": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Run this script when the job runs?"
-        },
-        "timeoutInMinutes": {
-          "$ref": "#/definitions/integerTemplateMacroExpression",
-          "description": "Time to wait for this script to complete before the server kills it"
-        },
-        "env": {
-          "type": "object",
-          "description": "Variables to map into the process's environment"
-        }
-      }
-    },
-    "bash": {
-      "type": "object",
-      "required": [
-        "bash"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "bash": {
-          "type": "string"
-        },
-        "displayName": {
-          "type": "string",
-          "description": "Human-readable name for the step"
-        },
-        "name": {
-          "type": "string",
-          "description": "ID of the step",
-          "pattern": "^[_A-Za-z0-9]*$"
-        },
-        "failOnStderr": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Fail the task if output is sent to Stderr?"
-        },
-        "workingDirectory": {
-          "type": "string",
-          "description": "Start the script with this working directory"
-        },
-        "condition": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Evaluate this condition expression to determine whether to run this script"
-        },
-        "continueOnError": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Continue running the parent job even on failure?"
-        },
-        "enabled": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Run this script when the job runs?"
-        },
-        "timeoutInMinutes": {
-          "$ref": "#/definitions/integerTemplateMacroExpression",
-          "description": "Time to wait for this script to complete before the server kills it"
-        },
-        "env": {
-          "type": "object",
-          "description": "Variables to map into the process's environment"
-        }
-      }
-    },
-    "powershell": {
-      "type": "object",
-      "required": [
-        "powershell"
-      ],
-      "additionalProperties": false,
-      "properties": {
-        "powershell": {
-          "type": "string",
-          "description": "Inline PowerShell or reference to a PowerShell file"
-        },
-        "displayName": {
-          "type": "string",
-          "description": "Human-readable name for the step"
-        },
-        "name": {
-          "type": "string",
-          "description": "ID of the step",
-          "pattern": "^[_A-Za-z0-9]*$"
-        },
-        "errorActionPreference": {
-          "oneOf": [
-            {
-              "enum": [
-                "stop",
-                "continue",
-                "silentlyContinue"
-              ]
-            },
-            {
-              "$ref": "#/definitions/templateMacroRuntimeExpression"
-            }
-          ],
-          "description": "Strategy for dealing with script errors"
-        },
-        "failOnStderr": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Fail the task if output is sent to Stderr?"
-        },
-        "ignoreLASTEXITCODE": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Check the final exit code of the script to determine whether the step succeeded?"
-        },
-        "workingDirectory": {
-          "type": "string",
-          "description": "Start the script with this working directory"
-        },
-        "condition": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Evaluate this condition expression to determine whether to run this script"
-        },
-        "continueOnError": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Continue running the parent job even on failure?"
-        },
-        "enabled": {
-          "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-          "description": "Run this script when the job runs?"
-        },
-        "timeoutInMinutes": {
-          "$ref": "#/definitions/integerTemplateMacroExpression",
-          "description": "Time to wait for this script to complete before the server kills it"
-        },
-        "env": {
-          "type": "object",
-          "description": "Variables to map into the process's environment"
-        }
-      }
-    },
     "checkout": {
       "type": "object",
       "required": [
+        "checkout"
+      ],
+      "firstProperty": [
         "checkout"
       ],
       "additionalProperties": false,
@@ -1032,6 +1138,9 @@
     "templateReference": {
       "type": "object",
       "required": [
+        "template"
+      ],
+      "firstProperty": [
         "template"
       ],
       "additionalProperties": false,
@@ -1109,7 +1218,8 @@
           "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression"
         },
         "checkoutOptions": {
-          "description": "[DEPRECATED] Move these up a level as peers of the `repository` keyword.",
+          "doNotSuggest": true,
+          "deprecationMessage": "This location is deprecated, `checkoutOptions` should be a peer of the `repository` keyword.",
           "type": "object"
         }
       }
@@ -1157,7 +1267,8 @@
         },
         "registry": {
           "type": "string",
-          "description": "[DEPRECATED] Don't use"
+          "doNotSuggest": true,
+          "deprecationMessage": "This option is deprecated"
         }
       }
     },
@@ -1260,6 +1371,9 @@
         },
         {
           "$ref": "#/definitions/powershell"
+        },
+        {
+          "$ref": "#/definitions/pwsh"
         },
         {
           "$ref": "#/definitions/checkout"
@@ -1383,6 +1497,9 @@
     "task": {
       "type": "object",
       "required": [
+        "task"
+      ],
+      "firstProperty": [
         "task"
       ],
       "anyOf": [

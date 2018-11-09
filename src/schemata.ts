@@ -85,7 +85,9 @@ const jobLegalAtRoot140 = {
     },
     "server": {
       "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-      "description": "[DEPRECATED] True if this is an agent-less job (runs on server)"
+      "description": "True if this is an agent-less job (runs on server)",
+      "doNotSuggest": true,
+      "deprecationMessage": "This option is deprecated, use pool:server instead"
     },
     "strategy": {
       "$ref": "#/definitions/strategy",
@@ -166,14 +168,16 @@ const jobIllegalAtRoot140 = {
   },
 };
 
-const job140 = augment(jobLegalAtRoot140, "properties", jobIllegalAtRoot140);
+const job140WithProperties = augment(jobLegalAtRoot140, "properties", jobIllegalAtRoot140);
+const job140 = augment(job140WithProperties, null, {"firstProperty": ["job"]});
 
 const jobAtRoot140 = augment(jobLegalAtRoot140, "properties", commonPipelineValues);
 
 const phaseLegalAtRoot140 = {
   "type": "object",
   "additionalProperties": false,
-  "description": "[DEPRECATED] Use `job` (inside `jobs`) instead",
+  "doNotSuggest": true,
+  "deprecationMessage": "This option is deprecated, use `job` (inside `jobs`) instead",
   "properties": {
     "queue": {
       "oneOf": [
@@ -184,7 +188,9 @@ const phaseLegalAtRoot140 = {
           "$ref": "#/definitions/queue"
         }
       ],
-      "description": "[DEPRECATED] Queue where this phase will run"
+      "doNotSuggest": true,
+      "deprecationMessage": "This option is deprecated",
+      "description": "Queue where this phase will run"
     },
     "server": {
       "oneOf": [
@@ -195,7 +201,9 @@ const phaseLegalAtRoot140 = {
           "$ref": "#/definitions/legacyServer"
         }
       ],
-      "description": "[DEPRECATED] True if this is an agent-less phase (runs on server)"
+      "doNotSuggest": true,
+      "deprecationMessage": "This option is deprecated, use pool:server instead",
+      "description": "True if this is an agent-less phase (runs on server)"
     },
     "variables": {
       "oneOf": commonVariablesOneOf,
@@ -311,7 +319,9 @@ const phasesAtRoot140 = augment({
   "required": ["phases"],
   "properties": {
     "phases": {
-      "description": "[DEPRECATED] Use `jobs` instead.\n\nPhases which make up the pipeline",
+      "doNotSuggest": true,
+      "deprecationMessage": "This option is deprecated, use `jobs` instead",
+     "description": "Phases which make up the pipeline",
       "type": "array",
       "items": {
         "$ref": "#/definitions/phase"
@@ -323,6 +333,145 @@ const phasesAtRoot140 = augment({
     }
   }
 }, "properties", commonPipelineValues);
+
+const commonScript = {
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "displayName": {
+      "type": "string",
+      "description": "Human-readable name for the step"
+    },
+    "name": {
+      "type": "string",
+      "description": "ID of the step",
+      "pattern": "^[_A-Za-z0-9]*$"
+    },
+    "failOnStderr": {
+      "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+      "description": "Fail the task if output is sent to Stderr?"
+    },
+    "workingDirectory": {
+      "type": "string",
+      "description": "Start the script with this working directory"
+    },
+    "condition": {
+      "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+      "description": "Evaluate this condition expression to determine whether to run this script"
+    },
+    "continueOnError": {
+      "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+      "description": "Continue running the parent job even on failure?"
+    },
+    "enabled": {
+      "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+      "description": "Run this script when the job runs?"
+    },
+    "timeoutInMinutes": {
+      "$ref": "#/definitions/integerTemplateMacroExpression",
+      "description": "Time to wait for this script to complete before the server kills it"
+    },
+    "env": {
+      "type": "object",
+      "description": "Variables to map into the process's environment"
+    }
+  }
+};
+
+const scriptProperties = augment(
+  commonScript, "properties", {
+    "script": {
+      "type": "string",
+      "description": "An inline script"
+    }
+  });
+
+const script = augment(
+  scriptProperties, null, {
+    "required": [
+      "script"
+    ],
+    "firstProperty": [
+      "script"
+    ]
+  });
+
+const bashProperties = augment(
+  commonScript, "properties", {
+    "bash": {
+      "type": "string",
+      "description": "An inline script"
+    }
+  });
+
+const bash = augment(
+  bashProperties, null, {
+    "required": [
+      "bash"
+    ],
+    "firstProperty": [
+      "bash"
+    ]
+  });
+
+const commonPowerShell = augment(
+  commonScript, "properties", {
+    "errorActionPreference": {
+      "oneOf": [
+        {
+          "enum": [
+            "stop",
+            "continue",
+            "silentlyContinue"
+          ],
+        },
+        {
+          "$ref": "#/definitions/templateMacroRuntimeExpression"
+        }
+      ],
+      "description": "Strategy for dealing with script errors"
+    },
+    "ignoreLASTEXITCODE": {
+      "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+      "description": "Check the final exit code of the script to determine whether the step succeeded?"
+    }
+  });
+
+const powershellProperties = augment(
+  commonPowerShell, "properties", {
+    "powershell": {
+      "type": "string",
+      "description": "Inline PowerShell or reference to a PowerShell file"
+    }
+  });
+
+const powershell = augment(
+  powershellProperties, null, {
+    "required": [
+      "powershell"
+    ],
+    "firstProperty": [
+      "powershell"
+    ]
+  });
+
+const pwshProperties = augment(
+  commonPowerShell, "properties", {
+    "pwsh": {
+      "type": "string",
+      "description": "Inline PowerShell or reference to a PowerShell file"
+    }
+  });
+
+const pwsh = augment(
+  pwshProperties, null, {
+    "required": [
+      "pwsh"
+    ],
+    "firstProperty": [
+      "pwsh"
+    ]
+  });
 
 export const schema140: string = JSON.stringify({
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -347,6 +496,10 @@ export const schema140: string = JSON.stringify({
       "phasesAtRoot": phasesAtRoot140,
       "jobAtRoot": jobAtRoot140,
       "phaseAtRoot": phaseAtRoot140,
+      "script": script,
+      "bash": bash,
+      "powershell": powershell,
+      "pwsh": pwsh,
       "stage": {
         /* Stages aren't implemented fully yet, so this is a placeholder */
         "type": "object",
@@ -379,7 +532,8 @@ export const schema140: string = JSON.stringify({
           },
           {
             "type": "array",
-            "description": "[DEPRECATED] Use `repositories` or `containers` instead."
+            "doNotSuggest": true,
+            "deprecationMessage": "This option is deprecated, use `repositories` or `containers` instead"
           }
         ]
       },
@@ -414,7 +568,9 @@ export const schema140: string = JSON.stringify({
       },
       "queue": {
         "type": "object",
-        "description": "[DEPRECATED] Use `pool` (with `jobs`) instead.\n\nQueue details",
+        "doNotSuggest": true,
+        "deprecationMessage": "This option is deprecated, use `pool` under `jobs` instead",
+        "description": "Queue details",
         "additionalProperties": false,
         "properties": {
           "name": {
@@ -543,178 +699,12 @@ export const schema140: string = JSON.stringify({
           }
         ]
       },
-      "script": {
-        "type": "object",
-        "description": "An inline script step",
-        "additionalProperties": false,
-        "required": [
-          "script"
-        ],
-        "properties": {
-          "script": {
-            "type": "string",
-            "description": "An inline script"
-          },
-          "displayName": {
-            "type": "string",
-            "description": "Human-readable name for the step"
-          },
-          "name": {
-            "type": "string",
-            "description": "ID of the step",
-            "pattern": "^[_A-Za-z0-9]*$"
-          },
-          "failOnStderr": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Fail the task if output is sent to Stderr?"
-          },
-          "workingDirectory": {
-            "type": "string",
-            "description": "Start the script with this working directory"
-          },
-          "condition": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Evaluate this condition expression to determine whether to run this script"
-          },
-          "continueOnError": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Continue running the parent job even on failure?"
-          },
-          "enabled": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Run this script when the job runs?"
-          },
-          "timeoutInMinutes": {
-            "$ref": "#/definitions/integerTemplateMacroExpression",
-            "description": "Time to wait for this script to complete before the server kills it"
-          },
-          "env": {
-            "type": "object",
-            "description": "Variables to map into the process's environment"
-          }
-        }
-      },
-      "bash": {
-        "type": "object",
-        "required": [
-          "bash"
-        ],
-        "additionalProperties": false,
-        "properties": {
-          "bash": {
-            "type": "string"
-          },
-          "displayName": {
-            "type": "string",
-            "description": "Human-readable name for the step"
-          },
-          "name": {
-            "type": "string",
-            "description": "ID of the step",
-            "pattern": "^[_A-Za-z0-9]*$"
-          },
-          "failOnStderr": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Fail the task if output is sent to Stderr?"
-          },
-          "workingDirectory": {
-            "type": "string",
-            "description": "Start the script with this working directory"
-          },
-          "condition": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Evaluate this condition expression to determine whether to run this script"
-          },
-          "continueOnError": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Continue running the parent job even on failure?"
-          },
-          "enabled": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Run this script when the job runs?"
-          },
-          "timeoutInMinutes": {
-            "$ref": "#/definitions/integerTemplateMacroExpression",
-            "description": "Time to wait for this script to complete before the server kills it"
-          },
-          "env": {
-            "type": "object",
-            "description": "Variables to map into the process's environment"
-          }
-        }
-      },
-      "powershell": {
-        "type": "object",
-        "required": [
-          "powershell"
-        ],
-        "additionalProperties": false,
-        "properties": {
-          "powershell": {
-            "type": "string",
-            "description": "Inline PowerShell or reference to a PowerShell file"
-          },
-          "displayName": {
-            "type": "string",
-            "description": "Human-readable name for the step"
-          },
-          "name": {
-            "type": "string",
-            "description": "ID of the step",
-            "pattern": "^[_A-Za-z0-9]*$"
-          },
-          "errorActionPreference": {
-            "oneOf": [
-              {
-                "enum": [
-                  "stop",
-                  "continue",
-                  "silentlyContinue"
-                ],
-              },
-              {
-                "$ref": "#/definitions/templateMacroRuntimeExpression"
-              }
-            ],
-            "description": "Strategy for dealing with script errors"
-          },
-          "failOnStderr": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Fail the task if output is sent to Stderr?"
-          },
-          "ignoreLASTEXITCODE": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Check the final exit code of the script to determine whether the step succeeded?"
-          },
-          "workingDirectory": {
-            "type": "string",
-            "description": "Start the script with this working directory"
-          },
-          "condition": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Evaluate this condition expression to determine whether to run this script"
-          },
-          "continueOnError": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Continue running the parent job even on failure?"
-          },
-          "enabled": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
-            "description": "Run this script when the job runs?"
-          },
-          "timeoutInMinutes": {
-            "$ref": "#/definitions/integerTemplateMacroExpression",
-            "description": "Time to wait for this script to complete before the server kills it"
-          },
-          "env": {
-            "type": "object",
-            "description": "Variables to map into the process's environment"
-          }
-        }
-      },
       "checkout": {
         "type": "object",
         "required": [
+          "checkout"
+        ],
+        "firstProperty": [
           "checkout"
         ],
         "additionalProperties": false,
@@ -755,6 +745,9 @@ export const schema140: string = JSON.stringify({
       "templateReference": {
         "type": "object",
         "required": [
+          "template"
+        ],
+        "firstProperty": [
           "template"
         ],
         "additionalProperties": false,
@@ -830,7 +823,8 @@ export const schema140: string = JSON.stringify({
             "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression"
           },
           "checkoutOptions": {
-            "description": "[DEPRECATED] Move these up a level as peers of the `repository` keyword.",
+            "doNotSuggest": true,
+            "deprecationMessage": "This location is deprecated, `checkoutOptions` should be a peer of the `repository` keyword.",
             "type": "object"
           }
         }
@@ -878,7 +872,8 @@ export const schema140: string = JSON.stringify({
           },
           "registry": {
             "type": "string",
-            "description": "[DEPRECATED] Don't use"
+            "doNotSuggest": true,
+            "deprecationMessage": "This option is deprecated"
           }
         }
       },
@@ -982,6 +977,9 @@ export const schema140: string = JSON.stringify({
           },
           {
             "$ref": "#/definitions/powershell"
+          },
+          {
+            "$ref": "#/definitions/pwsh"
           },
           {
             "$ref": "#/definitions/checkout"
@@ -1105,6 +1103,9 @@ export const schema140: string = JSON.stringify({
       "task": {
         "type": "object",
         "required": [
+          "task"
+        ],
+        "firstProperty": [
           "task"
         ],
         "anyOf": "{{{taskDefinitions}}}",
