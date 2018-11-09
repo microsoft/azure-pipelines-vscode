@@ -1,7 +1,7 @@
 {
     "name": "azure-pipelines",
     "displayName": "Azure Pipelines",
-    "description": "Syntax highlighting, Intellisense, and more for Azure Pipelines",
+    "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines",
     "version": "1.144.0",
     "publisher": "ms-azure-devops",
     "repository": {
