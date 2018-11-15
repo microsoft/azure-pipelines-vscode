@@ -54,6 +54,14 @@ steps:
   displayName: Echo npm error logs on failure
   condition: failed()
 
+# For releasable builds, we'll want the branch and the changelog
+- bash: |
+    git rev-parse --abbrev-ref HEAD > branch.txt
+    PACKAGE_VERSION=$(cat version.txt)
+    VERSION_REGEX="## $(echo $PACKAGE_VERSION | sed 's/\./\\./g')"
+    sed -n "/$VERSION_REGEX/,/## 1\..*/p" CHANGELOG.md | head -n -2 > minichangelog.txt
+  displayName: Get branch and mini-changelog
+
 # This is how the CI system knows what to publish...
 - task: CopyFiles@2
   displayName: Stage VSIX for publishing
@@ -61,6 +69,8 @@ steps:
     contents: |-
       *.vsix
       version.txt
+      branch.txt
+      minichangelog.txt
     targetFolder: $(Build.ArtifactStagingDirectory)
 
 # ...and this is the CI system publishing it.
