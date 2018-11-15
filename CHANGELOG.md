@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 ## 1.144.0
 ### Fixed
 - LF vs CRLF line endings caused the validator to lose its place
-- Misc schema fixes
+- removed several invalid auto-complete suggestions
+- enforce first property in some constructs
 
 ## 1.141.0 - 2018-09-05
 ### Added
