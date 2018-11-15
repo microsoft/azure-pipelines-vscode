@@ -52,8 +52,10 @@ export class YamlSchemaService implements IYamlSchemaService {
             }
         };
 
-        schema.properties.task.pattern = '^' + this.makeCaseInsensitiveRegexFromTaskName(task.name) + '@' + task.version.major.toString() + '$';
+        schema.properties.task.pattern = '^' + task.name + '@' + task.version.major.toString() + '$';
         schema.properties.task.description = this.cleanString(task.friendlyName) + '\n\n' + this.cleanString(task.description);
+        schema.properties.task.ignoreCase = "value";
+        schema.properties.inputs.additionalProperties = false;
         schema.properties.inputs.description = this.cleanString(task.friendlyName) + " inputs";
 
         var that = this;
@@ -65,16 +67,18 @@ export class YamlSchemaService implements IYamlSchemaService {
                 }
 
                 let thisProp: any = {};
-                const name = that.cleanString(input.name);
-                const description = input.label;
+                const name: string = that.cleanString(input.name);
+                const description: string = input.label;
                 thisProp = {
-                    description: description
+                    description: description,
+                    ignoreCase: "key"
                 };
 
                 // map input types to those that are allowed by json-schema
                 const inputType: string = input.type.toLowerCase();
                 if ((inputType === 'picklist' || inputType === 'radio') && input.options) {
                     thisProp['enum'] = Object.keys(input.options);
+                    thisProp.ignoreCase = "all";
                 }
                 else if (inputType === 'boolean') {
                     thisProp.type = 'boolean';
@@ -102,21 +106,6 @@ export class YamlSchemaService implements IYamlSchemaService {
         }
 
         return schema;
-    }
-
-    // Allow either upper or lowercase for characters that are uppercase in task definition.
-    makeCaseInsensitiveRegexFromTaskName(taskName: string): string {
-        let response: string = "";
-
-        for (var c of taskName) {
-            if (c === c.toUpperCase()) {
-                response += "[" + c.toLowerCase() + c.toUpperCase() + "]";
-            } else {
-                response += c;
-            }
-        }
-
-        return response;
     }
 
     cleanString(str: string): string {

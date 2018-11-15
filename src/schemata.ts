@@ -424,6 +424,7 @@ const commonPowerShell = augment(
             "continue",
             "silentlyContinue"
           ],
+          "ignoreCase": "value"
         },
         {
           "$ref": "#/definitions/templateMacroRuntimeExpression"
@@ -655,7 +656,8 @@ export const schema140: string = JSON.stringify({
               "resources",
               "all"
             ],
-            "description": "Clean source?"
+            "description": "Clean source?",
+            "ignoreCase": "value"
           }
         }
       },
@@ -714,7 +716,8 @@ export const schema140: string = JSON.stringify({
               "self",
               "none"
             ],
-            "description": "Whether or not to check out the repository containing this pipeline definition"
+            "description": "Whether or not to check out the repository containing this pipeline definition",
+            "ignoreCase": "value"
           },
           "clean": {
             "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
@@ -778,7 +781,8 @@ export const schema140: string = JSON.stringify({
             "enum": [
               "github", "tfsgit", "tfsversioncontrol"
             ],
-            "description": "Type of external repository"
+            "description": "Type of external repository",
+            "ignoreCase": "value"
           },
           "endpoint": {
             "type": "string",
@@ -1112,7 +1116,8 @@ export const schema140: string = JSON.stringify({
         "properties": {
           "task": {
             "enum": "{{{taskNames}}}",
-            "description": "Task reference including major version"
+            "description": "Task reference including major version",
+            "ignoreCase": "value"
           },
           "displayName": {
             "type": "string",
@@ -1159,7 +1164,8 @@ export const schema140: string = JSON.stringify({
               "vs2017-win2016",
               "win1803",
               "macos-10.13"    
-            ]
+            ],
+            "ignoreCase": "value"
           },
           {
             "type": "string"
