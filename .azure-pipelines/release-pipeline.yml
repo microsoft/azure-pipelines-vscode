@@ -1,9 +1,9 @@
 # Release build script
 #
 # Uses the common build logic, but also gains capabilities related to releasing the product.
-trigger:
-- releases/*
 
+# Only trigger manually
+trigger: none
 pr: none
 
 pool:
