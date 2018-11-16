@@ -2,14 +2,14 @@
     "name": "azure-pipelines",
     "displayName": "Azure Pipelines",
     "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines",
-    "version": "1.144.0",
+    "version": "1.144.1",
     "publisher": "ms-azure-devops",
     "repository": {
         "type": "git",
-        "url": "https://github.com/Microsoft/pipelines-vscode"
+        "url": "https://github.com/Microsoft/azure-pipelines-vscode"
     },
-    "homepage": "https://github.com/Microsoft/pipelines-vscode/blob/master/README.md",
-    "bugs": "https://github.com/Microsoft/pipelines-vscode/issues/",
+    "homepage": "https://github.com/Microsoft/azure-pipelines-vscode/blob/master/README.md",
+    "bugs": "https://github.com/Microsoft/azure-pipelines-vscode/issues/",
     "license": "MIT",
     "icon": "assets/pipelines.png",
     "galleryBanner": {
