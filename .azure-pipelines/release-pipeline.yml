@@ -17,4 +17,18 @@ steps:
     echo "$PACKAGE_VERSION" > version.txt
   displayName: Set version number of build
 
+# do all the normal build stuff
 - template: common-steps.yml
+
+# create a GitHub Release
+- bash: npm install
+  displayName: Prepare to create GitHub Release
+  workingDirectory: '$(Build.SourcesDirectory)/.azure-pipelines/github-release'
+- bash: |
+    SCRIPT=.azure-pipelines/github-release/github-release.js
+    VSIX=*.vsix
+    VERSION=$(node -p "require('./package.json').version")
+    node $SCRIPT $VSIX $VERSION $GITHUB_TOKEN
+  displayName: Create GitHub Release
+  env:
+    GITHUB_TOKEN: $(GitHubSecret)
