@@ -23,56 +23,55 @@ This is intended to be run by the release pipeline only.`);
 }
 
 async function createRelease() {
-    const { stdout, stderr } = await exec('git rev-parse --verify HEAD');
-    const head_commit = stdout;
-    const { stdout, stderr } = await exec('cat minichangelog.txt');
-    const body = stdout;
+    const { stdout: head_commit } = await exec('git rev-parse --verify HEAD');
+    const { stdout: body } = await exec('cat minichangelog.txt');
+
+    console.log(`Head commit: ${head_commit.trim()}`);
+    console.log(`Mini changelog: ${body}`);
 
     octokit.authenticate({
         type: 'token',
         token: token
     });
 
-    try {
-        console.log('Creating release...');
-        const createReleaseResult = await octokit.repos.createRelease({
-            owner: 'Microsoft',
-            repo: 'azure-pipelines-vscode',
-            tag_name: `v${version}`,
-            target_commitish: head_commit,
-            name: `Version ${version}`,
-            body: body,
-            draft: true
-        });
-        console.log('Created release.');
+    console.log('Creating release...');
+    const createReleaseResult = await octokit.repos.createRelease({
+        owner: 'Microsoft',
+        repo: 'azure-pipelines-vscode',
+        tag_name: `v${version}`,
+        target_commitish: head_commit.trim(),
+        name: `Version ${version}`,
+        body: body,
+        draft: true
+    });
+    console.log('Created release.');
 
-        if (process.env.SYSTEM_DEBUG) {
-            console.log(createReleaseResult);
-        }
+    if (process.env.SYSTEM_DEBUG) {
+        console.log(createReleaseResult);
+    }
 
-        const vsixSize = fs.statSync(vsixName).size;
+    const vsixSize = fs.statSync(vsixName).size;
 
-        console.log('Uploading VSIX...');
-        const uploadResult = await octokit.repos.uploadAsset({
-            url: createReleaseResult.data.upload_url,
-            headers: {
-                'content-length': vsixSize,
-                'content-type': 'application/zip',
-            },
-            name: vsixName,
-            file: fs.createReadStream(vsixName)
-        });
-        console.log('Uploaded VSIX.');
+    console.log('Uploading VSIX...');
+    const uploadResult = await octokit.repos.uploadAsset({
+        url: createReleaseResult.data.upload_url,
+        headers: {
+            'content-length': vsixSize,
+            'content-type': 'application/zip',
+        },
+        name: vsixName,
+        file: fs.createReadStream(vsixName)
+    });
+    console.log('Uploaded VSIX.');
 
-        if (process.env.SYSTEM_DEBUG) {
-            console.log(uploadResult);
-        }
-
-
-    } catch (err) {
-        console.error(err);
-        process.exit(1);
+    if (process.env.SYSTEM_DEBUG) {
+        console.log(uploadResult);
     }
 }
 
-createRelease();
+try {
+    createRelease();
+} catch (err) {
+    console.error(err);
+    process.exit(1);
+}
