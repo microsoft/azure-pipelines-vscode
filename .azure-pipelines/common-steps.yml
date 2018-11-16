@@ -39,7 +39,7 @@ steps:
 # For releasable builds, we'll want the branch and the changelog
 # Expects that a 'version.txt' has been laid down by a previous step
 - bash: |
-    git rev-parse --abbrev-ref HEAD > branch.txt
+    echo $(Build.SourceBranch) | sed "s|refs/[^/]*/||" > branch.txt
     PACKAGE_VERSION=$(cat version.txt)
     VERSION_REGEX="## $(echo $PACKAGE_VERSION | sed 's/\./\\./g')"
     sed -n "/$VERSION_REGEX/,/## 1\..*/p" CHANGELOG.md | head -n -2 > minichangelog.txt
