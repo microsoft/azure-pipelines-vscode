@@ -57,6 +57,10 @@ const commonPipelineValues = {
     "description": "Continuous integration triggers",
     "$ref": "#/definitions/trigger"
   },
+  "pr": {
+    "description": "Pull request triggers",
+    "$ref": "#/definitions/prTrigger"
+  },
   "resources": {
     "description": "Containers and repositories used in the build",
     "$ref": "#/definitions/resources"
@@ -904,6 +908,54 @@ export const schema140: string = JSON.stringify({
               "batch": {
                 "type": "boolean",
                 "description": "Whether to batch changes per branch"
+              },
+              "branches": {
+                "type": "object",
+                "properties": {
+                  "include": {
+                    "$ref": "#/definitions/branchFilterArray"
+                  },
+                  "exclude": {
+                    "$ref": "#/definitions/branchFilterArray"
+                  }
+                }
+              },
+              "paths": {
+                "type": "object",
+                "properties": {
+                  "include": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "exclude": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "prTrigger": {
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^none$"
+          },
+          {
+            "$ref": "#/definitions/branchFilterArray"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "autoCancel": {
+                "type": "boolean",
+                "description": "Whether to cancel running PR builds when a new commit lands in the branch"
               },
               "branches": {
                 "type": "object",
