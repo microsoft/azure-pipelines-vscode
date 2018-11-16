@@ -1,0 +1,20 @@
+# Release build script
+#
+# Uses the common build logic, but also gains capabilities related to releasing the product.
+trigger:
+- releases/*
+
+pr: none
+
+pool:
+  vmImage: ubuntu-16.04
+
+steps:
+# release version should be correctly set in package.json
+- bash: |
+    PACKAGE_VERSION=$(node -p "require('./package.json').version")
+    echo "##vso[build.updatebuildnumber]${PACKAGE_VERSION}_release_${BUILD_BUILDID}"
+    echo "$PACKAGE_VERSION" > version.txt
+  displayName: Set version number of build
+
+- template: common-steps.yml

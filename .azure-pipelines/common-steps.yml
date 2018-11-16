@@ -1,25 +1,7 @@
-# CI and PR build script
+# Common steps template
 #
-# There should be no deep magic here. The developer experience and CI experience
-# must remain as close to one another as possible.
-#
-# Developer experience:
-#   npm install
-#   (make changes)
-#   npm test
-#   vsce package
-#   (give VSIX to someone for buddy testing)
-trigger:
-- master
-- releases/*
-
+# Things which happen regardless of CI, PR, or release builds
 steps:
-# Set version number for PR/CI or release
-- ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/') }}:
-  - template: version-release.yml
-- ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/')) }}:
-  - template: version-ci.yml
-
 - script: npm install
   displayName: npm install
 
@@ -55,14 +37,15 @@ steps:
   condition: failed()
 
 # For releasable builds, we'll want the branch and the changelog
+# Expects that a 'version.txt' has been laid down by a previous step
 - bash: |
-    git rev-parse --abbrev-ref HEAD > branch.txt
+    echo $(Build.SourceBranch) | sed "s|refs/[^/]*/||" > branch.txt
     PACKAGE_VERSION=$(cat version.txt)
     VERSION_REGEX="## $(echo $PACKAGE_VERSION | sed 's/\./\\./g')"
     sed -n "/$VERSION_REGEX/,/## 1\..*/p" CHANGELOG.md | head -n -2 > minichangelog.txt
   displayName: Get branch and mini-changelog
 
-# This is how the CI system knows what to publish...
+# Choose files to publish
 - task: CopyFiles@2
   displayName: Stage VSIX for publishing
   inputs:
@@ -73,7 +56,7 @@ steps:
       minichangelog.txt
     targetFolder: $(Build.ArtifactStagingDirectory)
 
-# ...and this is the CI system publishing it.
+# Publish files as an artifact
 - task: PublishBuildArtifacts@1
   displayName: Publish VSIX
   inputs:
