@@ -481,7 +481,7 @@ const pwsh = augment(
 export const schema140: string = JSON.stringify({
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://github.com/Microsoft/azure-pipelines-vscode/blob/master/local-schema.json",
-    "$comment": "v1.140.2",
+    "$comment": "v1.140.3",
     "title": "Pipeline schema",
     "description": "A pipeline definition",
     "$ref": "#/definitions/pipeline",
