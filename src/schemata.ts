@@ -189,7 +189,7 @@ const phaseLegalAtRoot140 = {
         }
       ],
       "doNotSuggest": true,
-      "deprecationMessage": "This option is deprecated",
+      "deprecationMessage": "This option is deprecated, use pool instead",
       "description": "Queue where this phase will run"
     },
     "server": {
