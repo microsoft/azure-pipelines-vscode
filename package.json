@@ -89,7 +89,7 @@
         "@types/underscore": "1.8.9"
     },
     "dependencies": {
-        "azure-pipelines-language-server": "0.3.0",
+        "azure-pipelines-language-server": "0.4.0",
         "q": "1.5.1",
         "shelljs": "^0.3.0",
         "typed-rest-client": "1.0.7",

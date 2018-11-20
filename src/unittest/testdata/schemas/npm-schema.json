@@ -1,25 +1,31 @@
 {
+  "firstProperty": [ "task" ],
   "properties": {
     "task": {
-      "pattern": "^[nN]pm@0$",
-      "description": "npm\n\nRun an npm command"
+      "pattern": "^Npm@0$",
+      "description": "npm\n\nRun an npm command",
+      "ignoreCase": "value"
     },
     "inputs": {
       "properties": {
         "cwd": {
           "description": "working folder",
-          "type": "string"
+          "type": "string",
+          "ignoreCase": "key"
         },
         "command": {
           "description": "npm command",
-          "type": "string"
+          "type": "string",
+          "ignoreCase": "key"
         },
         "arguments": {
           "description": "arguments",
-          "type": "string"
+          "type": "string",
+          "ignoreCase": "key"
         }
       },
-      "description": "npm inputs"
+      "description": "npm inputs",
+      "additionalProperties": false
     }
   }
 }

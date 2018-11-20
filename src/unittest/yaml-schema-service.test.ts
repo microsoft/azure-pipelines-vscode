@@ -23,10 +23,6 @@ suite("Yaml Schema Service Tests", function () {
         runTaskTest('all-inputs-task.json', 'all-inputs-schema.json');
     });
 
-    test('Task name pattern uses regex for any characters that are uppercase in task name', function() {
-        runTaskTest('nameregex-task.json', 'nameregex-schema.json');
-    });
-
     test('Special characters are removed', function() {
         runTaskTest('special-characters-task.json', 'special-characters-schema.json');
     });
