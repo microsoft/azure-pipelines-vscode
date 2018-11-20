@@ -1501,14 +1501,11 @@
     },
     "task": {
       "type": "object",
-      "required": [
-        "task"
-      ],
-      "firstProperty": [
-        "task"
-      ],
       "anyOf": [
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureVmssDeployment@0$",
@@ -1580,6 +1577,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^XamariniOS@1$",
@@ -1696,6 +1696,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^XamariniOS@2$",
@@ -1766,6 +1769,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^BatchScript@1$",
@@ -1806,6 +1812,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DownloadBuildDrop@0$",
@@ -1836,6 +1845,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Go@0$",
@@ -1876,6 +1888,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^XamarinTestCloud@1$",
@@ -1972,6 +1987,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^UniversalPackages@0$",
@@ -2114,6 +2132,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^CocoaPods@0$",
@@ -2144,6 +2165,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^CondaEnvironment@1$",
@@ -2194,6 +2218,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^CondaEnvironment@0$",
@@ -2234,6 +2261,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AppCenterDistribute@1$",
@@ -2319,6 +2349,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AppCenterDistribute@0$",
@@ -2404,6 +2437,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^NuGetPublisher@0$",
@@ -2477,6 +2513,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^HelmInstaller@0$",
@@ -2517,6 +2556,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Npm@0$",
@@ -2547,6 +2589,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Npm@1$",
@@ -2622,6 +2667,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AndroidSigning@1$",
@@ -2682,6 +2730,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AndroidSigning@2$",
@@ -2742,6 +2793,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AndroidSigning@3$",
@@ -2807,6 +2861,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^WindowsMachineFileCopy@1$",
@@ -2875,6 +2932,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^WindowsMachineFileCopy@2$",
@@ -2930,6 +2990,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DeleteFiles@1$",
@@ -2955,6 +3018,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Chef@1$",
@@ -2990,6 +3056,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^UsePythonVersion@0$",
@@ -3023,6 +3092,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ServiceFabricComposeDeploy@0$",
@@ -3108,6 +3180,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DockerCompose@0$",
@@ -3290,6 +3365,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^NuGetToolInstaller@0$",
@@ -3315,6 +3393,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Gradle@2$",
@@ -3460,6 +3541,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Gradle@1$",
@@ -3646,6 +3730,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^SSH@0$",
@@ -3700,6 +3787,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^CloudLoadTest@1$",
@@ -3776,6 +3866,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PublishToAzureServiceBus@1$",
@@ -3821,6 +3914,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PublishToAzureServiceBus@0$",
@@ -3851,6 +3947,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureKeyVault@1$",
@@ -3881,6 +3980,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^InvokeRESTAPI@0$",
@@ -3943,6 +4045,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^InvokeRESTAPI@1$",
@@ -4018,6 +4123,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^InstallAppleCertificate@1$",
@@ -4077,6 +4185,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^InstallAppleCertificate@2$",
@@ -4136,6 +4247,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^InstallAppleCertificate@0$",
@@ -4195,6 +4309,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^SqlDacpacDeploymentOnMachineGroup@0$",
@@ -4306,6 +4423,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Kubernetes@0$",
@@ -4474,6 +4594,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Kubernetes@1$",
@@ -4662,6 +4785,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^FtpUpload@1$",
@@ -4745,6 +4871,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^NuGetInstaller@0$",
@@ -4813,6 +4942,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^NuGetRestore@1$",
@@ -4876,6 +5008,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^NuGetCommand@2$",
@@ -5087,6 +5222,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureCLI@1$",
@@ -5140,6 +5278,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureCLI@0$",
@@ -5206,6 +5347,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DotNetCoreInstaller@0$",
@@ -5234,6 +5378,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DotNetCoreCLI@2$",
@@ -5443,6 +5590,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DotNetCoreCLI@0$",
@@ -5489,6 +5639,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DotNetCoreCLI@1$",
@@ -5535,6 +5688,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ServiceFabricPowerShell@1$",
@@ -5578,6 +5734,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^GoTool@0$",
@@ -5608,6 +5767,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^HelmDeploy@0$",
@@ -5792,6 +5954,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PowerShell@2$",
@@ -5854,6 +6019,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PowerShell@1$",
@@ -5902,6 +6070,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^VSTest@2$",
@@ -6135,6 +6306,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^VSTest@1$",
@@ -6232,6 +6406,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureNLBManagement@1$",
@@ -6270,6 +6447,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PythonScript@0$",
@@ -6323,6 +6503,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^RunVisualStudioTestsusingTestAgent@1$",
@@ -6426,6 +6609,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureWebPowerShellDeployment@1$",
@@ -6476,6 +6662,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Grunt@0$",
@@ -6554,6 +6743,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^VSMobileCenterTest@0$",
@@ -6775,6 +6967,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AppCenterTest@1$",
@@ -6996,6 +7191,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ManualIntervention@8$",
@@ -7029,6 +7227,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Xcode@2$",
@@ -7214,6 +7415,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Xcode@5$",
@@ -7397,6 +7601,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Xcode@3$",
@@ -7569,6 +7776,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Xcode@4$",
@@ -7752,6 +7962,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Gulp@0$",
@@ -7830,6 +8043,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^XamarinAndroid@1$",
@@ -7945,6 +8161,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PublishBuildDrop@0$",
@@ -7970,6 +8189,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ServiceFabricUpdateAppVersions@1$",
@@ -8031,6 +8253,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ServiceFabricUpdateManifests@2$",
@@ -8115,6 +8340,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^XcodePackageiOS@0$",
@@ -8160,6 +8388,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DeployVisualStudioTestAgent@1$",
@@ -8246,6 +8477,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DeployVisualStudioTestAgent@2$",
@@ -8327,6 +8561,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PublishCodeCoverageResults@1$",
@@ -8370,6 +8607,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Docker@1$",
@@ -8555,6 +8795,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Docker@0$",
@@ -8740,6 +8983,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^JenkinsQueueJob@1$",
@@ -8795,6 +9041,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^JenkinsQueueJob@2$",
@@ -8850,6 +9099,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^CopyFiles@1$",
@@ -8895,6 +9147,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^CopyFiles@2$",
@@ -8940,6 +9195,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PublishBuildArtifacts@1$",
@@ -8988,6 +9246,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PublishTestResults@2$",
@@ -9048,6 +9309,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PublishTestResults@1$",
@@ -9103,6 +9367,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PyPIPublisher@0$",
@@ -9133,6 +9400,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^XamarinLicense@1$",
@@ -9180,6 +9450,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^QuickPerfTest@1$",
@@ -9278,6 +9551,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DownloadPackage@0$",
@@ -9313,6 +9589,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^NodeTool@0$",
@@ -9338,6 +9617,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^CopyPublishBuildArtifacts@1$",
@@ -9381,6 +9663,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^SonarQubePreBuild@1$",
@@ -9451,6 +9736,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DownloadBuildArtifacts@0$",
@@ -9541,6 +9829,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^MSBuild@1$",
@@ -9633,6 +9924,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^NuGet@0$",
@@ -9658,6 +9952,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^SqlServerDacpacDeployment@1$",
@@ -9768,6 +10065,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PowerShellOnTargetMachines@3$",
@@ -9881,6 +10181,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PowerShellOnTargetMachines@1$",
@@ -9962,6 +10265,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PowerShellOnTargetMachines@2$",
@@ -10043,6 +10349,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DecryptFile@1$",
@@ -10083,6 +10392,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ChefKnife@1$",
@@ -10113,6 +10425,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^SonarQubePostTest@1$",
@@ -10127,6 +10442,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^VisualStudioTestPlatformInstaller@1$",
@@ -10185,6 +10503,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureRmWebAppDeployment@2$",
@@ -10270,6 +10591,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureRmWebAppDeployment@4$",
@@ -10468,6 +10792,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureRmWebAppDeployment@3$",
@@ -10720,6 +11047,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Ant@1$",
@@ -10832,6 +11162,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DownloadSecureFile@1$",
@@ -10852,6 +11185,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^JenkinsDownloadArtifacts@1$",
@@ -10952,6 +11288,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureCloudPowerShellDeployment@1$",
@@ -11047,6 +11386,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^IISWebAppManagementOnMachineGroup@0$",
@@ -11417,6 +11759,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^CopyFilesOverSSH@0$",
@@ -11472,6 +11817,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ArchiveFiles@2$",
@@ -11527,6 +11875,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ArchiveFiles@1$",
@@ -11582,6 +11933,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^XamarinComponentRestore@0$",
@@ -11612,6 +11966,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ServiceFabricDeploy@1$",
@@ -11827,6 +12184,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^UseRubyVersion@0$",
@@ -11852,6 +12212,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^CmdLine@2$",
@@ -11882,6 +12245,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^CmdLine@1$",
@@ -11917,6 +12283,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureResourceGroupDeployment@1$",
@@ -12049,6 +12418,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureResourceGroupDeployment@2$",
@@ -12189,6 +12561,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Delay@1$",
@@ -12209,6 +12584,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzurePowerShell@3$",
@@ -12292,6 +12670,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzurePowerShell@1$",
@@ -12348,6 +12729,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzurePowerShell@2$",
@@ -12417,6 +12801,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ExtractFiles@1$",
@@ -12447,6 +12834,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureFunction@0$",
@@ -12514,6 +12904,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureFunction@1$",
@@ -12581,6 +12974,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^queryWorkItems@0$",
@@ -12611,6 +13007,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^DownloadFileshareArtifacts@1$",
@@ -12651,6 +13050,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^IISWebAppDeploymentOnMachineGroup@0$",
@@ -12721,6 +13123,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureMonitor@0$",
@@ -12766,6 +13171,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^replacetokens@3$",
@@ -12859,6 +13267,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureMonitorAlerts@0$",
@@ -12914,6 +13325,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^InstallSSHKey@0$",
@@ -12949,6 +13363,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^cURLUploader@1$",
@@ -12994,6 +13411,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^cURLUploader@2$",
@@ -13057,6 +13477,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^IISWebAppDeployment@1$",
@@ -13272,6 +13695,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PackerBuild@0$",
@@ -13397,6 +13823,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^InstallAppleProvisioningProfile@1$",
@@ -13435,6 +13864,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^InstallAppleProvisioningProfile@0$",
@@ -13460,6 +13892,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^npmAuthenticate@0$",
@@ -13485,6 +13920,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Maven@2$",
@@ -13648,6 +14086,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Maven@3$",
@@ -13811,6 +14252,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Maven@1$",
@@ -14015,6 +14459,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureMysqlDeployment@1$",
@@ -14101,6 +14548,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureAppServiceManage@0$",
@@ -14200,6 +14650,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^SqlAzureDacpacDeployment@1$",
@@ -14338,6 +14791,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^VSBuild@1$",
@@ -14417,6 +14873,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AndroidBuild@1$",
@@ -14507,6 +14966,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^Bash@3$",
@@ -14555,6 +15017,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ShellScript@2$",
@@ -14595,6 +15060,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^CMake@1$",
@@ -14620,6 +15088,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PublishSymbols@2$",
@@ -14699,6 +15170,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^PublishSymbols@1$",
@@ -14759,6 +15233,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^JavaToolInstaller@0$",
@@ -14830,6 +15307,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^NuGetPackager@0$",
@@ -14910,6 +15390,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^ApacheJMeterLoadTest@1$",
@@ -14994,6 +15477,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureFileCopy@2$",
@@ -15138,6 +15624,9 @@
           }
         },
         {
+          "firstProperty": [
+            "task"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureFileCopy@1$",

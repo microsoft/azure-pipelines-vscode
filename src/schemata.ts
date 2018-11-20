@@ -1106,12 +1106,6 @@ export const schema140: string = JSON.stringify({
       },
       "task": {
         "type": "object",
-        "required": [
-          "task"
-        ],
-        "firstProperty": [
-          "task"
-        ],
         "anyOf": "{{{taskDefinitions}}}",
         "properties": {
           "task": {

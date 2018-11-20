@@ -44,6 +44,7 @@ export class YamlSchemaService implements IYamlSchemaService {
 
     public getSchemaFromTask(task: DTTask): object {
         let schema: any = {
+            firstProperty: ['task'],
             properties: {
                 task: {},
                 inputs: {

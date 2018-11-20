@@ -1,4 +1,5 @@
 {
+  "firstProperty": [ "task" ],
   "properties": {
     "task": {
       "pattern": "^Npm@0$",
