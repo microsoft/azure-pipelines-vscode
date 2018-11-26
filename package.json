@@ -35,6 +35,12 @@
                 "filenamePatterns": [
                     "azure-pipelines.yml",
                     "azure-pipelines.yaml",
+                    ".azure-pipelines.yml",
+                    ".azure-pipelines.yaml",
+                    "azure-pipelines/**/*.yml",
+                    "azure-pipelines/**/*.yaml",
+                    ".azure-pipelines/**/*.yml",
+                    ".azure-pipelines/**/*.yaml",
                     ".vsts-ci.yml",
                     "vsts-ci.yml"
                 ],
