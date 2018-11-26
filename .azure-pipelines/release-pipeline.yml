@@ -20,6 +20,15 @@ steps:
 # do all the normal build stuff
 - template: common-steps.yml
 
+# if the mini changelog is empty, complain
+- bash: |
+    LINE_COUNT=$(cat minichangelog.txt | wc -l)
+    if [[ $LINE_COUNT <= 2 ]]; then
+      echo Mini changelog is too short. Did you use the wrong version number in CHANGELOG.txt?
+      exit 1
+    fi
+  displayName: Check for length of mini-changelog
+
 # create a GitHub Release
 - bash: npm install
   displayName: Prepare to create GitHub Release
