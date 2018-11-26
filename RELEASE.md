@@ -1,15 +1,5 @@
 # Releasing the extension
 
-## First time each sprint
-
-Run `prepare-sprint-release.sh` in a bash window.
-This will ask you to confirm the sprint number, bump the version number, and create two branches.
-You need to push those branches up to GitHub.
-PR the one under versionbump/* into master.
-The one under releases/* should never go back to master.
-
-## Subsequent point releases
-
-**TODO**: come up with a better strategy.
-
-In your local copy of the repo, run `npm --no-git-tag-version version patch` to increment the patch version.
+1. Ensure package.json and package-lock.json have the version number you want to release.
+2. Manually queue a [Release build](https://dev.azure.com/ms/azure-pipelines-vscode/_build?definitionId=12)
+3. Bump the package.json/package-lock.json version numbers so that CI produces prerelease packages off the "next" release.
