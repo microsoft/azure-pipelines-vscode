@@ -40,8 +40,9 @@ async function createRelease() {
     });
 
     console.log('Creating release...');
+    let createReleaseResult;
     try {
-        const createReleaseResult = await octokit.repos.createRelease({
+        createReleaseResult = await octokit.repos.createRelease({
             owner: 'Microsoft',
             repo: 'azure-pipelines-vscode',
             tag_name: `v${version}`,
@@ -61,8 +62,9 @@ async function createRelease() {
     const vsixSize = fs.statSync(vsixName).size;
 
     console.log('Uploading VSIX...');
+    let uploadResult;
     try {
-        const uploadResult = await octokit.repos.uploadAsset({
+        uploadResult = await octokit.repos.uploadAsset({
             url: createReleaseResult.data.upload_url,
             headers: {
                 'content-length': vsixSize,
