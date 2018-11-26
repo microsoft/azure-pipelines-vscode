@@ -3,9 +3,10 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
-## 1.144.1
+## 1.145.0
 ### Fixed
 - link to correct GitHub repo in package.json
+- several YAML correctness bugs
 
 ## 1.144.0
 ### Fixed
