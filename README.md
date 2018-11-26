@@ -2,6 +2,8 @@
 
 # Azure Pipelines for VS Code
 
+[Get it on the VS Code Marketplace!](https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azure-pipelines)
+
 This VS Code extension brings syntax highlighting and autocompletion for
 Azure Pipelines YAML to VS Code. Basic YAML validation is built in to VS Code, but
 now you can have syntax highlighting that's aware of the Pipelines YAML schema.
