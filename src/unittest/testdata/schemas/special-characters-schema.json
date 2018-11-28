@@ -15,7 +15,9 @@
         }
       },
       "description": "friendly name inputs",
-      "additionalProperties": false
+      "additionalProperties": false,
+      "required": ["input name"]
     }
-  }
+  },
+  "required": ["task", "inputs"]
 }

@@ -45,10 +45,12 @@ export class YamlSchemaService implements IYamlSchemaService {
     public getSchemaFromTask(task: DTTask): object {
         let schema: any = {
             firstProperty: ['task'],
+            required: ['task'],
             properties: {
                 task: {},
                 inputs: {
-                    properties: {}
+                    properties: {},
+                    required: []
                 }
             }
         };
@@ -60,6 +62,8 @@ export class YamlSchemaService implements IYamlSchemaService {
         schema.properties.inputs.description = this.cleanString(task.friendlyName) + " inputs";
 
         var that = this;
+
+        let hasRequiredInputs: boolean = false;
 
         if (task.inputs) {
             task.inputs.forEach(function (input: InputsEntity) {
@@ -103,7 +107,16 @@ export class YamlSchemaService implements IYamlSchemaService {
                 }
 
                 schema.properties.inputs.properties[name] = thisProp;
+
+                if (input.required) {
+                    schema.properties.inputs.required.push(name);
+                    hasRequiredInputs = true;
+                }
             });
+        }
+
+        if (hasRequiredInputs) {
+            schema.required.push("inputs");
         }
 
         return schema;
