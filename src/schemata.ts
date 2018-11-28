@@ -1199,6 +1199,7 @@ export const schema140: string = JSON.stringify({
             "description": "Variables to map into the process's environment"
           }
         },
+        "firstProperty": ["task"],
         "additionalProperties": false
       },
       "vmImage": {

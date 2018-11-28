@@ -16040,6 +16040,9 @@
           "description": "Variables to map into the process's environment"
         }
       },
+      "firstProperty": [
+        "task"
+      ],
       "additionalProperties": false
     },
     "vmImage": {
