@@ -13,8 +13,8 @@
     "license": "MIT",
     "icon": "assets/pipelines.png",
     "galleryBanner": {
-        "color": "#2C65E1",
-        "theme": "dark"
+        "color": "#D4DCEC",
+        "theme": "light"
     },
     "engines": {
         "vscode": "^1.25.0"
