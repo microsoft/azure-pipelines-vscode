@@ -40,21 +40,6 @@ data the language server produces. The extension respects the `telemetry.enableT
 setting, which you can learn more about at VS Code's
 [telemetry FAQ](https://code.visualstudio.com/docs/supporting/faq#_how-to-disable-telemetry-reporting).
 
-## Working with other extensions: GitLens
-
-GitLens may show too much history information. We recommend reducing it to just document-level information by adding this to your user or workspace settings:
-
-```json
-"gitlens.codeLens.scopesByLanguage": [
-    {
-        "language": "azure-pipelines",
-        "scopes": [
-            "document"
-        ]
-    }
-],
-```
-
 # Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) if you want to jump in!
