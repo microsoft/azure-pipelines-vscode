@@ -35,7 +35,7 @@ export class YamlSchemaService implements IYamlSchemaService {
 
         const taskNames: string[] = taskVersions.map((item) => item[0] + "@" + item[1]);
 
-        const fullSchema = schemata.schema140
+        const fullSchema = schemata.schema143
                                    .replace('"{{{taskDefinitions}}}"', JSON.stringify(taskDefinitions))
                                    .replace('"{{{taskNames}}}"', JSON.stringify(taskNames));
 

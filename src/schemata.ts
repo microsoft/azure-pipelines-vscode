@@ -72,7 +72,7 @@ const commonPipelineValues = {
   /* End common */
 };
 
-const jobLegalAtRoot140 = {
+const jobLegalAtRoot143 = {
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -118,7 +118,7 @@ const jobLegalAtRoot140 = {
   }
 };
 
-const jobIllegalAtRoot140 = {
+const jobIllegalAtRoot143 = {
   "job": {
     "oneOf": [
       {
@@ -172,12 +172,12 @@ const jobIllegalAtRoot140 = {
   },
 };
 
-const job140WithProperties = augment(jobLegalAtRoot140, "properties", jobIllegalAtRoot140);
-const job140 = augment(job140WithProperties, null, {"firstProperty": ["job"]});
+const job143WithProperties = augment(jobLegalAtRoot143, "properties", jobIllegalAtRoot143);
+const job143 = augment(job143WithProperties, null, {"firstProperty": ["job"]});
 
-const jobAtRoot140 = augment(jobLegalAtRoot140, "properties", commonPipelineValues);
+const jobAtRoot143 = augment(jobLegalAtRoot143, "properties", commonPipelineValues);
 
-const phaseLegalAtRoot140 = {
+const phaseLegalAtRoot143 = {
   "type": "object",
   "additionalProperties": false,
   "doNotSuggest": true,
@@ -227,7 +227,7 @@ const phaseLegalAtRoot140 = {
   }
 };
 
-const phaseIllegalAtRoot140 = {
+const phaseIllegalAtRoot143 = {
   "phase": {
     "oneOf": [
       {
@@ -273,11 +273,11 @@ const phaseIllegalAtRoot140 = {
   },
 };
 
-const phase140 = augment(phaseLegalAtRoot140, "properties", phaseIllegalAtRoot140);
+const phase143 = augment(phaseLegalAtRoot143, "properties", phaseIllegalAtRoot143);
 
-const phaseAtRoot140 = augment(phaseLegalAtRoot140, "properties", commonPipelineValues);
+const phaseAtRoot143 = augment(phaseLegalAtRoot143, "properties", commonPipelineValues);
 
-const stagesAtRoot140 = augment({
+const stagesAtRoot143 = augment({
   "additionalProperties": false,
   "properties": {
     "stages": {
@@ -293,7 +293,7 @@ const stagesAtRoot140 = augment({
   }
 }, "properties", commonPipelineValues);
 
-const jobsAtRoot140 = augment({
+const jobsAtRoot143 = augment({
   "additionalProperties": false,
   "required": ["jobs"],
   "properties": {
@@ -318,7 +318,7 @@ const jobsAtRoot140 = augment({
   }
 }, "properties", commonPipelineValues);
 
-const phasesAtRoot140 = augment({
+const phasesAtRoot143 = augment({
   "additionalProperties": false,
   "required": ["phases"],
   "properties": {
@@ -478,10 +478,10 @@ const pwsh = augment(
     ]
   });
 
-export const schema140: string = JSON.stringify({
+export const schema143: string = JSON.stringify({
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://github.com/Microsoft/azure-pipelines-vscode/blob/master/local-schema.json",
-    "$comment": "v1.140.3",
+    "$comment": "v1.143.0",
     "title": "Pipeline schema",
     "description": "A pipeline definition",
     "$ref": "#/definitions/pipeline",
@@ -496,11 +496,11 @@ export const schema140: string = JSON.stringify({
           { "$ref": "#/definitions/phaseAtRoot" }
         ]
       },
-      "stagesAtRoot": stagesAtRoot140,
-      "jobsAtRoot": jobsAtRoot140,
-      "phasesAtRoot": phasesAtRoot140,
-      "jobAtRoot": jobAtRoot140,
-      "phaseAtRoot": phaseAtRoot140,
+      "stagesAtRoot": stagesAtRoot143,
+      "jobsAtRoot": jobsAtRoot143,
+      "phasesAtRoot": phasesAtRoot143,
+      "jobAtRoot": jobAtRoot143,
+      "phaseAtRoot": phaseAtRoot143,
       "script": script,
       "bash": bash,
       "powershell": powershell,
@@ -510,8 +510,8 @@ export const schema140: string = JSON.stringify({
         "type": "object",
         "additionalProperties": false
       },
-      "job": job140,
-      "phase": phase140,
+      "job": job143,
+      "phase": phase143,
       "resources":
       {
         "oneOf": [
