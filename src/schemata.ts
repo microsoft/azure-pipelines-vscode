@@ -144,7 +144,7 @@ const jobIllegalAtRoot140 = {
     "description": "Human-readable name of the job"
   },
   "condition": {
-    "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+    "$ref": "#/definitions/conditionTemplateMacroRuntimeExpression",
     "description": "Evaluate this condition expression to determine whether to run this job"
   },
   "dependsOn": {
@@ -260,7 +260,7 @@ const phaseIllegalAtRoot140 = {
     "description": "Any phases which must complete before this one"
   },
   "condition": {
-    "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+    "$ref": "#/definitions/conditionTemplateMacroRuntimeExpression",
     "description": "Evaluate this condition expression to determine whether to run this phase"
   },
   "continueOnError": {
@@ -360,7 +360,7 @@ const commonScript = {
       "description": "Start the script with this working directory"
     },
     "condition": {
-      "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+      "$ref": "#/definitions/conditionTemplateMacroRuntimeExpression",
       "description": "Evaluate this condition expression to determine whether to run this script"
     },
     "continueOnError": {
@@ -744,7 +744,7 @@ export const schema140: string = JSON.stringify({
             "description": "Keep credentials available for later use?"
           },
           "condition": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+            "$ref": "#/definitions/conditionTemplateMacroRuntimeExpression",
             "description": "Is this step enabled?"
           }
         }
@@ -1055,6 +1055,9 @@ export const schema140: string = JSON.stringify({
           },
           {
             "$ref": "#/definitions/templateExpression"
+          },
+          {
+            "$ref": "#/definitions/functionExpression"
           }
         ]
       },
@@ -1084,6 +1087,31 @@ export const schema140: string = JSON.stringify({
           },
           {
             "$ref": "#/definitions/templateExpression"
+          },
+          {
+            "$ref": "#/definitions/functionExpression"
+          }
+        ]
+      },
+      "conditionTemplateMacroRuntimeExpression": {
+        "oneOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "$ref": "#/definitions/runtimeExpression"
+          },
+          {
+            "$ref": "#/definitions/macroExpression"
+          },
+          {
+            "$ref": "#/definitions/templateExpression"
+          },
+          {
+            "$ref": "#/definitions/functionExpression"
+          },
+          {
+            "$ref": "#/definitions/conditionExpression"
           }
         ]
       },
@@ -1094,6 +1122,9 @@ export const schema140: string = JSON.stringify({
           },
           {
             "$ref": "#/definitions/templateExpression"
+          },
+          {
+            "$ref": "#/definitions/functionExpression"
           }
         ]
       },
@@ -1107,6 +1138,9 @@ export const schema140: string = JSON.stringify({
           },
           {
             "$ref": "#/definitions/templateExpression"
+          },
+          {
+            "$ref": "#/definitions/functionExpression"
           }
         ]
       },
@@ -1123,6 +1157,9 @@ export const schema140: string = JSON.stringify({
           },
           {
             "$ref": "#/definitions/templateExpression"
+          },
+          {
+            "$ref": "#/definitions/functionExpression"
           }
         ]
       },
@@ -1136,6 +1173,9 @@ export const schema140: string = JSON.stringify({
           },
           {
             "$ref": "#/definitions/templateExpression"
+          },
+          {
+            "$ref": "#/definitions/functionExpression"
           }
         ]
       },
@@ -1150,6 +1190,16 @@ export const schema140: string = JSON.stringify({
       "templateExpression": {
         "type": "string",
         "pattern": "^\\${{.*}}$"
+      },
+      "functionExpression": {
+        "type": "string",
+        "pattern": "^(and|coalesce|contains|endsWith|eq|format|gt|ge|lt|le|in|not|ne|notIn|or|startsWith|xor)\\([a-z0-9, \\(\\)]*\\)$",
+        "ignoreCase": "value"
+      },
+      "conditionExpression": {
+        "type": "string",
+        "pattern": "^(always|failed|canceled|succeded|succeededOrFailed)\\([a-z0-9, \\(\\)]*\\)$",
+        "ignoreCase": "value"
       },
       "stepInsertExpression": {
         "type": "string",
@@ -1175,7 +1225,7 @@ export const schema140: string = JSON.stringify({
             "pattern": "^[_A-Za-z0-9]*$"
           },
           "condition": {
-            "$ref": "#/definitions/booleanTemplateMacroRuntimeExpression",
+            "$ref": "#/definitions/conditionTemplateMacroRuntimeExpression",
             "description": "Evaluate this condition expression to determine whether to run this task"
           },
           "continueOnError": {
