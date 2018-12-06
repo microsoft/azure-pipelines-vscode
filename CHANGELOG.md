@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 ## 1.145.1
 ### Fixed
 - updated to latest tasks in schema
+- allow expressions in some properties, including "condition"
 
 ## 1.145.0
 ### Fixed
