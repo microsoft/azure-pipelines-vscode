@@ -23,7 +23,7 @@ steps:
 # if the mini changelog is empty, complain
 - bash: |
     LINE_COUNT=$(cat minichangelog.txt | wc -l)
-    if [[ $LINE_COUNT <= 2 ]]; then
+    if [ "$LINE_COUNT" -lt 3 ]; then
       echo Mini changelog is too short. Did you use the wrong version number in CHANGELOG.txt?
       exit 1
     fi
