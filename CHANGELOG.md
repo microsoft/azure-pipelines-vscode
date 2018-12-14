@@ -3,6 +3,10 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.145.2
+### Fixed
+- Identify required task inputs
+
 ## 1.145.1
 ### Fixed
 - updated to latest tasks in schema
