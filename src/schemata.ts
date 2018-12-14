@@ -484,7 +484,16 @@ export const schema143: string = JSON.stringify({
     "$comment": "v1.143.0",
     "title": "Pipeline schema",
     "description": "A pipeline definition",
-    "$ref": "#/definitions/pipeline",
+    "oneOf": [
+      {
+        "$ref": "#/definitions/pipeline"
+      },
+      {
+        //allow an empty file
+        "type": "string",
+        "pattern": "^$"
+      }
+    ],
     "definitions": {
       "pipeline": {
         "type": "object",
