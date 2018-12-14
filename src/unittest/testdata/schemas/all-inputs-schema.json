@@ -152,7 +152,9 @@
         }
       },
       "description": "All Inputs Task inputs",
-      "additionalProperties": false
+      "additionalProperties": false,
+      "required": []
     }
-  }
+  },
+  "required": ["task"]
 }

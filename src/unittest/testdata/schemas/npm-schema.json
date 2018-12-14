@@ -25,7 +25,9 @@
         }
       },
       "description": "npm inputs",
-      "additionalProperties": false
+      "additionalProperties": false,
+      "required": ["command"]
     }
-  }
+  },
+  "required": ["task", "inputs"]
 }

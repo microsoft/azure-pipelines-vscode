@@ -1624,6 +1624,10 @@
           "firstProperty": [
             "task"
           ],
+          "required": [
+            "task",
+            "inputs"
+          ],
           "properties": {
             "task": {
               "pattern": "^AzureVmssDeployment@0$",
@@ -1689,6 +1693,13 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "action",
+                "vmssName",
+                "vmssOsType",
+                "imageUrl"
+              ],
               "additionalProperties": false,
               "description": "Azure VM scale set Deployment inputs"
             }
@@ -1697,6 +1708,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -1762,6 +1777,12 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "solution",
+                "configuration",
+                "packageApp",
+                "runNugetRestore"
+              ],
               "additionalProperties": false,
               "description": "Xamarin.iOS inputs"
             }
@@ -1770,6 +1791,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -1881,6 +1906,13 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "solution",
+                "configuration",
+                "packageApp",
+                "runNugetRestore",
+                "unlockDefaultKeychain"
+              ],
               "additionalProperties": false,
               "description": "Xamarin.iOS inputs"
             }
@@ -1889,6 +1921,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -1914,6 +1950,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "artifactName",
+                "targetPath"
+              ],
               "additionalProperties": false,
               "description": "Download Pipeline Artifact inputs"
             }
@@ -1922,6 +1962,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -1957,6 +2001,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "filename"
+              ],
               "additionalProperties": false,
               "description": "Batch Script inputs"
             }
@@ -1965,6 +2012,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2000,6 +2051,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "command",
+                "customCommand"
+              ],
               "additionalProperties": false,
               "description": "Go inputs"
             }
@@ -2008,6 +2063,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2099,6 +2158,17 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "app",
+                "teamApiKey",
+                "user",
+                "devices",
+                "series",
+                "testDir",
+                "parallelization",
+                "locale",
+                "testCloudLocation"
+              ],
               "additionalProperties": false,
               "description": "Xamarin Test Cloud inputs"
             }
@@ -2107,6 +2177,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2244,6 +2318,26 @@
                   ]
                 }
               },
+              "required": [
+                "command",
+                "downloadDirectory",
+                "internalOrExternalDownload",
+                "feedListDownload",
+                "packageListDownload",
+                "versionListDownload",
+                "feedDownloadExternal",
+                "packageDownloadExternal",
+                "versionDownloadExternal",
+                "publishDirectory",
+                "internalOrExternalPublish",
+                "externalEndpoints",
+                "feedListPublish",
+                "packageListPublish",
+                "feedPublishExternal",
+                "packagePublishExternal",
+                "versionPublishSelector",
+                "versionPublish"
+              ],
               "additionalProperties": false,
               "description": "Universal Packages inputs"
             }
@@ -2252,6 +2346,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2277,6 +2375,9 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "forceRepoUpdate"
+              ],
               "additionalProperties": false,
               "description": "CocoaPods inputs"
             }
@@ -2285,6 +2386,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2320,6 +2425,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "environmentName"
+              ],
               "additionalProperties": false,
               "description": "Conda Environment inputs"
             }
@@ -2328,6 +2436,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2373,6 +2485,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "environmentName"
+              ],
               "additionalProperties": false,
               "description": "Conda Environment inputs"
             }
@@ -2381,6 +2496,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2461,6 +2580,14 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "serverEndpoint",
+                "appSlug",
+                "app",
+                "releaseNotesSelection",
+                "releaseNotesInput",
+                "releaseNotesFile"
+              ],
               "additionalProperties": false,
               "description": "App Center Distribute inputs"
             }
@@ -2469,6 +2596,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2549,6 +2680,14 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "serverEndpoint",
+                "appSlug",
+                "app",
+                "releaseNotesSelection",
+                "releaseNotesInput",
+                "releaseNotesFile"
+              ],
               "additionalProperties": false,
               "description": "App Center Distribute inputs"
             }
@@ -2557,6 +2696,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2625,6 +2768,13 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "searchPattern",
+                "nuGetFeedType",
+                "connectedServiceName",
+                "feedName",
+                "nuGetVersion"
+              ],
               "additionalProperties": false,
               "description": "NuGet Publisher inputs"
             }
@@ -2633,6 +2783,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2668,6 +2822,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "helmVersion",
+                "installKubeCtl"
+              ],
               "additionalProperties": false,
               "description": "Helm tool installer inputs"
             }
@@ -2676,6 +2834,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2746,6 +2908,13 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "command",
+                "customCommand",
+                "customFeed",
+                "publishFeed",
+                "publishEndpoint"
+              ],
               "additionalProperties": false,
               "description": "npm inputs"
             }
@@ -2754,6 +2923,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2779,6 +2952,9 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "command"
+              ],
               "additionalProperties": false,
               "description": "npm inputs"
             }
@@ -2787,6 +2963,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2842,6 +3022,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "files",
+                "keystoreFile"
+              ],
               "additionalProperties": false,
               "description": "Android Signing inputs"
             }
@@ -2850,6 +3034,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2905,6 +3093,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "files",
+                "keystoreFile"
+              ],
               "additionalProperties": false,
               "description": "Android Signing inputs"
             }
@@ -2913,6 +3105,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -2973,6 +3169,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "files",
+                "keystoreFile"
+              ],
               "additionalProperties": false,
               "description": "Android Signing inputs"
             }
@@ -2981,6 +3181,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -3044,6 +3248,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "SourcePath",
+                "TargetPath"
+              ],
               "additionalProperties": false,
               "description": "Windows Machine File Copy inputs"
             }
@@ -3052,6 +3260,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -3102,6 +3314,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "SourcePath",
+                "TargetPath"
+              ],
               "additionalProperties": false,
               "description": "Windows Machine File Copy inputs"
             }
@@ -3110,6 +3326,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -3130,6 +3350,9 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "Contents"
+              ],
               "additionalProperties": false,
               "description": "Delete Files inputs"
             }
@@ -3138,6 +3361,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -3168,6 +3395,12 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "connectedServiceName",
+                "Environment",
+                "Attributes",
+                "chefWaitTime"
+              ],
               "additionalProperties": false,
               "description": "Chef inputs"
             }
@@ -3176,6 +3409,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -3204,6 +3441,11 @@
                   ]
                 }
               },
+              "required": [
+                "versionSpec",
+                "addToPath",
+                "architecture"
+              ],
               "additionalProperties": false,
               "description": "Use Python Version inputs"
             }
@@ -3212,6 +3454,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -3292,6 +3538,13 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "serviceConnectionName",
+                "composeFilePath",
+                "applicationName",
+                "registryCredentials",
+                "azureSubscriptionEndpoint"
+              ],
               "additionalProperties": false,
               "description": "Service Fabric Compose Deploy inputs"
             }
@@ -3300,6 +3553,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -3477,6 +3734,15 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "containerregistrytype",
+                "dockerComposeFile",
+                "action",
+                "serviceName",
+                "imageDigestComposeFile",
+                "outputDockerComposeFile",
+                "dockerComposeCommand"
+              ],
               "additionalProperties": false,
               "description": "Docker Compose inputs"
             }
@@ -3484,6 +3750,9 @@
         },
         {
           "firstProperty": [
+            "task"
+          ],
+          "required": [
             "task"
           ],
           "properties": {
@@ -3505,6 +3774,7 @@
                   "type": "string"
                 }
               },
+              "required": [],
               "additionalProperties": false,
               "description": "Python Twine Upload Authenticate inputs"
             }
@@ -3513,6 +3783,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -3533,6 +3807,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "versionSpec"
+              ],
               "additionalProperties": false,
               "description": "NuGet Tool Installer inputs"
             }
@@ -3540,6 +3817,9 @@
         },
         {
           "firstProperty": [
+            "task"
+          ],
+          "required": [
             "task"
           ],
           "properties": {
@@ -3561,6 +3841,7 @@
                   "type": "string"
                 }
               },
+              "required": [],
               "additionalProperties": false,
               "description": "Python Pip Authenticate inputs"
             }
@@ -3569,6 +3850,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -3750,6 +4035,22 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "wrapperScript",
+                "tasks",
+                "publishJUnitResults",
+                "testResultsFiles",
+                "classFilesDirectories",
+                "javaHomeSelection",
+                "jdkUserInputPath",
+                "sqAnalysisEnabled",
+                "sqConnectedServiceName",
+                "sqProjectName",
+                "sqProjectKey",
+                "sqProjectVersion",
+                "sqGradlePluginVersion",
+                "sqDbDetailsRequired"
+              ],
               "additionalProperties": false,
               "description": "Gradle inputs"
             }
@@ -3758,6 +4059,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -3899,6 +4204,18 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "wrapperScript",
+                "tasks",
+                "publishJUnitResults",
+                "testResultsFiles",
+                "classFilesDirectories",
+                "javaHomeSelection",
+                "jdkUserInputPath",
+                "sqAnalysisEnabled",
+                "sqGradlePluginVersionChoice",
+                "sqGradlePluginVersion"
+              ],
               "additionalProperties": false,
               "description": "Gradle inputs"
             }
@@ -3907,6 +4224,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -3956,6 +4277,13 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "sshEndpoint",
+                "runOptions",
+                "commands",
+                "scriptPath",
+                "inline"
+              ],
               "additionalProperties": false,
               "description": "SSH inputs"
             }
@@ -3964,6 +4292,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4035,6 +4367,12 @@
                   "type": "integer"
                 }
               },
+              "required": [
+                "TestDrop",
+                "LoadTest",
+                "runSettingName",
+                "MachineType"
+              ],
               "additionalProperties": false,
               "description": "Cloud-based Load Test inputs"
             }
@@ -4043,6 +4381,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4068,6 +4410,11 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "connectedServiceName",
+                "messageBody",
+                "waitForCompletion"
+              ],
               "additionalProperties": false,
               "description": "Publish To Azure Service Bus inputs"
             }
@@ -4076,6 +4423,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4116,6 +4467,12 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "connectedServiceName",
+                "signPayload",
+                "certificateString",
+                "waitForCompletion"
+              ],
               "additionalProperties": false,
               "description": "Publish To Azure Service Bus inputs"
             }
@@ -4124,6 +4481,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4149,6 +4510,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "KeyVaultName",
+                "SecretsFilter"
+              ],
               "additionalProperties": false,
               "description": "Azure Key Vault inputs"
             }
@@ -4157,6 +4523,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4214,6 +4584,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "connectedServiceName",
+                "method",
+                "waitForCompletion"
+              ],
               "additionalProperties": false,
               "description": "Invoke REST API inputs"
             }
@@ -4222,6 +4597,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4292,6 +4671,13 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "connectedServiceNameSelector",
+                "connectedServiceName",
+                "connectedServiceNameARM",
+                "method",
+                "waitForCompletion"
+              ],
               "additionalProperties": false,
               "description": "Invoke REST API inputs"
             }
@@ -4300,6 +4686,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4354,6 +4744,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "certSecureFile",
+                "keychain",
+                "customKeychainPath"
+              ],
               "additionalProperties": false,
               "description": "Install Apple Certificate inputs"
             }
@@ -4362,6 +4757,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4416,6 +4815,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "certSecureFile",
+                "keychain",
+                "customKeychainPath"
+              ],
               "additionalProperties": false,
               "description": "Install Apple Certificate inputs"
             }
@@ -4424,6 +4828,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4478,6 +4886,12 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "certSecureFile",
+                "keychain",
+                "keychainPassword",
+                "customKeychainPath"
+              ],
               "additionalProperties": false,
               "description": "Install Apple Certificate inputs"
             }
@@ -4486,6 +4900,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4564,6 +4982,21 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "credsType",
+                "serverEndpoint",
+                "serverUrl",
+                "username",
+                "password",
+                "rootFolder",
+                "filePatterns",
+                "remotePath",
+                "clean",
+                "cleanContents",
+                "overwrite",
+                "preservePaths",
+                "trustSSL"
+              ],
               "additionalProperties": false,
               "description": "FTP Upload inputs"
             }
@@ -4572,6 +5005,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4756,6 +5193,19 @@
                   ]
                 }
               },
+              "required": [
+                "connectionType",
+                "kubernetesServiceEndpoint",
+                "azureSubscriptionEndpoint",
+                "azureResourceGroup",
+                "kubernetesCluster",
+                "command",
+                "configuration",
+                "secretType",
+                "containerRegistryType",
+                "configMapFile",
+                "specifyLocation"
+              ],
               "additionalProperties": false,
               "description": "Deploy to Kubernetes inputs"
             }
@@ -4764,6 +5214,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -4927,6 +5381,14 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "command",
+                "configuration",
+                "secretType",
+                "containerRegistryType",
+                "configMapFile",
+                "specifyLocation"
+              ],
               "additionalProperties": false,
               "description": "Deploy to Kubernetes inputs"
             }
@@ -4935,6 +5397,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -5141,6 +5607,22 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "command",
+                "solution",
+                "selectOrConfig",
+                "searchPatternPush",
+                "nuGetFeedType",
+                "feedPublish",
+                "externalEndpoint",
+                "searchPatternPack",
+                "versioningScheme",
+                "versionEnvVar",
+                "requestedMajorVersion",
+                "requestedMinorVersion",
+                "requestedPatchVersion",
+                "arguments"
+              ],
               "additionalProperties": false,
               "description": "NuGet inputs"
             }
@@ -5149,6 +5631,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -5212,6 +5698,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "solution",
+                "restoreMode",
+                "nuGetVersion"
+              ],
               "additionalProperties": false,
               "description": "NuGet Installer inputs"
             }
@@ -5220,6 +5711,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -5278,6 +5773,10 @@
                   ]
                 }
               },
+              "required": [
+                "solution",
+                "selectOrConfig"
+              ],
               "additionalProperties": false,
               "description": "NuGet Restore inputs"
             }
@@ -5286,6 +5785,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -5327,6 +5830,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "command",
+                "publishWebProjects"
+              ],
               "additionalProperties": false,
               "description": ".NET Core (PREVIEW) inputs"
             }
@@ -5335,6 +5842,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -5539,6 +6050,22 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "command",
+                "publishWebProjects",
+                "custom",
+                "selectOrConfig",
+                "searchPatternPush",
+                "nuGetFeedType",
+                "feedPublish",
+                "externalEndpoint",
+                "searchPatternPack",
+                "versioningScheme",
+                "versionEnvVar",
+                "requestedMajorVersion",
+                "requestedMinorVersion",
+                "requestedPatchVersion"
+              ],
               "additionalProperties": false,
               "description": ".NET Core inputs"
             }
@@ -5547,6 +6074,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -5588,6 +6119,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "command",
+                "publishWebProjects"
+              ],
               "additionalProperties": false,
               "description": ".NET Core inputs"
             }
@@ -5596,6 +6131,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -5619,6 +6158,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "packageType",
+                "version"
+              ],
               "additionalProperties": false,
               "description": ".NET Core Tool Installer inputs"
             }
@@ -5627,6 +6170,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -5675,6 +6222,12 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "connectedServiceNameARM",
+                "scriptLocation",
+                "scriptPath",
+                "inlineScript"
+              ],
               "additionalProperties": false,
               "description": "Azure CLI inputs"
             }
@@ -5683,6 +6236,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -5744,6 +6301,14 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "connectedServiceNameSelector",
+                "connectedServiceNameARM",
+                "connectedServiceName",
+                "scriptLocation",
+                "scriptPath",
+                "inlineScript"
+              ],
               "additionalProperties": false,
               "description": "Azure CLI Preview inputs"
             }
@@ -5752,6 +6317,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -5790,6 +6359,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "serviceConnectionName",
+                "ScriptType"
+              ],
               "additionalProperties": false,
               "description": "Service Fabric PowerShell inputs"
             }
@@ -5798,6 +6371,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -5823,6 +6400,9 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "version"
+              ],
               "additionalProperties": false,
               "description": "Go Tool Installer inputs"
             }
@@ -5831,6 +6411,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -6011,6 +6595,20 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "connectionType",
+                "azureSubscriptionEndpoint",
+                "azureResourceGroup",
+                "kubernetesCluster",
+                "kubernetesServiceEndpoint",
+                "command",
+                "chartType",
+                "chartName",
+                "chartPath",
+                "caCert",
+                "certificate",
+                "privatekey"
+              ],
               "additionalProperties": false,
               "description": "Package and deploy Helm charts inputs"
             }
@@ -6019,6 +6617,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -6081,6 +6683,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "filePath",
+                "script"
+              ],
               "additionalProperties": false,
               "description": "PowerShell inputs"
             }
@@ -6089,6 +6695,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -6132,6 +6742,11 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "scriptType",
+                "scriptName",
+                "inlineScript"
+              ],
               "additionalProperties": false,
               "description": "PowerShell inputs"
             }
@@ -6140,6 +6755,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -6232,6 +6851,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "testAssembly"
+              ],
               "additionalProperties": false,
               "description": "Visual Studio Test inputs"
             }
@@ -6240,6 +6862,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -6469,6 +7095,16 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "testSelector",
+                "testAssemblyVer2",
+                "testPlan",
+                "testSuite",
+                "testConfiguration",
+                "searchFolder",
+                "customBatchSizeValue",
+                "customRunTimePerBatchValue"
+              ],
               "additionalProperties": false,
               "description": "Visual Studio Test inputs"
             }
@@ -6477,6 +7113,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -6525,6 +7165,11 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "scriptSource",
+                "scriptPath",
+                "script"
+              ],
               "additionalProperties": false,
               "description": "Python Script inputs"
             }
@@ -6533,6 +7178,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -6566,6 +7215,12 @@
                   ]
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "ResourceGroupName",
+                "LoadBalancer",
+                "Action"
+              ],
               "additionalProperties": false,
               "description": "Azure Network Load Balancer inputs"
             }
@@ -6574,6 +7229,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -6672,6 +7331,15 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "testMachineGroup",
+                "dropLocation",
+                "testSelection",
+                "testPlan",
+                "testSuite",
+                "testConfiguration",
+                "sourcefilters"
+              ],
               "additionalProperties": false,
               "description": "Run Functional Tests inputs"
             }
@@ -6680,6 +7348,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -6753,6 +7425,12 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "gruntFile",
+                "gruntCli",
+                "testResultsFiles",
+                "testFiles"
+              ],
               "additionalProperties": false,
               "description": "Grunt inputs"
             }
@@ -6761,6 +7439,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -6977,6 +7659,21 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "app",
+                "artifactsDir",
+                "framework",
+                "appiumBuildDir",
+                "calabashProjectDir",
+                "uitestBuildDir",
+                "credsType",
+                "serverEndpoint",
+                "username",
+                "password",
+                "appSlug",
+                "devices",
+                "locale"
+              ],
               "additionalProperties": false,
               "description": "Mobile Center Test inputs"
             }
@@ -6985,6 +7682,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -7201,6 +7902,21 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "app",
+                "artifactsDir",
+                "framework",
+                "appiumBuildDir",
+                "calabashProjectDir",
+                "uitestBuildDir",
+                "credsType",
+                "serverEndpoint",
+                "username",
+                "password",
+                "appSlug",
+                "devices",
+                "locale"
+              ],
               "additionalProperties": false,
               "description": "App Center Test inputs"
             }
@@ -7209,6 +7925,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -7254,6 +7974,12 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "WebSiteLocation",
+                "WebSiteName",
+                "Package"
+              ],
               "additionalProperties": false,
               "description": "Azure App Service: Classic (Deprecated) inputs"
             }
@@ -7262,6 +7988,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -7429,6 +8159,14 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "actions",
+                "packageApp",
+                "exportMethod",
+                "exportOptionsPlist",
+                "unlockDefaultKeychain",
+                "outputPattern"
+              ],
               "additionalProperties": false,
               "description": "Xcode Build inputs"
             }
@@ -7437,6 +8175,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -7615,6 +8357,12 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "actions",
+                "packageApp",
+                "exportMethod",
+                "exportOptionsPlist"
+              ],
               "additionalProperties": false,
               "description": "Xcode inputs"
             }
@@ -7623,6 +8371,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -7803,6 +8555,15 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "actions",
+                "packageApp",
+                "packageTool",
+                "exportMethod",
+                "exportOptionsPlist",
+                "unlockDefaultKeychain",
+                "outputPattern"
+              ],
               "additionalProperties": false,
               "description": "Xcode Build inputs"
             }
@@ -7811,6 +8572,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -7990,6 +8755,12 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "actions",
+                "packageApp",
+                "exportMethod",
+                "exportOptionsPlist"
+              ],
               "additionalProperties": false,
               "description": "Xcode inputs"
             }
@@ -7998,6 +8769,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8018,6 +8793,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "artifactName",
+                "targetPath"
+              ],
               "additionalProperties": false,
               "description": "Publish Pipeline Artifact inputs"
             }
@@ -8026,6 +8805,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8099,6 +8882,13 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "gulpFile",
+                "gulpjs",
+                "testResultsFiles",
+                "enableCodeCoverage",
+                "testFiles"
+              ],
               "additionalProperties": false,
               "description": "Gulp inputs"
             }
@@ -8107,6 +8897,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8218,6 +9012,12 @@
                   ]
                 }
               },
+              "required": [
+                "project",
+                "msbuildLocation",
+                "jdkSelection",
+                "jdkUserInputPath"
+              ],
               "additionalProperties": false,
               "description": "Xamarin.Android inputs"
             }
@@ -8226,6 +9026,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8282,6 +9086,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "applicationPackagePath",
+                "versionSuffix",
+                "updateOnlyChanged"
+              ],
               "additionalProperties": false,
               "description": "Update Service Fabric App Versions inputs"
             }
@@ -8290,6 +9099,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8369,6 +9182,13 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "updateType",
+                "applicationPackagePath",
+                "versionSuffix",
+                "updateOnlyChanged",
+                "imageDigestsPath"
+              ],
               "additionalProperties": false,
               "description": "Update Service Fabric Manifests inputs"
             }
@@ -8377,6 +9197,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8417,6 +9241,14 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "appName",
+                "ipaName",
+                "provisioningProfile",
+                "sdk",
+                "appPath",
+                "ipaPath"
+              ],
               "additionalProperties": false,
               "description": "Xcode Package iOS inputs"
             }
@@ -8425,6 +9257,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8506,6 +9342,11 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "testMachineGroup",
+                "machineUserName",
+                "machinePassword"
+              ],
               "additionalProperties": false,
               "description": "Visual Studio Test Agent Deployment inputs"
             }
@@ -8514,6 +9355,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8590,6 +9435,14 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "testMachines",
+                "adminUserName",
+                "adminPassword",
+                "winRmProtocol",
+                "machineUserName",
+                "machinePassword"
+              ],
               "additionalProperties": false,
               "description": "Visual Studio Test Agent Deployment inputs"
             }
@@ -8598,6 +9451,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8636,6 +9493,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "codeCoverageTool",
+                "summaryFileLocation"
+              ],
               "additionalProperties": false,
               "description": "Publish Code Coverage Results inputs"
             }
@@ -8644,6 +9505,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8694,6 +9559,14 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "serverEndpoint",
+                "jobName",
+                "multibranchPipelineBranch",
+                "captureConsole",
+                "capturePipeline",
+                "parameterizedJob"
+              ],
               "additionalProperties": false,
               "description": "Jenkins Queue Job inputs"
             }
@@ -8702,6 +9575,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8752,6 +9629,14 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "serverEndpoint",
+                "jobName",
+                "multibranchPipelineBranch",
+                "captureConsole",
+                "capturePipeline",
+                "parameterizedJob"
+              ],
               "additionalProperties": false,
               "description": "Jenkins Queue Job inputs"
             }
@@ -8760,6 +9645,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -8940,6 +9829,15 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "containerregistrytype",
+                "action",
+                "dockerFile",
+                "imageName",
+                "imageNamesPath",
+                "restartPolicy",
+                "customCommand"
+              ],
               "additionalProperties": false,
               "description": "Docker inputs"
             }
@@ -8948,6 +9846,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9128,6 +10030,14 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "containerregistrytype",
+                "command",
+                "dockerFile",
+                "imageName",
+                "imageNamesPath",
+                "restartPolicy"
+              ],
               "additionalProperties": false,
               "description": "Docker inputs"
             }
@@ -9136,6 +10046,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9176,6 +10090,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "Contents",
+                "TargetFolder"
+              ],
               "additionalProperties": false,
               "description": "Copy Files inputs"
             }
@@ -9184,6 +10102,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9224,6 +10146,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "Contents",
+                "TargetFolder"
+              ],
               "additionalProperties": false,
               "description": "Copy Files inputs"
             }
@@ -9232,6 +10158,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9275,6 +10205,12 @@
                   "type": "integer"
                 }
               },
+              "required": [
+                "PathtoPublish",
+                "ArtifactName",
+                "ArtifactType",
+                "TargetPath"
+              ],
               "additionalProperties": false,
               "description": "Publish Build Artifacts inputs"
             }
@@ -9283,6 +10219,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9333,6 +10273,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "testRunner",
+                "testResultsFiles"
+              ],
               "additionalProperties": false,
               "description": "Publish Test Results inputs"
             }
@@ -9341,6 +10285,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9396,6 +10344,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "testRunner",
+                "testResultsFiles"
+              ],
               "additionalProperties": false,
               "description": "Publish Test Results inputs"
             }
@@ -9404,6 +10356,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9429,6 +10385,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "serviceEndpoint",
+                "wd"
+              ],
               "additionalProperties": false,
               "description": "PyPI Publisher inputs"
             }
@@ -9437,6 +10397,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9479,6 +10443,12 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "action",
+                "email",
+                "password",
+                "product"
+              ],
               "additionalProperties": false,
               "description": "Xamarin License inputs"
             }
@@ -9487,6 +10457,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9580,6 +10554,13 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "websiteUrl",
+                "testName",
+                "vuLoad",
+                "runDuration",
+                "machineType"
+              ],
               "additionalProperties": false,
               "description": "Cloud-based Web Performance Test inputs"
             }
@@ -9588,6 +10569,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9618,6 +10603,12 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "feed",
+                "definition",
+                "version",
+                "downloadPath"
+              ],
               "additionalProperties": false,
               "description": "Download Package inputs"
             }
@@ -9626,6 +10617,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9691,6 +10686,12 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "projectKey",
+                "projectName",
+                "projectVersion",
+                "connectedServiceName"
+              ],
               "additionalProperties": false,
               "description": "SonarQube for MSBuild - Begin Analysis inputs"
             }
@@ -9699,6 +10700,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9719,6 +10724,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "versionSpec"
+              ],
               "additionalProperties": false,
               "description": "Node Tool Installer inputs"
             }
@@ -9727,6 +10735,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9765,6 +10777,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "Contents",
+                "ArtifactName",
+                "ArtifactType"
+              ],
               "additionalProperties": false,
               "description": "Copy and Publish Build Artifacts inputs"
             }
@@ -9773,6 +10790,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9858,6 +10879,17 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "buildType",
+                "project",
+                "definition",
+                "buildVersionToDownload",
+                "branchName",
+                "buildId",
+                "downloadType",
+                "artifactName",
+                "downloadPath"
+              ],
               "additionalProperties": false,
               "description": "Download Build Artifacts inputs"
             }
@@ -9866,6 +10898,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9953,6 +10989,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "solution"
+              ],
               "additionalProperties": false,
               "description": "MSBuild inputs"
             }
@@ -9961,6 +11000,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -9981,6 +11024,9 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "command"
+              ],
               "additionalProperties": false,
               "description": "NuGet Command inputs"
             }
@@ -9989,6 +11035,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -10094,6 +11144,14 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "EnvironmentName",
+                "DacpacFile",
+                "TargetMethod",
+                "ServerName",
+                "DatabaseName",
+                "ConnectionString"
+              ],
               "additionalProperties": false,
               "description": "[Deprecated] SQL Server Database Deploy inputs"
             }
@@ -10102,6 +11160,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -10210,6 +11272,11 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "Machines",
+                "ScriptPath",
+                "InlineScript"
+              ],
               "additionalProperties": false,
               "description": "PowerShell on Target Machines inputs"
             }
@@ -10218,6 +11285,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -10294,6 +11365,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "EnvironmentName",
+                "ScriptPath"
+              ],
               "additionalProperties": false,
               "description": "PowerShell on Target Machines inputs"
             }
@@ -10302,6 +11377,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -10378,6 +11457,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "EnvironmentName",
+                "ScriptPath"
+              ],
               "additionalProperties": false,
               "description": "PowerShell on Target Machines inputs"
             }
@@ -10386,6 +11469,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -10411,6 +11498,10 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "ScriptPath"
+              ],
               "additionalProperties": false,
               "description": "Chef Knife inputs"
             }
@@ -10419,6 +11510,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -10454,6 +11549,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "cipher",
+                "inFile",
+                "passphrase"
+              ],
               "additionalProperties": false,
               "description": "Decrypt File (OpenSSL) inputs"
             }
@@ -10461,6 +11561,9 @@
         },
         {
           "firstProperty": [
+            "task"
+          ],
+          "required": [
             "task"
           ],
           "properties": {
@@ -10471,6 +11574,7 @@
             },
             "inputs": {
               "properties": {},
+              "required": [],
               "additionalProperties": false,
               "description": "SonarQube for MSBuild - End Analysis inputs"
             }
@@ -10479,6 +11583,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -10532,6 +11640,13 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "packageFeedSelector",
+                "versionSelector",
+                "testPlatformVersion",
+                "customFeed",
+                "netShare"
+              ],
               "additionalProperties": false,
               "description": "Visual Studio Test Platform Installer inputs"
             }
@@ -10540,6 +11655,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -10743,6 +11862,22 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectionType",
+                "ConnectedServiceName",
+                "PublishProfilePath",
+                "PublishProfilePassword",
+                "WebAppKind",
+                "WebAppName",
+                "ResourceGroupName",
+                "SlotName",
+                "DockerNamespace",
+                "DockerRepository",
+                "Package",
+                "InlineScript",
+                "ScriptPath",
+                "DeploymentType"
+              ],
               "additionalProperties": false,
               "description": "Azure App Service Deploy inputs"
             }
@@ -10751,6 +11886,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -10831,6 +11970,13 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "WebAppName",
+                "ResourceGroupName",
+                "SlotName",
+                "Package"
+              ],
               "additionalProperties": false,
               "description": "Azure App Service Deploy inputs"
             }
@@ -10839,6 +11985,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11070,6 +12220,26 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "WebAppKind",
+                "WebAppName",
+                "ResourceGroupName",
+                "SlotName",
+                "AzureContainerRegistry",
+                "AzureContainerRegistryImage",
+                "DockerRepositoryAccess",
+                "RegistryConnectedServiceName",
+                "PrivateRegistryImage",
+                "DockerNamespace",
+                "DockerRepository",
+                "Package",
+                "BuiltinLinuxPackage",
+                "RuntimeStack",
+                "InlineScript",
+                "ScriptPath",
+                "WebConfigParameters"
+              ],
               "additionalProperties": false,
               "description": "Azure App Service Deploy inputs"
             }
@@ -11078,6 +12248,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11186,6 +12360,14 @@
                   ]
                 }
               },
+              "required": [
+                "antBuildFile",
+                "publishJUnitResults",
+                "testResultsFiles",
+                "classFilesDirectories",
+                "javaHomeSelection",
+                "jdkUserInputPath"
+              ],
               "additionalProperties": false,
               "description": "Ant inputs"
             }
@@ -11194,6 +12376,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11209,6 +12395,9 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "secureFile"
+              ],
               "additionalProperties": false,
               "description": "Download Secure File inputs"
             }
@@ -11217,6 +12406,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11312,6 +12505,17 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "serverEndpoint",
+                "jobName",
+                "saveTo",
+                "jenkinsBuild",
+                "jenkinsBuildNumber",
+                "artifactProvider",
+                "ConnectedServiceNameARM",
+                "storageAccountName",
+                "containerName"
+              ],
               "additionalProperties": false,
               "description": "Jenkins Download Artifacts inputs"
             }
@@ -11320,6 +12524,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11415,6 +12623,16 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "StorageAccount",
+                "ServiceName",
+                "ServiceLocation",
+                "CsPkg",
+                "CsCfg",
+                "Slot",
+                "AllowUpgrade"
+              ],
               "additionalProperties": false,
               "description": "Azure Cloud Service Deployment inputs"
             }
@@ -11423,6 +12641,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11473,6 +12695,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "sshEndpoint",
+                "contents"
+              ],
               "additionalProperties": false,
               "description": "Copy Files Over SSH inputs"
             }
@@ -11481,6 +12707,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11531,6 +12761,13 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "rootFolder",
+                "includeRootFolder",
+                "archiveType",
+                "archiveFile",
+                "replaceExistingArchive"
+              ],
               "additionalProperties": false,
               "description": "Archive Files inputs"
             }
@@ -11539,6 +12776,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11589,6 +12830,13 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "rootFolderOrFile",
+                "includeRootFolder",
+                "archiveType",
+                "archiveFile",
+                "replaceExistingArchive"
+              ],
               "additionalProperties": false,
               "description": "Archive Files inputs"
             }
@@ -11597,6 +12845,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11622,6 +12874,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "solution",
+                "email",
+                "password"
+              ],
               "additionalProperties": false,
               "description": "Xamarin Component Restore inputs"
             }
@@ -11630,6 +12887,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11835,6 +13096,16 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "applicationPackagePath",
+                "serviceConnectionName",
+                "overwriteBehavior",
+                "upgradeMode",
+                "FailureAction",
+                "registryCredentials",
+                "dockerRegistryEndpoint",
+                "azureSubscriptionEndpoint"
+              ],
               "additionalProperties": false,
               "description": "Service Fabric Application Deployment inputs"
             }
@@ -11843,6 +13114,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11863,6 +13138,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "versionSpec"
+              ],
               "additionalProperties": false,
               "description": "Use Ruby Version inputs"
             }
@@ -11871,6 +13149,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11896,6 +13178,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "script"
+              ],
               "additionalProperties": false,
               "description": "Command Line inputs"
             }
@@ -11904,6 +13189,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11934,6 +13223,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "filename"
+              ],
               "additionalProperties": false,
               "description": "Command Line inputs"
             }
@@ -11942,6 +13234,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -11957,6 +13253,9 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "delayForMinutes"
+              ],
               "additionalProperties": false,
               "description": "Delay inputs"
             }
@@ -11965,6 +13264,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12092,6 +13395,17 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "ConnectedServiceNameClassic",
+                "action",
+                "actionClassic",
+                "resourceGroupName",
+                "cloudService",
+                "location",
+                "csmFile",
+                "deploymentMode"
+              ],
               "additionalProperties": false,
               "description": "Azure Resource Group Deployment inputs"
             }
@@ -12100,6 +13414,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12235,6 +13553,20 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "action",
+                "resourceGroupName",
+                "location",
+                "templateLocation",
+                "csmFileLink",
+                "csmFile",
+                "deploymentMode",
+                "deploymentGroupEndpoint",
+                "project",
+                "deploymentGroupName",
+                "userName"
+              ],
               "additionalProperties": false,
               "description": "Azure Resource Group Deployment inputs"
             }
@@ -12243,6 +13575,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12307,6 +13643,12 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "ConnectedServiceNameARM",
+                "ScriptType",
+                "CustomTargetAzurePs"
+              ],
               "additionalProperties": false,
               "description": "Azure PowerShell inputs"
             }
@@ -12315,6 +13657,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12393,6 +13739,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "ConnectedServiceNameARM",
+                "CustomTargetAzurePs"
+              ],
               "additionalProperties": false,
               "description": "Azure PowerShell inputs"
             }
@@ -12401,6 +13752,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12452,6 +13807,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "ConnectedServiceNameARM",
+                "ScriptType"
+              ],
               "additionalProperties": false,
               "description": "Azure PowerShell inputs"
             }
@@ -12460,6 +13820,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12485,6 +13849,11 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "archiveFilePatterns",
+                "destinationFolder",
+                "cleanDestinationFolder"
+              ],
               "additionalProperties": false,
               "description": "Extract Files inputs"
             }
@@ -12493,6 +13862,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12555,6 +13928,12 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "function",
+                "key",
+                "method",
+                "waitForCompletion"
+              ],
               "additionalProperties": false,
               "description": "Invoke Azure Function inputs"
             }
@@ -12563,6 +13942,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12625,6 +14008,12 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "function",
+                "key",
+                "method",
+                "waitForCompletion"
+              ],
               "additionalProperties": false,
               "description": "Invoke Azure Function inputs"
             }
@@ -12633,6 +14022,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12658,6 +14051,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "queryId",
+                "maxThreshold",
+                "minThreshold"
+              ],
               "additionalProperties": false,
               "description": "Query Work Items inputs"
             }
@@ -12666,6 +14064,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12706,6 +14108,13 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "connectedServiceNameARM",
+                "ResourceGroupName",
+                "ResourceType",
+                "resourceName",
+                "alertRules"
+              ],
               "additionalProperties": false,
               "description": "Query Azure Monitor Alerts inputs"
             }
@@ -12714,6 +14123,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12749,6 +14162,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "filesharePath",
+                "artifactName",
+                "downloadPath"
+              ],
               "additionalProperties": false,
               "description": "Download Fileshare Artifacts inputs"
             }
@@ -12757,6 +14175,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12807,6 +14229,13 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "ResourceGroupName",
+                "ResourceType",
+                "ResourceName",
+                "AlertRules"
+              ],
               "additionalProperties": false,
               "description": "Azure Monitor Alerts inputs"
             }
@@ -12815,6 +14244,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12845,6 +14278,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "hostName",
+                "sshPublicKey",
+                "sshKeySecureFile"
+              ],
               "additionalProperties": false,
               "description": "Install SSH Key inputs"
             }
@@ -12853,6 +14291,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -12973,6 +14415,20 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "templateType",
+                "customTemplateLocation",
+                "ConnectedServiceName",
+                "location",
+                "storageAccountName",
+                "azureResourceGroup",
+                "baseImageSource",
+                "baseImage",
+                "customImageUrl",
+                "customImageOSType",
+                "packagePath",
+                "deployScriptPath"
+              ],
               "additionalProperties": false,
               "description": "Build Machine Image inputs"
             }
@@ -12981,6 +14437,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -13191,6 +14651,24 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "EnvironmentName",
+                "WebDeployPackage",
+                "WebSiteName",
+                "WebSitePhysicalPath",
+                "WebSitePhysicalPathAuth",
+                "WebSiteAuthUserName",
+                "Protocol",
+                "IPAddress",
+                "Port",
+                "HostNameWithSNI",
+                "SSLCertThumbPrint",
+                "AppPoolName",
+                "DotNetVersion",
+                "PipeLineMode",
+                "AppPoolIdentity",
+                "AppPoolUsername"
+              ],
               "additionalProperties": false,
               "description": "[Deprecated] IIS Web App Deployment inputs"
             }
@@ -13199,6 +14677,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -13239,6 +14721,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "files",
+                "url"
+              ],
               "additionalProperties": false,
               "description": "cURL Upload Files inputs"
             }
@@ -13247,6 +14733,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -13305,6 +14795,11 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "files",
+                "serviceEndpoint",
+                "url"
+              ],
               "additionalProperties": false,
               "description": "cURL Upload Files inputs"
             }
@@ -13313,6 +14808,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -13346,6 +14845,11 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "provisioningProfileLocation",
+                "provProfileSecureFile",
+                "provProfileSourceRepository"
+              ],
               "additionalProperties": false,
               "description": "Install Apple Provisioning Profile inputs"
             }
@@ -13354,6 +14858,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -13374,6 +14882,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "provProfileSecureFile"
+              ],
               "additionalProperties": false,
               "description": "Install Apple Provisioning Profile inputs"
             }
@@ -13381,6 +14892,9 @@
         },
         {
           "firstProperty": [
+            "task"
+          ],
+          "required": [
             "task"
           ],
           "properties": {
@@ -13402,6 +14916,7 @@
                   "type": "string"
                 }
               },
+              "required": [],
               "additionalProperties": false,
               "description": "npm Authenticate (for task runners) inputs"
             }
@@ -13410,6 +14925,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -13609,6 +15128,20 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "mavenPOMFile",
+                "publishJUnitResults",
+                "testResultsFiles",
+                "javaHomeSelection",
+                "jdkUserInputPath",
+                "mavenVersionSelection",
+                "mavenPath",
+                "mavenSetM2Home",
+                "mavenFeedAuthenticate",
+                "sqAnalysisEnabled",
+                "sqConnectedServiceName",
+                "sqDbDetailsRequired"
+              ],
               "additionalProperties": false,
               "description": "Maven inputs"
             }
@@ -13617,6 +15150,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -13776,6 +15313,19 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "mavenPOMFile",
+                "publishJUnitResults",
+                "testResultsFiles",
+                "javaHomeSelection",
+                "jdkUserInputPath",
+                "mavenVersionSelection",
+                "mavenPath",
+                "mavenSetM2Home",
+                "mavenFeedAuthenticate",
+                "sqAnalysisEnabled",
+                "sqMavenPluginVersionChoice"
+              ],
               "additionalProperties": false,
               "description": "Maven inputs"
             }
@@ -13784,6 +15334,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -13943,6 +15497,19 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "mavenPOMFile",
+                "publishJUnitResults",
+                "testResultsFiles",
+                "javaHomeSelection",
+                "jdkUserInputPath",
+                "mavenVersionSelection",
+                "mavenPath",
+                "mavenSetM2Home",
+                "mavenFeedAuthenticate",
+                "sqAnalysisEnabled",
+                "sqMavenPluginVersionChoice"
+              ],
               "additionalProperties": false,
               "description": "Maven inputs"
             }
@@ -13951,6 +15518,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14032,6 +15603,17 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "ServerName",
+                "SqlUsername",
+                "SqlPassword",
+                "SqlFile",
+                "SqlInline",
+                "IpDetectionMethod",
+                "StartIpAddress",
+                "EndIpAddress"
+              ],
               "additionalProperties": false,
               "description": "Azure Database for MySQL Deployment inputs"
             }
@@ -14040,6 +15622,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14134,6 +15720,17 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "WebAppName",
+                "ResourceGroupName",
+                "SourceSlot",
+                "TargetSlot",
+                "Slot",
+                "ExtensionsList",
+                "AppInsightsResourceGroupName",
+                "ApplicationInsightsResourceName"
+              ],
               "additionalProperties": false,
               "description": "Azure App Service Manage inputs"
             }
@@ -14142,6 +15739,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14275,6 +15876,22 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "ConnectedServiceName",
+                "ConnectedServiceNameARM",
+                "ServerName",
+                "DatabaseName",
+                "SqlUsername",
+                "SqlPassword",
+                "DeploymentAction",
+                "DacpacFile",
+                "BacpacFile",
+                "SqlFile",
+                "SqlInline",
+                "IpDetectionMethod",
+                "StartIpAddress",
+                "EndIpAddress"
+              ],
               "additionalProperties": false,
               "description": "Azure SQL Database Deployment inputs"
             }
@@ -14283,6 +15900,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14368,6 +15989,12 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "avdName",
+                "emulatorTarget",
+                "avdAbi",
+                "emulatorTimeout"
+              ],
               "additionalProperties": false,
               "description": "Android Build inputs"
             }
@@ -14376,6 +16003,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14450,6 +16081,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "solution"
+              ],
               "additionalProperties": false,
               "description": "Visual Studio Build inputs"
             }
@@ -14457,6 +16091,9 @@
         },
         {
           "firstProperty": [
+            "task"
+          ],
+          "required": [
             "task"
           ],
           "properties": {
@@ -14478,6 +16115,7 @@
                   "type": "string"
                 }
               },
+              "required": [],
               "additionalProperties": false,
               "description": "CMake inputs"
             }
@@ -14486,6 +16124,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14521,6 +16163,9 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "scriptPath"
+              ],
               "additionalProperties": false,
               "description": "Shell Script inputs"
             }
@@ -14529,6 +16174,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14572,6 +16221,10 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "filePath",
+                "script"
+              ],
               "additionalProperties": false,
               "description": "Bash inputs"
             }
@@ -14580,6 +16233,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14659,6 +16316,11 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "SearchPattern",
+                "SymbolServerType",
+                "CompressSymbols"
+              ],
               "additionalProperties": false,
               "description": "Index Sources & Publish Symbols inputs"
             }
@@ -14667,6 +16329,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14722,6 +16388,9 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "SearchPattern"
+              ],
               "additionalProperties": false,
               "description": "Index Sources & Publish Symbols inputs"
             }
@@ -14730,6 +16399,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14796,6 +16469,18 @@
                   "type": "boolean"
                 }
               },
+              "required": [
+                "versionSpec",
+                "jdkArchitectureOption",
+                "jdkSourceOption",
+                "jdkFile",
+                "azureResourceManagerEndpoint",
+                "azureStorageAccountName",
+                "azureContainerName",
+                "azureCommonVirtualFile",
+                "jdkDestinationDirectory",
+                "cleanDestinationDirectory"
+              ],
               "additionalProperties": false,
               "description": "Java Tool Installer inputs"
             }
@@ -14804,6 +16489,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14879,6 +16568,14 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "searchPattern",
+                "versionByBuild",
+                "versionEnvVar",
+                "requestedMajorVersion",
+                "requestedMinorVersion",
+                "requestedPatchVersion"
+              ],
               "additionalProperties": false,
               "description": "NuGet Packager inputs"
             }
@@ -14887,6 +16584,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -14966,6 +16667,12 @@
                   ]
                 }
               },
+              "required": [
+                "TestDrop",
+                "LoadTest",
+                "agentCount",
+                "runDuration"
+              ],
               "additionalProperties": false,
               "description": "Cloud-based Apache JMeter Load Test inputs"
             }
@@ -14974,6 +16681,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -15108,6 +16819,20 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "SourcePath",
+                "ConnectedServiceName",
+                "ConnectedServiceNameARM",
+                "Destination",
+                "StorageAccount",
+                "StorageAccountRM",
+                "ContainerName",
+                "EnvironmentName",
+                "EnvironmentNameRM",
+                "vmsAdminUserName",
+                "vmsAdminPassword",
+                "TargetPath"
+              ],
               "additionalProperties": false,
               "description": "Azure File Copy inputs"
             }
@@ -15116,6 +16841,10 @@
         {
           "firstProperty": [
             "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ],
           "properties": {
             "task": {
@@ -15255,6 +16984,20 @@
                   "type": "string"
                 }
               },
+              "required": [
+                "SourcePath",
+                "ConnectedServiceName",
+                "ConnectedServiceNameARM",
+                "Destination",
+                "StorageAccount",
+                "StorageAccountRM",
+                "ContainerName",
+                "EnvironmentName",
+                "EnvironmentNameRM",
+                "vmsAdminUserName",
+                "vmsAdminPassword",
+                "TargetPath"
+              ],
               "additionalProperties": false,
               "description": "Azure File Copy inputs"
             }
@@ -15464,6 +17207,9 @@
           "description": "Variables to map into the process's environment"
         }
       },
+      "firstProperty": [
+        "task"
+      ],
       "additionalProperties": false
     },
     "vmImage": {
