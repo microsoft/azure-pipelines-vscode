@@ -1644,10 +1644,13 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceName": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
                 "action": {
                   "description": "Action",
@@ -1702,7 +1705,7 @@
                 }
               },
               "required": [
-                "ConnectedServiceName",
+                "azureSubscription",
                 "action",
                 "vmssName",
                 "vmssOsType",
@@ -1729,10 +1732,13 @@
             },
             "inputs": {
               "properties": {
-                "solution": {
+                "solutionFile": {
                   "description": "Solution",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "solution"
+                  ]
                 },
                 "configuration": {
                   "description": "Configuration",
@@ -1749,10 +1755,13 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "forSimulator": {
+                "buildForSimulator": {
                   "description": "Build for iOS Simulator",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "forSimulator"
+                  ]
                 },
                 "runNugetRestore": {
                   "description": "Run NuGet restore",
@@ -1764,29 +1773,42 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
-                "buildToolLocation": {
+                "mdtoolFile": {
                   "description": "Build tool path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "buildToolLocation",
+                    "mdtoolLocation"
+                  ]
                 },
-                "iosSigningIdentity": {
+                "signingIdentity": {
                   "description": "Signing identity",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "iosSigningIdentity"
+                  ]
                 },
-                "provProfileUuid": {
+                "signingProvisioningProfileID": {
                   "description": "Provisioning profile UUID",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "provProfileUuid"
+                  ]
                 }
               },
               "required": [
-                "solution",
+                "solutionFile",
                 "configuration",
                 "packageApp",
                 "runNugetRestore"
@@ -1812,10 +1834,13 @@
             },
             "inputs": {
               "properties": {
-                "solution": {
+                "solutionFile": {
                   "description": "Solution",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "solution"
+                  ]
                 },
                 "configuration": {
                   "description": "Configuration",
@@ -1832,10 +1857,13 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "forSimulator": {
+                "buildForSimulator": {
                   "description": "Build for iOS Simulator",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "forSimulator"
+                  ]
                 },
                 "runNugetRestore": {
                   "description": "Run NuGet restore",
@@ -1847,79 +1875,115 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
-                "buildTool": {
+                "buildToolOption": {
                   "description": "Build tool",
                   "ignoreCase": "all",
                   "enum": [
                     "xbuild",
                     "msbuild"
+                  ],
+                  "aliases": [
+                    "buildTool"
                   ]
                 },
-                "mdtoolLocation": {
+                "mdtoolFile": {
                   "description": "Build tool path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mdtoolLocation"
+                  ]
                 },
-                "signMethod": {
+                "signingOption": {
                   "description": "Override using",
                   "ignoreCase": "all",
                   "enum": [
                     "file",
                     "id"
+                  ],
+                  "aliases": [
+                    "signMethod"
                   ]
                 },
-                "iosSigningIdentity": {
+                "signingIdentity": {
                   "description": "Signing identity",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "iosSigningIdentity"
+                  ]
                 },
-                "unlockDefaultKeychain": {
+                "signingUnlockDefaultKeychain": {
                   "description": "Unlock default keychain",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "unlockDefaultKeychain"
+                  ]
                 },
-                "defaultKeychainPassword": {
+                "signingDefaultKeychainPassword": {
                   "description": "Default keychain password",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "defaultKeychainPassword"
+                  ]
                 },
-                "provProfileUuid": {
+                "signingProvisioningProfileID": {
                   "description": "Provisioning profile UUID",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "provProfileUuid"
+                  ]
                 },
-                "p12": {
+                "signingP12File": {
                   "description": "P12 certificate file",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "p12"
+                  ]
                 },
-                "p12pwd": {
+                "signingP12Password": {
                   "description": "P12 password",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "p12pwd"
+                  ]
                 },
-                "provProfile": {
+                "signingProvisioningProfileFile": {
                   "description": "Provisioning profile file",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "provProfile"
+                  ]
                 },
-                "removeProfile": {
+                "signingRemoveProfile": {
                   "description": "Remove profile after build",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "removeProfile"
+                  ]
                 }
               },
               "required": [
-                "solution",
+                "solutionFile",
                 "configuration",
                 "packageApp",
                 "runNugetRestore",
-                "unlockDefaultKeychain"
+                "signingUnlockDefaultKeychain"
               ],
               "additionalProperties": false,
               "description": "Xamarin.iOS inputs"
@@ -2084,25 +2148,34 @@
             },
             "inputs": {
               "properties": {
-                "app": {
+                "appFile": {
                   "description": "App file",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "app"
+                  ]
                 },
-                "dsym": {
+                "dsymFile": {
                   "description": "dSYM file (iOS only)",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "dsym"
+                  ]
                 },
                 "teamApiKey": {
                   "description": "Team API key",
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "user": {
+                "email": {
                   "description": "User email",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "user"
+                  ]
                 },
                 "devices": {
                   "description": "Devices",
@@ -2114,21 +2187,27 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "testDir": {
+                "testAssemblyDirectory": {
                   "description": "Test assembly directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "testDir"
+                  ]
                 },
-                "parallelization": {
+                "parallelizationOption": {
                   "description": "Parallelization",
                   "ignoreCase": "all",
                   "enum": [
                     "none",
                     "--fixture-chunk",
                     "--test-chunk"
+                  ],
+                  "aliases": [
+                    "parallelization"
                   ]
                 },
-                "locale": {
+                "localeOption": {
                   "description": "System language",
                   "ignoreCase": "all",
                   "enum": [
@@ -2143,6 +2222,9 @@
                     "es_MX",
                     "es_ES",
                     "user"
+                  ],
+                  "aliases": [
+                    "locale"
                   ]
                 },
                 "userDefinedLocale": {
@@ -2150,10 +2232,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "testCloudLocation": {
+                "testCloudFile": {
                   "description": "test-cloud.exe location",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "testCloudLocation"
+                  ]
                 },
                 "optionalArgs": {
                   "description": "Optional arguments",
@@ -2167,15 +2252,15 @@
                 }
               },
               "required": [
-                "app",
+                "appFile",
                 "teamApiKey",
-                "user",
+                "email",
                 "devices",
                 "series",
-                "testDir",
-                "parallelization",
-                "locale",
-                "testCloudLocation"
+                "testAssemblyDirectory",
+                "parallelizationOption",
+                "localeOption",
+                "testCloudFile"
               ],
               "additionalProperties": false,
               "description": "Xamarin Test Cloud inputs"
@@ -2209,35 +2294,53 @@
                 "downloadDirectory": {
                   "description": "Destination directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "downloadDirectory"
+                  ]
                 },
-                "internalOrExternalDownload": {
+                "feedsToUse": {
                   "description": "Feed location",
                   "ignoreCase": "all",
                   "enum": [
                     "internal",
                     "external"
+                  ],
+                  "aliases": [
+                    "internalOrExternalDownload"
                   ]
                 },
-                "externalEndpoint": {
+                "externalFeedCredentials": {
                   "description": "Account/collection connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "externalEndpoint"
+                  ]
                 },
-                "feedListDownload": {
+                "vstsFeed": {
                   "description": "Feed",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "feedListDownload"
+                  ]
                 },
-                "packageListDownload": {
+                "vstsFeedPackage": {
                   "description": "Package name",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "packageListDownload"
+                  ]
                 },
-                "versionListDownload": {
+                "vstsPackageVersion": {
                   "description": "Version",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "versionListDownload"
+                  ]
                 },
                 "feedDownloadExternal": {
                   "description": "Feed",
@@ -2257,30 +2360,45 @@
                 "publishDirectory": {
                   "description": "Path to file(s) to publish",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "publishDirectory"
+                  ]
                 },
-                "internalOrExternalPublish": {
+                "feedsToUsePublish": {
                   "description": "Feed location",
                   "ignoreCase": "all",
                   "enum": [
                     "internal",
                     "external"
+                  ],
+                  "aliases": [
+                    "internalOrExternalPublish"
                   ]
                 },
-                "externalEndpoints": {
+                "publishFeedCredentials": {
                   "description": "Account/collection connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "externalEndpoints"
+                  ]
                 },
-                "feedListPublish": {
+                "vstsFeedPublish": {
                   "description": "Destination Feed",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "feedListPublish"
+                  ]
                 },
-                "packageListPublish": {
+                "vstsFeedPackagePublish": {
                   "description": "Package name",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "packageListPublish"
+                  ]
                 },
                 "feedPublishExternal": {
                   "description": "Feed",
@@ -2292,7 +2410,7 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "versionPublishSelector": {
+                "versionOption": {
                   "description": "Version",
                   "ignoreCase": "all",
                   "enum": [
@@ -2300,6 +2418,9 @@
                     "minor",
                     "patch",
                     "custom"
+                  ],
+                  "aliases": [
+                    "versionPublishSelector"
                   ]
                 },
                 "versionPublish": {
@@ -2329,21 +2450,21 @@
               "required": [
                 "command",
                 "downloadDirectory",
-                "internalOrExternalDownload",
-                "feedListDownload",
-                "packageListDownload",
-                "versionListDownload",
+                "feedsToUse",
+                "vstsFeed",
+                "vstsFeedPackage",
+                "vstsPackageVersion",
                 "feedDownloadExternal",
                 "packageDownloadExternal",
                 "versionDownloadExternal",
                 "publishDirectory",
-                "internalOrExternalPublish",
-                "externalEndpoints",
-                "feedListPublish",
-                "packageListPublish",
+                "feedsToUsePublish",
+                "publishFeedCredentials",
+                "vstsFeedPublish",
+                "vstsFeedPackagePublish",
                 "feedPublishExternal",
                 "packagePublishExternal",
-                "versionPublishSelector",
+                "versionOption",
                 "versionPublish"
               ],
               "additionalProperties": false,
@@ -2367,10 +2488,13 @@
             },
             "inputs": {
               "properties": {
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "forceRepoUpdate": {
                   "description": "Force repo update",
@@ -2527,16 +2651,22 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "app": {
+                "appFile": {
                   "description": "Binary file path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "app"
+                  ]
                 },
-                "symbolsType": {
+                "symbolsOption": {
                   "description": "Symbols type",
                   "ignoreCase": "all",
                   "enum": [
                     "Apple"
+                  ],
+                  "aliases": [
+                    "symbolsType"
                   ]
                 },
                 "symbolsPath": {
@@ -2544,32 +2674,47 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "pdbPath": {
+                "symbolsPdbFiles": {
                   "description": "Symbols path (*.pdb)",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "pdbPath"
+                  ]
                 },
-                "dsymPath": {
+                "symbolsDsymFiles": {
                   "description": "dSYM path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "dsymPath"
+                  ]
                 },
-                "mappingTxtPath": {
+                "symbolsMappingTxtFile": {
                   "description": "Mapping file",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mappingTxtPath"
+                  ]
                 },
-                "packParentFolder": {
+                "symbolsIncludeParentDirectory": {
                   "description": "Include all items in parent folder",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "packParentFolder"
+                  ]
                 },
-                "releaseNotesSelection": {
+                "releaseNotesOption": {
                   "description": "Create release notes",
                   "ignoreCase": "all",
                   "enum": [
                     "input",
                     "file"
+                  ],
+                  "aliases": [
+                    "releaseNotesSelection"
                   ]
                 },
                 "releaseNotesInput": {
@@ -2582,17 +2727,20 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "destinationId": {
+                "distributionGroupId": {
                   "description": "Destination ID",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "destinationId"
+                  ]
                 }
               },
               "required": [
                 "serverEndpoint",
                 "appSlug",
-                "app",
-                "releaseNotesSelection",
+                "appFile",
+                "releaseNotesOption",
                 "releaseNotesInput",
                 "releaseNotesFile"
               ],
@@ -2627,16 +2775,22 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "app": {
+                "appFile": {
                   "description": "Binary file path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "app"
+                  ]
                 },
-                "symbolsType": {
+                "symbolsOption": {
                   "description": "Symbols type",
                   "ignoreCase": "all",
                   "enum": [
                     "Apple"
+                  ],
+                  "aliases": [
+                    "symbolsType"
                   ]
                 },
                 "symbolsPath": {
@@ -2644,32 +2798,47 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "pdbPath": {
+                "symbolsPdbFiles": {
                   "description": "Symbols path (*.pdb)",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "pdbPath"
+                  ]
                 },
-                "dsymPath": {
+                "symbolsDsymFiles": {
                   "description": "dSYM path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "dsymPath"
+                  ]
                 },
-                "mappingTxtPath": {
+                "symbolsMappingTxtFile": {
                   "description": "Mapping file",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mappingTxtPath"
+                  ]
                 },
-                "packParentFolder": {
+                "symbolsIncludeParentDirectory": {
                   "description": "Include all items in parent folder",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "packParentFolder"
+                  ]
                 },
-                "releaseNotesSelection": {
+                "releaseNotesOption": {
                   "description": "Create release notes",
                   "ignoreCase": "all",
                   "enum": [
                     "input",
                     "file"
+                  ],
+                  "aliases": [
+                    "releaseNotesSelection"
                   ]
                 },
                 "releaseNotesInput": {
@@ -2691,8 +2860,8 @@
               "required": [
                 "serverEndpoint",
                 "appSlug",
-                "app",
-                "releaseNotesSelection",
+                "appFile",
+                "releaseNotesOption",
                 "releaseNotesInput",
                 "releaseNotesFile"
               ],
@@ -2814,25 +2983,31 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "installKubeCtl": {
+                "installKubectl": {
                   "description": "Install Kubectl",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "installKubeCtl"
+                  ]
                 },
                 "kubectlVersion": {
                   "description": "Kubectl Version Spec",
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "checkLatestKubeCtl": {
+                "checkLatestKubectl": {
                   "description": "Check for latest version of kubectl",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "checkLatestKubeCtl"
+                  ]
                 }
               },
               "required": [
                 "helmVersion",
-                "installKubeCtl"
+                "installKubectl"
               ],
               "additionalProperties": false,
               "description": "Helm tool installer inputs"
@@ -3055,35 +3230,50 @@
             },
             "inputs": {
               "properties": {
-                "files": {
+                "apkFiles": {
                   "description": "APK files",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "files"
+                  ]
                 },
                 "jarsign": {
                   "description": "Sign the APK",
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "keystoreFile": {
+                "jarsignerKeystoreFile": {
                   "description": "Keystore file",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "keystoreFile"
+                  ]
                 },
-                "keystorePass": {
+                "jarsignerKeystorePassword": {
                   "description": "Keystore password",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "keystorePass"
+                  ]
                 },
-                "keystoreAlias": {
+                "jarsignerKeystoreAlias": {
                   "description": "Alias",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "keystoreAlias"
+                  ]
                 },
-                "keyPass": {
+                "jarsignerKeyPassword": {
                   "description": "Key password",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "keyPass"
+                  ]
                 },
                 "jarsignerArguments": {
                   "description": "Jarsigner arguments",
@@ -3095,15 +3285,18 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "zipalignLocation": {
+                "zipalignFile": {
                   "description": "Zipalign location",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "zipalignLocation"
+                  ]
                 }
               },
               "required": [
-                "files",
-                "keystoreFile"
+                "apkFiles",
+                "jarsignerKeystoreFile"
               ],
               "additionalProperties": false,
               "description": "Android Signing inputs"
@@ -3126,60 +3319,81 @@
             },
             "inputs": {
               "properties": {
-                "files": {
+                "apkFiles": {
                   "description": "APK files",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "files"
+                  ]
                 },
                 "apksign": {
                   "description": "Sign the APK",
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "keystoreFile": {
+                "apksignerKeystoreFile": {
                   "description": "Keystore file",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "keystoreFile"
+                  ]
                 },
-                "keystorePass": {
+                "apksignerKeystorePassword": {
                   "description": "Keystore password",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "keystorePass"
+                  ]
                 },
-                "keystoreAlias": {
+                "apksignerKeystoreAlias": {
                   "description": "Alias",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "keystoreAlias"
+                  ]
                 },
-                "keyPass": {
+                "apksignerKeyPassword": {
                   "description": "Key password",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "keyPass"
+                  ]
                 },
                 "apksignerArguments": {
                   "description": "apksigner arguments",
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "apksignerLocation": {
+                "apksignerFile": {
                   "description": "apksigner location",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "apksignerLocation"
+                  ]
                 },
                 "zipalign": {
                   "description": "Zipalign",
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "zipalignLocation": {
+                "zipalignFile": {
                   "description": "Zipalign location",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "zipalignLocation"
+                  ]
                 }
               },
               "required": [
-                "files",
-                "keystoreFile"
+                "apkFiles",
+                "apksignerKeystoreFile"
               ],
               "additionalProperties": false,
               "description": "Android Signing inputs"
@@ -3475,10 +3689,13 @@
             },
             "inputs": {
               "properties": {
-                "serviceConnectionName": {
+                "clusterConnection": {
                   "description": "Cluster Service Connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "serviceConnectionName"
+                  ]
                 },
                 "composeFilePath": {
                   "description": "Compose File Path",
@@ -3500,15 +3717,21 @@
                     "None"
                   ]
                 },
-                "dockerRegistryEndpointName": {
+                "dockerRegistryConnection": {
                   "description": "Docker Registry Service Connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "dockerRegistryEndpointName"
+                  ]
                 },
-                "azureSubscriptionEndpoint": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "azureSubscriptionEndpoint"
+                  ]
                 },
                 "registryUserName": {
                   "description": "Registry User Name",
@@ -3547,11 +3770,11 @@
                 }
               },
               "required": [
-                "serviceConnectionName",
+                "clusterConnection",
                 "composeFilePath",
                 "applicationName",
                 "registryCredentials",
-                "azureSubscriptionEndpoint"
+                "azureSubscription"
               ],
               "additionalProperties": false,
               "description": "Service Fabric Compose Deploy inputs"
@@ -3587,10 +3810,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "azureSubscriptionEndpoint": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "azureSubscriptionEndpoint"
+                  ]
                 },
                 "azureContainerRegistry": {
                   "description": "Azure Container Registry",
@@ -3671,10 +3897,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "workDir": {
+                "workingDirectory": {
                   "description": "Working Directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "workDir"
+                  ]
                 },
                 "entrypoint": {
                   "description": "Entry Point Override",
@@ -3736,10 +3965,13 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "cwd": {
+                "currentWorkingDirectory": {
                   "description": "Working Directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 }
               },
               "required": [
@@ -3771,15 +4003,21 @@
             },
             "inputs": {
               "properties": {
-                "feedList": {
+                "artifactFeeds": {
                   "description": "My feeds (select below)",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "feedList"
+                  ]
                 },
-                "externalSources": {
+                "externalFeeds": {
                   "description": "Feeds from external organizations",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "externalSources"
+                  ]
                 }
               },
               "required": [],
@@ -3838,15 +4076,21 @@
             },
             "inputs": {
               "properties": {
-                "feedList": {
+                "artifactFeeds": {
                   "description": "My feeds (select below)",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "feedList"
+                  ]
                 },
-                "externalSources": {
+                "externalFeeds": {
                   "description": "Feeds from external organizations",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "externalSources"
+                  ]
                 }
               },
               "required": [],
@@ -3871,10 +4115,13 @@
             },
             "inputs": {
               "properties": {
-                "wrapperScript": {
+                "gradleWrapperFile": {
                   "description": "Gradle Wrapper",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "wrapperScript"
+                  ]
                 },
                 "options": {
                   "description": "Options",
@@ -3886,10 +4133,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working Directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "publishJUnitResults": {
                   "description": "Publish to TFS/Team Services",
@@ -3906,39 +4156,54 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "codeCoverageTool": {
+                "codeCoverageToolOption": {
                   "description": "Code Coverage Tool",
                   "ignoreCase": "all",
                   "enum": [
                     "None",
                     "Cobertura",
                     "JaCoCo"
+                  ],
+                  "aliases": [
+                    "codeCoverageTool"
                   ]
                 },
-                "classFilesDirectories": {
+                "codeCoverageClassFilesDirectories": {
                   "description": "Class Files Directories",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilesDirectories"
+                  ]
                 },
-                "classFilter": {
+                "codeCoverageClassFilter": {
                   "description": "Class Inclusion/Exclusion Filters",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilter"
+                  ]
                 },
-                "failIfCoverageEmpty": {
+                "codeCoverageFailIfEmpty": {
                   "description": "Fail When Code Coverage Results Are Missing",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "failIfCoverageEmpty"
+                  ]
                 },
-                "javaHomeSelection": {
+                "javaHomeOption": {
                   "description": "Set JAVA_HOME by",
                   "ignoreCase": "all",
                   "enum": [
                     "JDKVersion",
                     "Path"
+                  ],
+                  "aliases": [
+                    "javaHomeSelection"
                   ]
                 },
-                "jdkVersion": {
+                "jdkVersionOption": {
                   "description": "JDK Version",
                   "ignoreCase": "all",
                   "enum": [
@@ -3947,117 +4212,174 @@
                     "1.8",
                     "1.7",
                     "1.6"
+                  ],
+                  "aliases": [
+                    "jdkVersion"
                   ]
                 },
-                "jdkUserInputPath": {
+                "jdkDirectory": {
                   "description": "JDK Path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "jdkUserInputPath"
+                  ]
                 },
-                "jdkArchitecture": {
+                "jdkArchitectureOption": {
                   "description": "JDK Architecture",
                   "ignoreCase": "all",
                   "enum": [
                     "x86",
                     "x64"
+                  ],
+                  "aliases": [
+                    "jdkArchitecture"
                   ]
                 },
-                "gradleOpts": {
+                "gradleOptions": {
                   "description": "Set GRADLE_OPTS",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "gradleOpts"
+                  ]
                 },
-                "sqAnalysisEnabled": {
+                "sonarQubeRunAnalysis": {
                   "description": "Run SonarQube Analysis",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "sqAnalysisEnabled"
+                  ]
                 },
-                "sqConnectedServiceName": {
+                "sonarQubeServiceEndpoint": {
                   "description": "SonarQube Endpoint",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqConnectedServiceName"
+                  ]
                 },
-                "sqProjectName": {
+                "sonarQubeProjectName": {
                   "description": "SonarQube Project Name",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqProjectName"
+                  ]
                 },
-                "sqProjectKey": {
+                "sonarQubeProjectKey": {
                   "description": "SonarQube Project Key",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqProjectKey"
+                  ]
                 },
-                "sqProjectVersion": {
+                "sonarQubeProjectVersion": {
                   "description": "SonarQube Project Version",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqProjectVersion"
+                  ]
                 },
-                "sqGradlePluginVersion": {
+                "sonarQubeGradlePluginVersion": {
                   "description": "SonarQube Gradle Plugin Version",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqGradlePluginVersion"
+                  ]
                 },
-                "sqDbDetailsRequired": {
+                "sonarQubeSpecifyDB": {
                   "description": "The SonarQube server version is lower than 5.2",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "sqDbDetailsRequired"
+                  ]
                 },
-                "sqDbUrl": {
+                "sonarQubeDBUrl": {
                   "description": "Db Connection String",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqDbUrl"
+                  ]
                 },
-                "sqDbUsername": {
+                "sonarQubeDBUsername": {
                   "description": "Db Username",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqDbUsername"
+                  ]
                 },
-                "sqDbPassword": {
+                "sonarQubeDBPassword": {
                   "description": "Db User Password",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqDbPassword"
+                  ]
                 },
-                "sqAnalysisIncludeFullReport": {
+                "sonarQubeIncludeFullReport": {
                   "description": "Include full analysis report in the build summary (SQ 5.3+)",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "sqAnalysisIncludeFullReport"
+                  ]
                 },
-                "sqAnalysisBreakBuildIfQualityGateFailed": {
+                "sonarQubeFailWhenQualityGateFails": {
                   "description": "Fail the build on quality gate failure (SQ 5.3+)",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "sqAnalysisBreakBuildIfQualityGateFailed"
+                  ]
                 },
-                "checkstyleAnalysisEnabled": {
+                "checkStyleRunAnalysis": {
                   "description": "Run Checkstyle",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "checkstyleAnalysisEnabled"
+                  ]
                 },
-                "findbugsAnalysisEnabled": {
+                "findBugsRunAnalysis": {
                   "description": "Run FindBugs",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "findbugsAnalysisEnabled"
+                  ]
                 },
-                "pmdAnalysisEnabled": {
+                "pmdRunAnalysis": {
                   "description": "Run PMD",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "pmdAnalysisEnabled"
+                  ]
                 }
               },
               "required": [
-                "wrapperScript",
+                "gradleWrapperFile",
                 "tasks",
                 "publishJUnitResults",
                 "testResultsFiles",
-                "classFilesDirectories",
-                "javaHomeSelection",
-                "jdkUserInputPath",
-                "sqAnalysisEnabled",
-                "sqConnectedServiceName",
-                "sqProjectName",
-                "sqProjectKey",
-                "sqProjectVersion",
-                "sqGradlePluginVersion",
-                "sqDbDetailsRequired"
+                "codeCoverageClassFilesDirectories",
+                "javaHomeOption",
+                "jdkDirectory",
+                "sonarQubeRunAnalysis",
+                "sonarQubeServiceEndpoint",
+                "sonarQubeProjectName",
+                "sonarQubeProjectKey",
+                "sonarQubeProjectVersion",
+                "sonarQubeGradlePluginVersion",
+                "sonarQubeSpecifyDB"
               ],
               "additionalProperties": false,
               "description": "Gradle inputs"
@@ -4080,15 +4402,21 @@
             },
             "inputs": {
               "properties": {
-                "wrapperScript": {
+                "gradleWrapperFile": {
                   "description": "Gradle wrapper",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "wrapperScript"
+                  ]
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "options": {
                   "description": "Options",
@@ -4115,39 +4443,54 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "codeCoverageTool": {
+                "codeCoverageToolOption": {
                   "description": "Code coverage tool",
                   "ignoreCase": "all",
                   "enum": [
                     "None",
                     "Cobertura",
                     "JaCoCo"
+                  ],
+                  "aliases": [
+                    "codeCoverageTool"
                   ]
                 },
-                "classFilesDirectories": {
+                "codeCoverageClassFilesDirectories": {
                   "description": "Class files directories",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilesDirectories"
+                  ]
                 },
-                "classFilter": {
+                "codeCoverageClassFilter": {
                   "description": "Class inclusion/exclusion filters",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilter"
+                  ]
                 },
-                "failIfCoverageEmpty": {
+                "codeCoverageFailIfEmpty": {
                   "description": "Fail when code coverage results are missing",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "failIfCoverageEmpty"
+                  ]
                 },
-                "javaHomeSelection": {
+                "javaHomeOption": {
                   "description": "Set JAVA_HOME by",
                   "ignoreCase": "all",
                   "enum": [
                     "JDKVersion",
                     "Path"
+                  ],
+                  "aliases": [
+                    "javaHomeSelection"
                   ]
                 },
-                "jdkVersion": {
+                "jdkVersionOption": {
                   "description": "JDK version",
                   "ignoreCase": "all",
                   "enum": [
@@ -4158,30 +4501,45 @@
                     "1.8",
                     "1.7",
                     "1.6"
+                  ],
+                  "aliases": [
+                    "jdkVersion"
                   ]
                 },
-                "jdkUserInputPath": {
+                "jdkDirectory": {
                   "description": "JDK path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "jdkUserInputPath"
+                  ]
                 },
-                "jdkArchitecture": {
+                "jdkArchitectureOption": {
                   "description": "JDK architecture",
                   "ignoreCase": "all",
                   "enum": [
                     "x86",
                     "x64"
+                  ],
+                  "aliases": [
+                    "jdkArchitecture"
                   ]
                 },
-                "gradleOpts": {
+                "gradleOptions": {
                   "description": "Set GRADLE_OPTS",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "gradleOpts"
+                  ]
                 },
-                "sqAnalysisEnabled": {
+                "sonarQubeRunAnalysis": {
                   "description": "Run SonarQube or SonarCloud Analysis",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "sqAnalysisEnabled"
+                  ]
                 },
                 "sqGradlePluginVersionChoice": {
                   "description": "SonarQube scanner for Gradle version",
@@ -4191,38 +4549,50 @@
                     "build"
                   ]
                 },
-                "sqGradlePluginVersion": {
+                "sonarQubeGradlePluginVersion": {
                   "description": "SonarQube scanner for Gradle plugin version",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqGradlePluginVersion"
+                  ]
                 },
-                "checkstyleAnalysisEnabled": {
+                "checkStyleRunAnalysis": {
                   "description": "Run Checkstyle",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "checkstyleAnalysisEnabled"
+                  ]
                 },
-                "findbugsAnalysisEnabled": {
+                "findBugsRunAnalysis": {
                   "description": "Run FindBugs",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "findbugsAnalysisEnabled"
+                  ]
                 },
-                "pmdAnalysisEnabled": {
+                "pmdRunAnalysis": {
                   "description": "Run PMD",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "pmdAnalysisEnabled"
+                  ]
                 }
               },
               "required": [
-                "wrapperScript",
+                "gradleWrapperFile",
                 "tasks",
                 "publishJUnitResults",
                 "testResultsFiles",
-                "classFilesDirectories",
-                "javaHomeSelection",
-                "jdkUserInputPath",
-                "sqAnalysisEnabled",
+                "codeCoverageClassFilesDirectories",
+                "javaHomeOption",
+                "jdkDirectory",
+                "sonarQubeRunAnalysis",
                 "sqGradlePluginVersionChoice",
-                "sqGradlePluginVersion"
+                "sonarQubeGradlePluginVersion"
               ],
               "additionalProperties": false,
               "description": "Gradle inputs"
@@ -4402,10 +4772,13 @@
             },
             "inputs": {
               "properties": {
-                "connectedServiceName": {
+                "azureSubscription": {
                   "description": "Azure service bus connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "connectedServiceName"
+                  ]
                 },
                 "messageBody": {
                   "description": "Message body",
@@ -4419,7 +4792,7 @@
                 }
               },
               "required": [
-                "connectedServiceName",
+                "azureSubscription",
                 "messageBody",
                 "waitForCompletion"
               ],
@@ -4444,10 +4817,13 @@
             },
             "inputs": {
               "properties": {
-                "connectedServiceName": {
+                "azureSubscription": {
                   "description": "Azure Service Bus service connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "connectedServiceName"
+                  ]
                 },
                 "messageBody": {
                   "description": "Message body",
@@ -4476,7 +4852,7 @@
                 }
               },
               "required": [
-                "connectedServiceName",
+                "azureSubscription",
                 "signPayload",
                 "certificateString",
                 "waitForCompletion"
@@ -4502,10 +4878,13 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceName": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
                 "KeyVaultName": {
                   "description": "Key vault",
@@ -4519,7 +4898,7 @@
                 }
               },
               "required": [
-                "ConnectedServiceName",
+                "azureSubscription",
                 "KeyVaultName",
                 "SecretsFilter"
               ],
@@ -4544,10 +4923,13 @@
             },
             "inputs": {
               "properties": {
-                "connectedServiceName": {
+                "serviceConnection": {
                   "description": "Generic endpoint",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "connectedServiceName"
+                  ]
                 },
                 "method": {
                   "description": "Method",
@@ -4593,7 +4975,7 @@
                 }
               },
               "required": [
-                "connectedServiceName",
+                "serviceConnection",
                 "method",
                 "waitForCompletion"
               ],
@@ -4618,23 +5000,32 @@
             },
             "inputs": {
               "properties": {
-                "connectedServiceNameSelector": {
+                "connectionType": {
                   "description": "Connection type",
                   "ignoreCase": "all",
                   "enum": [
                     "connectedServiceName",
                     "connectedServiceNameARM"
+                  ],
+                  "aliases": [
+                    "connectedServiceNameSelector"
                   ]
                 },
-                "connectedServiceName": {
+                "serviceConnection": {
                   "description": "Generic service connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "connectedServiceName"
+                  ]
                 },
-                "connectedServiceNameARM": {
+                "azureServiceConnection": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "connectedServiceNameARM"
+                  ]
                 },
                 "method": {
                   "description": "Method",
@@ -4680,9 +5071,9 @@
                 }
               },
               "required": [
-                "connectedServiceNameSelector",
-                "connectedServiceName",
-                "connectedServiceNameARM",
+                "connectionType",
+                "serviceConnection",
+                "azureServiceConnection",
                 "method",
                 "waitForCompletion"
               ],
@@ -4921,12 +5312,15 @@
             },
             "inputs": {
               "properties": {
-                "credsType": {
+                "credentialsOption": {
                   "description": "Authentication Method",
                   "ignoreCase": "all",
                   "enum": [
                     "serviceEndpoint",
                     "inputs"
+                  ],
+                  "aliases": [
+                    "credsType"
                   ]
                 },
                 "serverEndpoint": {
@@ -4949,20 +5343,26 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "rootFolder": {
+                "rootDirectory": {
                   "description": "Root folder",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "rootFolder"
+                  ]
                 },
                 "filePatterns": {
                   "description": "File patterns",
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "remotePath": {
+                "remoteDirectory": {
                   "description": "Remote directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "remotePath"
+                  ]
                 },
                 "clean": {
                   "description": "Delete remote directory",
@@ -4991,14 +5391,14 @@
                 }
               },
               "required": [
-                "credsType",
+                "credentialsOption",
                 "serverEndpoint",
                 "serverUrl",
                 "username",
                 "password",
-                "rootFolder",
+                "rootDirectory",
                 "filePatterns",
-                "remotePath",
+                "remoteDirectory",
                 "clean",
                 "cleanContents",
                 "overwrite",
@@ -5187,10 +5587,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "outputFormat": {
                   "description": "Output format",
@@ -5235,10 +5638,13 @@
             },
             "inputs": {
               "properties": {
-                "kubernetesServiceEndpoint": {
+                "kubernetesServiceConnection": {
                   "description": "Kubernetes service connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "kubernetesServiceEndpoint"
+                  ]
                 },
                 "namespace": {
                   "description": "Namespace",
@@ -5297,15 +5703,21 @@
                     "Container Registry"
                   ]
                 },
-                "dockerRegistryEndpoint": {
+                "dockerRegistryConnection": {
                   "description": "Docker Registry service connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "dockerRegistryEndpoint"
+                  ]
                 },
-                "azureSubscriptionEndpoint": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "azureSubscriptionEndpoint"
+                  ]
                 },
                 "azureContainerRegistry": {
                   "description": "Azure Container Registry",
@@ -5370,10 +5782,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "outputFormat": {
                   "description": "Output format",
@@ -5428,23 +5843,32 @@
                     "custom"
                   ]
                 },
-                "solution": {
+                "restoreSolution": {
                   "description": "Path to solution, packages.config, or project.json",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "solution"
+                  ]
                 },
-                "selectOrConfig": {
+                "feedsToUse": {
                   "description": "Feeds to use",
                   "ignoreCase": "all",
                   "enum": [
                     "select",
                     "config"
+                  ],
+                  "aliases": [
+                    "selectOrConfig"
                   ]
                 },
-                "feedRestore": {
+                "vstsFeed": {
                   "description": "Use packages from this Azure Artifacts/TFS feed",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "feedRestore"
+                  ]
                 },
                 "includeNuGetOrg": {
                   "description": "Use packages from NuGet.org",
@@ -5456,10 +5880,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "externalEndpoints": {
+                "externalFeedCredentials": {
                   "description": "Credentials for feeds outside this account/collection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "externalEndpoints"
+                  ]
                 },
                 "noCache": {
                   "description": "Disable local cache",
@@ -5471,10 +5898,13 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "packagesDirectory": {
+                "restoreDirectory": {
                   "description": "Destination directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "packagesDirectory"
+                  ]
                 },
                 "verbosityRestore": {
                   "description": "Verbosity",
@@ -5485,10 +5915,13 @@
                     "Detailed"
                   ]
                 },
-                "searchPatternPush": {
+                "packagesToPush": {
                   "description": "Path to NuGet package(s) to publish",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "searchPatternPush"
+                  ]
                 },
                 "nuGetFeedType": {
                   "description": "Target feed location",
@@ -5498,20 +5931,26 @@
                     "external"
                   ]
                 },
-                "feedPublish": {
+                "publishVstsFeed": {
                   "description": "Target feed",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "feedPublish"
+                  ]
                 },
                 "allowPackageConflicts": {
                   "description": "Allow duplicates to be skipped",
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "externalEndpoint": {
+                "publishFeedCredentials": {
                   "description": "NuGet server",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "externalEndpoint"
+                  ]
                 },
                 "verbosityPush": {
                   "description": "Verbosity",
@@ -5522,20 +5961,29 @@
                     "Detailed"
                   ]
                 },
-                "searchPatternPack": {
+                "packagesToPack": {
                   "description": "Path to csproj or nuspec file(s) to pack",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "searchPatternPack"
+                  ]
                 },
-                "configurationToPack": {
+                "configuration": {
                   "description": "Configuration to package",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "configurationToPack"
+                  ]
                 },
-                "outputDir": {
+                "packDestination": {
                   "description": "Package folder",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "outputDir"
+                  ]
                 },
                 "versioningScheme": {
                   "description": "Automatic package versioning",
@@ -5557,20 +6005,29 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "requestedMajorVersion": {
+                "majorVersion": {
                   "description": "Major",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "requestedMajorVersion"
+                  ]
                 },
-                "requestedMinorVersion": {
+                "minorVersion": {
                   "description": "Minor",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "requestedMinorVersion"
+                  ]
                 },
-                "requestedPatchVersion": {
+                "patchVersion": {
                   "description": "Patch",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "requestedPatchVersion"
+                  ]
                 },
                 "packTimezone": {
                   "description": "Time zone",
@@ -5617,18 +6074,18 @@
               },
               "required": [
                 "command",
-                "solution",
-                "selectOrConfig",
-                "searchPatternPush",
+                "restoreSolution",
+                "feedsToUse",
+                "packagesToPush",
                 "nuGetFeedType",
-                "feedPublish",
-                "externalEndpoint",
-                "searchPatternPack",
+                "publishVstsFeed",
+                "publishFeedCredentials",
+                "packagesToPack",
                 "versioningScheme",
                 "versionEnvVar",
-                "requestedMajorVersion",
-                "requestedMinorVersion",
-                "requestedPatchVersion",
+                "majorVersion",
+                "minorVersion",
+                "patchVersion",
                 "arguments"
               ],
               "additionalProperties": false,
@@ -5912,18 +6369,24 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "selectOrConfig": {
+                "feedsToUse": {
                   "description": "Feeds to use",
                   "ignoreCase": "all",
                   "enum": [
                     "select",
                     "config"
+                  ],
+                  "aliases": [
+                    "selectOrConfig"
                   ]
                 },
-                "feedRestore": {
+                "vstsFeed": {
                   "description": "Use packages from this Azure Artifacts/TFS feed",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "feedRestore"
+                  ]
                 },
                 "includeNuGetOrg": {
                   "description": "Use packages from NuGet.org",
@@ -5935,20 +6398,26 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "externalEndpoints": {
+                "externalFeedCredentials": {
                   "description": "Credentials for feeds outside this organization/collection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "externalEndpoints"
+                  ]
                 },
                 "noCache": {
                   "description": "Disable local cache",
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "packagesDirectory": {
+                "restoreDirectory": {
                   "description": "Destination directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "packagesDirectory"
+                  ]
                 },
                 "verbosityRestore": {
                   "description": "Verbosity",
@@ -5962,10 +6431,13 @@
                     "Diagnostic"
                   ]
                 },
-                "searchPatternPush": {
+                "packagesToPush": {
                   "description": "Path to NuGet package(s) to publish",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "searchPatternPush"
+                  ]
                 },
                 "nuGetFeedType": {
                   "description": "Target feed location",
@@ -5975,30 +6447,45 @@
                     "external"
                   ]
                 },
-                "feedPublish": {
+                "publishVstsFeed": {
                   "description": "Target feed",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "feedPublish"
+                  ]
                 },
-                "externalEndpoint": {
+                "publishFeedCredentials": {
                   "description": "NuGet server",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "externalEndpoint"
+                  ]
                 },
-                "searchPatternPack": {
+                "packagesToPack": {
                   "description": "Path to csproj or nuspec file(s) to pack",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "searchPatternPack"
+                  ]
                 },
-                "configurationToPack": {
+                "configuration": {
                   "description": "Configuration to Package",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "configurationToPack"
+                  ]
                 },
-                "outputDir": {
+                "packDirectory": {
                   "description": "Package Folder",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "outputDir"
+                  ]
                 },
                 "nobuild": {
                   "description": "Do not build",
@@ -6020,20 +6507,29 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "requestedMajorVersion": {
+                "majorVersion": {
                   "description": "Major",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "requestedMajorVersion"
+                  ]
                 },
-                "requestedMinorVersion": {
+                "minorVersion": {
                   "description": "Minor",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "requestedMinorVersion"
+                  ]
                 },
-                "requestedPatchVersion": {
+                "patchVersion": {
                   "description": "Patch",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "requestedPatchVersion"
+                  ]
                 },
                 "buildProperties": {
                   "description": "Additional build properties",
@@ -6062,17 +6558,17 @@
                 "command",
                 "publishWebProjects",
                 "custom",
-                "selectOrConfig",
-                "searchPatternPush",
+                "feedsToUse",
+                "packagesToPush",
                 "nuGetFeedType",
-                "feedPublish",
-                "externalEndpoint",
-                "searchPatternPack",
+                "publishVstsFeed",
+                "publishFeedCredentials",
+                "packagesToPack",
                 "versioningScheme",
                 "versionEnvVar",
-                "requestedMajorVersion",
-                "requestedMinorVersion",
-                "requestedPatchVersion"
+                "majorVersion",
+                "minorVersion",
+                "patchVersion"
               ],
               "additionalProperties": false,
               "description": ".NET Core inputs"
@@ -6191,10 +6687,13 @@
             },
             "inputs": {
               "properties": {
-                "connectedServiceNameARM": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "connectedServiceNameARM"
+                  ]
                 },
                 "scriptLocation": {
                   "description": "Script Location",
@@ -6214,15 +6713,21 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "args": {
+                "arguments": {
                   "description": "Arguments",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "args"
+                  ]
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working Directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "failOnStandardError": {
                   "description": "Fail on Standard Error",
@@ -6231,7 +6736,7 @@
                 }
               },
               "required": [
-                "connectedServiceNameARM",
+                "azureSubscription",
                 "scriptLocation",
                 "scriptPath",
                 "inlineScript"
@@ -6338,10 +6843,13 @@
             },
             "inputs": {
               "properties": {
-                "serviceConnectionName": {
+                "clusterConnection": {
                   "description": "Cluster Service Connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "serviceConnectionName"
+                  ]
                 },
                 "ScriptType": {
                   "description": "Script Type",
@@ -6368,7 +6876,7 @@
                 }
               },
               "required": [
-                "serviceConnectionName",
+                "clusterConnection",
                 "ScriptType"
               ],
               "additionalProperties": false,
@@ -6441,10 +6949,13 @@
                     "None"
                   ]
                 },
-                "azureSubscriptionEndpoint": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "azureSubscriptionEndpoint"
+                  ]
                 },
                 "azureResourceGroup": {
                   "description": "Resource group",
@@ -6456,10 +6967,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "kubernetesServiceEndpoint": {
+                "kubernetesServiceConnection": {
                   "description": "Kubernetes Service Connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "kubernetesServiceEndpoint"
+                  ]
                 },
                 "namespace": {
                   "description": "Namespace",
@@ -6502,10 +7016,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "version": {
+                "chartVersion": {
                   "description": "Version",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "version"
+                  ]
                 },
                 "releaseName": {
                   "description": "Release Name",
@@ -6527,20 +7044,29 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "canaryimage": {
+                "canaryImage": {
                   "description": "Use canary image version.",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "canaryimage"
+                  ]
                 },
-                "upgradetiller": {
+                "upgradeTiller": {
                   "description": "Upgrade Tiller",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "upgradetiller"
+                  ]
                 },
-                "updatedependency": {
+                "updateDependency": {
                   "description": "Update Dependency",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "updatedependency"
+                  ]
                 },
                 "save": {
                   "description": "Save",
@@ -6597,18 +7123,21 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "tillernamespace": {
+                "tillerNamespace": {
                   "description": "Tiller namespace",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "tillernamespace"
+                  ]
                 }
               },
               "required": [
                 "connectionType",
-                "azureSubscriptionEndpoint",
+                "azureSubscription",
                 "azureResourceGroup",
                 "kubernetesCluster",
-                "kubernetesServiceEndpoint",
+                "kubernetesServiceConnection",
                 "command",
                 "chartType",
                 "chartName",
@@ -7199,10 +7728,13 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceName": {
+                "azureSubscription": {
                   "description": "Azure Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
                 "ResourceGroupName": {
                   "description": "Resource Group",
@@ -7224,7 +7756,7 @@
                 }
               },
               "required": [
-                "ConnectedServiceName",
+                "azureSubscription",
                 "ResourceGroupName",
                 "LoadBalancer",
                 "Action"
@@ -7384,10 +7916,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working Directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "gruntCli": {
                   "description": "grunt-cli location",
@@ -7703,22 +8238,31 @@
             },
             "inputs": {
               "properties": {
-                "app": {
+                "appFile": {
                   "description": "Binary application file path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "app"
+                  ]
                 },
-                "artifactsDir": {
+                "artifactsDirectory": {
                   "description": "Artifacts directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "artifactsDir"
+                  ]
                 },
-                "enablePrepare": {
+                "prepareTests": {
                   "description": "Prepare tests",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "enablePrepare"
+                  ]
                 },
-                "framework": {
+                "frameworkOption": {
                   "description": "Test framework",
                   "ignoreCase": "all",
                   "enum": [
@@ -7727,27 +8271,42 @@
                     "calabash",
                     "uitest",
                     "xcuitest"
+                  ],
+                  "aliases": [
+                    "framework"
                   ]
                 },
-                "appiumBuildDir": {
+                "appiumBuildDirectory": {
                   "description": "Build directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "appiumBuildDir"
+                  ]
                 },
-                "espressoBuildDir": {
+                "espressoBuildDirectory": {
                   "description": "Build directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "espressoBuildDir"
+                  ]
                 },
-                "espressoTestApkPath": {
+                "espressoTestApkFile": {
                   "description": "Test APK path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "espressoTestApkPath"
+                  ]
                 },
-                "calabashProjectDir": {
+                "calabashProjectDirectory": {
                   "description": "Project directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "calabashProjectDir"
+                  ]
                 },
                 "calabashConfigFile": {
                   "description": "Cucumber config file",
@@ -7764,67 +8323,94 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "uitestBuildDir": {
+                "uiTestBuildDirectory": {
                   "description": "Build directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "uitestBuildDir"
+                  ]
                 },
                 "uitestStoreFile": {
                   "description": "Store file",
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "uitestStorePass": {
+                "uiTestStorePassword": {
                   "description": "Store password",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "uitestStorePass"
+                  ]
                 },
                 "uitestKeyAlias": {
                   "description": "Key alias",
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "uitestKeyPass": {
+                "uiTestKeyPassword": {
                   "description": "Key password",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "uitestKeyPass"
+                  ]
                 },
-                "uitestToolsDir": {
+                "uiTestToolsDirectory": {
                   "description": "Test tools directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "uitestToolsDir"
+                  ]
                 },
                 "signInfo": {
                   "description": "Signing information",
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "xcuitestBuildDir": {
+                "xcUITestBuildDirectory": {
                   "description": "Build directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "xcuitestBuildDir"
+                  ]
                 },
-                "xcuitestTestIpaPath": {
+                "xcUITestIpaFile": {
                   "description": "Test IPA path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "xcuitestTestIpaPath"
+                  ]
                 },
-                "prepareOpts": {
+                "prepareOptions": {
                   "description": "Additional options",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "prepareOpts"
+                  ]
                 },
-                "enableRun": {
+                "runTests": {
                   "description": "Run tests",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "enableRun"
+                  ]
                 },
-                "credsType": {
+                "credentialsOption": {
                   "description": "Authentication method",
                   "ignoreCase": "all",
                   "enum": [
                     "serviceEndpoint",
                     "inputs"
+                  ],
+                  "aliases": [
+                    "credsType"
                   ]
                 },
                 "serverEndpoint": {
@@ -7857,12 +8443,15 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "dsymDir": {
+                "dsymDirectory": {
                   "description": "dSYM directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "dsymDir"
+                  ]
                 },
-                "locale": {
+                "localeOption": {
                   "description": "System language",
                   "ignoreCase": "all",
                   "enum": [
@@ -7877,6 +8466,9 @@
                     "es_MX",
                     "es_ES",
                     "user"
+                  ],
+                  "aliases": [
+                    "locale"
                   ]
                 },
                 "userDefinedLocale": {
@@ -7884,46 +8476,61 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "loginOpts": {
+                "loginOptions": {
                   "description": "Additional options for login",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "loginOpts"
+                  ]
                 },
-                "runOpts": {
+                "runOptions": {
                   "description": "Additional options for run",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "runOpts"
+                  ]
                 },
-                "async": {
+                "skipWaitingForResults": {
                   "description": "Do not wait for test result",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "async"
+                  ]
                 },
-                "cliLocationOverride": {
+                "cliFile": {
                   "description": "App Center CLI location",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cliLocationOverride"
+                  ]
                 },
-                "debug": {
+                "showDebugOutput": {
                   "description": "Enable debug output",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "debug"
+                  ]
                 }
               },
               "required": [
-                "app",
-                "artifactsDir",
-                "framework",
-                "appiumBuildDir",
-                "calabashProjectDir",
-                "uitestBuildDir",
-                "credsType",
+                "appFile",
+                "artifactsDirectory",
+                "frameworkOption",
+                "appiumBuildDirectory",
+                "calabashProjectDirectory",
+                "uiTestBuildDirectory",
+                "credentialsOption",
                 "serverEndpoint",
                 "username",
                 "password",
                 "appSlug",
                 "devices",
-                "locale"
+                "localeOption"
               ],
               "additionalProperties": false,
               "description": "App Center Test inputs"
@@ -8344,10 +8951,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "outputPattern": {
                   "description": "Output directory",
@@ -8747,10 +9357,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "useXcpretty": {
                   "description": "Use xcpretty",
@@ -8841,10 +9454,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working Directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "gulpjs": {
                   "description": "gulp.js location",
@@ -8918,20 +9534,26 @@
             },
             "inputs": {
               "properties": {
-                "project": {
+                "projectFile": {
                   "description": "Project",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "project"
+                  ]
                 },
                 "target": {
                   "description": "Target",
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "outputDir": {
+                "outputDirectory": {
                   "description": "Output directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "outputDir"
+                  ]
                 },
                 "configuration": {
                   "description": "Configuration",
@@ -8948,15 +9570,18 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "msbuildLocationMethod": {
+                "msbuildLocationOption": {
                   "description": "MSBuild",
                   "ignoreCase": "all",
                   "enum": [
                     "version",
                     "location"
+                  ],
+                  "aliases": [
+                    "msbuildLocationMethod"
                   ]
                 },
-                "msbuildVersion": {
+                "msbuildVersionOption": {
                   "description": "MSBuild version",
                   "ignoreCase": "all",
                   "enum": [
@@ -8965,19 +9590,28 @@
                     "14.0",
                     "12.0",
                     "4.0"
+                  ],
+                  "aliases": [
+                    "msbuildVersion"
                   ]
                 },
-                "msbuildLocation": {
+                "msbuildFile": {
                   "description": "MSBuild location",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "msbuildLocation"
+                  ]
                 },
-                "msbuildArchitecture": {
+                "msbuildArchitectureOption": {
                   "description": "MSBuild architecture",
                   "ignoreCase": "all",
                   "enum": [
                     "x86",
                     "x64"
+                  ],
+                  "aliases": [
+                    "msbuildArchitecture"
                   ]
                 },
                 "msbuildArguments": {
@@ -8985,15 +9619,18 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "jdkSelection": {
+                "jdkOption": {
                   "description": "Select JDK to use for the build",
                   "ignoreCase": "all",
                   "enum": [
                     "JDKVersion",
                     "Path"
+                  ],
+                  "aliases": [
+                    "jdkSelection"
                   ]
                 },
-                "jdkVersion": {
+                "jdkVersionOption": {
                   "description": "JDK version",
                   "ignoreCase": "all",
                   "enum": [
@@ -9004,27 +9641,36 @@
                     "1.8",
                     "1.7",
                     "1.6"
+                  ],
+                  "aliases": [
+                    "jdkVersion"
                   ]
                 },
-                "jdkUserInputPath": {
+                "jdkDirectory": {
                   "description": "JDK path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "jdkUserInputPath"
+                  ]
                 },
-                "jdkArchitecture": {
+                "jdkArchitectureOption": {
                   "description": "JDK architecture",
                   "ignoreCase": "all",
                   "enum": [
                     "x86",
                     "x64"
+                  ],
+                  "aliases": [
+                    "jdkArchitecture"
                   ]
                 }
               },
               "required": [
-                "project",
-                "msbuildLocation",
-                "jdkSelection",
-                "jdkUserInputPath"
+                "projectFile",
+                "msbuildFile",
+                "jdkOption",
+                "jdkDirectory"
               ],
               "additionalProperties": false,
               "description": "Xamarin.Android inputs"
@@ -9626,10 +10272,13 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "parameterizedJob": {
+                "isParameterizedJob": {
                   "description": "Parameterized job",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "parameterizedJob"
+                  ]
                 },
                 "jobParameters": {
                   "description": "Job parameters",
@@ -9643,7 +10292,7 @@
                 "multibranchPipelineBranch",
                 "captureConsole",
                 "capturePipeline",
-                "parameterizedJob"
+                "isParameterizedJob"
               ],
               "additionalProperties": false,
               "description": "Jenkins Queue Job inputs"
@@ -9674,15 +10323,21 @@
                     "Container Registry"
                   ]
                 },
-                "dockerRegistryEndpoint": {
+                "dockerRegistryConnection": {
                   "description": "Docker Registry Service Connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "dockerRegistryEndpoint"
+                  ]
                 },
-                "azureSubscriptionEndpoint": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "azureSubscriptionEndpoint"
+                  ]
                 },
                 "azureContainerRegistry": {
                   "description": "Azure Container Registry",
@@ -9826,10 +10481,13 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working Directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "memory": {
                   "description": "Memory limit",
@@ -10189,12 +10847,15 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "ArtifactType": {
+                "publishLocation": {
                   "description": "Artifact publish location",
                   "ignoreCase": "all",
                   "enum": [
                     "Container",
                     "FilePath"
+                  ],
+                  "aliases": [
+                    "ArtifactType"
                   ]
                 },
                 "TargetPath": {
@@ -10216,7 +10877,7 @@
               "required": [
                 "PathtoPublish",
                 "ArtifactName",
-                "ArtifactType",
+                "publishLocation",
                 "TargetPath"
               ],
               "additionalProperties": false,
@@ -10306,7 +10967,7 @@
             },
             "inputs": {
               "properties": {
-                "testRunner": {
+                "testResultsFormat": {
                   "description": "Test result format",
                   "ignoreCase": "all",
                   "enum": [
@@ -10314,6 +10975,9 @@
                     "NUnit",
                     "VSTest",
                     "XUnit"
+                  ],
+                  "aliases": [
+                    "testRunner"
                   ]
                 },
                 "testResultsFiles": {
@@ -10336,15 +11000,21 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "platform": {
+                "buildPlatform": {
                   "description": "Build Platform",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "platform"
+                  ]
                 },
-                "configuration": {
+                "buildConfiguration": {
                   "description": "Build Configuration",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "configuration"
+                  ]
                 },
                 "publishRunAttachments": {
                   "description": "Upload test results files",
@@ -10353,7 +11023,7 @@
                 }
               },
               "required": [
-                "testRunner",
+                "testResultsFormat",
                 "testResultsFiles"
               ],
               "additionalProperties": false,
@@ -10377,25 +11047,34 @@
             },
             "inputs": {
               "properties": {
-                "serviceEndpoint": {
+                "pypiConnection": {
                   "description": "PyPI service connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "serviceEndpoint"
+                  ]
                 },
-                "wd": {
+                "packageDirectory": {
                   "description": "Python package directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "wd"
+                  ]
                 },
-                "wheel": {
+                "alsoPublishWheel": {
                   "description": "Also publish a wheel",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "wheel"
+                  ]
                 }
               },
               "required": [
-                "serviceEndpoint",
-                "wd"
+                "pypiConnection",
+                "packageDirectory"
               ],
               "additionalProperties": false,
               "description": "PyPI Publisher inputs"
@@ -10824,10 +11503,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "definition": {
+                "pipeline": {
                   "description": "Build pipeline",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "definition"
+                  ]
                 },
                 "specificBuildWithTriggering": {
                   "description": "When appropriate, download artifacts from the triggering build.",
@@ -10890,7 +11572,7 @@
               "required": [
                 "buildType",
                 "project",
-                "definition",
+                "pipeline",
                 "buildVersionToDownload",
                 "branchName",
                 "buildId",
@@ -11551,10 +12233,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 }
               },
               "required": [
@@ -11684,10 +12369,13 @@
                     "PublishProfile"
                   ]
                 },
-                "ConnectedServiceName": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
                 "PublishProfilePath": {
                   "description": "Publish profile path",
@@ -11699,7 +12387,7 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "WebAppKind": {
+                "appType": {
                   "description": "App Service type",
                   "ignoreCase": "all",
                   "enum": [
@@ -11711,6 +12399,9 @@
                     "functionAppContainer",
                     "apiApp",
                     "mobileApp"
+                  ],
+                  "aliases": [
+                    "WebAppKind"
                   ]
                 },
                 "WebAppName": {
@@ -11718,10 +12409,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "DeployToSlotOrASEFlag": {
+                "deployToSlotOrASE": {
                   "description": "Deploy to Slot or App Service Environment",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "DeployToSlotOrASEFlag"
+                  ]
                 },
                 "ResourceGroupName": {
                   "description": "Resource group",
@@ -11753,10 +12447,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "Package": {
+                "packageForLinux": {
                   "description": "Package or folder",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "Package"
+                  ]
                 },
                 "RuntimeStack": {
                   "description": "Runtime Stack",
@@ -11810,10 +12507,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "UseWebDeploy": {
+                "enableCustomDeployment": {
                   "description": "Select deployment method",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "UseWebDeploy"
+                  ]
                 },
                 "DeploymentType": {
                   "description": "Deployment method",
@@ -11854,15 +12554,21 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "XmlTransformation": {
+                "enableXmlTransform": {
                   "description": "XML transformation",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "XmlTransformation"
+                  ]
                 },
-                "XmlVariableSubstitution": {
+                "enableXmlVariableSubstitution": {
                   "description": "XML variable substitution",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "XmlVariableSubstitution"
+                  ]
                 },
                 "JSONFiles": {
                   "description": "JSON variable substitution",
@@ -11872,16 +12578,16 @@
               },
               "required": [
                 "ConnectionType",
-                "ConnectedServiceName",
+                "azureSubscription",
                 "PublishProfilePath",
                 "PublishProfilePassword",
-                "WebAppKind",
+                "appType",
                 "WebAppName",
                 "ResourceGroupName",
                 "SlotName",
                 "DockerNamespace",
                 "DockerRepository",
-                "Package",
+                "packageForLinux",
                 "InlineScript",
                 "ScriptPath",
                 "DeploymentType"
@@ -12006,12 +12712,15 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceName": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
-                "WebAppKind": {
+                "appType": {
                   "description": "App type",
                   "ignoreCase": "all",
                   "enum": [
@@ -12020,6 +12729,9 @@
                     "functionapp",
                     "api",
                     "mobileapp"
+                  ],
+                  "aliases": [
+                    "WebAppKind"
                   ]
                 },
                 "WebAppName": {
@@ -12078,10 +12790,13 @@
                     "public"
                   ]
                 },
-                "RegistryConnectedServiceName": {
+                "dockerRegistryConnection": {
                   "description": "Registry Connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "RegistryConnectedServiceName"
+                  ]
                 },
                 "PrivateRegistryImage": {
                   "description": "Image",
@@ -12118,10 +12833,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "BuiltinLinuxPackage": {
+                "packageForLinux": {
                   "description": "Package or folder",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "BuiltinLinuxPackage"
+                  ]
                 },
                 "RuntimeStack": {
                   "description": "Runtime Stack",
@@ -12212,15 +12930,21 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "XmlTransformation": {
+                "enableXmlTransform": {
                   "description": "XML transformation",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "XmlTransformation"
+                  ]
                 },
-                "XmlVariableSubstitution": {
+                "enableXmlVariableSubstitution": {
                   "description": "XML variable substitution",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "XmlVariableSubstitution"
+                  ]
                 },
                 "JSONFiles": {
                   "description": "JSON variable substitution",
@@ -12229,20 +12953,20 @@
                 }
               },
               "required": [
-                "ConnectedServiceName",
-                "WebAppKind",
+                "azureSubscription",
+                "appType",
                 "WebAppName",
                 "ResourceGroupName",
                 "SlotName",
                 "AzureContainerRegistry",
                 "AzureContainerRegistryImage",
                 "DockerRepositoryAccess",
-                "RegistryConnectedServiceName",
+                "dockerRegistryConnection",
                 "PrivateRegistryImage",
                 "DockerNamespace",
                 "DockerRepository",
                 "Package",
-                "BuiltinLinuxPackage",
+                "packageForLinux",
                 "RuntimeStack",
                 "InlineScript",
                 "ScriptPath",
@@ -12269,10 +12993,13 @@
             },
             "inputs": {
               "properties": {
-                "antBuildFile": {
+                "buildFile": {
                   "description": "Ant build file",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "antBuildFile"
+                  ]
                 },
                 "options": {
                   "description": "Options",
@@ -12299,49 +13026,70 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "codeCoverageTool": {
+                "codeCoverageToolOptions": {
                   "description": "Code coverage tool",
                   "ignoreCase": "all",
                   "enum": [
                     "None",
                     "Cobertura",
                     "JaCoCo"
+                  ],
+                  "aliases": [
+                    "codeCoverageTool"
                   ]
                 },
-                "classFilesDirectories": {
+                "codeCoverageClassFilesDirectories": {
                   "description": "Class files directories",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilesDirectories"
+                  ]
                 },
-                "classFilter": {
+                "codeCoverageClassFilter": {
                   "description": "Class inclusion/exclusion filters",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilter"
+                  ]
                 },
-                "srcDirectories": {
+                "codeCoverageSourceDirectories": {
                   "description": "Source files directories",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "srcDirectories"
+                  ]
                 },
-                "failIfCoverageEmpty": {
+                "codeCoverageFailIfEmpty": {
                   "description": "Fail when code coverage results are missing",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "failIfCoverageEmpty"
+                  ]
                 },
-                "antHomeUserInputPath": {
+                "antHomeDirectory": {
                   "description": "Set ANT_HOME path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "antHomeUserInputPath"
+                  ]
                 },
-                "javaHomeSelection": {
+                "javaHomeOption": {
                   "description": "Set JAVA_HOME by",
                   "ignoreCase": "all",
                   "enum": [
                     "JDKVersion",
                     "Path"
+                  ],
+                  "aliases": [
+                    "javaHomeSelection"
                   ]
                 },
-                "jdkVersion": {
+                "jdkVersionOption": {
                   "description": "JDK version",
                   "ignoreCase": "all",
                   "enum": [
@@ -12352,29 +13100,38 @@
                     "1.8",
                     "1.7",
                     "1.6"
+                  ],
+                  "aliases": [
+                    "jdkVersion"
                   ]
                 },
-                "jdkUserInputPath": {
+                "jdkUserInputDirectory": {
                   "description": "JDK path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "jdkUserInputPath"
+                  ]
                 },
-                "jdkArchitecture": {
+                "jdkArchitectureOption": {
                   "description": "JDK architecture",
                   "ignoreCase": "all",
                   "enum": [
                     "x86",
                     "x64"
+                  ],
+                  "aliases": [
+                    "jdkArchitecture"
                   ]
                 }
               },
               "required": [
-                "antBuildFile",
+                "buildFile",
                 "publishJUnitResults",
                 "testResultsFiles",
-                "classFilesDirectories",
-                "javaHomeSelection",
-                "jdkUserInputPath"
+                "codeCoverageClassFilesDirectories",
+                "javaHomeOption",
+                "jdkUserInputDirectory"
               ],
               "additionalProperties": false,
               "description": "Ant inputs"
@@ -12427,10 +13184,13 @@
             },
             "inputs": {
               "properties": {
-                "serverEndpoint": {
+                "jenkinsServerConnection": {
                   "description": "Jenkins service connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "serverEndpoint"
+                  ]
                 },
                 "jobName": {
                   "description": "Job name",
@@ -12514,7 +13274,7 @@
                 }
               },
               "required": [
-                "serverEndpoint",
+                "jenkinsServerConnection",
                 "jobName",
                 "saveTo",
                 "jenkinsBuild",
@@ -12545,10 +13305,13 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceName": {
+                "azureClassicSubscription": {
                   "description": "Azure subscription (Classic)",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
                 "StorageAccount": {
                   "description": "Storage account",
@@ -12575,10 +13338,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "Slot": {
+                "slotName": {
                   "description": "Environment (Slot)",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "Slot"
+                  ]
                 },
                 "DeploymentLabel": {
                   "description": "Deployment label",
@@ -12632,13 +13398,13 @@
                 }
               },
               "required": [
-                "ConnectedServiceName",
+                "azureClassicSubscription",
                 "StorageAccount",
                 "ServiceName",
                 "ServiceLocation",
                 "CsPkg",
                 "CsCfg",
-                "Slot",
+                "slotName",
                 "AllowUpgrade"
               ],
               "additionalProperties": false,
@@ -12866,10 +13632,13 @@
             },
             "inputs": {
               "properties": {
-                "solution": {
+                "solutionFile": {
                   "description": "Path to solution",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "solution"
+                  ]
                 },
                 "email": {
                   "description": "Email",
@@ -12883,7 +13652,7 @@
                 }
               },
               "required": [
-                "solution",
+                "solutionFile",
                 "email",
                 "password"
               ],
@@ -13078,15 +13847,21 @@
                     "UsernamePassword"
                   ]
                 },
-                "dockerRegistryEndpoint": {
+                "dockerRegistryConnection": {
                   "description": "Docker Registry Service Connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "dockerRegistryEndpoint"
+                  ]
                 },
-                "azureSubscriptionEndpoint": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "azureSubscriptionEndpoint"
+                  ]
                 },
                 "registryUserName": {
                   "description": "Registry User Name",
@@ -13111,8 +13886,8 @@
                 "upgradeMode",
                 "FailureAction",
                 "registryCredentials",
-                "dockerRegistryEndpoint",
-                "azureSubscriptionEndpoint"
+                "dockerRegistryConnection",
+                "azureSubscription"
               ],
               "additionalProperties": false,
               "description": "Service Fabric Application Deployment inputs"
@@ -13435,10 +14210,13 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceName": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
                 "action": {
                   "description": "Action",
@@ -13515,15 +14293,21 @@
                     "ConfigureVMWithDGAgent"
                   ]
                 },
-                "deploymentGroupEndpoint": {
+                "teamServicesConnection": {
                   "description": "Azure Pipelines/TFS service connection",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "deploymentGroupEndpoint"
+                  ]
                 },
-                "project": {
+                "teamProject": {
                   "description": "Team project",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "project"
+                  ]
                 },
                 "deploymentGroupName": {
                   "description": "Deployment Group",
@@ -13562,7 +14346,7 @@
                 }
               },
               "required": [
-                "ConnectedServiceName",
+                "azureSubscription",
                 "action",
                 "resourceGroupName",
                 "location",
@@ -13570,8 +14354,8 @@
                 "csmFileLink",
                 "csmFile",
                 "deploymentMode",
-                "deploymentGroupEndpoint",
-                "project",
+                "teamServicesConnection",
+                "teamProject",
                 "deploymentGroupName",
                 "userName"
               ],
@@ -13596,23 +14380,32 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceNameSelector": {
+                "azureConnectionType": {
                   "description": "Azure Connection Type",
                   "ignoreCase": "all",
                   "enum": [
                     "ConnectedServiceName",
                     "ConnectedServiceNameARM"
+                  ],
+                  "aliases": [
+                    "ConnectedServiceNameSelector"
                   ]
                 },
-                "ConnectedServiceName": {
+                "azureClassicSubscription": {
                   "description": "Azure Classic Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
-                "ConnectedServiceNameARM": {
+                "azureSubscription": {
                   "description": "Azure Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceNameARM"
+                  ]
                 },
                 "ScriptType": {
                   "description": "Script Type",
@@ -13637,25 +14430,31 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "TargetAzurePs": {
+                "azurePowerShellVersion": {
                   "description": "Azure PowerShell Version",
                   "ignoreCase": "all",
                   "enum": [
                     "LatestVersion",
                     "OtherVersion"
+                  ],
+                  "aliases": [
+                    "TargetAzurePs"
                   ]
                 },
-                "CustomTargetAzurePs": {
+                "preferredAzurePowerShellVersion": {
                   "description": "Preferred Azure PowerShell Version",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "CustomTargetAzurePs"
+                  ]
                 }
               },
               "required": [
-                "ConnectedServiceName",
-                "ConnectedServiceNameARM",
+                "azureClassicSubscription",
+                "azureSubscription",
                 "ScriptType",
-                "CustomTargetAzurePs"
+                "preferredAzurePowerShellVersion"
               ],
               "additionalProperties": false,
               "description": "Azure PowerShell inputs"
@@ -13678,23 +14477,32 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceNameSelector": {
+                "azureConnectionType": {
                   "description": "Azure Connection Type",
                   "ignoreCase": "all",
                   "enum": [
                     "ConnectedServiceName",
                     "ConnectedServiceNameARM"
+                  ],
+                  "aliases": [
+                    "ConnectedServiceNameSelector"
                   ]
                 },
-                "ConnectedServiceName": {
+                "azureClassicSubscription": {
                   "description": "Azure Classic Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
-                "ConnectedServiceNameARM": {
+                "azureSubscription": {
                   "description": "Azure Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceNameARM"
+                  ]
                 },
                 "ScriptType": {
                   "description": "Script Type",
@@ -13733,24 +14541,30 @@
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "TargetAzurePs": {
+                "azurePowerShellVersion": {
                   "description": "Azure PowerShell Version",
                   "ignoreCase": "all",
                   "enum": [
                     "LatestVersion",
                     "OtherVersion"
+                  ],
+                  "aliases": [
+                    "TargetAzurePs"
                   ]
                 },
-                "CustomTargetAzurePs": {
+                "preferredAzurePowerShellVersion": {
                   "description": "Preferred Azure PowerShell Version",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "CustomTargetAzurePs"
+                  ]
                 }
               },
               "required": [
-                "ConnectedServiceName",
-                "ConnectedServiceNameARM",
-                "CustomTargetAzurePs"
+                "azureClassicSubscription",
+                "azureSubscription",
+                "preferredAzurePowerShellVersion"
               ],
               "additionalProperties": false,
               "description": "Azure PowerShell inputs"
@@ -14196,10 +15010,13 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceName": {
+                "azureSubscription": {
                   "description": "Azure Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
                 "ResourceGroupName": {
                   "description": "Resource Group",
@@ -14238,7 +15055,7 @@
                 }
               },
               "required": [
-                "ConnectedServiceName",
+                "azureSubscription",
                 "ResourceGroupName",
                 "ResourceType",
                 "ResourceName",
@@ -14946,10 +15763,13 @@
             },
             "inputs": {
               "properties": {
-                "mavenPOMFile": {
+                "mavenPomFile": {
                   "description": "Maven POM file",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mavenPOMFile"
+                  ]
                 },
                 "goals": {
                   "description": "Goal(s)",
@@ -14976,44 +15796,62 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "codeCoverageTool": {
+                "codeCoverageToolOption": {
                   "description": "Code Coverage Tool",
                   "ignoreCase": "all",
                   "enum": [
                     "None",
                     "Cobertura",
                     "JaCoCo"
+                  ],
+                  "aliases": [
+                    "codeCoverageTool"
                   ]
                 },
-                "classFilter": {
+                "codeCoverageClassFilter": {
                   "description": "Class Inclusion/Exclusion Filters",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilter"
+                  ]
                 },
-                "classFilesDirectories": {
+                "codeCoverageClassFilesDirectories": {
                   "description": "Class Files Directories",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilesDirectories"
+                  ]
                 },
-                "srcDirectories": {
+                "codeCoverageSourceDirectories": {
                   "description": "Source Files Directories",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "srcDirectories"
+                  ]
                 },
-                "failIfCoverageEmpty": {
+                "codeCoverageFailIfEmpty": {
                   "description": "Fail When Code Coverage Results Are Missing",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "failIfCoverageEmpty"
+                  ]
                 },
-                "javaHomeSelection": {
+                "javaHomeOption": {
                   "description": "Set JAVA_HOME by",
                   "ignoreCase": "all",
                   "enum": [
                     "JDKVersion",
                     "Path"
+                  ],
+                  "aliases": [
+                    "javaHomeSelection"
                   ]
                 },
-                "jdkVersion": {
+                "jdkVersionOption": {
                   "description": "JDK Version",
                   "ignoreCase": "all",
                   "enum": [
@@ -15022,133 +15860,196 @@
                     "1.8",
                     "1.7",
                     "1.6"
+                  ],
+                  "aliases": [
+                    "jdkVersion"
                   ]
                 },
-                "jdkUserInputPath": {
+                "jdkDirectory": {
                   "description": "JDK Path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "jdkUserInputPath"
+                  ]
                 },
-                "jdkArchitecture": {
+                "jdkArchitectureOption": {
                   "description": "JDK Architecture",
                   "ignoreCase": "all",
                   "enum": [
                     "x86",
                     "x64"
+                  ],
+                  "aliases": [
+                    "jdkArchitecture"
                   ]
                 },
-                "mavenVersionSelection": {
+                "mavenVersionOption": {
                   "description": "Maven Version",
                   "ignoreCase": "all",
                   "enum": [
                     "Default",
                     "Path"
+                  ],
+                  "aliases": [
+                    "mavenVersionSelection"
                   ]
                 },
-                "mavenPath": {
+                "mavenDirectory": {
                   "description": "Maven Path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mavenPath"
+                  ]
                 },
                 "mavenSetM2Home": {
                   "description": "Set M2_HOME variable",
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "mavenOpts": {
+                "mavenOptions": {
                   "description": "Set MAVEN_OPTS to",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mavenOpts"
+                  ]
                 },
-                "mavenFeedAuthenticate": {
+                "mavenAuthenticateFeed": {
                   "description": "Authenticate built-in Maven feeds",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "mavenFeedAuthenticate"
+                  ]
                 },
-                "sqAnalysisEnabled": {
+                "sonarQubeRunAnalysis": {
                   "description": "Run SonarQube Analysis",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "sqAnalysisEnabled"
+                  ]
                 },
-                "sqConnectedServiceName": {
+                "sonarQubeServiceEndpoint": {
                   "description": "SonarQube Endpoint",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqConnectedServiceName"
+                  ]
                 },
-                "sqProjectName": {
+                "sonarQubeProjectName": {
                   "description": "SonarQube Project Name",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqProjectName"
+                  ]
                 },
-                "sqProjectKey": {
+                "sonarQubeProjectKey": {
                   "description": "SonarQube Project Key",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqProjectKey"
+                  ]
                 },
-                "sqProjectVersion": {
+                "sonarQubeProjectVersion": {
                   "description": "SonarQube Project Version",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqProjectVersion"
+                  ]
                 },
-                "sqDbDetailsRequired": {
+                "sonarQubeSpecifyDB": {
                   "description": "The SonarQube server version is lower than 5.2",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "sqDbDetailsRequired"
+                  ]
                 },
-                "sqDbUrl": {
+                "sonarQubeDBUrl": {
                   "description": "Db Connection String",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqDbUrl"
+                  ]
                 },
-                "sqDbUsername": {
+                "sonarQubeDBUsername": {
                   "description": "Db Username",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqDbUsername"
+                  ]
                 },
-                "sqDbPassword": {
+                "sonarQubeDBPassword": {
                   "description": "Db User Password",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "sqDbPassword"
+                  ]
                 },
-                "sqAnalysisIncludeFullReport": {
+                "sonarQubeIncludeFullReport": {
                   "description": "Include full analysis report in the build summary (SQ 5.3+)",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "sqAnalysisIncludeFullReport"
+                  ]
                 },
-                "sqAnalysisBreakBuildIfQualityGateFailed": {
+                "sonarQubeFailWhenQualityGateFails": {
                   "description": "Fail the build on quality gate failure (SQ 5.3+)",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "sqAnalysisBreakBuildIfQualityGateFailed"
+                  ]
                 },
-                "checkstyleAnalysisEnabled": {
+                "checkStyleRunAnalysis": {
                   "description": "Run Checkstyle",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "checkstyleAnalysisEnabled"
+                  ]
                 },
-                "pmdAnalysisEnabled": {
+                "pmdRunAnalysis": {
                   "description": "Run PMD",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "pmdAnalysisEnabled"
+                  ]
                 },
-                "findbugsAnalysisEnabled": {
+                "findBugsRunAnalysis": {
                   "description": "Run FindBugs",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "findbugsAnalysisEnabled"
+                  ]
                 }
               },
               "required": [
-                "mavenPOMFile",
+                "mavenPomFile",
                 "publishJUnitResults",
                 "testResultsFiles",
-                "javaHomeSelection",
-                "jdkUserInputPath",
-                "mavenVersionSelection",
-                "mavenPath",
+                "javaHomeOption",
+                "jdkDirectory",
+                "mavenVersionOption",
+                "mavenDirectory",
                 "mavenSetM2Home",
-                "mavenFeedAuthenticate",
-                "sqAnalysisEnabled",
-                "sqConnectedServiceName",
-                "sqDbDetailsRequired"
+                "mavenAuthenticateFeed",
+                "sonarQubeRunAnalysis",
+                "sonarQubeServiceEndpoint",
+                "sonarQubeSpecifyDB"
               ],
               "additionalProperties": false,
               "description": "Maven inputs"
@@ -15171,10 +16072,13 @@
             },
             "inputs": {
               "properties": {
-                "mavenPOMFile": {
+                "mavenPomFile": {
                   "description": "Maven POM file",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mavenPOMFile"
+                  ]
                 },
                 "goals": {
                   "description": "Goal(s)",
@@ -15201,44 +16105,62 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "codeCoverageTool": {
+                "codeCoverageToolOption": {
                   "description": "Code coverage tool",
                   "ignoreCase": "all",
                   "enum": [
                     "None",
                     "Cobertura",
                     "JaCoCo"
+                  ],
+                  "aliases": [
+                    "codeCoverageTool"
                   ]
                 },
-                "classFilter": {
+                "codeCoverageClassFilter": {
                   "description": "Class inclusion/exclusion filters",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilter"
+                  ]
                 },
-                "classFilesDirectories": {
+                "codeCoverageClassFilesDirectories": {
                   "description": "Class files directories",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilesDirectories"
+                  ]
                 },
-                "srcDirectories": {
+                "codeCoverageSourceDirectories": {
                   "description": "Source files directories",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "srcDirectories"
+                  ]
                 },
-                "failIfCoverageEmpty": {
+                "codeCoverageFailIfEmpty": {
                   "description": "Fail when code coverage results are missing",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "failIfCoverageEmpty"
+                  ]
                 },
-                "javaHomeSelection": {
+                "javaHomeOption": {
                   "description": "Set JAVA_HOME by",
                   "ignoreCase": "all",
                   "enum": [
                     "JDKVersion",
                     "Path"
+                  ],
+                  "aliases": [
+                    "javaHomeSelection"
                   ]
                 },
-                "jdkVersion": {
+                "jdkVersionOption": {
                   "description": "JDK version",
                   "ignoreCase": "all",
                   "enum": [
@@ -15249,53 +16171,77 @@
                     "1.8",
                     "1.7",
                     "1.6"
+                  ],
+                  "aliases": [
+                    "jdkVersion"
                   ]
                 },
-                "jdkUserInputPath": {
+                "jdkDirectory": {
                   "description": "JDK path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "jdkUserInputPath"
+                  ]
                 },
-                "jdkArchitecture": {
+                "jdkArchitectureOption": {
                   "description": "JDK architecture",
                   "ignoreCase": "all",
                   "enum": [
                     "x86",
                     "x64"
+                  ],
+                  "aliases": [
+                    "jdkArchitecture"
                   ]
                 },
-                "mavenVersionSelection": {
+                "mavenVersionOption": {
                   "description": "Maven version",
                   "ignoreCase": "all",
                   "enum": [
                     "Default",
                     "Path"
+                  ],
+                  "aliases": [
+                    "mavenVersionSelection"
                   ]
                 },
-                "mavenPath": {
+                "mavenDirectory": {
                   "description": "Maven path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mavenPath"
+                  ]
                 },
                 "mavenSetM2Home": {
                   "description": "Set M2_HOME variable",
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "mavenOpts": {
+                "mavenOptions": {
                   "description": "Set MAVEN_OPTS to",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mavenOpts"
+                  ]
                 },
-                "mavenFeedAuthenticate": {
+                "mavenAuthenticateFeed": {
                   "description": "Authenticate built-in Maven feeds",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "mavenFeedAuthenticate"
+                  ]
                 },
-                "sqAnalysisEnabled": {
+                "sonarQubeRunAnalysis": {
                   "description": "Run SonarQube or SonarCloud analysis",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "sqAnalysisEnabled"
+                  ]
                 },
                 "sqMavenPluginVersionChoice": {
                   "description": "SonarQube scanner for Maven version",
@@ -15305,33 +16251,42 @@
                     "pom"
                   ]
                 },
-                "checkstyleAnalysisEnabled": {
+                "checkStyleRunAnalysis": {
                   "description": "Run Checkstyle",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "checkstyleAnalysisEnabled"
+                  ]
                 },
-                "pmdAnalysisEnabled": {
+                "pmdRunAnalysis": {
                   "description": "Run PMD",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "pmdAnalysisEnabled"
+                  ]
                 },
-                "findbugsAnalysisEnabled": {
+                "findBugsRunAnalysis": {
                   "description": "Run FindBugs",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "findbugsAnalysisEnabled"
+                  ]
                 }
               },
               "required": [
-                "mavenPOMFile",
+                "mavenPomFile",
                 "publishJUnitResults",
                 "testResultsFiles",
-                "javaHomeSelection",
-                "jdkUserInputPath",
-                "mavenVersionSelection",
-                "mavenPath",
+                "javaHomeOption",
+                "jdkDirectory",
+                "mavenVersionOption",
+                "mavenDirectory",
                 "mavenSetM2Home",
-                "mavenFeedAuthenticate",
-                "sqAnalysisEnabled",
+                "mavenAuthenticateFeed",
+                "sonarQubeRunAnalysis",
                 "sqMavenPluginVersionChoice"
               ],
               "additionalProperties": false,
@@ -15355,10 +16310,13 @@
             },
             "inputs": {
               "properties": {
-                "mavenPOMFile": {
+                "mavenPomFile": {
                   "description": "Maven POM file",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mavenPOMFile"
+                  ]
                 },
                 "goals": {
                   "description": "Goal(s)",
@@ -15385,44 +16343,62 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "codeCoverageTool": {
+                "codeCoverageToolOption": {
                   "description": "Code coverage tool",
                   "ignoreCase": "all",
                   "enum": [
                     "None",
                     "Cobertura",
                     "JaCoCo"
+                  ],
+                  "aliases": [
+                    "codeCoverageTool"
                   ]
                 },
-                "classFilter": {
+                "codeCoverageClassFilter": {
                   "description": "Class inclusion/exclusion filters",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilter"
+                  ]
                 },
-                "classFilesDirectories": {
+                "codeCoverageClassFilesDirectories": {
                   "description": "Class files directories",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "classFilesDirectories"
+                  ]
                 },
-                "srcDirectories": {
+                "codeCoverageSourceDirectories": {
                   "description": "Source files directories",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "srcDirectories"
+                  ]
                 },
-                "failIfCoverageEmpty": {
+                "codeCoverageFailIfEmpty": {
                   "description": "Fail when code coverage results are missing",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "failIfCoverageEmpty"
+                  ]
                 },
-                "javaHomeSelection": {
+                "javaHomeOption": {
                   "description": "Set JAVA_HOME by",
                   "ignoreCase": "all",
                   "enum": [
                     "JDKVersion",
                     "Path"
+                  ],
+                  "aliases": [
+                    "javaHomeSelection"
                   ]
                 },
-                "jdkVersion": {
+                "jdkVersionOption": {
                   "description": "JDK version",
                   "ignoreCase": "all",
                   "enum": [
@@ -15433,53 +16409,77 @@
                     "1.8",
                     "1.7",
                     "1.6"
+                  ],
+                  "aliases": [
+                    "jdkVersion"
                   ]
                 },
-                "jdkUserInputPath": {
+                "jdkDirectory": {
                   "description": "JDK path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "jdkUserInputPath"
+                  ]
                 },
-                "jdkArchitecture": {
+                "jdkArchitectureOption": {
                   "description": "JDK architecture",
                   "ignoreCase": "all",
                   "enum": [
                     "x86",
                     "x64"
+                  ],
+                  "aliases": [
+                    "jdkArchitecture"
                   ]
                 },
-                "mavenVersionSelection": {
+                "mavenVersionOption": {
                   "description": "Maven version",
                   "ignoreCase": "all",
                   "enum": [
                     "Default",
                     "Path"
+                  ],
+                  "aliases": [
+                    "mavenVersionSelection"
                   ]
                 },
-                "mavenPath": {
+                "mavenDirectory": {
                   "description": "Maven path",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mavenPath"
+                  ]
                 },
                 "mavenSetM2Home": {
                   "description": "Set M2_HOME variable",
                   "ignoreCase": "key",
                   "type": "boolean"
                 },
-                "mavenOpts": {
+                "mavenOptions": {
                   "description": "Set MAVEN_OPTS to",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "mavenOpts"
+                  ]
                 },
-                "mavenFeedAuthenticate": {
+                "mavenAuthenticateFeed": {
                   "description": "Authenticate built-in Maven feeds",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "mavenFeedAuthenticate"
+                  ]
                 },
-                "sqAnalysisEnabled": {
+                "sonarQubeRunAnalysis": {
                   "description": "Run SonarQube or SonarCloud analysis",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "sqAnalysisEnabled"
+                  ]
                 },
                 "sqMavenPluginVersionChoice": {
                   "description": "SonarQube scanner for Maven version",
@@ -15489,33 +16489,42 @@
                     "pom"
                   ]
                 },
-                "checkstyleAnalysisEnabled": {
+                "checkStyleRunAnalysis": {
                   "description": "Run Checkstyle",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "checkstyleAnalysisEnabled"
+                  ]
                 },
-                "pmdAnalysisEnabled": {
+                "pmdRunAnalysis": {
                   "description": "Run PMD",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "pmdAnalysisEnabled"
+                  ]
                 },
-                "findbugsAnalysisEnabled": {
+                "findBugsRunAnalysis": {
                   "description": "Run FindBugs",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "findbugsAnalysisEnabled"
+                  ]
                 }
               },
               "required": [
-                "mavenPOMFile",
+                "mavenPomFile",
                 "publishJUnitResults",
                 "testResultsFiles",
-                "javaHomeSelection",
-                "jdkUserInputPath",
-                "mavenVersionSelection",
-                "mavenPath",
+                "javaHomeOption",
+                "jdkDirectory",
+                "mavenVersionOption",
+                "mavenDirectory",
                 "mavenSetM2Home",
-                "mavenFeedAuthenticate",
-                "sqAnalysisEnabled",
+                "mavenAuthenticateFeed",
+                "sonarQubeRunAnalysis",
                 "sqMavenPluginVersionChoice"
               ],
               "additionalProperties": false,
@@ -15539,10 +16548,13 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceName": {
+                "azureSubscription": {
                   "description": "Azure Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
                 "ServerName": {
                   "description": "Host Name",
@@ -15612,7 +16624,7 @@
                 }
               },
               "required": [
-                "ConnectedServiceName",
+                "azureSubscription",
                 "ServerName",
                 "SqlUsername",
                 "SqlPassword",
@@ -15643,10 +16655,13 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceName": {
+                "azureSubscription": {
                   "description": "Azure subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
                 "Action": {
                   "description": "Action",
@@ -15667,10 +16682,13 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "SpecifySlot": {
+                "SpecifySlotOrASE": {
                   "description": "Specify Slot or App Service Environment",
                   "ignoreCase": "key",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "aliases": [
+                    "SpecifySlot"
+                  ]
                 },
                 "ResourceGroupName": {
                   "description": "Resource group",
@@ -15729,7 +16747,7 @@
                 }
               },
               "required": [
-                "ConnectedServiceName",
+                "azureSubscription",
                 "WebAppName",
                 "ResourceGroupName",
                 "SourceSlot",
@@ -15760,23 +16778,32 @@
             },
             "inputs": {
               "properties": {
-                "ConnectedServiceNameSelector": {
+                "azureConnectionType": {
                   "description": "Azure Service Connection Type",
                   "ignoreCase": "all",
                   "enum": [
                     "ConnectedServiceName",
                     "ConnectedServiceNameARM"
+                  ],
+                  "aliases": [
+                    "ConnectedServiceNameSelector"
                   ]
                 },
-                "ConnectedServiceName": {
+                "azureClassicSubscription": {
                   "description": "Azure Classic Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
-                "ConnectedServiceNameARM": {
+                "azureSubscription": {
                   "description": "Azure Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceNameARM"
+                  ]
                 },
                 "ServerName": {
                   "description": "Azure SQL Server Name",
@@ -15885,8 +16912,8 @@
                 }
               },
               "required": [
-                "ConnectedServiceName",
-                "ConnectedServiceNameARM",
+                "azureClassicSubscription",
+                "azureSubscription",
                 "ServerName",
                 "DatabaseName",
                 "SqlUsername",
@@ -16112,10 +17139,13 @@
             },
             "inputs": {
               "properties": {
-                "cwd": {
+                "workingDirectory": {
                   "description": "Working Directory",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "cwd"
+                  ]
                 },
                 "cmakeArgs": {
                   "description": "Arguments",
@@ -16707,23 +17737,32 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "ConnectedServiceNameSelector": {
+                "azureConnectionType": {
                   "description": "Azure Connection Type",
                   "ignoreCase": "all",
                   "enum": [
                     "ConnectedServiceName",
                     "ConnectedServiceNameARM"
+                  ],
+                  "aliases": [
+                    "ConnectedServiceNameSelector"
                   ]
                 },
-                "ConnectedServiceName": {
+                "azureClassicSubscription": {
                   "description": "Azure Classic Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
-                "ConnectedServiceNameARM": {
+                "azureSubscription": {
                   "description": "Azure Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceNameARM"
+                  ]
                 },
                 "Destination": {
                   "description": "Destination Type",
@@ -16733,15 +17772,21 @@
                     "AzureVMs"
                   ]
                 },
-                "StorageAccount": {
+                "classicStorage": {
                   "description": "Classic Storage Account",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "StorageAccount"
+                  ]
                 },
-                "StorageAccountRM": {
+                "storage": {
                   "description": "RM Storage Account",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "StorageAccountRM"
+                  ]
                 },
                 "ContainerName": {
                   "description": "Container Name",
@@ -16753,15 +17798,21 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "EnvironmentName": {
+                "cloudService": {
                   "description": "Cloud Service",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "EnvironmentName"
+                  ]
                 },
-                "EnvironmentNameRM": {
+                "resourceGroup": {
                   "description": "Resource Group",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "EnvironmentNameRM"
+                  ]
                 },
                 "ResourceFilteringMethod": {
                   "description": "Select Machines By",
@@ -16829,14 +17880,14 @@
               },
               "required": [
                 "SourcePath",
-                "ConnectedServiceName",
-                "ConnectedServiceNameARM",
+                "azureClassicSubscription",
+                "azureSubscription",
                 "Destination",
-                "StorageAccount",
-                "StorageAccountRM",
+                "classicStorage",
+                "storage",
                 "ContainerName",
-                "EnvironmentName",
-                "EnvironmentNameRM",
+                "cloudService",
+                "resourceGroup",
                 "vmsAdminUserName",
                 "vmsAdminPassword",
                 "TargetPath"
@@ -16867,23 +17918,32 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "ConnectedServiceNameSelector": {
+                "azureConnectionType": {
                   "description": "Azure Connection Type",
                   "ignoreCase": "all",
                   "enum": [
                     "ConnectedServiceName",
                     "ConnectedServiceNameARM"
+                  ],
+                  "aliases": [
+                    "ConnectedServiceNameSelector"
                   ]
                 },
-                "ConnectedServiceName": {
+                "azureClassicSubscription": {
                   "description": "Azure Classic Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceName"
+                  ]
                 },
-                "ConnectedServiceNameARM": {
+                "azureSubscription": {
                   "description": "Azure Subscription",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "ConnectedServiceNameARM"
+                  ]
                 },
                 "Destination": {
                   "description": "Destination Type",
@@ -16893,15 +17953,21 @@
                     "AzureVMs"
                   ]
                 },
-                "StorageAccount": {
+                "classicStorage": {
                   "description": "Classic Storage Account",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "StorageAccount"
+                  ]
                 },
-                "StorageAccountRM": {
+                "storage": {
                   "description": "RM Storage Account",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "StorageAccountRM"
+                  ]
                 },
                 "ContainerName": {
                   "description": "Container Name",
@@ -16913,15 +17979,21 @@
                   "ignoreCase": "key",
                   "type": "string"
                 },
-                "EnvironmentName": {
+                "cloudService": {
                   "description": "Cloud Service",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "EnvironmentName"
+                  ]
                 },
-                "EnvironmentNameRM": {
+                "resourceGroup": {
                   "description": "Resource Group",
                   "ignoreCase": "key",
-                  "type": "string"
+                  "type": "string",
+                  "aliases": [
+                    "EnvironmentNameRM"
+                  ]
                 },
                 "ResourceFilteringMethod": {
                   "description": "Select Machines By",
@@ -16994,14 +18066,14 @@
               },
               "required": [
                 "SourcePath",
-                "ConnectedServiceName",
-                "ConnectedServiceNameARM",
+                "azureClassicSubscription",
+                "azureSubscription",
                 "Destination",
-                "StorageAccount",
-                "StorageAccountRM",
+                "classicStorage",
+                "storage",
                 "ContainerName",
-                "EnvironmentName",
-                "EnvironmentNameRM",
+                "cloudService",
+                "resourceGroup",
                 "vmsAdminUserName",
                 "vmsAdminPassword",
                 "TargetPath"
