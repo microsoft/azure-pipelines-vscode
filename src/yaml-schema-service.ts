@@ -11,33 +11,54 @@ export interface IYamlSchemaService {
     getFullSchema(tasks: DTTask[]): object;
 }
 
+interface ITaskNameData {
+    name: string;
+    version: number;
+    description: string;
+}
+
+interface ITaskEnum {
+    enum: string[];
+    description: string;
+    ignoreCase: string;
+}
+
 export class YamlSchemaService implements IYamlSchemaService {
     public getFullSchema(tasks: DTTask[]): object {
         logger.log('getSchemaFromTasks');
         let taskDefinitions: object[] = [];
-        let taskVersions: [string, number][] = [];
+        let taskNameData: ITaskNameData[] = [];
 
         for (var i = 0; i < tasks.length; i++) {
             const taskSchema: object = this.getSchemaFromTask(tasks[i]);
             taskDefinitions.push(taskSchema);
-            taskVersions.push([tasks[i].name, tasks[i].version.major]);
+            taskNameData.push({
+                name: tasks[i].name,
+                version: tasks[i].version.major,
+                description: tasks[i].description
+            });
         }
 
-        taskVersions.sort((a, b) => {
-            // first compare strings
-            if (a[0] > b[0]) { return 1; }
-            if (a[0] < b[0]) { return -1; }
+        taskNameData.sort((a, b) => {
+            if (a.name > b.name) { return 1; }
+            if (a.name < b.name) { return -1; }
 
-            // strings are the same, so compare version number.
+            // names are the same, so compare version number.
             // we want to reverse sort so that Foo@2 shows up earlier than Foo@1
-            return b[1] - a[1];
+            return b.version - a.version;
         });
 
-        const taskNames: string[] = taskVersions.map((item) => item[0] + "@" + item[1]);
+        const taskNameEnums: ITaskEnum[] = taskNameData.map((item) => {
+            return {
+                enum: [ item.name + "@" + item.version],
+                description: item.description,
+                ignoreCase: "value"
+            };
+        });
 
         const fullSchema = schemata.schema143
                                    .replace('"{{{taskDefinitions}}}"', JSON.stringify(taskDefinitions))
-                                   .replace('"{{{taskNames}}}"', JSON.stringify(taskNames));
+                                   .replace('"{{{taskNameEnums}}}"', '{ "oneOf":' + JSON.stringify(taskNameEnums) + '}');
 
         return JSON.parse(fullSchema);
     }
