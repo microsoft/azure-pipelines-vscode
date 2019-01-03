@@ -17014,172 +17014,1142 @@
       ],
       "properties": {
         "task": {
-          "enum": [
-            "AndroidBuild@1",
-            "AndroidSigning@3",
-            "AndroidSigning@2",
-            "AndroidSigning@1",
-            "Ant@1",
-            "ApacheJMeterLoadTest@1",
-            "AppCenterDistribute@1",
-            "AppCenterDistribute@0",
-            "AppCenterTest@1",
-            "ArchiveFiles@2",
-            "ArchiveFiles@1",
-            "AzureAppServiceManage@0",
-            "AzureCLI@1",
-            "AzureCLI@0",
-            "AzureCloudPowerShellDeployment@1",
-            "AzureFileCopy@2",
-            "AzureFileCopy@1",
-            "AzureFunction@1",
-            "AzureFunction@0",
-            "AzureKeyVault@1",
-            "AzureMonitor@0",
-            "AzureMonitorAlerts@0",
-            "AzureMysqlDeployment@1",
-            "AzureNLBManagement@1",
-            "AzurePowerShell@3",
-            "AzurePowerShell@2",
-            "AzurePowerShell@1",
-            "AzureResourceGroupDeployment@2",
-            "AzureResourceGroupDeployment@1",
-            "AzureRmWebAppDeployment@4",
-            "AzureRmWebAppDeployment@3",
-            "AzureRmWebAppDeployment@2",
-            "AzureVmssDeployment@0",
-            "AzureWebPowerShellDeployment@1",
-            "Bash@3",
-            "BatchScript@1",
-            "CMake@1",
-            "Chef@1",
-            "ChefKnife@1",
-            "CloudLoadTest@1",
-            "CmdLine@2",
-            "CmdLine@1",
-            "CocoaPods@0",
-            "CondaEnvironment@1",
-            "CondaEnvironment@0",
-            "CopyFiles@2",
-            "CopyFiles@1",
-            "CopyFilesOverSSH@0",
-            "CopyPublishBuildArtifacts@1",
-            "DecryptFile@1",
-            "Delay@1",
-            "DeleteFiles@1",
-            "DeployVisualStudioTestAgent@2",
-            "DeployVisualStudioTestAgent@1",
-            "Docker@1",
-            "Docker@0",
-            "DockerCompose@0",
-            "DotNetCoreCLI@2",
-            "DotNetCoreCLI@1",
-            "DotNetCoreCLI@0",
-            "DotNetCoreInstaller@0",
-            "DownloadBuildArtifacts@0",
-            "DownloadFileshareArtifacts@1",
-            "DownloadPackage@0",
-            "DownloadPipelineArtifact@0",
-            "DownloadSecureFile@1",
-            "ExtractFiles@1",
-            "FtpUpload@1",
-            "Go@0",
-            "GoTool@0",
-            "Gradle@2",
-            "Gradle@1",
-            "Grunt@0",
-            "Gulp@0",
-            "HelmDeploy@0",
-            "HelmInstaller@0",
-            "IISWebAppDeployment@1",
-            "InstallAppleCertificate@2",
-            "InstallAppleCertificate@1",
-            "InstallAppleCertificate@0",
-            "InstallAppleProvisioningProfile@1",
-            "InstallAppleProvisioningProfile@0",
-            "InstallSSHKey@0",
-            "InvokeRESTAPI@1",
-            "InvokeRESTAPI@0",
-            "JavaToolInstaller@0",
-            "JenkinsDownloadArtifacts@1",
-            "JenkinsQueueJob@2",
-            "JenkinsQueueJob@1",
-            "Kubernetes@1",
-            "Kubernetes@0",
-            "MSBuild@1",
-            "Maven@3",
-            "Maven@2",
-            "Maven@1",
-            "NodeTool@0",
-            "Npm@1",
-            "Npm@0",
-            "NuGet@0",
-            "NuGetCommand@2",
-            "NuGetInstaller@0",
-            "NuGetPackager@0",
-            "NuGetPublisher@0",
-            "NuGetRestore@1",
-            "NuGetToolInstaller@0",
-            "PackerBuild@0",
-            "PipAuthenticate@0",
-            "PowerShell@2",
-            "PowerShell@1",
-            "PowerShellOnTargetMachines@3",
-            "PowerShellOnTargetMachines@2",
-            "PowerShellOnTargetMachines@1",
-            "PublishBuildArtifacts@1",
-            "PublishCodeCoverageResults@1",
-            "PublishPipelineArtifact@0",
-            "PublishSymbols@2",
-            "PublishSymbols@1",
-            "PublishTestResults@2",
-            "PublishTestResults@1",
-            "PublishToAzureServiceBus@1",
-            "PublishToAzureServiceBus@0",
-            "PyPIPublisher@0",
-            "PythonScript@0",
-            "QuickPerfTest@1",
-            "RunVisualStudioTestsusingTestAgent@1",
-            "SSH@0",
-            "ServiceFabricComposeDeploy@0",
-            "ServiceFabricDeploy@1",
-            "ServiceFabricPowerShell@1",
-            "ServiceFabricUpdateAppVersions@1",
-            "ServiceFabricUpdateManifests@2",
-            "ShellScript@2",
-            "SonarQubePostTest@1",
-            "SonarQubePreBuild@1",
-            "SqlAzureDacpacDeployment@1",
-            "SqlServerDacpacDeployment@1",
-            "TwineAuthenticate@0",
-            "UniversalPackages@0",
-            "UsePythonVersion@0",
-            "UseRubyVersion@0",
-            "VSBuild@1",
-            "VSMobileCenterTest@0",
-            "VSTest@2",
-            "VSTest@1",
-            "VisualStudioTestPlatformInstaller@1",
-            "WindowsMachineFileCopy@2",
-            "WindowsMachineFileCopy@1",
-            "XamarinAndroid@1",
-            "XamarinComponentRestore@0",
-            "XamarinLicense@1",
-            "XamarinTestCloud@1",
-            "XamariniOS@2",
-            "XamariniOS@1",
-            "Xcode@5",
-            "Xcode@4",
-            "Xcode@3",
-            "Xcode@2",
-            "XcodePackageiOS@0",
-            "cURLUploader@2",
-            "cURLUploader@1",
-            "npmAuthenticate@0",
-            "queryWorkItems@0"
-          ],
-          "description": "Task reference including major version",
-          "ignoreCase": "value"
+          "oneOf": [
+            {
+              "enum": [
+                "AndroidBuild@1"
+              ],
+              "description": "[Deprecated]  Use Gradle",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AndroidSigning@3"
+              ],
+              "description": "Sign and align Android APK files",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AndroidSigning@2"
+              ],
+              "description": "Sign and align Android APK files",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AndroidSigning@1"
+              ],
+              "description": "Sign and align Android APK files",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Ant@1"
+              ],
+              "description": "Build with Apache Ant",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "ApacheJMeterLoadTest@1"
+              ],
+              "description": "Runs the Apache JMeter load test in cloud",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AppCenterDistribute@1"
+              ],
+              "description": "Distribute app builds to testers and users via App Center",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AppCenterDistribute@0"
+              ],
+              "description": "Distribute app builds to testers and users via App Center",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AppCenterTest@1"
+              ],
+              "description": "Test app packages with Visual Studio App Center.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "ArchiveFiles@2"
+              ],
+              "description": "Archive files using compression formats such as .7z, .rar, .tar.gz, and .zip.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "ArchiveFiles@1"
+              ],
+              "description": "Archive files using compression formats such as .7z, .rar, .tar.gz, and .zip.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureAppServiceManage@0"
+              ],
+              "description": "Start, Stop, Restart, Slot swap, Install site extensions or Enable Continuous Monitoring for an Azure App Service",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureCLI@1"
+              ],
+              "description": "Run a Shell or Batch script with Azure CLI commands against an azure subscription",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureCLI@0"
+              ],
+              "description": "Run a Shell or Batch script with Azure CLI commands against an azure subscription",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureCloudPowerShellDeployment@1"
+              ],
+              "description": "Deploy an Azure Cloud Service",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureFileCopy@2"
+              ],
+              "description": "Copy files to Azure blob or VM(s)",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureFileCopy@1"
+              ],
+              "description": "Copy files to Azure blob or VM(s)",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureFunction@1"
+              ],
+              "description": "Invoke an Azure Function as a part of your pipeline.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureFunction@0"
+              ],
+              "description": "Invoke Azure function as a part of your process.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureKeyVault@1"
+              ],
+              "description": "Download Azure Key Vault Secrets",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureMonitor@0"
+              ],
+              "description": "Observe the configured Azure monitor rules for active alerts.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureMonitorAlerts@0"
+              ],
+              "description": "Configure alerts on available metrics for an Azure resource",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureMysqlDeployment@1"
+              ],
+              "description": "Run your scripts and make changes to your Azure Database for MySQL.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureNLBManagement@1"
+              ],
+              "description": "Connect/Disconnect an Azure virtual machine's network interface to a Load Balancer's backend address pool",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzurePowerShell@3"
+              ],
+              "description": "Run a PowerShell script within an Azure environment",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzurePowerShell@2"
+              ],
+              "description": "Run a PowerShell script within an Azure environment",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzurePowerShell@1"
+              ],
+              "description": "Run a PowerShell script within an Azure environment",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureResourceGroupDeployment@2"
+              ],
+              "description": "Deploy an Azure resource manager (ARM) template to a resource group. You can also start, stop, delete, deallocate all Virtual Machines (VM) in a resource group",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureResourceGroupDeployment@1"
+              ],
+              "description": "Deploy, start, stop, delete Azure Resource Groups",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureRmWebAppDeployment@4"
+              ],
+              "description": "Update Azure App Services on Windows, Web App on Linux with built-in images or Docker containers, ASP.NET, .NET Core, PHP, Python or Node.js based Web applications, Function Apps on Windows or Linux with Docker Containers, Mobile Apps, API applications, Web Jobs using Web Deploy / Kudu REST APIs",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureRmWebAppDeployment@3"
+              ],
+              "description": "Update Azure App Services on Windows, Web App on Linux with built-in images or Docker containers, ASP.NET, .NET Core, PHP, Python or Node.js based Web applications, Function Apps, Mobile Apps, API applications, Web Jobs using Web Deploy / Kudu REST APIs",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureRmWebAppDeployment@2"
+              ],
+              "description": "Update Azure App Service using Web Deploy / Kudu REST APIs",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureVmssDeployment@0"
+              ],
+              "description": "Deploy Virtual Machine scale set image",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "AzureWebPowerShellDeployment@1"
+              ],
+              "description": "Create or update Azure App Service using Azure PowerShell",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Bash@3"
+              ],
+              "description": "Run a Bash script on macOS, Linux, or Windows",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "BatchScript@1"
+              ],
+              "description": "Run a windows cmd or bat script and optionally allow it to change the environment",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "CMake@1"
+              ],
+              "description": "Build with the CMake cross-platform build system",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Chef@1"
+              ],
+              "description": "Deploy to Chef environments by editing environment attributes",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "ChefKnife@1"
+              ],
+              "description": "Run Scripts with knife commands on your chef workstation",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "CloudLoadTest@1"
+              ],
+              "description": "Runs the load test in the cloud with Azure Pipelines",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "CmdLine@2"
+              ],
+              "description": "Run a command line script using cmd.exe on Windows and bash on macOS and Linux.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "CmdLine@1"
+              ],
+              "description": "Run a command line with arguments",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "CocoaPods@0"
+              ],
+              "description": "CocoaPods is a dependency manager for Swift and Objective-C Cocoa projects. This task runs 'pod install'.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "CondaEnvironment@1"
+              ],
+              "description": "Create and activate a Conda environment.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "CondaEnvironment@0"
+              ],
+              "description": "Create and activate a Conda environment.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "CopyFiles@2"
+              ],
+              "description": "Copy files from source folder to target folder using match patterns (The match patterns will only match file paths, not folder paths)",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "CopyFiles@1"
+              ],
+              "description": "Copy files from source folder to target folder using minimatch patterns (The minimatch patterns will only match file paths, not folder paths)",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "CopyFilesOverSSH@0"
+              ],
+              "description": "Copy files or build artifacts to a remote machine over SSH",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "CopyPublishBuildArtifacts@1"
+              ],
+              "description": "[DEPRECATED] Use the Copy Files task and the Publish Build Artifacts task instead",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DecryptFile@1"
+              ],
+              "description": "A thin utility task for file decryption using OpenSSL.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Delay@1"
+              ],
+              "description": "Delay further execution of the workflow by a fixed time.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DeleteFiles@1"
+              ],
+              "description": "Delete files or folders. (The minimatch patterns will only match file paths, not folder paths)",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DeployVisualStudioTestAgent@2"
+              ],
+              "description": "Deprecated: This task and it’s companion task (Run Functional Tests) are deprecated. Use the 'Visual Studio Test' task instead. The VSTest task can run unit as well as functional tests. Run tests on one or more agents using the multi-agent job setting. Use the 'Visual Studio Test Platform' task to run tests without needing Visual Studio on the agent. VSTest task also brings new capabilities such as automatically rerunning failed tests.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DeployVisualStudioTestAgent@1"
+              ],
+              "description": "Deploy and configure Test Agent to run tests on a set of machines",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Docker@1"
+              ],
+              "description": "Build, tag, push, or run Docker images, or run a Docker command. Task can be used with Docker or Azure Container registry.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Docker@0"
+              ],
+              "description": "Build, tag, push, or run Docker images, or run a Docker command. Task can be used with Docker or Azure Container registry.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DockerCompose@0"
+              ],
+              "description": "Build, push or run multi-container Docker applications. Task can be used with Docker or Azure Container registry.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DotNetCoreCLI@2"
+              ],
+              "description": "Build, test, package, or publish a dotnet application, or run a custom dotnet command. For package commands, supports NuGet.org and authenticated feeds like Package Management and MyGet.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DotNetCoreCLI@1"
+              ],
+              "description": "Build, test and publish using dotnet core command-line.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DotNetCoreCLI@0"
+              ],
+              "description": "Build, test and publish using dotnet core command-line.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DotNetCoreInstaller@0"
+              ],
+              "description": "Acquires a specific version of .NET Core from internet or the tools cache and adds it to the PATH. Use this task to change the version of .NET Core used in subsequent tasks.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DownloadBuildArtifacts@0"
+              ],
+              "description": "Download Build Artifacts",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DownloadFileshareArtifacts@1"
+              ],
+              "description": "Download artifacts from a file share e.g \\\\share\\drop",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DownloadPackage@0"
+              ],
+              "description": "Download a package from a Package Management feed in Azure Artifacts or TFS. \r\n Requires the Package Management extension.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DownloadPipelineArtifact@0"
+              ],
+              "description": "Download Pipeline Artifact",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "DownloadSecureFile@1"
+              ],
+              "description": "Download a secure file to a temporary location on the build or release agent",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "ExtractFiles@1"
+              ],
+              "description": "Extract a variety of archive and compression files such as .7z, .rar, .tar.gz, and .zip.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "FtpUpload@1"
+              ],
+              "description": "FTP Upload",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Go@0"
+              ],
+              "description": "Get, build, or test a Go application, or run a custom Go command.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "GoTool@0"
+              ],
+              "description": "Finds or downloads a specific version of Go in the tools cache and adds it to the PATH. Use this to set the version of Go used in subsequent tasks.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Gradle@2"
+              ],
+              "description": "Build using a Gradle wrapper script",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Gradle@1"
+              ],
+              "description": "Build using a Gradle wrapper script",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Grunt@0"
+              ],
+              "description": "The JavaScript Task Runner",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Gulp@0"
+              ],
+              "description": "Node.js streaming task based build system",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "HelmDeploy@0"
+              ],
+              "description": "Deploy, configure, update your Kubernetes cluster in Azure Container Service by running helm commands.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "HelmInstaller@0"
+              ],
+              "description": "Install Helm and Kubernetes on agent machine.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "IISWebAppDeployment@1"
+              ],
+              "description": "Deploy by MSDeploy, create/update website & app pools",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "InstallAppleCertificate@2"
+              ],
+              "description": "Install an Apple certificate required to build on a macOS agent",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "InstallAppleCertificate@1"
+              ],
+              "description": "Install an Apple certificate required to build on a macOS agent",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "InstallAppleCertificate@0"
+              ],
+              "description": "Install an Apple certificate required to build on a macOS agent",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "InstallAppleProvisioningProfile@1"
+              ],
+              "description": "Install an Apple provisioning profile required to build on a macOS agent",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "InstallAppleProvisioningProfile@0"
+              ],
+              "description": "Install an Apple provisioning profile required to build on a macOS agent",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "InstallSSHKey@0"
+              ],
+              "description": "Install an SSH key prior to a build or release",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "InvokeRESTAPI@1"
+              ],
+              "description": "Invoke a REST API as a part of your pipeline.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "InvokeRESTAPI@0"
+              ],
+              "description": "Invoke REST API as a part of your process.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "JavaToolInstaller@0"
+              ],
+              "description": "Acquires a specific version of Java from a user supplied Azure blob or the tools cache and sets JAVA_HOME. Use this task to change the version of Java used in Java tasks.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "JenkinsDownloadArtifacts@1"
+              ],
+              "description": "Download artifacts produced by a Jenkins job",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "JenkinsQueueJob@2"
+              ],
+              "description": "Queue a job on a Jenkins server",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "JenkinsQueueJob@1"
+              ],
+              "description": "Queue a job on a Jenkins server",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Kubernetes@1"
+              ],
+              "description": "Deploy, configure, update your Kubernetes cluster in Azure Container Service by running kubectl commands.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Kubernetes@0"
+              ],
+              "description": "Deploy, configure, update your Kubernetes cluster in Azure Container Service by running kubectl commands.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "MSBuild@1"
+              ],
+              "description": "Build with MSBuild",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Maven@3"
+              ],
+              "description": "Build with Apache Maven",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Maven@2"
+              ],
+              "description": "Build with Apache Maven",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Maven@1"
+              ],
+              "description": "Build with Apache Maven",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "NodeTool@0"
+              ],
+              "description": "Finds or Downloads and caches specified version spec of Node and adds it to the PATH.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Npm@1"
+              ],
+              "description": "Install and publish npm packages, or run an npm command. Supports npmjs.com and authenticated registries like Package Management.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Npm@0"
+              ],
+              "description": "Run an npm command",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "NuGet@0"
+              ],
+              "description": "Deprecated: use the “NuGet” task instead. It works with the new Tool Installer framework so you can easily use new versions of NuGet without waiting for a task update, provides better support for authenticated feeds outside this account/collection, and uses NuGet 4 by default.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "NuGetCommand@2"
+              ],
+              "description": "Restore, pack, or push NuGet packages, or run a NuGet command. Supports NuGet.org and authenticated feeds like Package Management and MyGet. Uses NuGet.exe and works with .NET Framework apps. For .NET Core and .NET Standard apps, use the .NET Core task.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "NuGetInstaller@0"
+              ],
+              "description": "Installs or restores missing NuGet packages",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "NuGetPackager@0"
+              ],
+              "description": "Deprecated: use the “NuGet” task instead. It works with the new Tool Installer framework so you can easily use new versions of NuGet without waiting for a task update, provides better support for authenticated feeds outside this account/collection, and uses NuGet 4 by default.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "NuGetPublisher@0"
+              ],
+              "description": "Deprecated: use the “NuGet” task instead. It works with the new Tool Installer framework so you can easily use new versions of NuGet without waiting for a task update, provides better support for authenticated feeds outside this account/collection, and uses NuGet 4 by default.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "NuGetRestore@1"
+              ],
+              "description": "Restores NuGet packages in preparation for a Visual Studio Build step.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "NuGetToolInstaller@0"
+              ],
+              "description": "Acquires a specific version of NuGet from the internet or the tools cache and adds it to the PATH. Use this task to change the version of NuGet used in the NuGet tasks.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PackerBuild@0"
+              ],
+              "description": "Build machine image using Packer. This image can be used for Azure Virtual machine scale set deployment",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PipAuthenticate@0"
+              ],
+              "description": "Authentication task for pip client used for installing python distributions.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PowerShell@2"
+              ],
+              "description": "Run a PowerShell script on Windows, macOS, or Linux.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PowerShell@1"
+              ],
+              "description": "Run a PowerShell script",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PowerShellOnTargetMachines@3"
+              ],
+              "description": "Execute PowerShell scripts on remote machine(s). This version of the task uses PSSession and Invoke-Command for remoting.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PowerShellOnTargetMachines@2"
+              ],
+              "description": "Execute PowerShell scripts on remote machine(s)",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PowerShellOnTargetMachines@1"
+              ],
+              "description": "Execute PowerShell scripts on remote machine(s)",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PublishBuildArtifacts@1"
+              ],
+              "description": "Publish build artifacts to Azure Pipelines/TFS or a file share",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PublishCodeCoverageResults@1"
+              ],
+              "description": "Publish Cobertura or JaCoCo code coverage results from a build",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PublishPipelineArtifact@0"
+              ],
+              "description": "Publish Pipeline Artifact",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PublishSymbols@2"
+              ],
+              "description": "Index your source code and publish symbols to a file share or Azure Artifacts Symbol Server",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PublishSymbols@1"
+              ],
+              "description": "Index your source code and publish symbols to a file share",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PublishTestResults@2"
+              ],
+              "description": "Publish Test Results to Azure Pipelines/TFS",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PublishTestResults@1"
+              ],
+              "description": "Publish Test Results to VSTS/TFS",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PublishToAzureServiceBus@1"
+              ],
+              "description": "Sends a message to azure service bus using a service connection (no agent required).",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PublishToAzureServiceBus@0"
+              ],
+              "description": "Sends a message to azure service bus using a service connection (no agent required).",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PyPIPublisher@0"
+              ],
+              "description": "Create and upload an sdist or wheel to a PyPI-compatible index using Twine.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "PythonScript@0"
+              ],
+              "description": "Run a Python script.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "QuickPerfTest@1"
+              ],
+              "description": "Runs a quick web performance test in the cloud with Azure Pipelines",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "RunVisualStudioTestsusingTestAgent@1"
+              ],
+              "description": "Deprecated: This task and it’s companion task (Visual Studio Test Agent Deployment) are deprecated. Use the 'Visual Studio Test' task instead. The VSTest task can run unit as well as functional tests. Run tests on one or more agents using the multi-agent job setting. Use the 'Visual Studio Test Platform' task to run tests without needing Visual Studio on the agent. VSTest task also brings new capabilities such as automatically rerunning failed tests.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "SSH@0"
+              ],
+              "description": "Run shell commands or a script on a remote machine using SSH",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "ServiceFabricComposeDeploy@0"
+              ],
+              "description": "Deploy a docker-compose application to a Service Fabric cluster.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "ServiceFabricDeploy@1"
+              ],
+              "description": "Deploy a Service Fabric application to a cluster.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "ServiceFabricPowerShell@1"
+              ],
+              "description": "Run a PowerShell script within the context of an Azure Service Fabric cluster connection.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "ServiceFabricUpdateAppVersions@1"
+              ],
+              "description": "Automatically updates the versions of a packaged Service Fabric application.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "ServiceFabricUpdateManifests@2"
+              ],
+              "description": "Automatically updates portions of the application and service manifests within a packaged Service Fabric application.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "ShellScript@2"
+              ],
+              "description": "Run a shell script using bash",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "SonarQubePostTest@1"
+              ],
+              "description": "[DEPRECATED] Finish the analysis and upload the results to SonarQube",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "SonarQubePreBuild@1"
+              ],
+              "description": "[DEPRECATED] Fetch the Quality Profile from SonarQube to configure the analysis",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "SqlAzureDacpacDeployment@1"
+              ],
+              "description": "Deploy Azure SQL DB using DACPAC or run scripts using SQLCMD",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "SqlServerDacpacDeployment@1"
+              ],
+              "description": "Deploy SQL Server Database using DACPAC",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "TwineAuthenticate@0"
+              ],
+              "description": "Authentication for uploading python distributions using twine. Please add \"-r FeedName/EndpointName --config-file $(PYPIRC_PATH)\" to your twine upload command. For feeds present in this organization use feed name as repository(-r) otherwise use the endpoint name defined in the service connection.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "UniversalPackages@0"
+              ],
+              "description": "Download or publish Universal Packages.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "UsePythonVersion@0"
+              ],
+              "description": "Retrieves the specified version of Python from the tool cache. Optionally add it to PATH.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "UseRubyVersion@0"
+              ],
+              "description": "Retrieves the specified version of Ruby from the tool cache. Optionally add it to PATH.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "VSBuild@1"
+              ],
+              "description": "Build with MSBuild and set the Visual Studio version property.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "VSMobileCenterTest@0"
+              ],
+              "description": "Test mobile app packages with Visual Studio Mobile Center.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "VSTest@2"
+              ],
+              "description": "Run unit and functional tests (Selenium, Appium, Coded UI test, etc.) using the Visual Studio Test (VsTest) runner. Test frameworks that have a Visual Studio test adapter such as MsTest, xUnit, NUnit, Chutzpah (for JavaScript tests using QUnit, Mocha and Jasmine), etc. can be run. Tests can be distributed on multiple agents using this task (version 2).",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "VSTest@1"
+              ],
+              "description": "Run tests with Visual Studio test runner",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "VisualStudioTestPlatformInstaller@1"
+              ],
+              "description": "Acquires the test platform from nuget.org or the tools cache. Satisfies the ‘vstest’ demand and can be used for running tests and collecting diagnostic data using the Visual Studio Test task.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "WindowsMachineFileCopy@2"
+              ],
+              "description": "Copy files to remote machine(s)",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "WindowsMachineFileCopy@1"
+              ],
+              "description": "Copy files to remote machine(s)",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "XamarinAndroid@1"
+              ],
+              "description": "Build an Android app with Xamarin",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "XamarinComponentRestore@0"
+              ],
+              "description": "This task is deprecated. Use 'NuGet' instead.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "XamarinLicense@1"
+              ],
+              "description": "[Deprecated] Upgrade to free version of Xamarin: https://store.xamarin.com",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "XamarinTestCloud@1"
+              ],
+              "description": "[Depreciated] Testing mobile apps with Xamarin Test Cloud using Xamarin.UITest - recommended task is now AppCenterTest",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "XamariniOS@2"
+              ],
+              "description": "Build an iOS app with Xamarin on macOS.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "XamariniOS@1"
+              ],
+              "description": "Build an iOS app with Xamarin on macOS",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Xcode@5"
+              ],
+              "description": "Build, test, or archive an Xcode workspace on macOS. Optionally package an app.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Xcode@4"
+              ],
+              "description": "Build, test, or archive an Xcode workspace on macOS. Optionally package an app.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Xcode@3"
+              ],
+              "description": "Build an Xcode workspace on macOS",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "Xcode@2"
+              ],
+              "description": "Build an Xcode workspace on Mac OS",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "XcodePackageiOS@0"
+              ],
+              "description": "Generate an .ipa file from Xcode build output using xcrun (Xcode 7 or below)",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "cURLUploader@2"
+              ],
+              "description": "Use cURL to upload files.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "cURLUploader@1"
+              ],
+              "description": "Use cURL to upload files with FTP, FTPS, SFTP, HTTP, and more.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "npmAuthenticate@0"
+              ],
+              "description": "Don't use this task if you're also using the npm task. Provides npm credentials to an .npmrc file in your repository for the scope of the build. This enables npm task runners like Gulp and Grunt to authenticate with private registries.",
+              "ignoreCase": "value"
+            },
+            {
+              "enum": [
+                "queryWorkItems@0"
+              ],
+              "description": "Executes a work item query and checks for the number of items returned.",
+              "ignoreCase": "value"
+            }
+          ]
         },
         "displayName": {
           "type": "string",

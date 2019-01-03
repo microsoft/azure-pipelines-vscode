@@ -1219,11 +1219,7 @@ export const schema143: string = JSON.stringify({
         "type": "object",
         "anyOf": "{{{taskDefinitions}}}",
         "properties": {
-          "task": {
-            "enum": "{{{taskNames}}}",
-            "description": "Task reference including major version",
-            "ignoreCase": "value"
-          },
+          "task": "{{{taskNameEnums}}}",
           "displayName": {
             "type": "string",
             "description": "Human-readable name for the task"
