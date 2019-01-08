@@ -2,7 +2,7 @@
     "name": "azure-pipelines",
     "displayName": "Azure Pipelines",
     "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines",
-    "version": "1.145.2",
+    "version": "1.147.1",
     "publisher": "ms-azure-devops",
     "repository": {
         "type": "git",
@@ -95,7 +95,7 @@
         "@types/underscore": "1.8.9"
     },
     "dependencies": {
-        "azure-pipelines-language-server": "0.4.2",
+        "azure-pipelines-language-server": "0.5.2",
         "q": "1.5.1",
         "shelljs": "^0.3.0",
         "typed-rest-client": "1.0.7",

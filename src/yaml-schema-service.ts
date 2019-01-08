@@ -6,6 +6,7 @@
 import { DTTask, InputsEntity } from "./dtdata";
 import * as logger from './logger';
 import * as schemata from './schemata';
+import { JSONSchema } from 'azure-pipelines-language-service';
 
 export interface IYamlSchemaService {
     getFullSchema(tasks: DTTask[]): object;
@@ -92,8 +93,7 @@ export class YamlSchemaService implements IYamlSchemaService {
                     return;
                 }
 
-                let thisProp: any = {};
-                const name: string = that.cleanString(input.name);
+                let thisProp: JSONSchema = {};
                 const description: string = input.label;
                 thisProp = {
                     description: description,
@@ -127,6 +127,18 @@ export class YamlSchemaService implements IYamlSchemaService {
                     throw new Error(`Unable to find input type mapping '${input.type}'.`);
                 }
 
+                let name: string;
+                if (Array.isArray(input.aliases) && input.aliases.length > 0) {
+                    //use the first alias as the preferred name
+                    name = that.cleanString(input.aliases[0]);
+                    thisProp.aliases = [ that.cleanString(input.name) ];
+                    if (input.aliases.length > 1) {
+                        thisProp.aliases.push(...input.aliases.slice(1));
+                    }
+                }
+                else {
+                    name = that.cleanString(input.name);
+                }
                 schema.properties.inputs.properties[name] = thisProp;
 
                 if (input.required) {
