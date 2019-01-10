@@ -1202,12 +1202,12 @@ export const schema143: string = JSON.stringify({
       },
       "functionExpression": {
         "type": "string",
-        "pattern": "^(and|coalesce|contains|endsWith|eq|format|gt|ge|lt|le|in|not|ne|notIn|or|startsWith|xor)\\([a-z0-9, \\(\\)]*\\)$",
+        "pattern": "^(and|coalesce|contains|endsWith|eq|format|gt|ge|lt|le|in|not|ne|notIn|or|startsWith|xor)\\([a-z0-9\\, \\(\\)'\"\\[\\]\\.]*\\)$",
         "ignoreCase": "value"
       },
       "conditionExpression": {
         "type": "string",
-        "pattern": "^(always|failed|canceled|succeded|succeededOrFailed)\\([a-z0-9, \\(\\)]*\\)$",
+        "pattern": "^(always|failed|canceled|succeded|succeededOrFailed)\\([a-z0-9\\, \\(\\)'\"\\[\\]\\.]*\\)$",
         "ignoreCase": "value"
       },
       "stepInsertExpression": {
