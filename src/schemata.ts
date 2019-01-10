@@ -792,7 +792,7 @@ export const schema143: string = JSON.stringify({
           },
           "type": {
             "enum": [
-              "github", "tfsgit", "tfsversioncontrol"
+              "git", "github", "tfsgit", "tfsversioncontrol"
             ],
             "description": "Type of external repository",
             "ignoreCase": "value"
