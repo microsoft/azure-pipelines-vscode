@@ -26,7 +26,7 @@
       },
       "description": "npm inputs",
       "additionalProperties": false,
-      "required": ["command"]
+      "required": ["cwd"]
     }
   },
   "required": ["task", "inputs"]
