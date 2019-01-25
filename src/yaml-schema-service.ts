@@ -141,7 +141,7 @@ export class YamlSchemaService implements IYamlSchemaService {
                 }
                 schema.properties.inputs.properties[name] = thisProp;
 
-                if (input.required) {
+                if (input.required && !input.defaultValue && !input.visibleRule) {
                     schema.properties.inputs.required.push(name);
                     hasRequiredInputs = true;
                 }
