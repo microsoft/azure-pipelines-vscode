@@ -13,6 +13,7 @@
             "name": "cwd",
             "label": "working folder",
             "defaultValue": "",
+            "required": true,
             "type": "filePath",
             "helpMarkDown": "Working directory where the npm command is run. Defaults to the root of the repo."
         }, {

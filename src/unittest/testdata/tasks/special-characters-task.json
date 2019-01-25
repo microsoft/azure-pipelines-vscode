@@ -12,7 +12,7 @@
     "inputs": [{
             "name": "\r\n\"input \r\n\"name\r\n\"",
             "label": "my input label",
-            "defaultValue": "install",
+            "defaultValue": "",
             "required": true,
             "type": "string",
             "helpMarkDown": ""
