@@ -3092,13 +3092,7 @@
                   "type": "string"
                 }
               },
-              "required": [
-                "command",
-                "customCommand",
-                "customFeed",
-                "publishFeed",
-                "publishEndpoint"
-              ],
+              "required": [],
               "additionalProperties": false,
               "description": "npm inputs"
             }
