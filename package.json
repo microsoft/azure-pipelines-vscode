@@ -1,7 +1,7 @@
 {
     "name": "azure-pipelines",
     "displayName": "Azure Pipelines",
-    "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines",
+    "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines YAML",
     "version": "1.147.1",
     "publisher": "ms-azure-devops",
     "repository": {
@@ -22,6 +22,11 @@
     "categories": [
         "Programming Languages",
         "Formatters"
+    ],
+    "tags": [
+        "azure-pipelines",
+        "Azure Pipelines",
+        "YAML"
     ],
     "activationEvents": [
         "*"
