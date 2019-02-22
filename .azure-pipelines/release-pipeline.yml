@@ -31,7 +31,7 @@ steps:
 
 # create a GitHub Release
 - bash: |
-    npm config set cache $(Build.SourcesDirectory)/.azure-pipelines/github-release/npm-cache --global
+    export npm_config_cache=$(Build.SourcesDirectory)/.azure-pipelines/github-release/npm-cache
     npm install
   displayName: Prepare to create GitHub Release
   workingDirectory: '$(Build.SourcesDirectory)/.azure-pipelines/github-release'
