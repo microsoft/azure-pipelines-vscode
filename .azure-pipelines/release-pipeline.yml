@@ -30,7 +30,9 @@ steps:
   displayName: Check for length of mini-changelog
 
 # create a GitHub Release
-- bash: npm install
+- bash: |
+    npm config set cache $(Build.SourcesDirectory)/.azure-pipelines/github-release/npm-cache --global
+    npm install
   displayName: Prepare to create GitHub Release
   workingDirectory: '$(Build.SourcesDirectory)/.azure-pipelines/github-release'
 - bash: |
