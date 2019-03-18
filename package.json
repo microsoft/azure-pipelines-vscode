@@ -32,7 +32,7 @@
         "YAML",
         "Azure Pipelines",
         "continuous integration",
-        "CI"
+        "CI/CD"
     ],
     "activationEvents": [
         "*"
