@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 
 ## 1.147.3
 ### Fixed
-- Updated schema
+- Updated schema to include stages
 
 ## 1.147.2
 ### Fixed
