@@ -28,6 +28,12 @@
         "Azure Pipelines",
         "YAML"
     ],
+    "keywords": [
+        "YAML",
+        "Azure Pipelines",
+        "continuous integration",
+        "CI/CD"
+    ],
     "activationEvents": [
         "*"
     ],
