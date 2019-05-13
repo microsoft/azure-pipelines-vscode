@@ -2,7 +2,7 @@
     "name": "azure-pipelines",
     "displayName": "Azure Pipelines",
     "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines YAML",
-    "version": "1.147.2",
+    "version": "1.52.0",
     "publisher": "ms-azure-devops",
     "repository": {
         "type": "git",
@@ -90,8 +90,7 @@
         "watch": "tsc -watch -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
-        "unittest": "node_modules/.bin/mocha -u tdd out/unittest/*.js",
-        "generateyamlschema": "npm run compile && node ./out/genschema/generate-yaml-from-json.js"
+        "unittest": "node_modules/.bin/mocha -u tdd out/unittest/*.js"
     },
     "devDependencies": {
         "assert": "1.4.1",

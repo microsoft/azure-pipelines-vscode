@@ -4,13 +4,11 @@
 *--------------------------------------------------------------------------------------------*/
 
 // import * as assert from 'assert';
-// import { YamlSchemaService } from '../yaml-schema-service';
-// import { DTTask } from '../dtdata';
 
 // TODO: Implement.
-suite("Schema Association Service Tests", function () {
+suite("No-op Tests", function () {
 
-    test('First schema association test', function() {
+    test('No-op test', function() {
         // Arrange
         
         

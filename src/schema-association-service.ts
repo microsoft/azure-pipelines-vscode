@@ -14,11 +14,11 @@ export interface ISchemaAssociationService {
 // TODO: I think we can remove this class. Make it simpler?
 export class SchemaAssociationService implements ISchemaAssociationService {
 
-    /* Where the schema file is on disk. This is packaged with the extension, in the root, at local-schema.json. */
+    /* Where the schema file is on disk. This is packaged with the extension, in the root, at service-schema.json. */
     schemaFilePath: string;
 
     constructor(extensionPath: string) {
-        this.schemaFilePath = vscode.Uri.file(path.join(extensionPath, './local-schema.json')).toString();
+        this.schemaFilePath = vscode.Uri.file(path.join(extensionPath, './service-schema.json')).toString();
     }
 
     public getSchemaAssociation(): ISchemaAssociations {
