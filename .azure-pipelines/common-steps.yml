@@ -11,7 +11,7 @@ steps:
 # TODO: call the schema endpoint to generate the shipped schema file
 # - script: |
 #     echo no-op
-#   displayName: Generate local-schema.json
+#   displayName: Generate service-schema.json
 
 - script: npm run unittest
   displayName: Run unit tests
