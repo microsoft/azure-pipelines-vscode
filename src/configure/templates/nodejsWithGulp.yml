@@ -1,0 +1,38 @@
+# Node.js with gulp
+# Build a Node.js project using the gulp task runner.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+
+trigger:
+- {{ sourceRepository.branch }}
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '10.x'
+  displayName: 'Install Node.js'
+
+- script: |
+    npm install
+    gulp default --gulpfile gulpfile.js
+  displayName: 'npm install and run gulp'
+
+- task: ArchiveFiles@2
+  displayName: 'Archive files'
+  inputs:
+    rootFolderOrFile: '{{ pipelineParameters.workingDirectory }}'
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    replaceExistingArchive: true
+
+- task: AzureWebApp@1
+  displayName: 'Azure Web App Deploy'
+  inputs:
+    azureSubscription: '{{ targetResource.serviceConnectionId }}'
+    appType: webApp
+    appName: '{{ targetResource.resource.name }}'
+    package: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip

@@ -11,6 +11,7 @@ import * as vscode from 'vscode';
 import * as schemaassociationservice from './schema-association-service';
 import TelemetryReporter from 'vscode-extension-telemetry';
 const fs = require('fs');
+import { activateConfigurePipeline } from './configure/activate';
 
 const myExtensionId = 'azure-pipelines';
 const telemetryVersion = generateVersionString(vscode.extensions.getExtension(`ms-azure-devops.${myExtensionId}`));
@@ -68,7 +69,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // TODO: Can we get rid of this since it's set in package.json?
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
-
+    await activateConfigurePipeline(context, reporter);
     return schemacontributor.schemaContributor;
 }
 
