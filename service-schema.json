@@ -1862,6 +1862,18 @@
 			}, {
 				"type": "object",
 				"properties": {
+					"publish": {
+						"$ref": "#/definitions/string"
+					},
+					"artifact": {
+						"$ref": "#/definitions/string"
+					}
+				},
+				"additionalProperties": false,
+				"firstProperty": ["publish"]
+			}, {
+				"type": "object",
+				"properties": {
 					"use": {
 						"$ref": "#/definitions/nonEmptyString"
 					},
@@ -2055,6 +2067,10 @@
 						"description": "Download Pipeline Artifact",
 						"ignoreCase": "value",
 						"enum": ["DownloadPipelineArtifact@1"]
+					}, {
+						"description": "Download Pipeline Artifact",
+						"ignoreCase": "value",
+						"enum": ["DownloadPipelineArtifact@2"]
 					}, {
 						"description": "Run a windows cmd or bat script and optionally allow it to change the environment",
 						"ignoreCase": "value",
@@ -2407,6 +2423,10 @@
 						"description": "Publish Pipeline Artifact",
 						"ignoreCase": "value",
 						"enum": ["PublishPipelineArtifact@0"]
+					}, {
+						"description": "Publish Pipeline Artifact",
+						"ignoreCase": "value",
+						"enum": ["PublishPipelineArtifact@1"]
 					}, {
 						"description": "Automatically updates the versions of a packaged Service Fabric application.",
 						"ignoreCase": "value",
@@ -3309,6 +3329,89 @@
 						},
 						"additionalProperties": false,
 						"required": []
+					}
+				},
+				"firstProperty": ["task"],
+				"required": ["task", "inputs"]
+			}, {
+				"properties": {
+					"task": {
+						"description": "Download Pipeline Artifact\n\nDownload one or more published build or pipeline artifacts",
+						"$comment": "https://github.com/microsoft/azure-pipelines-tasks/blob/master/Tasks/DownloadPipelineArtifactV2/task.json",
+						"ignoreCase": "value",
+						"pattern": "^DownloadPipelineArtifact@2$"
+					},
+					"inputs": {
+						"description": "Download Pipeline Artifact inputs",
+						"properties": {
+							"source": {
+								"description": "Download artifacts produced by",
+								"ignoreCase": "all",
+								"aliases": ["buildType"],
+								"enum": ["current", "specific"],
+								"default": "current"
+							},
+							"project": {
+								"type": "string",
+								"description": "Project",
+								"ignoreCase": "key"
+							},
+							"pipeline": {
+								"type": "string",
+								"description": "Build pipeline",
+								"ignoreCase": "key",
+								"aliases": ["definition"]
+							},
+							"preferTriggeringPipeline": {
+								"type": "boolean",
+								"description": "When appropriate, download artifacts from the triggering build.",
+								"ignoreCase": "key",
+								"aliases": ["specificBuildWithTriggering"]
+							},
+							"runVersion": {
+								"description": "Build version to download",
+								"ignoreCase": "all",
+								"enum": ["latest", "latestFromBranch", "specific"],
+								"aliases": ["buildVersionToDownload"]
+							},
+							"runBranch": {
+								"type": "string",
+								"description": "Branch name",
+								"ignoreCase": "key",
+								"aliases": ["branchName"]
+							},
+							"runId": {
+								"type": "string",
+								"description": "Build",
+								"ignoreCase": "key",
+								"aliases": ["buildId", "pipelineId"]
+							},
+							"tags": {
+								"type": "string",
+								"description": "Build Tags",
+								"ignoreCase": "key"
+							},
+							"artifact": {
+								"type": "string",
+								"description": "Artifact name",
+								"ignoreCase": "key",
+								"aliases": ["artifactName"]
+							},
+							"patterns": {
+								"type": "string",
+								"description": "Matching pattern",
+								"ignoreCase": "key",
+								"aliases": ["itemPattern"]
+							},
+							"path": {
+								"type": "string",
+								"description": "Destination directory",
+								"ignoreCase": "key",
+								"aliases": ["downloadPath", "targetPath"]
+							}
+						},
+						"additionalProperties": false,
+						"required": ["path"]
 					}
 				},
 				"firstProperty": ["task"],
@@ -10201,6 +10304,34 @@
 						},
 						"additionalProperties": false,
 						"required": ["targetPath"]
+					}
+				},
+				"firstProperty": ["task"],
+				"required": ["task", "inputs"]
+			}, {
+				"properties": {
+					"task": {
+						"description": "Publish Pipeline Artifact\n\nPublish (upload) an artifact for the current run of a pipeline",
+						"ignoreCase": "value",
+						"pattern": "^PublishPipelineArtifact@1$",
+						"$comment": "https://github.com/microsoft/azure-pipelines-tasks/blob/master/Tasks/PublishPipelineArtifactV1/task.json"
+					},
+					"inputs": {
+						"description": "Publish Pipeline Artifact inputs",
+						"properties": {
+							"artifact": {
+								"type": "string",
+								"description": "The name of this artifact",
+								"ignoreCase": "key"
+							},
+							"path": {
+								"type": "string",
+								"description": "The path of the file or folder to publish",
+								"ignoreCase": "key"
+							}
+						},
+						"additionalProperties": false,
+						"required": ["path"]
 					}
 				},
 				"firstProperty": ["task"],
