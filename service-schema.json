@@ -1965,6 +1965,8 @@
 		},
 		"boolean": {
 			"anyOf": [{
+				"type": "boolean"
+			}, {
 				"type": "string",
 				"ignoreCase": "value",
 				"pattern": "^true$"
