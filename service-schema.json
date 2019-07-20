@@ -7,6 +7,14 @@
 	"oneOf": [{
 		"$ref": "#/definitions/pipeline"
 	}, {
+		"$ref": "#/definitions/variablesTemplate"
+	}, {
+		"$ref": "#/definitions/stagesTemplate"
+	}, {
+		"$ref": "#/definitions/jobsTemplate"
+	}, {
+		"$ref": "#/definitions/stepsTemplate"
+	}, {
 		"type": "string",
 		"pattern": "^$"
 	}],
