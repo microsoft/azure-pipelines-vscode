@@ -1,7 +1,7 @@
 {
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"$id": "https://github.com/Microsoft/azure-pipelines-vscode/blob/master/local-schema.json",
-	"$comment": "v1.154.0",
+	"$comment": "v1.155.0",
 	"title": "Pipeline schema",
 	"description": "A pipeline definition",
 	"oneOf": [
@@ -1296,6 +1296,14 @@
 							"description": "Continue running even on failure?",
 							"$ref": "#/definitions/jobContinueOnError"
 						},
+						"timeoutInMinutes": {
+							"description": "Time to wait for this job to complete before the server kills it",
+							"$ref": "#/definitions/nonEmptyString"
+						},
+						"cancelTimeoutInMinutes": {
+							"description": "Time to wait for the job to cancel before forcibly terminating it",
+							"$ref": "#/definitions/nonEmptyString"
+						},
 						"variables": {
 							"description": "Deployment-specific variables",
 							"$ref": "#/definitions/variables"
@@ -2570,7 +2578,7 @@
 			"type": "object",
 			"properties": {
 				"task": {
-					"oneOf": [
+					"anyOf": [
 						{
 							"description": "Deploy a virtual machine scale set image",
 							"ignoreCase": "value",
@@ -2746,17 +2754,17 @@
 							]
 						},
 						{
-							"description": "Run an npm command",
-							"ignoreCase": "value",
-							"enum": [
-								"Npm@0"
-							]
-						},
-						{
 							"description": "Install and publish npm packages, or run an npm command. Supports npmjs.com and authenticated registries like Azure Artifacts.",
 							"ignoreCase": "value",
 							"enum": [
 								"Npm@1"
+							]
+						},
+						{
+							"description": "Run an npm command",
+							"ignoreCase": "value",
+							"enum": [
+								"Npm@0"
 							]
 						},
 						{
@@ -2767,7 +2775,7 @@
 							]
 						},
 						{
-							"description": "Deploy an Azure Function for Linux or Windows",
+							"description": "Update a function app with .NET, Python, JavaScript, PowerShell, Java based web applications",
 							"ignoreCase": "value",
 							"enum": [
 								"AzureFunctionApp@1"
@@ -3005,14 +3013,14 @@
 							"description": "Deploy, configure, update a Kubernetes cluster in Azure Container Service by running kubectl commands",
 							"ignoreCase": "value",
 							"enum": [
-								"Kubernetes@1"
+								"Kubernetes@0"
 							]
 						},
 						{
 							"description": "Deploy, configure, update a Kubernetes cluster in Azure Container Service by running kubectl commands",
 							"ignoreCase": "value",
 							"enum": [
-								"Kubernetes@0"
+								"Kubernetes@1"
 							]
 						},
 						{
@@ -3404,7 +3412,7 @@
 							]
 						},
 						{
-							"description": "Update Function Apps with Docker containers",
+							"description": "Update a function app with a Docker container",
 							"ignoreCase": "value",
 							"enum": [
 								"AzureFunctionAppContainer@1"
@@ -3570,14 +3578,14 @@
 							"description": "Deploy to Azure App Service a web, mobile, or API app using Docker, Java, .NET, .NET Core, Node.js, PHP, Python, or Ruby",
 							"ignoreCase": "value",
 							"enum": [
-								"AzureRmWebAppDeployment@3"
+								"AzureRmWebAppDeployment@4"
 							]
 						},
 						{
 							"description": "Deploy to Azure App Service a web, mobile, or API app using Docker, Java, .NET, .NET Core, Node.js, PHP, Python, or Ruby",
 							"ignoreCase": "value",
 							"enum": [
-								"AzureRmWebAppDeployment@4"
+								"AzureRmWebAppDeployment@3"
 							]
 						},
 						{
@@ -3688,13 +3696,6 @@
 							]
 						},
 						{
-							"description": "Deploy an Azure Resource Manager (ARM) template to a resource group and manage virtual machines",
-							"ignoreCase": "value",
-							"enum": [
-								"AzureResourceGroupDeployment@2"
-							]
-						},
-						{
 							"description": "Deploy, start, stop, delete Azure Resource Groups",
 							"deprecationMessage": "AzureResourceGroupDeployment is deprecated - Deploy, start, stop, delete Azure Resource Groups",
 							"doNotSuggest": true,
@@ -3704,10 +3705,10 @@
 							]
 						},
 						{
-							"description": "Run a PowerShell script within an Azure environment",
+							"description": "Deploy an Azure Resource Manager (ARM) template to a resource group and manage virtual machines",
 							"ignoreCase": "value",
 							"enum": [
-								"AzurePowerShell@4"
+								"AzureResourceGroupDeployment@2"
 							]
 						},
 						{
@@ -3729,6 +3730,13 @@
 							"ignoreCase": "value",
 							"enum": [
 								"AzurePowerShell@1"
+							]
+						},
+						{
+							"description": "Run a PowerShell script within an Azure environment",
+							"ignoreCase": "value",
+							"enum": [
+								"AzurePowerShell@4"
 							]
 						},
 						{
@@ -4002,6 +4010,13 @@
 							"description": "Copy files to Azure Blob Storage or virtual machines",
 							"ignoreCase": "value",
 							"enum": [
+								"AzureFileCopy@2"
+							]
+						},
+						{
+							"description": "Copy files to Azure Blob Storage or virtual machines",
+							"ignoreCase": "value",
+							"enum": [
 								"AzureFileCopy@1"
 							]
 						},
@@ -4010,13 +4025,6 @@
 							"ignoreCase": "value",
 							"enum": [
 								"AzureFileCopy@3"
-							]
-						},
-						{
-							"description": "Copy files to Azure Blob Storage or virtual machines",
-							"ignoreCase": "value",
-							"enum": [
-								"AzureFileCopy@2"
 							]
 						}
 					]
@@ -4921,8 +4929,15 @@
 									"description": "Render Engine",
 									"ignoreCase": "all",
 									"enum": [
-										"helm2"
+										"helm2",
+										"kompose",
+										"kustomize"
 									]
+								},
+								"dockerComposeFile": {
+									"type": "string",
+									"description": "Path to docker compose file",
+									"ignoreCase": "key"
 								},
 								"helmChart": {
 									"type": "string",
@@ -4942,6 +4957,11 @@
 								"overrides": {
 									"type": "string",
 									"description": "Overrides",
+									"ignoreCase": "key"
+								},
+								"kustomizationPath": {
+									"type": "string",
+									"description": "Kustomization Path",
 									"ignoreCase": "key"
 								},
 								"resourceToPatch": {
@@ -6314,43 +6334,6 @@
 				{
 					"properties": {
 						"task": {
-							"description": "npm\n\nRun an npm command",
-							"ignoreCase": "value",
-							"pattern": "^Npm@0$"
-						},
-						"inputs": {
-							"description": "npm inputs",
-							"properties": {
-								"cwd": {
-									"type": "string",
-									"description": "working folder",
-									"ignoreCase": "key"
-								},
-								"command": {
-									"type": "string",
-									"description": "npm command",
-									"ignoreCase": "key"
-								},
-								"arguments": {
-									"type": "string",
-									"description": "arguments",
-									"ignoreCase": "key"
-								}
-							},
-							"additionalProperties": false,
-							"required": []
-						}
-					},
-					"firstProperty": [
-						"task"
-					],
-					"required": [
-						"task"
-					]
-				},
-				{
-					"properties": {
-						"task": {
 							"description": "npm\n\nInstall and publish npm packages, or run an npm command. Supports npmjs.com and authenticated registries like Azure Artifacts.",
 							"ignoreCase": "value",
 							"pattern": "^Npm@1$"
@@ -6421,6 +6404,43 @@
 								"publishEndpoint": {
 									"type": "string",
 									"description": "External Registry",
+									"ignoreCase": "key"
+								}
+							},
+							"additionalProperties": false,
+							"required": []
+						}
+					},
+					"firstProperty": [
+						"task"
+					],
+					"required": [
+						"task"
+					]
+				},
+				{
+					"properties": {
+						"task": {
+							"description": "npm\n\nRun an npm command",
+							"ignoreCase": "value",
+							"pattern": "^Npm@0$"
+						},
+						"inputs": {
+							"description": "npm inputs",
+							"properties": {
+								"cwd": {
+									"type": "string",
+									"description": "working folder",
+									"ignoreCase": "key"
+								},
+								"command": {
+									"type": "string",
+									"description": "npm command",
+									"ignoreCase": "key"
+								},
+								"arguments": {
+									"type": "string",
+									"description": "arguments",
 									"ignoreCase": "key"
 								}
 							},
@@ -6574,12 +6594,12 @@
 				{
 					"properties": {
 						"task": {
-							"description": "Azure Function\n\nDeploy an Azure Function for Linux or Windows",
+							"description": "Azure Functions\n\nUpdate a function app with .NET, Python, JavaScript, PowerShell, Java based web applications",
 							"ignoreCase": "value",
 							"pattern": "^AzureFunctionApp@1$"
 						},
 						"inputs": {
-							"description": "Azure Function inputs",
+							"description": "Azure Functions inputs",
 							"properties": {
 								"azureSubscription": {
 									"type": "string",
@@ -7121,6 +7141,11 @@
 								"Contents": {
 									"type": "string",
 									"description": "Contents",
+									"ignoreCase": "key"
+								},
+								"RemoveSourceFolder": {
+									"type": "boolean",
+									"description": "Remove SourceFolder",
 									"ignoreCase": "key"
 								}
 							},
@@ -9273,6 +9298,193 @@
 						"task": {
 							"description": "Deploy to Kubernetes\n\nDeploy, configure, update a Kubernetes cluster in Azure Container Service by running kubectl commands",
 							"ignoreCase": "value",
+							"pattern": "^Kubernetes@0$"
+						},
+						"inputs": {
+							"description": "Deploy to Kubernetes inputs",
+							"properties": {
+								"kubernetesServiceConnection": {
+									"type": "string",
+									"description": "Kubernetes service connection",
+									"ignoreCase": "key",
+									"aliases": [
+										"kubernetesServiceEndpoint"
+									]
+								},
+								"namespace": {
+									"type": "string",
+									"description": "Namespace",
+									"ignoreCase": "key"
+								},
+								"command": {
+									"description": "Command",
+									"ignoreCase": "all",
+									"enum": [
+										"apply",
+										"create",
+										"delete",
+										"exec",
+										"expose",
+										"get",
+										"logs",
+										"run",
+										"set",
+										"top"
+									]
+								},
+								"useConfigurationFile": {
+									"type": "boolean",
+									"description": "Use Configuration files",
+									"ignoreCase": "key"
+								},
+								"configuration": {
+									"type": "string",
+									"description": "Configuration file",
+									"ignoreCase": "key"
+								},
+								"arguments": {
+									"type": "string",
+									"description": "Arguments",
+									"ignoreCase": "key"
+								},
+								"secretType": {
+									"description": "Type of secret",
+									"ignoreCase": "all",
+									"enum": [
+										"dockerRegistry",
+										"generic"
+									]
+								},
+								"secretArguments": {
+									"type": "string",
+									"description": "Arguments",
+									"ignoreCase": "key"
+								},
+								"containerRegistryType": {
+									"description": "Container Registry type",
+									"ignoreCase": "all",
+									"enum": [
+										"Azure Container Registry",
+										"Container Registry"
+									]
+								},
+								"dockerRegistryConnection": {
+									"type": "string",
+									"description": "Docker Registry service connection",
+									"ignoreCase": "key",
+									"aliases": [
+										"dockerRegistryEndpoint"
+									]
+								},
+								"azureSubscription": {
+									"type": "string",
+									"description": "Azure subscription",
+									"ignoreCase": "key",
+									"aliases": [
+										"azureSubscriptionEndpoint"
+									]
+								},
+								"azureContainerRegistry": {
+									"type": "string",
+									"description": "Azure Container Registry",
+									"ignoreCase": "key"
+								},
+								"secretName": {
+									"type": "string",
+									"description": "Secret name",
+									"ignoreCase": "key"
+								},
+								"forceUpdate": {
+									"type": "boolean",
+									"description": "Force update secret",
+									"ignoreCase": "key"
+								},
+								"configMapName": {
+									"type": "string",
+									"description": "ConfigMap name",
+									"ignoreCase": "key"
+								},
+								"forceUpdateConfigMap": {
+									"type": "boolean",
+									"description": "Force update configmap",
+									"ignoreCase": "key"
+								},
+								"useConfigMapFile": {
+									"type": "boolean",
+									"description": "Use file",
+									"ignoreCase": "key"
+								},
+								"configMapFile": {
+									"type": "string",
+									"description": "ConfigMap file",
+									"ignoreCase": "key"
+								},
+								"configMapArguments": {
+									"type": "string",
+									"description": "Arguments",
+									"ignoreCase": "key"
+								},
+								"versionOrLocation": {
+									"description": "Kubectl",
+									"ignoreCase": "all",
+									"enum": [
+										"version",
+										"location"
+									]
+								},
+								"versionSpec": {
+									"type": "string",
+									"description": "Version spec",
+									"ignoreCase": "key"
+								},
+								"checkLatest": {
+									"type": "boolean",
+									"description": "Check for latest version",
+									"ignoreCase": "key"
+								},
+								"specifyLocation": {
+									"type": "string",
+									"description": "Path to Kubectl",
+									"ignoreCase": "key"
+								},
+								"workingDirectory": {
+									"type": "string",
+									"description": "Working directory",
+									"ignoreCase": "key",
+									"aliases": [
+										"cwd"
+									]
+								},
+								"outputFormat": {
+									"description": "Output format",
+									"ignoreCase": "all",
+									"enum": [
+										"json",
+										"yaml"
+									]
+								},
+								"kubectlOutput": {
+									"type": "string",
+									"description": "Output variable name",
+									"ignoreCase": "key"
+								}
+							},
+							"additionalProperties": false,
+							"required": []
+						}
+					},
+					"firstProperty": [
+						"task"
+					],
+					"required": [
+						"task"
+					]
+				},
+				{
+					"properties": {
+						"task": {
+							"description": "Deploy to Kubernetes\n\nDeploy, configure, update a Kubernetes cluster in Azure Container Service by running kubectl commands",
+							"ignoreCase": "value",
 							"pattern": "^Kubernetes@1$"
 						},
 						"inputs": {
@@ -9472,193 +9684,6 @@
 										"json",
 										"yaml"
 									]
-								}
-							},
-							"additionalProperties": false,
-							"required": []
-						}
-					},
-					"firstProperty": [
-						"task"
-					],
-					"required": [
-						"task"
-					]
-				},
-				{
-					"properties": {
-						"task": {
-							"description": "Deploy to Kubernetes\n\nDeploy, configure, update a Kubernetes cluster in Azure Container Service by running kubectl commands",
-							"ignoreCase": "value",
-							"pattern": "^Kubernetes@0$"
-						},
-						"inputs": {
-							"description": "Deploy to Kubernetes inputs",
-							"properties": {
-								"kubernetesServiceConnection": {
-									"type": "string",
-									"description": "Kubernetes service connection",
-									"ignoreCase": "key",
-									"aliases": [
-										"kubernetesServiceEndpoint"
-									]
-								},
-								"namespace": {
-									"type": "string",
-									"description": "Namespace",
-									"ignoreCase": "key"
-								},
-								"command": {
-									"description": "Command",
-									"ignoreCase": "all",
-									"enum": [
-										"apply",
-										"create",
-										"delete",
-										"exec",
-										"expose",
-										"get",
-										"logs",
-										"run",
-										"set",
-										"top"
-									]
-								},
-								"useConfigurationFile": {
-									"type": "boolean",
-									"description": "Use Configuration files",
-									"ignoreCase": "key"
-								},
-								"configuration": {
-									"type": "string",
-									"description": "Configuration file",
-									"ignoreCase": "key"
-								},
-								"arguments": {
-									"type": "string",
-									"description": "Arguments",
-									"ignoreCase": "key"
-								},
-								"secretType": {
-									"description": "Type of secret",
-									"ignoreCase": "all",
-									"enum": [
-										"dockerRegistry",
-										"generic"
-									]
-								},
-								"secretArguments": {
-									"type": "string",
-									"description": "Arguments",
-									"ignoreCase": "key"
-								},
-								"containerRegistryType": {
-									"description": "Container Registry type",
-									"ignoreCase": "all",
-									"enum": [
-										"Azure Container Registry",
-										"Container Registry"
-									]
-								},
-								"dockerRegistryConnection": {
-									"type": "string",
-									"description": "Docker Registry service connection",
-									"ignoreCase": "key",
-									"aliases": [
-										"dockerRegistryEndpoint"
-									]
-								},
-								"azureSubscription": {
-									"type": "string",
-									"description": "Azure subscription",
-									"ignoreCase": "key",
-									"aliases": [
-										"azureSubscriptionEndpoint"
-									]
-								},
-								"azureContainerRegistry": {
-									"type": "string",
-									"description": "Azure Container Registry",
-									"ignoreCase": "key"
-								},
-								"secretName": {
-									"type": "string",
-									"description": "Secret name",
-									"ignoreCase": "key"
-								},
-								"forceUpdate": {
-									"type": "boolean",
-									"description": "Force update secret",
-									"ignoreCase": "key"
-								},
-								"configMapName": {
-									"type": "string",
-									"description": "ConfigMap name",
-									"ignoreCase": "key"
-								},
-								"forceUpdateConfigMap": {
-									"type": "boolean",
-									"description": "Force update configmap",
-									"ignoreCase": "key"
-								},
-								"useConfigMapFile": {
-									"type": "boolean",
-									"description": "Use file",
-									"ignoreCase": "key"
-								},
-								"configMapFile": {
-									"type": "string",
-									"description": "ConfigMap file",
-									"ignoreCase": "key"
-								},
-								"configMapArguments": {
-									"type": "string",
-									"description": "Arguments",
-									"ignoreCase": "key"
-								},
-								"versionOrLocation": {
-									"description": "Kubectl",
-									"ignoreCase": "all",
-									"enum": [
-										"version",
-										"location"
-									]
-								},
-								"versionSpec": {
-									"type": "string",
-									"description": "Version spec",
-									"ignoreCase": "key"
-								},
-								"checkLatest": {
-									"type": "boolean",
-									"description": "Check for latest version",
-									"ignoreCase": "key"
-								},
-								"specifyLocation": {
-									"type": "string",
-									"description": "Path to Kubectl",
-									"ignoreCase": "key"
-								},
-								"workingDirectory": {
-									"type": "string",
-									"description": "Working directory",
-									"ignoreCase": "key",
-									"aliases": [
-										"cwd"
-									]
-								},
-								"outputFormat": {
-									"description": "Output format",
-									"ignoreCase": "all",
-									"enum": [
-										"json",
-										"yaml"
-									]
-								},
-								"kubectlOutput": {
-									"type": "string",
-									"description": "Output variable name",
-									"ignoreCase": "key"
 								}
 							},
 							"additionalProperties": false,
@@ -10965,6 +10990,11 @@
 								"kubernetesCluster": {
 									"type": "string",
 									"description": "Kubernetes cluster",
+									"ignoreCase": "key"
+								},
+								"useClusterAdmin": {
+									"type": "boolean",
+									"description": "Use cluster admin credentials",
 									"ignoreCase": "key"
 								},
 								"kubernetesServiceConnection": {
@@ -15162,12 +15192,12 @@
 				{
 					"properties": {
 						"task": {
-							"description": "Azure Function for container\n\nUpdate Function Apps with Docker containers",
+							"description": "Azure Functions for container\n\nUpdate a function app with a Docker container",
 							"ignoreCase": "value",
 							"pattern": "^AzureFunctionAppContainer@1$"
 						},
 						"inputs": {
-							"description": "Azure Function for container inputs",
+							"description": "Azure Functions for container inputs",
 							"properties": {
 								"azureSubscription": {
 									"type": "string",
@@ -16650,6 +16680,242 @@
 						"task": {
 							"description": "Azure App Service deploy\n\nDeploy to Azure App Service a web, mobile, or API app using Docker, Java, .NET, .NET Core, Node.js, PHP, Python, or Ruby",
 							"ignoreCase": "value",
+							"pattern": "^AzureRmWebAppDeployment@4$"
+						},
+						"inputs": {
+							"description": "Azure App Service deploy inputs",
+							"properties": {
+								"ConnectionType": {
+									"description": "Connection type",
+									"ignoreCase": "all",
+									"enum": [
+										"AzureRM",
+										"PublishProfile"
+									]
+								},
+								"azureSubscription": {
+									"type": "string",
+									"description": "Azure subscription",
+									"ignoreCase": "key",
+									"aliases": [
+										"ConnectedServiceName"
+									]
+								},
+								"PublishProfilePath": {
+									"type": "string",
+									"description": "Publish profile path",
+									"ignoreCase": "key"
+								},
+								"PublishProfilePassword": {
+									"type": "string",
+									"description": "Publish profile password",
+									"ignoreCase": "key"
+								},
+								"appType": {
+									"description": "App Service type",
+									"ignoreCase": "all",
+									"enum": [
+										"webApp",
+										"webAppLinux",
+										"webAppContainer",
+										"functionApp",
+										"functionAppLinux",
+										"functionAppContainer",
+										"apiApp",
+										"mobileApp"
+									],
+									"aliases": [
+										"WebAppKind"
+									]
+								},
+								"WebAppName": {
+									"type": "string",
+									"description": "App Service name",
+									"ignoreCase": "key"
+								},
+								"deployToSlotOrASE": {
+									"type": "boolean",
+									"description": "Deploy to Slot or App Service Environment",
+									"ignoreCase": "key",
+									"aliases": [
+										"DeployToSlotOrASEFlag"
+									]
+								},
+								"ResourceGroupName": {
+									"type": "string",
+									"description": "Resource group",
+									"ignoreCase": "key"
+								},
+								"SlotName": {
+									"type": "string",
+									"description": "Slot",
+									"ignoreCase": "key"
+								},
+								"DockerNamespace": {
+									"type": "string",
+									"description": "Registry or Namespace",
+									"ignoreCase": "key"
+								},
+								"DockerRepository": {
+									"type": "string",
+									"description": "Image",
+									"ignoreCase": "key"
+								},
+								"DockerImageTag": {
+									"type": "string",
+									"description": "Tag",
+									"ignoreCase": "key"
+								},
+								"VirtualApplication": {
+									"type": "string",
+									"description": "Virtual application",
+									"ignoreCase": "key"
+								},
+								"packageForLinux": {
+									"type": "string",
+									"description": "Package or folder",
+									"ignoreCase": "key",
+									"aliases": [
+										"Package"
+									]
+								},
+								"RuntimeStack": {
+									"type": "string",
+									"description": "Runtime Stack",
+									"ignoreCase": "key"
+								},
+								"RuntimeStackFunction": {
+									"description": "Runtime Stack",
+									"ignoreCase": "all",
+									"enum": [
+										"DOCKER|microsoft/azure-functions-dotnet-core2.0:2.0",
+										"DOCKER|microsoft/azure-functions-node8:2.0"
+									]
+								},
+								"StartupCommand": {
+									"type": "string",
+									"description": "Startup command ",
+									"ignoreCase": "key"
+								},
+								"ScriptType": {
+									"description": "Deployment script type",
+									"ignoreCase": "all",
+									"enum": [
+										"",
+										"Inline Script",
+										"File Path"
+									]
+								},
+								"InlineScript": {
+									"type": "string",
+									"description": "Inline Script",
+									"ignoreCase": "key"
+								},
+								"ScriptPath": {
+									"type": "string",
+									"description": "Deployment script path",
+									"ignoreCase": "key"
+								},
+								"WebConfigParameters": {
+									"type": "string",
+									"description": "Generate web.config parameters for Python, Node.js, Go and Java apps",
+									"ignoreCase": "key"
+								},
+								"AppSettings": {
+									"type": "string",
+									"description": "App settings",
+									"ignoreCase": "key"
+								},
+								"ConfigurationSettings": {
+									"type": "string",
+									"description": "Configuration settings",
+									"ignoreCase": "key"
+								},
+								"enableCustomDeployment": {
+									"type": "boolean",
+									"description": "Select deployment method",
+									"ignoreCase": "key",
+									"aliases": [
+										"UseWebDeploy"
+									]
+								},
+								"DeploymentType": {
+									"description": "Deployment method",
+									"ignoreCase": "all",
+									"enum": [
+										"webDeploy",
+										"zipDeploy",
+										"runFromZip"
+									]
+								},
+								"TakeAppOfflineFlag": {
+									"type": "boolean",
+									"description": "Take App Offline",
+									"ignoreCase": "key"
+								},
+								"SetParametersFile": {
+									"type": "string",
+									"description": "SetParameters file",
+									"ignoreCase": "key"
+								},
+								"RemoveAdditionalFilesFlag": {
+									"type": "boolean",
+									"description": "Remove additional files at destination",
+									"ignoreCase": "key"
+								},
+								"ExcludeFilesFromAppDataFlag": {
+									"type": "boolean",
+									"description": "Exclude files from the App_Data folder",
+									"ignoreCase": "key"
+								},
+								"AdditionalArguments": {
+									"type": "string",
+									"description": "Additional arguments",
+									"ignoreCase": "key"
+								},
+								"RenameFilesFlag": {
+									"type": "boolean",
+									"description": "Rename locked files",
+									"ignoreCase": "key"
+								},
+								"enableXmlTransform": {
+									"type": "boolean",
+									"description": "XML transformation",
+									"ignoreCase": "key",
+									"aliases": [
+										"XmlTransformation"
+									]
+								},
+								"enableXmlVariableSubstitution": {
+									"type": "boolean",
+									"description": "XML variable substitution",
+									"ignoreCase": "key",
+									"aliases": [
+										"XmlVariableSubstitution"
+									]
+								},
+								"JSONFiles": {
+									"type": "string",
+									"description": "JSON variable substitution",
+									"ignoreCase": "key"
+								}
+							},
+							"additionalProperties": false,
+							"required": []
+						}
+					},
+					"firstProperty": [
+						"task"
+					],
+					"required": [
+						"task"
+					]
+				},
+				{
+					"properties": {
+						"task": {
+							"description": "Azure App Service deploy\n\nDeploy to Azure App Service a web, mobile, or API app using Docker, Java, .NET, .NET Core, Node.js, PHP, Python, or Ruby",
+							"ignoreCase": "value",
 							"pattern": "^AzureRmWebAppDeployment@3$"
 						},
 						"inputs": {
@@ -16908,242 +17174,6 @@
 					"required": [
 						"task",
 						"inputs"
-					]
-				},
-				{
-					"properties": {
-						"task": {
-							"description": "Azure App Service deploy\n\nDeploy to Azure App Service a web, mobile, or API app using Docker, Java, .NET, .NET Core, Node.js, PHP, Python, or Ruby",
-							"ignoreCase": "value",
-							"pattern": "^AzureRmWebAppDeployment@4$"
-						},
-						"inputs": {
-							"description": "Azure App Service deploy inputs",
-							"properties": {
-								"ConnectionType": {
-									"description": "Connection type",
-									"ignoreCase": "all",
-									"enum": [
-										"AzureRM",
-										"PublishProfile"
-									]
-								},
-								"azureSubscription": {
-									"type": "string",
-									"description": "Azure subscription",
-									"ignoreCase": "key",
-									"aliases": [
-										"ConnectedServiceName"
-									]
-								},
-								"PublishProfilePath": {
-									"type": "string",
-									"description": "Publish profile path",
-									"ignoreCase": "key"
-								},
-								"PublishProfilePassword": {
-									"type": "string",
-									"description": "Publish profile password",
-									"ignoreCase": "key"
-								},
-								"appType": {
-									"description": "App Service type",
-									"ignoreCase": "all",
-									"enum": [
-										"webApp",
-										"webAppLinux",
-										"webAppContainer",
-										"functionApp",
-										"functionAppLinux",
-										"functionAppContainer",
-										"apiApp",
-										"mobileApp"
-									],
-									"aliases": [
-										"WebAppKind"
-									]
-								},
-								"WebAppName": {
-									"type": "string",
-									"description": "App Service name",
-									"ignoreCase": "key"
-								},
-								"deployToSlotOrASE": {
-									"type": "boolean",
-									"description": "Deploy to Slot or App Service Environment",
-									"ignoreCase": "key",
-									"aliases": [
-										"DeployToSlotOrASEFlag"
-									]
-								},
-								"ResourceGroupName": {
-									"type": "string",
-									"description": "Resource group",
-									"ignoreCase": "key"
-								},
-								"SlotName": {
-									"type": "string",
-									"description": "Slot",
-									"ignoreCase": "key"
-								},
-								"DockerNamespace": {
-									"type": "string",
-									"description": "Registry or Namespace",
-									"ignoreCase": "key"
-								},
-								"DockerRepository": {
-									"type": "string",
-									"description": "Image",
-									"ignoreCase": "key"
-								},
-								"DockerImageTag": {
-									"type": "string",
-									"description": "Tag",
-									"ignoreCase": "key"
-								},
-								"VirtualApplication": {
-									"type": "string",
-									"description": "Virtual application",
-									"ignoreCase": "key"
-								},
-								"packageForLinux": {
-									"type": "string",
-									"description": "Package or folder",
-									"ignoreCase": "key",
-									"aliases": [
-										"Package"
-									]
-								},
-								"RuntimeStack": {
-									"type": "string",
-									"description": "Runtime Stack",
-									"ignoreCase": "key"
-								},
-								"RuntimeStackFunction": {
-									"description": "Runtime Stack",
-									"ignoreCase": "all",
-									"enum": [
-										"DOCKER|microsoft/azure-functions-dotnet-core2.0:2.0",
-										"DOCKER|microsoft/azure-functions-node8:2.0"
-									]
-								},
-								"StartupCommand": {
-									"type": "string",
-									"description": "Startup command ",
-									"ignoreCase": "key"
-								},
-								"ScriptType": {
-									"description": "Deployment script type",
-									"ignoreCase": "all",
-									"enum": [
-										"",
-										"Inline Script",
-										"File Path"
-									]
-								},
-								"InlineScript": {
-									"type": "string",
-									"description": "Inline Script",
-									"ignoreCase": "key"
-								},
-								"ScriptPath": {
-									"type": "string",
-									"description": "Deployment script path",
-									"ignoreCase": "key"
-								},
-								"WebConfigParameters": {
-									"type": "string",
-									"description": "Generate web.config parameters for Python, Node.js, Go and Java apps",
-									"ignoreCase": "key"
-								},
-								"AppSettings": {
-									"type": "string",
-									"description": "App settings",
-									"ignoreCase": "key"
-								},
-								"ConfigurationSettings": {
-									"type": "string",
-									"description": "Configuration settings",
-									"ignoreCase": "key"
-								},
-								"enableCustomDeployment": {
-									"type": "boolean",
-									"description": "Select deployment method",
-									"ignoreCase": "key",
-									"aliases": [
-										"UseWebDeploy"
-									]
-								},
-								"DeploymentType": {
-									"description": "Deployment method",
-									"ignoreCase": "all",
-									"enum": [
-										"webDeploy",
-										"zipDeploy",
-										"runFromZip"
-									]
-								},
-								"TakeAppOfflineFlag": {
-									"type": "boolean",
-									"description": "Take App Offline",
-									"ignoreCase": "key"
-								},
-								"SetParametersFile": {
-									"type": "string",
-									"description": "SetParameters file",
-									"ignoreCase": "key"
-								},
-								"RemoveAdditionalFilesFlag": {
-									"type": "boolean",
-									"description": "Remove additional files at destination",
-									"ignoreCase": "key"
-								},
-								"ExcludeFilesFromAppDataFlag": {
-									"type": "boolean",
-									"description": "Exclude files from the App_Data folder",
-									"ignoreCase": "key"
-								},
-								"AdditionalArguments": {
-									"type": "string",
-									"description": "Additional arguments",
-									"ignoreCase": "key"
-								},
-								"RenameFilesFlag": {
-									"type": "boolean",
-									"description": "Rename locked files",
-									"ignoreCase": "key"
-								},
-								"enableXmlTransform": {
-									"type": "boolean",
-									"description": "XML transformation",
-									"ignoreCase": "key",
-									"aliases": [
-										"XmlTransformation"
-									]
-								},
-								"enableXmlVariableSubstitution": {
-									"type": "boolean",
-									"description": "XML variable substitution",
-									"ignoreCase": "key",
-									"aliases": [
-										"XmlVariableSubstitution"
-									]
-								},
-								"JSONFiles": {
-									"type": "string",
-									"description": "JSON variable substitution",
-									"ignoreCase": "key"
-								}
-							},
-							"additionalProperties": false,
-							"required": []
-						}
-					},
-					"firstProperty": [
-						"task"
-					],
-					"required": [
-						"task"
 					]
 				},
 				{
@@ -17557,9 +17587,24 @@
 										"ConnectedServiceName"
 									]
 								},
+								"EnableAdvancedStorageOptions": {
+									"type": "boolean",
+									"description": "Enable ARM storage support",
+									"ignoreCase": "key"
+								},
 								"StorageAccount": {
 									"type": "string",
-									"description": "Storage account",
+									"description": "Storage account (Classic)",
+									"ignoreCase": "key"
+								},
+								"ARMConnectedServiceName": {
+									"type": "string",
+									"description": "Azure subscription (ARM)",
+									"ignoreCase": "key"
+								},
+								"ARMStorageAccount": {
+									"type": "string",
+									"description": "Storage account (ARM)",
 									"ignoreCase": "key"
 								},
 								"ServiceName": {
@@ -17644,7 +17689,6 @@
 							"additionalProperties": false,
 							"required": [
 								"azureClassicSubscription",
-								"StorageAccount",
 								"ServiceName",
 								"ServiceLocation",
 								"CsPkg",
@@ -18664,6 +18708,147 @@
 				{
 					"properties": {
 						"task": {
+							"description": "Azure Resource Group Deployment\n\nDeploy, start, stop, delete Azure Resource Groups",
+							"ignoreCase": "value",
+							"pattern": "^AzureResourceGroupDeployment@1$"
+						},
+						"inputs": {
+							"description": "Azure Resource Group Deployment inputs",
+							"properties": {
+								"ConnectedServiceNameSelector": {
+									"description": "Azure Connection Type",
+									"ignoreCase": "all",
+									"enum": [
+										"ConnectedServiceName",
+										"ConnectedServiceNameClassic"
+									]
+								},
+								"ConnectedServiceName": {
+									"type": "string",
+									"description": "Azure Subscription",
+									"ignoreCase": "key"
+								},
+								"ConnectedServiceNameClassic": {
+									"type": "string",
+									"description": "Azure Classic Subscription",
+									"ignoreCase": "key"
+								},
+								"action": {
+									"description": "Action",
+									"ignoreCase": "all",
+									"enum": [
+										"Create Or Update Resource Group",
+										"Select Resource Group",
+										"Start",
+										"Stop",
+										"Restart",
+										"Delete",
+										"DeleteRG"
+									]
+								},
+								"actionClassic": {
+									"description": "Action",
+									"ignoreCase": "all",
+									"enum": [
+										"Select Resource Group"
+									]
+								},
+								"resourceGroupName": {
+									"type": "string",
+									"description": "Resource Group",
+									"ignoreCase": "key"
+								},
+								"cloudService": {
+									"type": "string",
+									"description": "Cloud Service",
+									"ignoreCase": "key"
+								},
+								"location": {
+									"description": "Location",
+									"ignoreCase": "all",
+									"enum": [
+										"Australia East",
+										"Australia Southeast",
+										"Brazil South",
+										"Canada Central",
+										"Canada East",
+										"Central India",
+										"Central US",
+										"East Asia",
+										"East US",
+										"East US 2 ",
+										"Japan East",
+										"Japan West",
+										"North Central US",
+										"North Europe",
+										"South Central US",
+										"South India",
+										"Southeast Asia",
+										"UK South",
+										"UK West",
+										"West Central US",
+										"West Europe",
+										"West India",
+										"West US",
+										"West US 2"
+									]
+								},
+								"csmFile": {
+									"type": "string",
+									"description": "Template",
+									"ignoreCase": "key"
+								},
+								"csmParametersFile": {
+									"type": "string",
+									"description": "Template Parameters",
+									"ignoreCase": "key"
+								},
+								"overrideParameters": {
+									"type": "string",
+									"description": "Override Template Parameters",
+									"ignoreCase": "key"
+								},
+								"deploymentMode": {
+									"description": "Deployment Mode",
+									"ignoreCase": "all",
+									"enum": [
+										"Validation",
+										"Incremental",
+										"Complete"
+									]
+								},
+								"enableDeploymentPrerequisitesForCreate": {
+									"type": "boolean",
+									"description": "Enable Deployment Prerequisites",
+									"ignoreCase": "key"
+								},
+								"enableDeploymentPrerequisitesForSelect": {
+									"type": "boolean",
+									"description": "Enable Deployment Prerequisites",
+									"ignoreCase": "key"
+								},
+								"outputVariable": {
+									"type": "string",
+									"description": "Resource Group",
+									"ignoreCase": "key"
+								}
+							},
+							"additionalProperties": false,
+							"required": []
+						}
+					},
+					"deprecationMessage": "AzureResourceGroupDeployment is deprecated - Deploy, start, stop, delete Azure Resource Groups",
+					"doNotSuggest": true,
+					"firstProperty": [
+						"task"
+					],
+					"required": [
+						"task"
+					]
+				},
+				{
+					"properties": {
+						"task": {
 							"description": "Azure resource group deployment\n\nDeploy an Azure Resource Manager (ARM) template to a resource group and manage virtual machines",
 							"ignoreCase": "value",
 							"pattern": "^AzureResourceGroupDeployment@2$"
@@ -18820,236 +19005,6 @@
 							"required": [
 								"azureSubscription",
 								"resourceGroupName"
-							]
-						}
-					},
-					"firstProperty": [
-						"task"
-					],
-					"required": [
-						"task",
-						"inputs"
-					]
-				},
-				{
-					"properties": {
-						"task": {
-							"description": "Azure Resource Group Deployment\n\nDeploy, start, stop, delete Azure Resource Groups",
-							"ignoreCase": "value",
-							"pattern": "^AzureResourceGroupDeployment@1$"
-						},
-						"inputs": {
-							"description": "Azure Resource Group Deployment inputs",
-							"properties": {
-								"ConnectedServiceNameSelector": {
-									"description": "Azure Connection Type",
-									"ignoreCase": "all",
-									"enum": [
-										"ConnectedServiceName",
-										"ConnectedServiceNameClassic"
-									]
-								},
-								"ConnectedServiceName": {
-									"type": "string",
-									"description": "Azure Subscription",
-									"ignoreCase": "key"
-								},
-								"ConnectedServiceNameClassic": {
-									"type": "string",
-									"description": "Azure Classic Subscription",
-									"ignoreCase": "key"
-								},
-								"action": {
-									"description": "Action",
-									"ignoreCase": "all",
-									"enum": [
-										"Create Or Update Resource Group",
-										"Select Resource Group",
-										"Start",
-										"Stop",
-										"Restart",
-										"Delete",
-										"DeleteRG"
-									]
-								},
-								"actionClassic": {
-									"description": "Action",
-									"ignoreCase": "all",
-									"enum": [
-										"Select Resource Group"
-									]
-								},
-								"resourceGroupName": {
-									"type": "string",
-									"description": "Resource Group",
-									"ignoreCase": "key"
-								},
-								"cloudService": {
-									"type": "string",
-									"description": "Cloud Service",
-									"ignoreCase": "key"
-								},
-								"location": {
-									"description": "Location",
-									"ignoreCase": "all",
-									"enum": [
-										"Australia East",
-										"Australia Southeast",
-										"Brazil South",
-										"Canada Central",
-										"Canada East",
-										"Central India",
-										"Central US",
-										"East Asia",
-										"East US",
-										"East US 2 ",
-										"Japan East",
-										"Japan West",
-										"North Central US",
-										"North Europe",
-										"South Central US",
-										"South India",
-										"Southeast Asia",
-										"UK South",
-										"UK West",
-										"West Central US",
-										"West Europe",
-										"West India",
-										"West US",
-										"West US 2"
-									]
-								},
-								"csmFile": {
-									"type": "string",
-									"description": "Template",
-									"ignoreCase": "key"
-								},
-								"csmParametersFile": {
-									"type": "string",
-									"description": "Template Parameters",
-									"ignoreCase": "key"
-								},
-								"overrideParameters": {
-									"type": "string",
-									"description": "Override Template Parameters",
-									"ignoreCase": "key"
-								},
-								"deploymentMode": {
-									"description": "Deployment Mode",
-									"ignoreCase": "all",
-									"enum": [
-										"Validation",
-										"Incremental",
-										"Complete"
-									]
-								},
-								"enableDeploymentPrerequisitesForCreate": {
-									"type": "boolean",
-									"description": "Enable Deployment Prerequisites",
-									"ignoreCase": "key"
-								},
-								"enableDeploymentPrerequisitesForSelect": {
-									"type": "boolean",
-									"description": "Enable Deployment Prerequisites",
-									"ignoreCase": "key"
-								},
-								"outputVariable": {
-									"type": "string",
-									"description": "Resource Group",
-									"ignoreCase": "key"
-								}
-							},
-							"additionalProperties": false,
-							"required": []
-						}
-					},
-					"deprecationMessage": "AzureResourceGroupDeployment is deprecated - Deploy, start, stop, delete Azure Resource Groups",
-					"doNotSuggest": true,
-					"firstProperty": [
-						"task"
-					],
-					"required": [
-						"task"
-					]
-				},
-				{
-					"properties": {
-						"task": {
-							"description": "Azure PowerShell\n\nRun a PowerShell script within an Azure environment",
-							"ignoreCase": "value",
-							"pattern": "^AzurePowerShell@4$"
-						},
-						"inputs": {
-							"description": "Azure PowerShell inputs",
-							"properties": {
-								"azureSubscription": {
-									"type": "string",
-									"description": "Azure Subscription",
-									"ignoreCase": "key",
-									"aliases": [
-										"ConnectedServiceNameARM"
-									]
-								},
-								"ScriptType": {
-									"description": "Script Type",
-									"ignoreCase": "all",
-									"enum": [
-										"FilePath",
-										"InlineScript"
-									]
-								},
-								"ScriptPath": {
-									"type": "string",
-									"description": "Script Path",
-									"ignoreCase": "key"
-								},
-								"Inline": {
-									"type": "string",
-									"description": "Inline Script",
-									"ignoreCase": "key"
-								},
-								"ScriptArguments": {
-									"type": "string",
-									"description": "Script Arguments",
-									"ignoreCase": "key"
-								},
-								"errorActionPreference": {
-									"description": "ErrorActionPreference",
-									"ignoreCase": "all",
-									"enum": [
-										"stop",
-										"continue",
-										"silentlyContinue"
-									]
-								},
-								"FailOnStandardError": {
-									"type": "boolean",
-									"description": "Fail on Standard Error",
-									"ignoreCase": "key"
-								},
-								"azurePowerShellVersion": {
-									"description": "Azure PowerShell Version",
-									"ignoreCase": "all",
-									"enum": [
-										"LatestVersion",
-										"OtherVersion"
-									],
-									"aliases": [
-										"TargetAzurePs"
-									]
-								},
-								"preferredAzurePowerShellVersion": {
-									"type": "string",
-									"description": "Preferred Azure PowerShell Version",
-									"ignoreCase": "key",
-									"aliases": [
-										"CustomTargetAzurePs"
-									]
-								}
-							},
-							"additionalProperties": false,
-							"required": [
-								"azureSubscription"
 							]
 						}
 					},
@@ -19318,6 +19273,95 @@
 					],
 					"required": [
 						"task"
+					]
+				},
+				{
+					"properties": {
+						"task": {
+							"description": "Azure PowerShell\n\nRun a PowerShell script within an Azure environment",
+							"ignoreCase": "value",
+							"pattern": "^AzurePowerShell@4$"
+						},
+						"inputs": {
+							"description": "Azure PowerShell inputs",
+							"properties": {
+								"azureSubscription": {
+									"type": "string",
+									"description": "Azure Subscription",
+									"ignoreCase": "key",
+									"aliases": [
+										"ConnectedServiceNameARM"
+									]
+								},
+								"ScriptType": {
+									"description": "Script Type",
+									"ignoreCase": "all",
+									"enum": [
+										"FilePath",
+										"InlineScript"
+									]
+								},
+								"ScriptPath": {
+									"type": "string",
+									"description": "Script Path",
+									"ignoreCase": "key"
+								},
+								"Inline": {
+									"type": "string",
+									"description": "Inline Script",
+									"ignoreCase": "key"
+								},
+								"ScriptArguments": {
+									"type": "string",
+									"description": "Script Arguments",
+									"ignoreCase": "key"
+								},
+								"errorActionPreference": {
+									"description": "ErrorActionPreference",
+									"ignoreCase": "all",
+									"enum": [
+										"stop",
+										"continue",
+										"silentlyContinue"
+									]
+								},
+								"FailOnStandardError": {
+									"type": "boolean",
+									"description": "Fail on Standard Error",
+									"ignoreCase": "key"
+								},
+								"azurePowerShellVersion": {
+									"description": "Azure PowerShell Version",
+									"ignoreCase": "all",
+									"enum": [
+										"LatestVersion",
+										"OtherVersion"
+									],
+									"aliases": [
+										"TargetAzurePs"
+									]
+								},
+								"preferredAzurePowerShellVersion": {
+									"type": "string",
+									"description": "Preferred Azure PowerShell Version",
+									"ignoreCase": "key",
+									"aliases": [
+										"CustomTargetAzurePs"
+									]
+								}
+							},
+							"additionalProperties": false,
+							"required": [
+								"azureSubscription"
+							]
+						}
+					},
+					"firstProperty": [
+						"task"
+					],
+					"required": [
+						"task",
+						"inputs"
 					]
 				},
 				{
@@ -22895,6 +22939,182 @@
 						"task": {
 							"description": "Azure file copy\n\nCopy files to Azure Blob Storage or virtual machines",
 							"ignoreCase": "value",
+							"pattern": "^AzureFileCopy@2$"
+						},
+						"inputs": {
+							"description": "Azure file copy inputs",
+							"properties": {
+								"SourcePath": {
+									"type": "string",
+									"description": "Source",
+									"ignoreCase": "key"
+								},
+								"azureConnectionType": {
+									"description": "Azure Connection Type",
+									"ignoreCase": "all",
+									"enum": [
+										"ConnectedServiceName",
+										"ConnectedServiceNameARM"
+									],
+									"aliases": [
+										"ConnectedServiceNameSelector"
+									]
+								},
+								"azureClassicSubscription": {
+									"type": "string",
+									"description": "Azure Classic Subscription",
+									"ignoreCase": "key",
+									"aliases": [
+										"ConnectedServiceName"
+									]
+								},
+								"azureSubscription": {
+									"type": "string",
+									"description": "Azure Subscription",
+									"ignoreCase": "key",
+									"aliases": [
+										"ConnectedServiceNameARM"
+									]
+								},
+								"Destination": {
+									"description": "Destination Type",
+									"ignoreCase": "all",
+									"enum": [
+										"AzureBlob",
+										"AzureVMs"
+									]
+								},
+								"classicStorage": {
+									"type": "string",
+									"description": "Classic Storage Account",
+									"ignoreCase": "key",
+									"aliases": [
+										"StorageAccount"
+									]
+								},
+								"storage": {
+									"type": "string",
+									"description": "RM Storage Account",
+									"ignoreCase": "key",
+									"aliases": [
+										"StorageAccountRM"
+									]
+								},
+								"ContainerName": {
+									"type": "string",
+									"description": "Container Name",
+									"ignoreCase": "key"
+								},
+								"BlobPrefix": {
+									"type": "string",
+									"description": "Blob Prefix",
+									"ignoreCase": "key"
+								},
+								"cloudService": {
+									"type": "string",
+									"description": "Cloud Service",
+									"ignoreCase": "key",
+									"aliases": [
+										"EnvironmentName"
+									]
+								},
+								"resourceGroup": {
+									"type": "string",
+									"description": "Resource Group",
+									"ignoreCase": "key",
+									"aliases": [
+										"EnvironmentNameRM"
+									]
+								},
+								"ResourceFilteringMethod": {
+									"description": "Select Machines By",
+									"ignoreCase": "all",
+									"enum": [
+										"machineNames",
+										"tags"
+									]
+								},
+								"MachineNames": {
+									"type": "string",
+									"description": "Filter Criteria",
+									"ignoreCase": "key"
+								},
+								"vmsAdminUserName": {
+									"type": "string",
+									"description": "Admin Login",
+									"ignoreCase": "key"
+								},
+								"vmsAdminPassword": {
+									"type": "string",
+									"description": "Password",
+									"ignoreCase": "key"
+								},
+								"TargetPath": {
+									"type": "string",
+									"description": "Destination Folder",
+									"ignoreCase": "key"
+								},
+								"AdditionalArgumentsForBlobCopy": {
+									"type": "string",
+									"description": "Optional Arguments (for uploading files to blob)",
+									"ignoreCase": "key"
+								},
+								"AdditionalArgumentsForVMCopy": {
+									"type": "string",
+									"description": "Optional Arguments (for downloading files to VM)",
+									"ignoreCase": "key"
+								},
+								"enableCopyPrerequisites": {
+									"type": "boolean",
+									"description": "Enable Copy Prerequisites",
+									"ignoreCase": "key"
+								},
+								"CopyFilesInParallel": {
+									"type": "boolean",
+									"description": "Copy in Parallel",
+									"ignoreCase": "key"
+								},
+								"CleanTargetBeforeCopy": {
+									"type": "boolean",
+									"description": "Clean Target",
+									"ignoreCase": "key"
+								},
+								"skipCACheck": {
+									"type": "boolean",
+									"description": "Test Certificate",
+									"ignoreCase": "key"
+								},
+								"outputStorageUri": {
+									"type": "string",
+									"description": "Storage Container URI",
+									"ignoreCase": "key"
+								},
+								"outputStorageContainerSasToken": {
+									"type": "string",
+									"description": "Storage Container SAS Token",
+									"ignoreCase": "key"
+								}
+							},
+							"additionalProperties": false,
+							"required": [
+								"SourcePath",
+								"Destination"
+							]
+						}
+					},
+					"firstProperty": [
+						"task"
+					],
+					"required": [
+						"task",
+						"inputs"
+					]
+				},
+				{
+					"properties": {
+						"task": {
+							"description": "Azure file copy\n\nCopy files to Azure Blob Storage or virtual machines",
+							"ignoreCase": "value",
 							"pattern": "^AzureFileCopy@1$"
 						},
 						"inputs": {
@@ -23198,182 +23418,6 @@
 								"azureSubscription",
 								"Destination",
 								"storage"
-							]
-						}
-					},
-					"firstProperty": [
-						"task"
-					],
-					"required": [
-						"task",
-						"inputs"
-					]
-				},
-				{
-					"properties": {
-						"task": {
-							"description": "Azure file copy\n\nCopy files to Azure Blob Storage or virtual machines",
-							"ignoreCase": "value",
-							"pattern": "^AzureFileCopy@2$"
-						},
-						"inputs": {
-							"description": "Azure file copy inputs",
-							"properties": {
-								"SourcePath": {
-									"type": "string",
-									"description": "Source",
-									"ignoreCase": "key"
-								},
-								"azureConnectionType": {
-									"description": "Azure Connection Type",
-									"ignoreCase": "all",
-									"enum": [
-										"ConnectedServiceName",
-										"ConnectedServiceNameARM"
-									],
-									"aliases": [
-										"ConnectedServiceNameSelector"
-									]
-								},
-								"azureClassicSubscription": {
-									"type": "string",
-									"description": "Azure Classic Subscription",
-									"ignoreCase": "key",
-									"aliases": [
-										"ConnectedServiceName"
-									]
-								},
-								"azureSubscription": {
-									"type": "string",
-									"description": "Azure Subscription",
-									"ignoreCase": "key",
-									"aliases": [
-										"ConnectedServiceNameARM"
-									]
-								},
-								"Destination": {
-									"description": "Destination Type",
-									"ignoreCase": "all",
-									"enum": [
-										"AzureBlob",
-										"AzureVMs"
-									]
-								},
-								"classicStorage": {
-									"type": "string",
-									"description": "Classic Storage Account",
-									"ignoreCase": "key",
-									"aliases": [
-										"StorageAccount"
-									]
-								},
-								"storage": {
-									"type": "string",
-									"description": "RM Storage Account",
-									"ignoreCase": "key",
-									"aliases": [
-										"StorageAccountRM"
-									]
-								},
-								"ContainerName": {
-									"type": "string",
-									"description": "Container Name",
-									"ignoreCase": "key"
-								},
-								"BlobPrefix": {
-									"type": "string",
-									"description": "Blob Prefix",
-									"ignoreCase": "key"
-								},
-								"cloudService": {
-									"type": "string",
-									"description": "Cloud Service",
-									"ignoreCase": "key",
-									"aliases": [
-										"EnvironmentName"
-									]
-								},
-								"resourceGroup": {
-									"type": "string",
-									"description": "Resource Group",
-									"ignoreCase": "key",
-									"aliases": [
-										"EnvironmentNameRM"
-									]
-								},
-								"ResourceFilteringMethod": {
-									"description": "Select Machines By",
-									"ignoreCase": "all",
-									"enum": [
-										"machineNames",
-										"tags"
-									]
-								},
-								"MachineNames": {
-									"type": "string",
-									"description": "Filter Criteria",
-									"ignoreCase": "key"
-								},
-								"vmsAdminUserName": {
-									"type": "string",
-									"description": "Admin Login",
-									"ignoreCase": "key"
-								},
-								"vmsAdminPassword": {
-									"type": "string",
-									"description": "Password",
-									"ignoreCase": "key"
-								},
-								"TargetPath": {
-									"type": "string",
-									"description": "Destination Folder",
-									"ignoreCase": "key"
-								},
-								"AdditionalArgumentsForBlobCopy": {
-									"type": "string",
-									"description": "Optional Arguments (for uploading files to blob)",
-									"ignoreCase": "key"
-								},
-								"AdditionalArgumentsForVMCopy": {
-									"type": "string",
-									"description": "Optional Arguments (for downloading files to VM)",
-									"ignoreCase": "key"
-								},
-								"enableCopyPrerequisites": {
-									"type": "boolean",
-									"description": "Enable Copy Prerequisites",
-									"ignoreCase": "key"
-								},
-								"CopyFilesInParallel": {
-									"type": "boolean",
-									"description": "Copy in Parallel",
-									"ignoreCase": "key"
-								},
-								"CleanTargetBeforeCopy": {
-									"type": "boolean",
-									"description": "Clean Target",
-									"ignoreCase": "key"
-								},
-								"skipCACheck": {
-									"type": "boolean",
-									"description": "Test Certificate",
-									"ignoreCase": "key"
-								},
-								"outputStorageUri": {
-									"type": "string",
-									"description": "Storage Container URI",
-									"ignoreCase": "key"
-								},
-								"outputStorageContainerSasToken": {
-									"type": "string",
-									"description": "Storage Container SAS Token",
-									"ignoreCase": "key"
-								}
-							},
-							"additionalProperties": false,
-							"required": [
-								"SourcePath",
-								"Destination"
 							]
 						}
 					},
