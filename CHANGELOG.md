@@ -3,6 +3,10 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.155.0
+### Fixed
+- Updated to M155 schema including some new tasks
+
 ## 1.152.0
 ### Added
 - Support for `stages` and other new schema
