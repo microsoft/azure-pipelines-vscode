@@ -93,19 +93,19 @@
         "unittest": "node_modules/.bin/mocha -u tdd out/unittest/*.js"
     },
     "devDependencies": {
+        "@types/mocha": "5.2.5",
+        "@types/node": "7.0.43",
+        "@types/q": "1.5.0",
+        "@types/underscore": "1.8.9",
         "assert": "1.4.1",
         "mocha": "5.2.0",
         "ts-node": "3.3.0",
         "tslint": "5.8.0",
         "typescript": "2.6.1",
-        "vscode": "1.1.22",
-        "@types/mocha": "5.2.5",
-        "@types/node": "7.0.43",
-        "@types/q": "1.5.0",
-        "@types/underscore": "1.8.9"
+        "vscode": "^1.1.35"
     },
     "dependencies": {
-        "azure-pipelines-language-server": "0.5.4",
+        "azure-pipelines-language-server": "0.5.9",
         "q": "1.5.1",
         "shelljs": "^0.3.0",
         "typed-rest-client": "1.0.7",
