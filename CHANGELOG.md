@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 ## 1.155.0
 ### Fixed
 - Updated to M155 schema including some new tasks
+- Several improvements to validation and auto-complete
 
 ## 1.152.0
 ### Added
