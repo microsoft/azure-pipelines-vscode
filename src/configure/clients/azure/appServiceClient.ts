@@ -1,8 +1,7 @@
-import { ResourceListResult, GenericResource } from 'azure-arm-resource/lib/resource/models';
-import { ServiceClientCredentials } from 'ms-rest';
-
 import { AzureResourceClient } from './azureResourceClient';
 import { Messages } from '../../messages';
+import { ResourceListResult, GenericResource } from 'azure-arm-resource/lib/resource/models';
+import { ServiceClientCredentials } from 'ms-rest';
 import { WebAppKind } from '../../model/models';
 
 export class AppServiceClient extends AzureResourceClient {

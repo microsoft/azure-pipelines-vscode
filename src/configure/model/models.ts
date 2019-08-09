@@ -1,8 +1,8 @@
-import { SubscriptionModels } from 'azure-arm-resource';
-import { GenericResource } from 'azure-arm-resource/lib/resource/models';
-import { ServiceClientCredentials } from 'ms-rest';
 import { AzureEnvironment } from 'ms-rest-azure';
+import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { OutputChannel, ExtensionContext, QuickPickItem } from 'vscode';
+import { ServiceClientCredentials } from 'ms-rest';
+import { SubscriptionModels } from 'azure-arm-resource';
 import { UIExtensionVariables, IAzureUserInput } from 'vscode-azureextensionui';
 import TelemetryReporter from 'vscode-extension-telemetry';
 
@@ -21,16 +21,23 @@ export { extensionVariables };
 export interface  AzureAccountExtensionExports {
     sessions: AzureSession[];
     subscriptions: { session: AzureSession, subscription: SubscriptionModels.Subscription }[];
+    filters: { session: AzureSession, subscription: SubscriptionModels.Subscription }[];
     waitForLogin: () => Promise<boolean>;
 }
 
 export class WizardInputs {
     organizationName: string;
-    projectName: string;
+    isNewOrganization: boolean;
+    project: DevOpsProject;
     sourceRepository: GitRepositoryParameters;
     targetResource: AzureParameters = new AzureParameters();
     pipelineParameters: PipelineParameters = new PipelineParameters();
     azureSession: AzureSession;
+}
+
+export interface DevOpsProject {
+    id: string;
+    name: string;
 }
 
 export class Organization {
@@ -110,4 +117,16 @@ export class QuickPickItemWithData implements QuickPickItem {
     data: any;
     description?: string;
     detail?: string;
+}
+
+export interface Token {
+    session: AzureSession;
+    accessToken: string;
+    refreshToken: string;
+}
+
+export interface AadApplication {
+    appId: string;
+    secret: string;
+    objectId: string;
 }

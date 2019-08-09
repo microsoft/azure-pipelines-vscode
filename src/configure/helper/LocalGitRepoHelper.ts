@@ -1,15 +1,14 @@
+import { AzureDevOpsHelper } from './devOps/azureDevOpsHelper';
+import { BranchSummary } from 'simple-git/typings/response';
+import { GitHubProvider } from './gitHubHelper';
+import { GitRepositoryParameters, RepositoryProvider } from '../model/models';
+import { Messages } from '../messages';
 import * as fs from 'fs';
-import * as path from 'path';
 import * as git from 'simple-git/promise';
+import * as path from 'path';
 import * as Q from 'q';
 import * as util from 'util';
 import * as vscode from 'vscode';
-
-import { AzureDevOpsHelper } from './devOps/azureDevOpsHelper';
-import { Messages } from '../messages';
-import { GitRepositoryParameters, RepositoryProvider } from '../model/models';
-import { GitHubProvider } from './gitHubHelper';
-import { BranchSummary } from 'simple-git/typings/response';
 
 export class LocalGitRepoHelper {
     private gitReference: git.SimpleGit;
@@ -17,10 +16,16 @@ export class LocalGitRepoHelper {
     private constructor() {
     }
 
-    public static GetHelperInstance(repositoryPath: string): LocalGitRepoHelper {
-        var repoService = new LocalGitRepoHelper();
-        repoService.initialize(repositoryPath);
-        return repoService;
+    public static async GetHelperInstance(repositoryPath: string): Promise<LocalGitRepoHelper> {
+        try {
+            var repoService = new LocalGitRepoHelper();
+            repoService.initialize(repositoryPath);
+            await repoService.gitReference.status();
+            return repoService;
+        }
+        catch(error) {
+            throw new Error(Messages.notAGitRepository);
+        }
     }
 
     public static async GetAvailableFileName(fileName:string, repoPath: string): Promise<string> {
@@ -113,8 +118,9 @@ export class LocalGitRepoHelper {
      */
     public async commitAndPushPipelineFile(pipelineYamlPath: string): Promise<{ commitId: string, branch: string }> {
         await this.gitReference.add(pipelineYamlPath);
-        let commit = await this.gitReference.commit(Messages.addYmlFile, pipelineYamlPath);
+        await this.gitReference.commit(Messages.addYmlFile, pipelineYamlPath);
         let status = await this.gitReference.status();
+        let gitLog = await this.gitReference.log();
         let branch = status.current;
         let remote = status.tracking;
         if (!remote) {
@@ -139,7 +145,7 @@ export class LocalGitRepoHelper {
 
         return {
             branch: branch,
-            commitId: commit.commit
+            commitId: gitLog.latest.hash
         };
     }
 

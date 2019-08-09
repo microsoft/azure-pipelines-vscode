@@ -1,12 +1,10 @@
-import * as vscode from 'vscode';
-
-import { AzureUserInput, createApiProvider, registerUIExtensionVariables } from 'vscode-azureextensionui';
+import { AzureAccountExtensionExports, extensionVariables } from './model/models';
 import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
-import TelemetryReporter from 'vscode-extension-telemetry';
-
+import { AzureUserInput, createApiProvider, registerUIExtensionVariables } from 'vscode-azureextensionui';
 import { configurePipeline } from './configure';
 import { Messages } from './messages';
-import { AzureAccountExtensionExports, extensionVariables } from './model/models';
+import * as vscode from 'vscode';
+import TelemetryReporter from 'vscode-extension-telemetry';
 
 
 export async function activateConfigurePipeline(context: vscode.ExtensionContext, reporter: TelemetryReporter): Promise<AzureExtensionApiProvider> {

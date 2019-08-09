@@ -1,9 +1,8 @@
+import { PipelineTemplate, TargetResourceType, WizardInputs } from '../model/models';
 import * as fs from 'fs';
 import * as Mustache from 'mustache';
 import * as path from 'path';
 import * as Q from 'q';
-
-import { PipelineTemplate, TargetResourceType, WizardInputs } from '../model/models';
 
 export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): Promise<PipelineTemplate[]> {
     // TO-DO: To populate the possible templates on the basis of azure target resource.
@@ -83,6 +82,12 @@ const nodeTemplates: Array<PipelineTemplate> = [
         label: 'Node.js with Webpack',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithWebpack.yml'),
         language: 'node',
+        targetType: TargetResourceType.WindowsWebApp
+    },
+    {
+        label: 'Simple web app',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/simpleWebApp.yml'),
+        language: 'none',
         targetType: TargetResourceType.WindowsWebApp
     }
 ];
