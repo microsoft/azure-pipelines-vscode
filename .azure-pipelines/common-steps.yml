@@ -49,8 +49,8 @@ steps:
     targetFolder: $(Build.ArtifactStagingDirectory)
 
 # Publish files as an artifact
-- task: PublishBuildArtifacts@1
+- task: PublishPipelineArtifact@1
   displayName: Publish VSIX
   inputs:
-    pathToPublish: $(Build.ArtifactStagingDirectory)
-    artifactName: azure-pipelines-vscode
+    artifact: azure-pipelines-vscode
+    targetPath: $(Build.ArtifactStagingDirectory)
