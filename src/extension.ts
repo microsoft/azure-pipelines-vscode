@@ -26,6 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
     // It also facilitates registering command and called events telemetry.
     extensionVariables.reporter = createTelemetryReporter(context);
     extensionVariables.outputChannel = vscode.window.createOutputChannel('Azure Pipelines');
+    context.subscriptions.push(extensionVariables.outputChannel);
     extensionVariables.context = context;
     extensionVariables.ui = new AzureUserInput(context.globalState);
     registerUIExtensionVariables(extensionVariables);
