@@ -2,7 +2,7 @@ const uuid = require('uuid/v4');
 import { AppServiceClient } from './clients/azure/appServiceClient';
 import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
-import { AzureTreeItem } from 'vscode-azureextensionui';
+import { AzureTreeItem, IActionContext } from 'vscode-azureextensionui';
 import { exit } from 'process';
 import { generateDevOpsProjectName } from './helper/commonHelper';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
@@ -17,7 +17,7 @@ import * as templateHelper from './helper/templateHelper';
 import * as utils from 'util';
 import * as vscode from 'vscode';
 
-export async function configurePipeline(node: any) {
+export async function configurePipeline(actionContext: IActionContext, node: AzureTreeItem) {
     try {
         if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
             let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
@@ -36,6 +36,8 @@ export async function configurePipeline(node: any) {
         // log error in telemetery.
         extensionVariables.outputChannel.appendLine(error.message);
         vscode.window.showErrorMessage(error.message);
+        actionContext.telemetry.properties.error = error;
+        actionContext.telemetry.properties.errorMessage = error.message;
     }
 }
 

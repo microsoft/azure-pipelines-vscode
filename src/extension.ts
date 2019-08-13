@@ -3,73 +3,76 @@
 *  Licensed under the MIT License.
 *--------------------------------------------------------------------------------------------*/
 
-import * as languageclient from 'vscode-languageclient';
-import * as logger from './logger';
 import * as path from 'path';
-import * as schemacontributor from './schema-contributor';
 import * as vscode from 'vscode';
-import * as schemaassociationservice from './schema-association-service';
-import TelemetryReporter from 'vscode-extension-telemetry';
-const fs = require('fs');
+import { createTelemetryReporter, callWithTelemetryAndErrorHandling, IActionContext, AzureUserInput, registerUIExtensionVariables } from 'vscode-azureextensionui';
+import * as languageclient from 'vscode-languageclient';
+
 import { activateConfigurePipeline } from './configure/activate';
+import { extensionVariables } from './configure/model/models';
+import * as logger from './logger';
+import * as schemaassociationservice from './schema-association-service';
+import * as schemacontributor from './schema-contributor';
 
-const myExtensionId = 'azure-pipelines';
-const telemetryVersion = generateVersionString(vscode.extensions.getExtension(`ms-azure-devops.${myExtensionId}`));
-const telemetryKey = 'ae672644-d394-497c-8c57-98f6eac32342';
-
-let reporter: TelemetryReporter;
+let perfStats = {
+    loadStartTime: Date.now(),
+    loadEndTime: undefined
+};
 
 export async function activate(context: vscode.ExtensionContext) {
     logger.log('Extension has been activated!', 'ExtensionActivated');
 
-    logger.log(`Spinning up telemetry client for id ${myExtensionId}, version ${telemetryVersion}`);
-    reporter = new TelemetryReporter(myExtensionId, telemetryVersion, telemetryKey);
-    context.subscriptions.push(reporter);
+    // Register ui extension variables is required to be done for telemetry to start flowing for extension activation and other events.
+    // It also facilitates registering command and called events telemetry.
+    extensionVariables.reporter = createTelemetryReporter(context);
+    extensionVariables.outputChannel = vscode.window.createOutputChannel('Azure Pipelines');
+    extensionVariables.context = context;
+    extensionVariables.ui = new AzureUserInput(context.globalState);
+    registerUIExtensionVariables(extensionVariables);
 
-    try {
-        reporter.sendTelemetryEvent('extension.activate');
-    } catch(e) {
-        // if something bad happens reporting telemetry, swallow it and move on
-        logger.log(e.toString());
-    }
+    await callWithTelemetryAndErrorHandling('azurePipelines.activate', async (activateContext: IActionContext) => {
+        activateContext.telemetry.properties.isActivationEvent = 'true';
+        activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
 
-    const serverOptions: languageclient.ServerOptions = getServerOptions(context);
-    const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
-    const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Support', serverOptions, clientOptions);
+        const serverOptions: languageclient.ServerOptions = getServerOptions(context);
+        const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
+        const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Support', serverOptions, clientOptions);
 
-    const schemaAssociationService: schemaassociationservice.ISchemaAssociationService = new schemaassociationservice.SchemaAssociationService(context.extensionPath);
+        const schemaAssociationService: schemaassociationservice.ISchemaAssociationService = new schemaassociationservice.SchemaAssociationService(context.extensionPath);
 
-    const disposable = client.start();
-    context.subscriptions.push(disposable);
+        const disposable = client.start();
+        context.subscriptions.push(disposable);
 
-    const initialSchemaAssociations: schemaassociationservice.ISchemaAssociations = schemaAssociationService.getSchemaAssociation();
+        const initialSchemaAssociations: schemaassociationservice.ISchemaAssociations = schemaAssociationService.getSchemaAssociation();
 
-    await client.onReady().then(() => {
-        //logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
-        client.sendNotification(schemaassociationservice.SchemaAssociationNotification.type, initialSchemaAssociations);
+        await client.onReady().then(() => {
+            //logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
+            client.sendNotification(schemaassociationservice.SchemaAssociationNotification.type, initialSchemaAssociations);
 
-        // TODO: Should we get rid of these events and handle other events like Ctrl + Space? See when this event gets fired and send updated schema on that event.
-        client.onRequest(schemacontributor.CUSTOM_SCHEMA_REQUEST, (resource: any) => {
-            //logger.log('Custom schema request. Resource: ' + JSON.stringify(resource), 'CustomSchemaRequest');
+            // TODO: Should we get rid of these events and handle other events like Ctrl + Space? See when this event gets fired and send updated schema on that event.
+            client.onRequest(schemacontributor.CUSTOM_SCHEMA_REQUEST, (resource: any) => {
+                //logger.log('Custom schema request. Resource: ' + JSON.stringify(resource), 'CustomSchemaRequest');
 
-            // TODO: Can this return the location of the new schema file?
-            return schemacontributor.schemaContributor.requestCustomSchema(resource); // TODO: Have a single instance for the extension but dont return a global from this namespace.
+                // TODO: Can this return the location of the new schema file?
+                return schemacontributor.schemaContributor.requestCustomSchema(resource); // TODO: Have a single instance for the extension but dont return a global from this namespace.
+            });
+
+            // TODO: Can we get rid of this? Never seems to happen.
+            client.onRequest(schemacontributor.CUSTOM_CONTENT_REQUEST, (uri: any) => {
+                //logger.log('Custom content request.', 'CustomContentRequest');
+
+                return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
+            });
+        }).catch((reason) => {
+            logger.log(JSON.stringify(reason), 'ClientOnReadyError');
+            extensionVariables.reporter.sendTelemetryEvent('extension.languageserver.onReadyError', { 'reason': JSON.stringify(reason) });
         });
 
-        // TODO: Can we get rid of this? Never seems to happen.
-        client.onRequest(schemacontributor.CUSTOM_CONTENT_REQUEST, (uri: any) => {
-            //logger.log('Custom content request.', 'CustomContentRequest');
-
-            return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
-        });
-    }).catch((reason) =>{
-        logger.log(JSON.stringify(reason), 'ClientOnReadyError');
-        reporter.sendTelemetryEvent('extension.languageserver.onReadyError', {'reason': JSON.stringify(reason)});
+        // TODO: Can we get rid of this since it's set in package.json?
+        vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
+        await activateConfigurePipeline(context);
     });
 
-    // TODO: Can we get rid of this since it's set in package.json?
-    vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
-    await activateConfigurePipeline(context, reporter);
     return schemacontributor.schemaContributor;
 }
 
@@ -77,7 +80,7 @@ function getServerOptions(context: vscode.ExtensionContext): languageclient.Serv
     const languageServerPath = context.asAbsolutePath(path.join('node_modules', 'azure-pipelines-language-server', 'server.js'));
 
     return {
-        run : { module: languageServerPath, transport: languageclient.TransportKind.ipc },
+        run: { module: languageServerPath, transport: languageclient.TransportKind.ipc },
         debug: { module: languageServerPath, transport: languageclient.TransportKind.ipc, options: { execArgv: ["--nolazy", "--inspect=6009"] } }
     };
 }
@@ -104,13 +107,6 @@ function getClientOptions(): languageclient.LanguageClientOptions {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-    reporter.dispose();
 }
 
-function generateVersionString(extension: vscode.Extension<any>): string {
-    // if the extensionPath is a Git repo, this is probably an extension developer
-    const isDevMode: boolean = extension ? fs.existsSync(extension.extensionPath + '/.git') : false;
-    const baseVersion: string = extension ? extension.packageJSON.version : "0.0.0";
-
-    return isDevMode ? `${baseVersion}-dev` : baseVersion;
-}
+perfStats.loadEndTime = Date.now();
