@@ -1,0 +1,50 @@
+# Simple Web App on Windows
+# Package and deploy a simple web application on Windows web app
+
+trigger:
+- {{ sourceRepository.branch }}
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: BuildJob
+    displayName: Build
+    pool:
+      vmImage: 'vs2017-win2016'
+
+    steps:
+
+    - task: ArchiveFiles@2
+      displayName: 'Archive files'
+      inputs:
+        rootFolderOrFile: '{{ pipelineParameters.workingDirectory }}'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+        replaceExistingArchive: true
+
+    - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      artifact: drop
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+  condition: succeeded()
+  jobs:
+  - deployment: Deploy
+    environment: 'development'
+    pool:
+      vmImage: 'vs2017-win2016'
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: AzureWebApp@1
+            displayName: 'Azure Web App Deploy'
+            inputs:
+              azureSubscription: '{{ targetResource.serviceConnectionId }}'
+              appType: webApp
+              appName: '{{ targetResource.resource.name }}'
+              package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip
