@@ -9,6 +9,6 @@
   "author": "Microsoft",
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "^15.17.0"
+    "@octokit/rest": "^15.18.2"
   }
 }
