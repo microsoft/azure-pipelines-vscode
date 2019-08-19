@@ -3,6 +3,12 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.157.0
+### Added
+- Added "Configure Pipeline", which helps you configure a pipeline for Azure deployment
+### Fixed
+- Updated a few vulnerable npm packages (nothing that would affect end users)
+
 ## 1.155.0
 ### Fixed
 - Updated to M155 schema including some new tasks
