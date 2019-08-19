@@ -19,9 +19,24 @@ let perfStats = {
     loadEndTime: undefined
 };
 
+const configurePipelineEnabled: boolean = vscode.workspace.getConfiguration('[azure-pipelines]', null).get('configure') ? true : false;
+
 export async function activate(context: vscode.ExtensionContext) {
     logger.log('Extension has been activated!', 'ExtensionActivated');
+    setTelemetryReporter(context);
 
+    await callWithTelemetryAndErrorHandling('azurePipelines.activate', async (activateContext: IActionContext) => {
+        activateContext.telemetry.properties['configurePipelineEnabled'] = `${configurePipelineEnabled}`;
+        await activateYmlContributor(context, activateContext);
+        if (configurePipelineEnabled) {
+            await activateConfigurePipeline();
+        }
+    });
+
+    return schemacontributor.schemaContributor;
+}
+
+function setTelemetryReporter(context: vscode.ExtensionContext) {
     // Register ui extension variables is required to be done for telemetry to start flowing for extension activation and other events.
     // It also facilitates registering command and called events telemetry.
     extensionVariables.reporter = createTelemetryReporter(context);
@@ -30,51 +45,54 @@ export async function activate(context: vscode.ExtensionContext) {
     extensionVariables.context = context;
     extensionVariables.ui = new AzureUserInput(context.globalState);
     registerUIExtensionVariables(extensionVariables);
+}
 
-    await callWithTelemetryAndErrorHandling('azurePipelines.activate', async (activateContext: IActionContext) => {
+async function activateYmlContributor(context: vscode.ExtensionContext, activateContext: IActionContext) {
+    if (activateContext) {
         activateContext.telemetry.properties.isActivationEvent = 'true';
         activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
+    }
 
-        const serverOptions: languageclient.ServerOptions = getServerOptions(context);
-        const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
-        const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Support', serverOptions, clientOptions);
+    const serverOptions: languageclient.ServerOptions = getServerOptions(context);
+    const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
+    const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Support', serverOptions, clientOptions);
 
-        const schemaAssociationService: schemaassociationservice.ISchemaAssociationService = new schemaassociationservice.SchemaAssociationService(context.extensionPath);
+    const schemaAssociationService: schemaassociationservice.ISchemaAssociationService = new schemaassociationservice.SchemaAssociationService(context.extensionPath);
 
-        const disposable = client.start();
-        context.subscriptions.push(disposable);
+    const disposable = client.start();
+    context.subscriptions.push(disposable);
 
-        const initialSchemaAssociations: schemaassociationservice.ISchemaAssociations = schemaAssociationService.getSchemaAssociation();
+    const initialSchemaAssociations: schemaassociationservice.ISchemaAssociations = schemaAssociationService.getSchemaAssociation();
 
-        await client.onReady().then(() => {
-            //logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
-            client.sendNotification(schemaassociationservice.SchemaAssociationNotification.type, initialSchemaAssociations);
+    await client.onReady().then(() => {
+        //logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
+        client.sendNotification(schemaassociationservice.SchemaAssociationNotification.type, initialSchemaAssociations);
 
-            // TODO: Should we get rid of these events and handle other events like Ctrl + Space? See when this event gets fired and send updated schema on that event.
-            client.onRequest(schemacontributor.CUSTOM_SCHEMA_REQUEST, (resource: any) => {
-                //logger.log('Custom schema request. Resource: ' + JSON.stringify(resource), 'CustomSchemaRequest');
+        // TODO: Should we get rid of these events and handle other events like Ctrl + Space? See when this event gets fired and send updated schema on that event.
+        client.onRequest(schemacontributor.CUSTOM_SCHEMA_REQUEST, (resource: any) => {
+            //logger.log('Custom schema request. Resource: ' + JSON.stringify(resource), 'CustomSchemaRequest');
 
-                // TODO: Can this return the location of the new schema file?
-                return schemacontributor.schemaContributor.requestCustomSchema(resource); // TODO: Have a single instance for the extension but dont return a global from this namespace.
-            });
+            // TODO: Can this return the location of the new schema file?
+            return schemacontributor.schemaContributor.requestCustomSchema(resource); // TODO: Have a single instance for the extension but dont return a global from this namespace.
+        });
 
-            // TODO: Can we get rid of this? Never seems to happen.
-            client.onRequest(schemacontributor.CUSTOM_CONTENT_REQUEST, (uri: any) => {
-                //logger.log('Custom content request.', 'CustomContentRequest');
+        // TODO: Can we get rid of this? Never seems to happen.
+        client.onRequest(schemacontributor.CUSTOM_CONTENT_REQUEST, (uri: any) => {
+            //logger.log('Custom content request.', 'CustomContentRequest');
 
-                return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
-            });
-        }).catch((reason) => {
+            return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
+        });
+    })
+        .catch((reason) => {
             logger.log(JSON.stringify(reason), 'ClientOnReadyError');
+            if (activateContext) {
+                activateContext.errorHandling.suppressDisplay = true;
+            }
             extensionVariables.reporter.sendTelemetryEvent('extension.languageserver.onReadyError', { 'reason': JSON.stringify(reason) });
         });
 
-        // TODO: Can we get rid of this since it's set in package.json?
-        vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
-        await activateConfigurePipeline(context);
-    });
-
-    return schemacontributor.schemaContributor;
+    // TODO: Can we get rid of this since it's set in package.json?
+    vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
 }
 
 function getServerOptions(context: vscode.ExtensionContext): languageclient.ServerOptions {

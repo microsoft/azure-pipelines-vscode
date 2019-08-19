@@ -1,6 +1,6 @@
 import { AzureDevOpsClient } from '../../clients/devOps/azureDevOpsClient';
 import { BuildDefinition, BuildDefinitionRepositoryProperties, Build } from '../../model/azureDevOps';
-import { Messages } from '../../messages';
+import { Messages } from '../../resources/messages';
 import { WizardInputs, RepositoryProvider } from '../../model/models';
 import * as util from 'util';
 

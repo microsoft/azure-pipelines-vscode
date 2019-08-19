@@ -2,43 +2,63 @@ const uuid = require('uuid/v4');
 import { AppServiceClient } from './clients/azure/appServiceClient';
 import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
-import { AzureTreeItem, IActionContext } from 'vscode-azureextensionui';
+import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
 import { exit } from 'process';
 import { generateDevOpsProjectName } from './helper/commonHelper';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { GraphHelper } from './helper/graphHelper';
 import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
-import { Messages } from './messages';
+import { Messages } from './resources/messages';
 import { QuickPickItem } from 'vscode';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
 import { SourceOptions, RepositoryProvider, extensionVariables, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData } from './model/models';
+import { TracePoints } from './resources/tracePoints';
 import * as path from 'path';
 import * as templateHelper from './helper/templateHelper';
 import * as utils from 'util';
 import * as vscode from 'vscode';
+import { TelemetryHelper } from './helper/telemetryHelper';
 
-export async function configurePipeline(actionContext: IActionContext, node: AzureTreeItem) {
+export async function configurePipeline(telemetryHelper: TelemetryHelper, node: AzureTreeItem) {
     try {
+        telemetryHelper.setTelemetry(TracePoints.CommandStartTime, Date.UTC.toString());
         if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
+            // set telemetry
+            telemetryHelper.setTelemetry(TracePoints.AzureLoginRequired, 'true');
+
             let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
-            if(signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
+            if (signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
                 await vscode.commands.executeCommand("azure-account.login");
             }
             else {
-                throw new Error(Messages.azureLoginRequired);
+                let error = new Error(Messages.azureLoginRequired);
+                extensionVariables.reporter.sendTelemetryEvent(
+                    TracePoints.AzureLoginFailure,
+                    {
+                        'errorMessage': error.message
+                    }
+                );
+
+                throw error;
             }
         }
 
-        var configurer = new PipelineConfigurer();
+        var configurer = new PipelineConfigurer(telemetryHelper);
         await configurer.configure(node);
     }
     catch (error) {
         // log error in telemetery.
-        extensionVariables.outputChannel.appendLine(error.message);
-        vscode.window.showErrorMessage(error.message);
-        actionContext.telemetry.properties.error = error;
-        actionContext.telemetry.properties.errorMessage = error.message;
+        if (error instanceof UserCancelledError) {
+            telemetryHelper.setError(error);
+        }
+        else {
+            telemetryHelper.setError(error);
+            extensionVariables.outputChannel.appendLine(error.message);
+            vscode.window.showErrorMessage(error.message);
+        }
     }
+
+    telemetryHelper.setTelemetry(TracePoints.CommandEndTime, Date.UTC.toString());
 }
 
 class PipelineConfigurer {
@@ -50,26 +70,38 @@ class PipelineConfigurer {
     private appServiceClient: AppServiceClient;
     private workspacePath: string;
     private uniqueResourceNameSuffix: string;
+    private telemetryHelper: TelemetryHelper;
 
-    public constructor() {
+    public constructor(telemetryHelper: TelemetryHelper) {
         this.inputs = new WizardInputs();
         this.inputs.azureSession = extensionVariables.azureAccountExtensionApi.sessions[0];
         this.azureDevOpsClient = new AzureDevOpsClient(this.inputs.azureSession.credentials);
         this.azureDevOpsHelper = new AzureDevOpsHelper(this.azureDevOpsClient);
         this.uniqueResourceNameSuffix = uuid().substr(0, 5);
+        this.telemetryHelper = telemetryHelper;
     }
 
     public async configure(node: any) {
+        this.telemetryHelper.setCurrentStep('GetAllRequiredInputs');
         await this.getAllRequiredInputs(node);
+
+        this.telemetryHelper.setCurrentStep('CreatePreRequisites');
         await this.createPreRequisites();
+
+        this.telemetryHelper.setCurrentStep('CheckInPipeline');
         await this.checkInPipelineFileToRepository();
+
+        this.telemetryHelper.setCurrentStep('CreateAndRunPipeline');
         let queuedPipelineUrl = await vscode.window.withProgress<string>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, () => {
             let pipelineName = `${this.inputs.targetResource.resource.name}.${this.uniqueResourceNameSuffix}`;
             return this.azureDevOpsHelper.createAndRunPipeline(pipelineName, this.inputs);
         });
+
+        this.telemetryHelper.setCurrentStep('DisplayCreatedPipeline');
         vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
             .then((action: string) => {
                 if (action && action.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
+                    this.telemetryHelper.setTelemetry(TracePoints.ViewPipelineClicked, 'true');
                     vscode.env.openExternal(vscode.Uri.parse(queuedPipelineUrl));
                 }
             });
@@ -90,7 +122,7 @@ class PipelineConfigurer {
         if (this.inputs.isNewOrganization) {
             this.inputs.project = {
                 id: "",
-                name:  generateDevOpsProjectName(this.inputs.sourceRepository.repositoryName)
+                name: generateDevOpsProjectName(this.inputs.sourceRepository.repositoryName)
             };
             await vscode.window.withProgress(
                 {
@@ -108,6 +140,10 @@ class PipelineConfigurer {
                         })
                         .then((projectId) => {
                             this.inputs.project.id = projectId;
+                        })
+                        .catch((error) => {
+                            this.telemetryHelper.logError(TracePoints.CreateOrganizationFailure, error);
+                            throw error;
                         });
                 });
         }
@@ -119,13 +155,13 @@ class PipelineConfigurer {
         await this.createAzureRMServiceConnection();
     }
 
-
     private async analyzeNode(node: any): Promise<void> {
         if (node instanceof AzureTreeItem) {
             await this.extractAzureResourceFromNode(node);
         }
         else if (node && node.fsPath) {
             this.workspacePath = node.fsPath;
+            this.telemetryHelper.setTelemetry(TracePoints.SourceRepoLocation, SourceOptions.CurrentWorkspace);
         }
     }
 
@@ -143,6 +179,7 @@ class PipelineConfigurer {
                 { placeHolder: Messages.selectFolderOrRepository }
             );
 
+            this.telemetryHelper.setTelemetry(TracePoints.SourceRepoLocation, selectedSourceOption.label);
             switch (selectedSourceOption.label) {
                 case SourceOptions.BrowseLocalMachine:
                     let selectedFolder: vscode.Uri[] = await vscode.window.showOpenDialog(
@@ -174,6 +211,9 @@ class PipelineConfigurer {
     private async getGitDetailsFromRepository(workspacePath: string): Promise<void> {
         this.localGitRepoHelper = await LocalGitRepoHelper.GetHelperInstance(workspacePath);
         this.inputs.sourceRepository = await this.localGitRepoHelper.getGitRepoDetails(workspacePath);
+
+        // set telemetry
+        this.telemetryHelper.setTelemetry(TracePoints.RepoProvider, this.inputs.sourceRepository.repositoryProvider);
 
         if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
             let orgAndProjectName = AzureDevOpsHelper.getOrganizationAndProjectNameFromRepositoryUrl(this.inputs.sourceRepository.remoteUrl);
@@ -229,6 +269,8 @@ class PipelineConfigurer {
                 this.inputs.project = selectedProject.data;
             }
             else {
+                this.telemetryHelper.setTelemetry(TracePoints.NewOrganization, 'true');
+
                 this.inputs.isNewOrganization = true;
                 this.inputs.organizationName = await extensionVariables.ui.showInputBox({
                     placeHolder: Messages.enterAzureDevOpsOrganizationName,
@@ -240,7 +282,7 @@ class PipelineConfigurer {
 
     private async getSelectedPipeline(): Promise<void> {
         let appropriatePipelines: PipelineTemplate[] = await vscode.window.withProgress(
-            { location: vscode.ProgressLocation.Notification, title: Messages.analyzingRepo }, 
+            { location: vscode.ProgressLocation.Notification, title: Messages.analyzingRepo },
             () => templateHelper.analyzeRepoAndListAppropriatePipeline(this.inputs.sourceRepository.localPath)
         );
 
@@ -248,10 +290,10 @@ class PipelineConfigurer {
         let selectedOption = await extensionVariables.ui.showQuickPick(appropriatePipelines.map((pipeline) => { return { label: pipeline.label }; }), {
             placeHolder: Messages.selectPipelineTemplate
         });
-
         this.inputs.pipelineParameters.pipelineTemplate = appropriatePipelines.find((pipeline) => {
             return pipeline.label === selectedOption.label;
         });
+        this.telemetryHelper.setTelemetry(TracePoints.ChosenTemplate, this.inputs.pipelineParameters.pipelineTemplate.label);
     }
 
     private async getAzureResourceDetails(): Promise<void> {
@@ -267,7 +309,7 @@ class PipelineConfigurer {
         // show available resources and get the chosen one
         this.appServiceClient = new AppServiceClient(extensionVariables.azureAccountExtensionApi.sessions[0].credentials, this.inputs.targetResource.subscriptionId);
         let selectedResource: QuickPickItemWithData = await extensionVariables.ui.showQuickPick(
-            this.appServiceClient.GetAppServices(WebAppKind.WindowsApp).then((webApps) => webApps.map(x => {return {label: x.name, data: x};})),
+            this.appServiceClient.GetAppServices(WebAppKind.WindowsApp).then((webApps) => webApps.map(x => { return { label: x.name, data: x }; })),
             { placeHolder: Messages.selectWebApp });
         this.inputs.targetResource.resource = selectedResource.data;
     }
@@ -277,18 +319,36 @@ class PipelineConfigurer {
             this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, this.azureDevOpsClient);
         }
 
-        let githubPat = await extensionVariables.ui.showInputBox({ placeHolder: Messages.enterGitHubPat, prompt: Messages.githubPatTokenHelpMessage });
+        // Get GitHub PAT as an input from the user.
+        let githubPat = null;
+        try {
+            // TO-DO  Create a new helper function to time and log time for all user inputs.
+            // Log the time taken by the user to enter GitHub PAT
+            this.telemetryHelper.setTelemetry(TracePoints.GitHubPatStartTime, Date.UTC.toString());
+            githubPat = await extensionVariables.ui.showInputBox({ placeHolder: Messages.enterGitHubPat, prompt: Messages.githubPatTokenHelpMessage });
+            this.telemetryHelper.setTelemetry(TracePoints.GitHubPatEndTime, Date.UTC.toString());
+        }
+        catch (error) {
+            // This logs when the user cancels the operation.
+            this.telemetryHelper.setTelemetry(TracePoints.GitHubPatEndTime, Date.UTC.toString());
+            throw error;
+        }
+
+        // Create GitHub service connection in Azure DevOps
         await vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
                 title: Messages.creatingGitHubServiceConnection
             },
-            () => {
-                let serviceConnectionName = `${this.inputs.sourceRepository.repositoryName}-${this.uniqueResourceNameSuffix}`;
-                return this.serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, githubPat)
-                    .then((serviceConnectionId) => {
-                        this.inputs.sourceRepository.serviceConnectionId = serviceConnectionId;
-                    });
+            async () => {
+                try {
+                    let serviceConnectionName = `${this.inputs.sourceRepository.repositoryName}-${this.uniqueResourceNameSuffix}`;
+                    this.inputs.sourceRepository.serviceConnectionId = await this.serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, githubPat);
+                }
+                catch (error) {
+                    this.telemetryHelper.logError(TracePoints.GitHubServiceConnectionError, error);
+                    throw error;
+                }
             });
     }
 
@@ -303,14 +363,18 @@ class PipelineConfigurer {
                 location: vscode.ProgressLocation.Notification,
                 title: utils.format(Messages.creatingAzureServiceConnection, this.inputs.targetResource.subscriptionId)
             },
-            () => {
-                let scope = this.inputs.targetResource.resource.id;
-                let aadAppName = GraphHelper.generateAadApplicationName(this.inputs.organizationName, this.inputs.project.name);
-                return GraphHelper.createSpnAndAssignRole(this.inputs.azureSession, aadAppName, scope)
-                .then((aadApp) => {
+            async () => {
+                try {
+                    let scope = this.inputs.targetResource.resource.id;
+                    let aadAppName = GraphHelper.generateAadApplicationName(this.inputs.organizationName, this.inputs.project.name);
+                    let aadApp = await GraphHelper.createSpnAndAssignRole(this.inputs.azureSession, aadAppName, scope);
                     let serviceConnectionName = `${this.inputs.targetResource.resource.name}-${this.uniqueResourceNameSuffix}`;
                     return this.serviceConnectionHelper.createAzureServiceConnection(serviceConnectionName, this.inputs.azureSession.tenantId, this.inputs.targetResource.subscriptionId, scope, aadApp);
-                });
+                }
+                catch (error) {
+                    this.telemetryHelper.logError(TracePoints.AzureServiceConnectionCreateFailure, error);
+                    throw error;
+                }
             });
     }
 
@@ -324,13 +388,20 @@ class PipelineConfigurer {
         let commitOrDiscard = await vscode.window.showInformationMessage(Messages.modifyAndCommitFile, Messages.commitAndPush, Messages.discardPipeline);
         if (commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
             await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
-                // handle when the branch is not upto date with remote branch and push fails
-                let commitDetails = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFilePath);
-                this.inputs.sourceRepository.branch = commitDetails.branch;
-                this.inputs.sourceRepository.commitId = commitDetails.commitId;
+                try {
+                    // handle when the branch is not upto date with remote branch and push fails
+                    let commitDetails = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFilePath);
+                    this.inputs.sourceRepository.branch = commitDetails.branch;
+                    this.inputs.sourceRepository.commitId = commitDetails.commitId;
+                }
+                catch (error) {
+                    this.telemetryHelper.logError(TracePoints.CheckInPipelineFailure, error);
+                    throw (error);
+                }
             });
         }
         else {
+            this.telemetryHelper.setTelemetry(TracePoints.PipelineDiscarded, 'true');
             throw new Error(Messages.operationCancelled);
         }
     }

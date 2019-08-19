@@ -2,7 +2,7 @@ const uuid = require('uuid/v1');
 import { AzureEnvironment } from 'ms-rest-azure';
 import { AzureSession, Token, AadApplication } from '../model/models';
 import { generateRandomPassword } from './commonHelper';
-import { Messages } from '../messages';
+import { Messages } from '../resources/messages';
 import { RestClient } from '../clients/restClient';
 import { TokenCredentials, UrlBasedRequestPrepareOptions, ServiceClientCredentials } from 'ms-rest';
 import { TokenResponse, MemoryCache, AuthenticationContext } from 'adal-node';

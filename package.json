@@ -71,7 +71,13 @@
         ],
         "configuration": {
             "title": "Azure Pipelines extension configuration.",
-            "properties": {}
+            "properties": {
+                "[azure-pipelines].configure" : {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable to opt-in for Configure Pipeline feature."
+                }
+            }
         },
         "configurationDefaults": {
             "[azure-pipelines]": {
