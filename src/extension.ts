@@ -22,8 +22,8 @@ let perfStats = {
 const configurePipelineEnabled: boolean = vscode.workspace.getConfiguration('[azure-pipelines]', null).get('configure') ? true : false;
 
 export async function activate(context: vscode.ExtensionContext) {
-    logger.log('Extension has been activated!', 'ExtensionActivated');
-    setTelemetryReporter(context);
+    extensionVariables.reporter = createTelemetryReporter(context);
+    registerUiVariables(context);
 
     await callWithTelemetryAndErrorHandling('azurePipelines.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties['configurePipelineEnabled'] = `${configurePipelineEnabled}`;
@@ -33,13 +33,13 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     });
 
+    logger.log('Extension has been activated!', 'ExtensionActivated');
     return schemacontributor.schemaContributor;
 }
 
-function setTelemetryReporter(context: vscode.ExtensionContext) {
+function registerUiVariables(context: vscode.ExtensionContext) {
     // Register ui extension variables is required to be done for telemetry to start flowing for extension activation and other events.
     // It also facilitates registering command and called events telemetry.
-    extensionVariables.reporter = createTelemetryReporter(context);
     extensionVariables.outputChannel = vscode.window.createOutputChannel('Azure Pipelines');
     context.subscriptions.push(extensionVariables.outputChannel);
     extensionVariables.context = context;
@@ -48,10 +48,8 @@ function setTelemetryReporter(context: vscode.ExtensionContext) {
 }
 
 async function activateYmlContributor(context: vscode.ExtensionContext, activateContext: IActionContext) {
-    if (activateContext) {
-        activateContext.telemetry.properties.isActivationEvent = 'true';
-        activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
-    }
+    activateContext.telemetry.properties.isActivationEvent = 'true';
+    activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
 
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
@@ -83,13 +81,11 @@ async function activateYmlContributor(context: vscode.ExtensionContext, activate
             return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
         });
     })
-        .catch((reason) => {
-            logger.log(JSON.stringify(reason), 'ClientOnReadyError');
-            if (activateContext) {
-                activateContext.errorHandling.suppressDisplay = true;
-            }
-            extensionVariables.reporter.sendTelemetryEvent('extension.languageserver.onReadyError', { 'reason': JSON.stringify(reason) });
-        });
+    .catch((reason) => {
+        logger.log(JSON.stringify(reason), 'ClientOnReadyError');
+        activateContext.errorHandling.suppressDisplay = true;
+        extensionVariables.reporter.sendTelemetryEvent('extension.languageserver.onReadyError', { 'reason': JSON.stringify(reason) });
+    });
 
     // TODO: Can we get rid of this since it's set in package.json?
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });

@@ -24,7 +24,7 @@ export async function activateConfigurePipeline(): Promise<AzureExtensionApiProv
     // The commandId parameter must match the command field in package.json
     registerCommand('configure-pipeline', async (actionContext: IActionContext, node: any) => {
         // The code you place here will be executed every time your command is executed
-        let telemetryHelper = new TelemetryHelper(actionContext, 'configure', journeyId);
+        let telemetryHelper = new TelemetryHelper(actionContext, 'configure');
         await configurePipeline(telemetryHelper, node);
     });
 

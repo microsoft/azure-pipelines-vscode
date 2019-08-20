@@ -13,18 +13,21 @@ import { QuickPickItem } from 'vscode';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
 import { SourceOptions, RepositoryProvider, extensionVariables, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData } from './model/models';
 import { TracePoints } from './resources/tracePoints';
+import { TelemetryKeys } from './resources/telemetryKeys';
 import * as path from 'path';
 import * as templateHelper from './helper/templateHelper';
 import * as utils from 'util';
 import * as vscode from 'vscode';
 import { TelemetryHelper } from './helper/telemetryHelper';
 
+const Layer: string = 'configure';
+
 export async function configurePipeline(telemetryHelper: TelemetryHelper, node: AzureTreeItem) {
+    let startTime = Date.now();
     try {
-        telemetryHelper.setTelemetry(TracePoints.CommandStartTime, Date.UTC.toString());
         if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
             // set telemetry
-            telemetryHelper.setTelemetry(TracePoints.AzureLoginRequired, 'true');
+            telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
 
             let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
             if (signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
@@ -32,13 +35,7 @@ export async function configurePipeline(telemetryHelper: TelemetryHelper, node: 
             }
             else {
                 let error = new Error(Messages.azureLoginRequired);
-                extensionVariables.reporter.sendTelemetryEvent(
-                    TracePoints.AzureLoginFailure,
-                    {
-                        'errorMessage': error.message
-                    }
-                );
-
+                telemetryHelper.setResult('Failed', error);
                 throw error;
             }
         }
@@ -48,17 +45,14 @@ export async function configurePipeline(telemetryHelper: TelemetryHelper, node: 
     }
     catch (error) {
         // log error in telemetery.
-        if (error instanceof UserCancelledError) {
-            telemetryHelper.setError(error);
-        }
-        else {
-            telemetryHelper.setError(error);
+        telemetryHelper.setResult('Failed', error);
+        if (!(error instanceof UserCancelledError)) {
             extensionVariables.outputChannel.appendLine(error.message);
             vscode.window.showErrorMessage(error.message);
         }
     }
 
-    telemetryHelper.setTelemetry(TracePoints.CommandEndTime, Date.UTC.toString());
+    telemetryHelper.setTelemetry(TelemetryKeys.CommandExecutionDuration, ((Date.now() - startTime) / 1000).toString());
 }
 
 class PipelineConfigurer {
@@ -101,7 +95,7 @@ class PipelineConfigurer {
         vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
             .then((action: string) => {
                 if (action && action.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
-                    this.telemetryHelper.setTelemetry(TracePoints.ViewPipelineClicked, 'true');
+                    this.telemetryHelper.setTelemetry(TelemetryKeys.ViewPipelineClicked, 'true');
                     vscode.env.openExternal(vscode.Uri.parse(queuedPipelineUrl));
                 }
             });
@@ -142,7 +136,7 @@ class PipelineConfigurer {
                             this.inputs.project.id = projectId;
                         })
                         .catch((error) => {
-                            this.telemetryHelper.logError(TracePoints.CreateOrganizationFailure, error);
+                            this.telemetryHelper.logError(Layer, TracePoints.CreateOrganizationFailure, error);
                             throw error;
                         });
                 });
@@ -161,7 +155,7 @@ class PipelineConfigurer {
         }
         else if (node && node.fsPath) {
             this.workspacePath = node.fsPath;
-            this.telemetryHelper.setTelemetry(TracePoints.SourceRepoLocation, SourceOptions.CurrentWorkspace);
+            this.telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.CurrentWorkspace);
         }
     }
 
@@ -179,7 +173,7 @@ class PipelineConfigurer {
                 { placeHolder: Messages.selectFolderOrRepository }
             );
 
-            this.telemetryHelper.setTelemetry(TracePoints.SourceRepoLocation, selectedSourceOption.label);
+            this.telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, selectedSourceOption.label);
             switch (selectedSourceOption.label) {
                 case SourceOptions.BrowseLocalMachine:
                     let selectedFolder: vscode.Uri[] = await vscode.window.showOpenDialog(
@@ -213,7 +207,7 @@ class PipelineConfigurer {
         this.inputs.sourceRepository = await this.localGitRepoHelper.getGitRepoDetails(workspacePath);
 
         // set telemetry
-        this.telemetryHelper.setTelemetry(TracePoints.RepoProvider, this.inputs.sourceRepository.repositoryProvider);
+        this.telemetryHelper.setTelemetry(TelemetryKeys.RepoProvider, this.inputs.sourceRepository.repositoryProvider);
 
         if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
             let orgAndProjectName = AzureDevOpsHelper.getOrganizationAndProjectNameFromRepositoryUrl(this.inputs.sourceRepository.remoteUrl);
@@ -269,7 +263,7 @@ class PipelineConfigurer {
                 this.inputs.project = selectedProject.data;
             }
             else {
-                this.telemetryHelper.setTelemetry(TracePoints.NewOrganization, 'true');
+                this.telemetryHelper.setTelemetry(TelemetryKeys.NewOrganization, 'true');
 
                 this.inputs.isNewOrganization = true;
                 this.inputs.organizationName = await extensionVariables.ui.showInputBox({
@@ -293,7 +287,7 @@ class PipelineConfigurer {
         this.inputs.pipelineParameters.pipelineTemplate = appropriatePipelines.find((pipeline) => {
             return pipeline.label === selectedOption.label;
         });
-        this.telemetryHelper.setTelemetry(TracePoints.ChosenTemplate, this.inputs.pipelineParameters.pipelineTemplate.label);
+        this.telemetryHelper.setTelemetry(TelemetryKeys.ChosenTemplate, this.inputs.pipelineParameters.pipelineTemplate.label);
     }
 
     private async getAzureResourceDetails(): Promise<void> {
@@ -321,16 +315,16 @@ class PipelineConfigurer {
 
         // Get GitHub PAT as an input from the user.
         let githubPat = null;
+        let startTime = Date.now();
         try {
             // TO-DO  Create a new helper function to time and log time for all user inputs.
             // Log the time taken by the user to enter GitHub PAT
-            this.telemetryHelper.setTelemetry(TracePoints.GitHubPatStartTime, Date.UTC.toString());
             githubPat = await extensionVariables.ui.showInputBox({ placeHolder: Messages.enterGitHubPat, prompt: Messages.githubPatTokenHelpMessage });
-            this.telemetryHelper.setTelemetry(TracePoints.GitHubPatEndTime, Date.UTC.toString());
+            this.telemetryHelper.setTelemetry(TelemetryKeys.GitHubPatDuration, ((Date.now() - startTime) / 1000).toString());
         }
         catch (error) {
             // This logs when the user cancels the operation.
-            this.telemetryHelper.setTelemetry(TracePoints.GitHubPatEndTime, Date.UTC.toString());
+            this.telemetryHelper.setTelemetry(TelemetryKeys.GitHubPatDuration, ((Date.now() - startTime) / 1000).toString());
             throw error;
         }
 
@@ -346,7 +340,7 @@ class PipelineConfigurer {
                     this.inputs.sourceRepository.serviceConnectionId = await this.serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, githubPat);
                 }
                 catch (error) {
-                    this.telemetryHelper.logError(TracePoints.GitHubServiceConnectionError, error);
+                    this.telemetryHelper.logError(Layer, TracePoints.GitHubServiceConnectionError, error);
                     throw error;
                 }
             });
@@ -369,10 +363,10 @@ class PipelineConfigurer {
                     let aadAppName = GraphHelper.generateAadApplicationName(this.inputs.organizationName, this.inputs.project.name);
                     let aadApp = await GraphHelper.createSpnAndAssignRole(this.inputs.azureSession, aadAppName, scope);
                     let serviceConnectionName = `${this.inputs.targetResource.resource.name}-${this.uniqueResourceNameSuffix}`;
-                    return this.serviceConnectionHelper.createAzureServiceConnection(serviceConnectionName, this.inputs.azureSession.tenantId, this.inputs.targetResource.subscriptionId, scope, aadApp);
+                    return await this.serviceConnectionHelper.createAzureServiceConnection(serviceConnectionName, this.inputs.azureSession.tenantId, this.inputs.targetResource.subscriptionId, scope, aadApp);
                 }
                 catch (error) {
-                    this.telemetryHelper.logError(TracePoints.AzureServiceConnectionCreateFailure, error);
+                    this.telemetryHelper.logError(Layer, TracePoints.AzureServiceConnectionCreateFailure, error);
                     throw error;
                 }
             });
@@ -395,13 +389,13 @@ class PipelineConfigurer {
                     this.inputs.sourceRepository.commitId = commitDetails.commitId;
                 }
                 catch (error) {
-                    this.telemetryHelper.logError(TracePoints.CheckInPipelineFailure, error);
+                    this.telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
                     throw (error);
                 }
             });
         }
         else {
-            this.telemetryHelper.setTelemetry(TracePoints.PipelineDiscarded, 'true');
+            this.telemetryHelper.setTelemetry(TelemetryKeys.PipelineDiscarded, 'true');
             throw new Error(Messages.operationCancelled);
         }
     }

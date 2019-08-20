@@ -1,7 +1,7 @@
 import { IActionContext, ITelemetryReporter } from "vscode-azureextensionui";
 
 import { extensionVariables } from "../model/models";
-import { TracePoints } from "../resources/tracePoints";
+import { TelemetryKeys } from '../resources/telemetryKeys';
 
 const uuid = require('uuid/v4');
 
@@ -15,8 +15,8 @@ export class TelemetryHelper {
         this.telemetryReporter = extensionVariables.reporter;
         this.journeyId = uuid();
         this.command = command;
-        this.setTelemetry(TracePoints.Command, command);
-        this.setTelemetry(TracePoints.JourneyId, this.journeyId);
+        this.setTelemetry(TelemetryKeys.Command, command);
+        this.setTelemetry(TelemetryKeys.JourneyId, this.journeyId);
     }
 
     public setTelemetry(key: string, value: string) {
@@ -25,18 +25,11 @@ export class TelemetryHelper {
         }
     }
 
-    public setError(error: Error) {
-        this.actionContext.telemetry.properties.error = error.stack;
-        this.actionContext.telemetry.properties.errorMessage = error.message;
-    }
-
-    public setResult(result: 'Succeeded' | 'Failed' | 'Canceled', error?: Error, currentStep?: string) {
+    public setResult(result: 'Succeeded' | 'Failed' | 'Canceled', error?: Error) {
         this.actionContext.telemetry.properties.result = result;
-        if (result === "Failed" && error) {
-            this.setError(error);
-        }
-        else if(result === 'Canceled' && currentStep) {
-            this.setCurrentStep(currentStep);
+        if (error) {
+            this.actionContext.telemetry.properties.error = error.stack;
+            this.actionContext.telemetry.properties.errorMessage = error.message;
         }
     }
 
@@ -44,23 +37,25 @@ export class TelemetryHelper {
         this.actionContext.telemetry.properties.cancelStep = stepName;
     }
 
-    public logError(tracePoint: string, error: Error) {
+    public logError(layer: string, tracePoint: string, error: Error) {
         this.telemetryReporter.sendTelemetryEvent(
             tracePoint,
             {
                 'journeyId': this.journeyId,
                 'command': this.command,
-                'error': `Error: ${error.name}, Error.Message: ${error.message}, Error.Stack: ${error.stack}`
+                'error': JSON.stringify(error),
+                'layer': layer
             });
     }
 
-    public logData(tracePoint: string, data: string) {
+    public logInfo(layer: string, tracePoint: string, data: string) {
         this.telemetryReporter.sendTelemetryEvent(
             tracePoint,
             {
                 'journeyId': this.journeyId,
                 'command': this.command,
-                'data': data
+                'data': data,
+                'layer': layer
             });
     }
 }
