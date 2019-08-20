@@ -3,6 +3,12 @@ export class TracePoints {
     public static AzureLoginFailure = 'azureLoginFailure';
     public static AzureServiceConnectionCreateFailure = 'AzureServiceConnectionCreateFailure';
     public static CheckInPipelineFailure = 'checkInPipelineFailure';
-    public static CreateOrganizationFailure = 'createOrganizationFailure';
+    public static CreateNewOrganizationAndProjectFailure = 'CreateNewOrganizationAndProjectFailure';
     public static GitHubServiceConnectionError = 'gitHubServiceConnectionError';
+    public static CreateAndQueuePipelineFailed = 'createAndBuildPipelineFailed';
+    public static GetSourceRepositoryDetailsFailed = 'getSourceRepositoryDetailsFailed';
+    public static ExtractAzureResourceFromNodeFailed = 'extractAzureResourceFromNodeFailed';
+    public static GetAzureDevOpsDetailsFailed = 'GetAzureDevOpsDetailsFailed';
+    public static AddingContentToPipelineFileFailed = 'AddingContentToPipelineFileFailed';
+    public static PipelineFileCheckInFailed = 'PipelineFileCheckInFailed';
 }

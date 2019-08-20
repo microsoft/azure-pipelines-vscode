@@ -81,6 +81,8 @@ export class AzureDevOpsHelper {
             };
         }
 
+        let properties = { 'source': 'VSCode' };
+
         return {
             name: pipelineName,
             type: 2, //YAML process type
@@ -111,7 +113,8 @@ export class AzureDevOpsHelper {
                 defaultBranch: inputs.sourceRepository.branch,
                 url: inputs.sourceRepository.remoteUrl,
                 properties: repositoryProperties
-            }
+            },
+            properties: properties
         };
     }
 

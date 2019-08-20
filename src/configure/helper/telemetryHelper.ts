@@ -2,6 +2,7 @@ import { IActionContext, ITelemetryReporter } from "vscode-azureextensionui";
 
 import { extensionVariables } from "../model/models";
 import { TelemetryKeys } from '../resources/telemetryKeys';
+import * as logger from '../../logger';
 
 const uuid = require('uuid/v4');
 
@@ -46,6 +47,8 @@ export class TelemetryHelper {
                 'error': JSON.stringify(error),
                 'layer': layer
             });
+
+            logger.log(JSON.stringify(error));
     }
 
     public logInfo(layer: string, tracePoint: string, data: string) {

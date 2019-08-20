@@ -14,9 +14,9 @@ import * as logger from './logger';
 import * as schemaassociationservice from './schema-association-service';
 import * as schemacontributor from './schema-contributor';
 
-let perfStats = {
-    loadStartTime: Date.now(),
-    loadEndTime: undefined
+let FileLoadPerformance = {
+    startTime: Date.now(),
+    endTime: undefined
 };
 
 const configurePipelineEnabled: boolean = vscode.workspace.getConfiguration('[azure-pipelines]', null).get('configure') ? true : false;
@@ -26,6 +26,8 @@ export async function activate(context: vscode.ExtensionContext) {
     registerUiVariables(context);
 
     await callWithTelemetryAndErrorHandling('azurePipelines.activate', async (activateContext: IActionContext) => {
+        activateContext.telemetry.properties.isActivationEvent = 'true';
+        activateContext.telemetry.measurements.mainFileLoad = (FileLoadPerformance.endTime - FileLoadPerformance.startTime) / 1000;
         activateContext.telemetry.properties['configurePipelineEnabled'] = `${configurePipelineEnabled}`;
         await activateYmlContributor(context, activateContext);
         if (configurePipelineEnabled) {
@@ -48,9 +50,6 @@ function registerUiVariables(context: vscode.ExtensionContext) {
 }
 
 async function activateYmlContributor(context: vscode.ExtensionContext, activateContext: IActionContext) {
-    activateContext.telemetry.properties.isActivationEvent = 'true';
-    activateContext.telemetry.measurements.mainFileLoad = (perfStats.loadEndTime - perfStats.loadStartTime) / 1000;
-
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
     const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Support', serverOptions, clientOptions);
@@ -124,4 +123,4 @@ function getClientOptions(): languageclient.LanguageClientOptions {
 export function deactivate() {
 }
 
-perfStats.loadEndTime = Date.now();
+FileLoadPerformance.endTime = Date.now();
