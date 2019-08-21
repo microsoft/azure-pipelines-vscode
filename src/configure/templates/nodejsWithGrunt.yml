@@ -6,6 +6,13 @@
 trigger:
 - {{ sourceRepository.branch }}
 
+variables:
+  # Azure Resource Manager connection
+  azureSubscription: '{{ targetResource.serviceConnectionId }}'
+  
+  # Web app name
+  webAppName: '{{ targetResource.resource.name }}'
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -55,7 +62,7 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Azure Web App Deploy'
             inputs:
-              azureSubscription: '{{ targetResource.serviceConnectionId }}'
+              azureSubscription: $(azureSubscription)
               appType: webApp
-              appName: '{{ targetResource.resource.name }}'
+              appName: $(webAppName)
               package: $(Pipeline.Workspace)/drop/$(Build.BuildId).zip

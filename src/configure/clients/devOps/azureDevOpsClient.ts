@@ -1,7 +1,7 @@
-import { BuildDefinition, Build } from '../../model/azureDevOps';
+import { Build, BuildDefinition } from '../../model/azureDevOps';
 import { Messages } from '../../resources/messages';
-import { Organization, DevOpsProject } from '../../model/models';
-import { ReservedHostNames } from '../../resources/constants';
+import { DevOpsProject, Organization } from '../../model/models';
+import { AzureDevOpsBaseUrl, ReservedHostNames } from '../../resources/constants';
 import { RestClient } from '../restClient';
 import { ServiceClientCredentials, UrlBasedRequestPrepareOptions } from 'ms-rest';
 import { sleepForMilliSeconds, stringCompareFunction } from "../../helper/commonHelper";
@@ -11,7 +11,6 @@ import * as util from 'util';
 export class AzureDevOpsClient {
     private restClient: RestClient;
     private listOrgPromise: Promise<Organization[]>;
-    private lastAccessedOrganization: Organization;
 
     constructor(credentials: ServiceClientCredentials) {
         this.restClient = new RestClient(credentials);
@@ -102,8 +101,7 @@ export class AzureDevOpsClient {
     }
 
     public async listProjects(organizationName: string): Promise<Array<DevOpsProject>> {
-        let url = await this.getBaseOrgUrl(organizationName, "tfs");
-        url = `${url}/_apis/projects`;
+        let url = `${AzureDevOpsBaseUrl}/${organizationName}/_apis/projects`;
         let response = await this.restClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
             url: url,
             headers: {
@@ -128,8 +126,7 @@ export class AzureDevOpsClient {
     }
 
     public async getRepository(organizationName: string, projectName: string, repositoryName: string): Promise<any> {
-        let url = await this.getBaseOrgUrl(organizationName, 'tfs');
-        url = `${url}/${projectName}/_apis/git/repositories/${repositoryName}`;
+        let url = `${AzureDevOpsBaseUrl}/${organizationName}/${projectName}/_apis/git/repositories/${repositoryName}`;
 
         return this.restClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
             url: url,
@@ -146,8 +143,7 @@ export class AzureDevOpsClient {
     }
 
     public async createBuildDefinition(organizationName: string, buildDefinition: BuildDefinition): Promise<any> {
-        let url = await this.getBaseOrgUrl(organizationName, "tfs");
-        url = `${url}/${buildDefinition.project.id}/_apis/build/definitions`;
+        let url = `${AzureDevOpsBaseUrl}/${organizationName}/${buildDefinition.project.id}/_apis/build/definitions`;
 
         return this.restClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
             url: url,
@@ -162,8 +158,7 @@ export class AzureDevOpsClient {
     }
 
     public async queueBuild(organizationName: string, build: Build): Promise<any> {
-        let url = await this.getBaseOrgUrl(organizationName, "tfs");
-        url = `${url}/${build.project.id}/_apis/build/builds`;
+        let url = `${AzureDevOpsBaseUrl}/${organizationName}/${build.project.id}/_apis/build/builds`;
 
         return this.restClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
             url: url,
@@ -175,21 +170,6 @@ export class AzureDevOpsClient {
             serializationMapper: null,
             deserializationMapper: null
         });
-    }
-
-    public async getBaseOrgUrl(organizationName: string, service: string): Promise<string> {
-        if (!this.lastAccessedOrganization || this.lastAccessedOrganization.accountName !== organizationName) {
-            let organizations = await this.listOrgPromise;
-            this.lastAccessedOrganization = organizations.find((element) => {
-                return element.accountName === organizationName;
-            });
-        }
-
-        switch (service) {
-            case "tfs":
-            default:
-                return this.lastAccessedOrganization.properties["Microsoft.VisualStudio.Services.Account.ServiceUrl.00025394-6065-48ca-87d9-7f5672854ef7"]["$value"];
-        }
     }
 
     public async validateOrganizationName(organizationName: string): Promise<string> {
@@ -229,8 +209,7 @@ export class AzureDevOpsClient {
     }
 
     public async getProjectIdFromName(organizationName: string, projectName: string): Promise<string> {
-        let url = await this.getBaseOrgUrl(organizationName, "tfs");
-        url = `${url}/_apis/projects/${projectName}`;
+        let url = `${AzureDevOpsBaseUrl}/${organizationName}/_apis/projects/${projectName}`;
 
         return this.restClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
             url: url,
@@ -315,6 +294,26 @@ export class AzureDevOpsClient {
             method: "GET",
             deserializationMapper: null,
             serializationMapper: null
+        });
+    }
+
+    public getAgentQueues(organizationName: string, projectName: string): Promise<Array<any>> {
+        let url = `${AzureDevOpsBaseUrl}/${organizationName}/${projectName}/_apis/distributedtask/queues`;
+
+        return this.restClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
+            url: url,
+            method: "GET",
+            headers: {
+                "Accept": "application/json;"
+            },
+            queryParameters: {
+                "api-version": "5.1-preview.1"
+            },
+            serializationMapper: null,
+            deserializationMapper: null
+        })
+        .then((response) => {
+            return response.value;
         });
     }
 }

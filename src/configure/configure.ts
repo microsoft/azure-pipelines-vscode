@@ -4,7 +4,7 @@ import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
 import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
 import { exit } from 'process';
-import { generateDevOpsProjectName } from './helper/commonHelper';
+import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { GraphHelper } from './helper/graphHelper';
 import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
@@ -92,7 +92,7 @@ class PipelineConfigurer {
         this.telemetryHelper.setCurrentStep('CreateAndRunPipeline');
         let queuedPipelineUrl = await vscode.window.withProgress<string>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
             try {
-                let pipelineName = `${this.inputs.targetResource.resource.name}.${this.uniqueResourceNameSuffix}`;
+                let pipelineName = `${this.inputs.targetResource.resource.name}-${this.uniqueResourceNameSuffix}`;
                 return await this.azureDevOpsHelper.createAndRunPipeline(pipelineName, this.inputs);
             }
             catch (error) {
@@ -229,7 +229,7 @@ class PipelineConfigurer {
         if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
             let orgAndProjectName = AzureDevOpsHelper.getOrganizationAndProjectNameFromRepositoryUrl(this.inputs.sourceRepository.remoteUrl);
             this.inputs.organizationName = orgAndProjectName.orgnizationName;
-            this.azureDevOpsClient.getRepository(this.inputs.organizationName, this.inputs.project.name, this.inputs.sourceRepository.repositoryName)
+            this.azureDevOpsClient.getRepository(this.inputs.organizationName, orgAndProjectName.projectName, this.inputs.sourceRepository.repositoryName)
                 .then((repository) => {
                     this.inputs.sourceRepository.repositoryId = repository.id;
                     this.inputs.project = {
@@ -294,10 +294,19 @@ class PipelineConfigurer {
                     this.telemetryHelper.setTelemetry(TelemetryKeys.NewOrganization, 'true');
 
                     this.inputs.isNewOrganization = true;
-                    this.inputs.organizationName = await this.controlProvider.showInputBox({
-                        placeHolder: Messages.enterAzureDevOpsOrganizationName,
-                        validateInput: (organizationName) => this.azureDevOpsClient.validateOrganizationName(organizationName)
-                    });
+                    let userName = this.inputs.azureSession.userId.substring(0, this.inputs.azureSession.userId.indexOf("@"));
+                    let organizationName = generateDevOpsOrganizationName(userName, this.inputs.sourceRepository.repositoryName);
+
+                    let validationErrorMessage = await this.azureDevOpsClient.validateOrganizationName(organizationName);
+                    if(validationErrorMessage) {
+                        this.inputs.organizationName = await this.controlProvider.showInputBox({
+                            placeHolder: Messages.enterAzureDevOpsOrganizationName,
+                            validateInput: (organizationName) => this.azureDevOpsClient.validateOrganizationName(organizationName)
+                        });
+                    }
+                    else {
+                        this.inputs.organizationName = organizationName;
+                    }
                 }
             }
         }
@@ -417,14 +426,12 @@ class PipelineConfigurer {
         }
 
         try {
-            let commitOrDiscard = await vscode.window.showInformationMessage(Messages.modifyAndCommitFile, Messages.commitAndPush, Messages.discardPipeline);
+            let commitOrDiscard = await vscode.window.showInformationMessage(utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, this.inputs.sourceRepository.branch, this.inputs.sourceRepository.remoteName), Messages.commitAndPush, Messages.discardPipeline);
             if (commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
                 await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
                     try {
                         // handle when the branch is not upto date with remote branch and push fails
-                        let commitDetails = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFilePath);
-                        this.inputs.sourceRepository.branch = commitDetails.branch;
-                        this.inputs.sourceRepository.commitId = commitDetails.commitId;
+                        this.inputs.sourceRepository.commitId = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFilePath, this.inputs.sourceRepository);
                     }
                     catch (error) {
                         this.telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);

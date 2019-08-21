@@ -69,6 +69,7 @@ export interface GitRepositoryParameters {
     repositoryProvider: RepositoryProvider;
     repositoryName: string;
     repositoryId: string;
+    remoteName: string;
     remoteUrl: string;
     branch: string;
     commitId: string;
