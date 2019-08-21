@@ -24,36 +24,36 @@ import { ControlProvider } from './helper/controlProvider';
 const Layer: string = 'configure';
 
 export async function configurePipeline(telemetryHelper: TelemetryHelper, node: AzureTreeItem) {
-    let startTime = Date.now();
-    try {
-        if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
-            // set telemetry
-            telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
+    await telemetryHelper.execteFunctionWithTimeTelemetry(async () => {
+        try {
+            if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
+                // set telemetry
+                telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
 
-            let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
-            if (signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
-                await vscode.commands.executeCommand("azure-account.login");
+                let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
+                if (signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
+                    await vscode.commands.executeCommand("azure-account.login");
+                }
+                else {
+                    let error = new Error(Messages.azureLoginRequired);
+                    telemetryHelper.setResult('Failed', error);
+                    throw error;
+                }
             }
-            else {
-                let error = new Error(Messages.azureLoginRequired);
-                telemetryHelper.setResult('Failed', error);
-                throw error;
+
+            var configurer = new PipelineConfigurer(telemetryHelper);
+            await configurer.configure(node);
+        }
+        catch (error) {
+            // log error in telemetery.
+            telemetryHelper.setResult('Failed', error);
+            if (!(error instanceof UserCancelledError)) {
+                extensionVariables.outputChannel.appendLine(error.message);
+                vscode.window.showErrorMessage(error.message);
             }
         }
 
-        var configurer = new PipelineConfigurer(telemetryHelper);
-        await configurer.configure(node);
-    }
-    catch (error) {
-        // log error in telemetery.
-        telemetryHelper.setResult('Failed', error);
-        if (!(error instanceof UserCancelledError)) {
-            extensionVariables.outputChannel.appendLine(error.message);
-            vscode.window.showErrorMessage(error.message);
-        }
-    }
-
-    telemetryHelper.setTelemetry(TelemetryKeys.CommandExecutionDuration, ((Date.now() - startTime) / 1000).toString());
+    }, TelemetryKeys.CommandExecutionDuration);
 }
 
 class PipelineConfigurer {
@@ -351,18 +351,13 @@ class PipelineConfigurer {
 
         // Get GitHub PAT as an input from the user.
         let githubPat = null;
-        let startTime = Date.now();
-        try {
-            // TO-DO  Create a new helper function to time and log time for all user inputs.
-            // Log the time taken by the user to enter GitHub PAT
-            githubPat = await this.controlProvider.showInputBox({ placeHolder: Messages.enterGitHubPat, prompt: Messages.githubPatTokenHelpMessage });
-            this.telemetryHelper.setTelemetry(TelemetryKeys.GitHubPatDuration, ((Date.now() - startTime) / 1000).toString());
-        }
-        catch (error) {
-            // This logs when the user cancels the operation.
-            this.telemetryHelper.setTelemetry(TelemetryKeys.GitHubPatDuration, ((Date.now() - startTime) / 1000).toString());
-            throw error;
-        }
+        this.telemetryHelper.execteFunctionWithTimeTelemetry(
+            async () => {
+                // TO-DO  Create a new helper function to time and log time for all user inputs.
+                // Log the time taken by the user to enter GitHub PAT
+                githubPat = await this.controlProvider.showInputBox({ placeHolder: Messages.enterGitHubPat, prompt: Messages.githubPatTokenHelpMessage });
+            },
+            TelemetryKeys.GitHubPatDuration);
 
         // Create GitHub service connection in Azure DevOps
         await vscode.window.withProgress(
@@ -439,7 +434,7 @@ class PipelineConfigurer {
             }
             else {
                 this.telemetryHelper.setTelemetry(TelemetryKeys.PipelineDiscarded, 'true');
-                throw new Error(Messages.operationCancelled);
+                throw new UserCancelledError(Messages.operationCancelled);
             }
         }
         catch (error) {

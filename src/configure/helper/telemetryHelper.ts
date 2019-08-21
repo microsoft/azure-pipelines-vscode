@@ -63,4 +63,14 @@ export class TelemetryHelper {
                 'info': info
             });
     }
+
+    public async execteFunctionWithTimeTelemetry<T>(callback: () => T, telemetryKey: string): Promise<T> {
+        let startTime = Date.now();
+        try {
+            return await callback();
+        }
+        finally{
+            this.setTelemetry(telemetryKey, ((Date.now() - startTime)/1000).toString());
+        }
+    }
 }

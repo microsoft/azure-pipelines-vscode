@@ -13,26 +13,28 @@ import { extensionVariables } from './configure/model/models';
 import * as logger from './logger';
 import * as schemaassociationservice from './schema-association-service';
 import * as schemacontributor from './schema-contributor';
-
-let FileLoadPerformance = {
-    startTime: Date.now(),
-    endTime: undefined
-};
+import { TelemetryHelper } from './configure/helper/telemetryHelper';
+import { TelemetryKeys } from './configure/resources/telemetryKeys';
 
 const configurePipelineEnabled: boolean = vscode.workspace.getConfiguration('[azure-pipelines]', null).get('configure') ? true : false;
 
 export async function activate(context: vscode.ExtensionContext) {
     extensionVariables.reporter = createTelemetryReporter(context);
+    extensionVariables.reporter.sendTelemetryEvent('hiyadaPipelineExtension.Activated', { 'test': 'true' });
     registerUiVariables(context);
 
     await callWithTelemetryAndErrorHandling('azurePipelines.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
-        activateContext.telemetry.measurements.mainFileLoad = (FileLoadPerformance.endTime - FileLoadPerformance.startTime) / 1000;
-        activateContext.telemetry.properties['configurePipelineEnabled'] = `${configurePipelineEnabled}`;
-        await activateYmlContributor(context, activateContext);
-        if (configurePipelineEnabled) {
-            await activateConfigurePipeline();
-        }
+        let telemetryHelper = new TelemetryHelper(activateContext, 'activate');
+        telemetryHelper.setTelemetry('configurePipelineEnabled', `${configurePipelineEnabled}`);
+        await telemetryHelper.execteFunctionWithTimeTelemetry(
+            async () => {
+                await activateYmlContributor(context, telemetryHelper);
+                if (configurePipelineEnabled) {
+                    await activateConfigurePipeline();
+                }
+            },
+            TelemetryKeys.ExtensionActivationDuration);
     });
 
     logger.log('Extension has been activated!', 'ExtensionActivated');
@@ -49,7 +51,7 @@ function registerUiVariables(context: vscode.ExtensionContext) {
     registerUIExtensionVariables(extensionVariables);
 }
 
-async function activateYmlContributor(context: vscode.ExtensionContext, activateContext: IActionContext) {
+async function activateYmlContributor(context: vscode.ExtensionContext) {
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
     const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Support', serverOptions, clientOptions);
@@ -82,7 +84,6 @@ async function activateYmlContributor(context: vscode.ExtensionContext, activate
     })
     .catch((reason) => {
         logger.log(JSON.stringify(reason), 'ClientOnReadyError');
-        activateContext.errorHandling.suppressDisplay = true;
         extensionVariables.reporter.sendTelemetryEvent('extension.languageserver.onReadyError', { 'reason': JSON.stringify(reason) });
     });
 
@@ -122,5 +123,3 @@ function getClientOptions(): languageclient.LanguageClientOptions {
 // this method is called when your extension is deactivated
 export function deactivate() {
 }
-
-FileLoadPerformance.endTime = Date.now();
