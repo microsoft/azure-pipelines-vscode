@@ -176,7 +176,7 @@ class PipelineConfigurer {
         if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
             let orgAndProjectName = AzureDevOpsHelper.getOrganizationAndProjectNameFromRepositoryUrl(this.inputs.sourceRepository.remoteUrl);
             this.inputs.organizationName = orgAndProjectName.orgnizationName;
-            this.azureDevOpsClient.getRepository(this.inputs.organizationName, this.inputs.project.name, this.inputs.sourceRepository.repositoryName)
+            this.azureDevOpsClient.getRepository(this.inputs.organizationName, orgAndProjectName.projectName, this.inputs.sourceRepository.repositoryName)
                 .then((repository) => {
                     this.inputs.sourceRepository.repositoryId = repository.id;
                     this.inputs.project = {
@@ -319,13 +319,11 @@ class PipelineConfigurer {
             this.inputs.sourceRepository.localPath);
 
         await vscode.window.showTextDocument(vscode.Uri.file(path.join(this.inputs.sourceRepository.localPath, this.inputs.pipelineParameters.pipelineFilePath)));
-        let commitOrDiscard = await vscode.window.showInformationMessage(Messages.modifyAndCommitFile, Messages.commitAndPush, Messages.discardPipeline);
+        let commitOrDiscard = await vscode.window.showInformationMessage(utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, this.inputs.sourceRepository.branch, this.inputs.sourceRepository.remoteName), Messages.commitAndPush, Messages.discardPipeline);
         if (commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
             await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
                 // handle when the branch is not upto date with remote branch and push fails
-                let commitDetails = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFilePath);
-                this.inputs.sourceRepository.branch = commitDetails.branch;
-                this.inputs.sourceRepository.commitId = commitDetails.commitId;
+                this.inputs.sourceRepository.commitId = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFilePath, this.inputs.sourceRepository);
             });
         }
         else {

@@ -1,3 +1,5 @@
+export const AzureDevOpsBaseUrl: string = "https://dev.azure.com";
+export const HostedVS2017QueueName: string = "Hosted VS2017";
 export const ReservedHostNames: string[] = [
     // Reserved names from https://dev.azure.com/mseng/AzureDevOps/_git/AzureDevOps?path=%2FMps%2FService%2FNameResolution%2FServicing%2FHost%2FDeployment%2FGroups%2FInstall%2FInstallNameResolutionService.xml&version=GBmaster
     // Forbidden

@@ -6,15 +6,17 @@ import * as Q from 'q';
 
 export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): Promise<PipelineTemplate[]> {
     // TO-DO: To populate the possible templates on the basis of azure target resource.
+    let templateList = simpleWebAppTemplates;
     let analysisResult = await analyzeRepo(repoPath);
+
 
     if (analysisResult.isNodeApplication) {
         // add all node application templates
-        return nodeTemplates;
+        templateList = nodeTemplates.concat(templateList);
     }
 
     // add all possible templates as we could not detect the appropriate onesı
-    return nodeTemplates;
+    return templateList;
 }
 
 export async function renderContent(templateFilePath: string, context: WizardInputs): Promise<string> {
@@ -36,7 +38,7 @@ async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boole
     let deferred: Q.Deferred<{ isNodeApplication: boolean }> = Q.defer();
     fs.readdir(repoPath, (err, files: string[]) => {
         let result = {
-            isNodeApplication: isNodeRepo(files)
+            isNodeApplication: err ? true : isNodeRepo(files)
             // isContainerApplication: isDockerRepo(files)
         };
         deferred.resolve(result);
@@ -46,7 +48,7 @@ async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boole
 }
 
 function isNodeRepo(files: string[]): boolean {
-    let nodeFilesRegex = '[node_modules,package/.json,.*/.ts,.*/.js]';
+    let nodeFilesRegex = '\.ts$|\.js$|package\.json$|node_modules';
     return files.some((file) => {
         let result = new RegExp(nodeFilesRegex).test(file.toLowerCase());
         return result;
@@ -83,7 +85,10 @@ const nodeTemplates: Array<PipelineTemplate> = [
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithWebpack.yml'),
         language: 'node',
         targetType: TargetResourceType.WindowsWebApp
-    },
+    }    
+];
+
+const simpleWebAppTemplates: Array<PipelineTemplate> = [
     {
         label: 'Simple web app',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/simpleWebApp.yml'),

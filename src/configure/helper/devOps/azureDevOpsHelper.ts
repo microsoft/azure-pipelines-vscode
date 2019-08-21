@@ -3,6 +3,7 @@ import { BuildDefinition, BuildDefinitionRepositoryProperties, Build } from '../
 import { Messages } from '../../messages';
 import { WizardInputs, RepositoryProvider } from '../../model/models';
 import * as util from 'util';
+import { HostedVS2017QueueName } from '../../constants';
 
 export class AzureDevOpsHelper {
     private static AzureReposUrl = 'dev.azure.com/';
@@ -56,7 +57,7 @@ export class AzureDevOpsHelper {
 
     public async createAndRunPipeline(pipelineName: string, inputs: WizardInputs): Promise<string> {
         try {
-            let buildDefinitionPayload = this.getBuildDefinitionPayload(pipelineName, inputs);
+            let buildDefinitionPayload = await this.getBuildDefinitionPayload(pipelineName, inputs);
             let definition = await this.azureDevOpsClient.createBuildDefinition(inputs.organizationName, buildDefinitionPayload);
             let build = await this.azureDevOpsClient.queueBuild(inputs.organizationName, this.getQueueBuildPayload(inputs, definition.id, definition.project.id));
             return build._links.web.href;
@@ -66,7 +67,8 @@ export class AzureDevOpsHelper {
         }
     }
 
-    private getBuildDefinitionPayload(pipelineName: string, inputs: WizardInputs): BuildDefinition {
+    private async getBuildDefinitionPayload(pipelineName: string, inputs: WizardInputs): Promise<BuildDefinition> {
+        let queueId = await this.getAgentQueueId(inputs.organizationName, inputs.project.name, HostedVS2017QueueName);
         let repositoryProperties: BuildDefinitionRepositoryProperties = null;
 
         if (inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
@@ -95,7 +97,7 @@ export class AzureDevOpsHelper {
                 yamlFileName: inputs.pipelineParameters.pipelineFilePath
             },
             queue: {
-                id: 539 // Default queue Hosted VS 2017. This value is overriden by queue specified in YAML
+                id: queueId // Default queue Hosted VS 2017. This value is overriden by queue specified in YAML
             },
             triggers: [
                 {
@@ -113,6 +115,24 @@ export class AzureDevOpsHelper {
                 properties: repositoryProperties
             }
         };
+    }
+
+    private async getAgentQueueId(organizationName: string, projectName: string, poolName: string): Promise<number> {
+        let queues = await this.azureDevOpsClient.getAgentQueues(organizationName, projectName);
+        let queueId: number = queues.length > 0 ? queues[0].id : null;
+
+        for(let queue of queues) {
+            if(queue.pool && queue.pool.name && queue.pool.name.toLowerCase() === poolName.toLowerCase()) {
+                queueId = queue.id;
+                break;
+            }
+        }
+
+        if(queueId) {
+            return queueId;
+        }
+        
+        throw new Error(util.format(Messages.noAgentQueueFound, poolName));
     }
 
     private getQueueBuildPayload(inputs: WizardInputs, buildDefinitionId: number, projectId: string): Build {
