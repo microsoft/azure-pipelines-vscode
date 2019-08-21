@@ -19,6 +19,7 @@ import * as templateHelper from './helper/templateHelper';
 import * as utils from 'util';
 import * as vscode from 'vscode';
 import { TelemetryHelper } from './helper/telemetryHelper';
+import { ControlProvider } from './helper/controlProvider';
 
 const Layer: string = 'configure';
 
@@ -64,7 +65,9 @@ class PipelineConfigurer {
     private appServiceClient: AppServiceClient;
     private workspacePath: string;
     private uniqueResourceNameSuffix: string;
+
     private telemetryHelper: TelemetryHelper;
+    private controlProvider: ControlProvider;
 
     public constructor(telemetryHelper: TelemetryHelper) {
         this.inputs = new WizardInputs();
@@ -73,6 +76,7 @@ class PipelineConfigurer {
         this.azureDevOpsHelper = new AzureDevOpsHelper(this.azureDevOpsClient);
         this.uniqueResourceNameSuffix = uuid().substr(0, 5);
         this.telemetryHelper = telemetryHelper;
+        this.controlProvider = new ControlProvider(telemetryHelper);
     }
 
     public async configure(node: any) {
@@ -102,7 +106,7 @@ class PipelineConfigurer {
         vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
             .then((action: string) => {
                 if (action && action.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
-                    this.telemetryHelper.setTelemetry(TelemetryKeys.ViewPipelineClicked, 'true');
+                    this.telemetryHelper.setTelemetry(TelemetryKeys.BrowsePipelineClicked, 'true');
                     vscode.env.openExternal(vscode.Uri.parse(queuedPipelineUrl));
                 }
             });
@@ -176,7 +180,7 @@ class PipelineConfigurer {
 
                 sourceOptions.push({ label: SourceOptions.BrowseLocalMachine });
 
-                let selectedSourceOption = await extensionVariables.ui.showQuickPick(
+                let selectedSourceOption = await this.controlProvider.showQuickPick(
                     sourceOptions,
                     { placeHolder: Messages.selectFolderOrRepository }
                 );
@@ -273,20 +277,24 @@ class PipelineConfigurer {
                 let devOpsOrganizations = await this.azureDevOpsClient.listOrganizations();
 
                 if (devOpsOrganizations && devOpsOrganizations.length > 0) {
-                    let selectedOrganization = await extensionVariables.ui.showQuickPick(
-                        devOpsOrganizations.map(x => { return { label: x.accountName }; }), { placeHolder: Messages.selectOrganization });
+                    let selectedOrganization = await this.controlProvider.showQuickPick(
+                        devOpsOrganizations.map(x => { return { label: x.accountName }; }),
+                        { placeHolder: Messages.selectOrganization },
+                        TelemetryKeys.OrganizationListCount);
                     this.inputs.organizationName = selectedOrganization.label;
 
-                    let selectedProject = await extensionVariables.ui.showQuickPick(
-                        this.azureDevOpsClient.listProjects(this.inputs.organizationName).then((projects) => projects.map(x => { return { label: x.name, data: x }; })),
-                        { placeHolder: Messages.selectProject });
+                    let selectedProject = await this.controlProvider.showQuickPick(
+                        this.azureDevOpsClient.listProjects(this.inputs.organizationName)
+                        .then((projects) => projects.map(x => { return { label: x.name, data: x }; })),
+                        { placeHolder: Messages.selectProject },
+                        TelemetryKeys.ProjectListCount);
                     this.inputs.project = selectedProject.data;
                 }
                 else {
                     this.telemetryHelper.setTelemetry(TelemetryKeys.NewOrganization, 'true');
 
                     this.inputs.isNewOrganization = true;
-                    this.inputs.organizationName = await extensionVariables.ui.showInputBox({
+                    this.inputs.organizationName = await this.controlProvider.showInputBox({
                         placeHolder: Messages.enterAzureDevOpsOrganizationName,
                         validateInput: (organizationName) => this.azureDevOpsClient.validateOrganizationName(organizationName)
                     });
@@ -306,9 +314,10 @@ class PipelineConfigurer {
         );
 
         // TO:DO- Get applicable pipelines for the repo type and azure target type if target already selected
-        let selectedOption = await extensionVariables.ui.showQuickPick(appropriatePipelines.map((pipeline) => { return { label: pipeline.label }; }), {
-            placeHolder: Messages.selectPipelineTemplate
-        });
+        let selectedOption = await this.controlProvider.showQuickPick(
+            appropriatePipelines.map((pipeline) => { return { label: pipeline.label }; }),
+            { placeHolder: Messages.selectPipelineTemplate },
+            TelemetryKeys.PipelineTempateListCount);
         this.inputs.pipelineParameters.pipelineTemplate = appropriatePipelines.find((pipeline) => {
             return pipeline.label === selectedOption.label;
         });
@@ -323,13 +332,15 @@ class PipelineConfigurer {
                 data: subscriptionObject
             };
         });
-        let selectedSubscription: QuickPickItemWithData = await extensionVariables.ui.showQuickPick(subscriptionList, { placeHolder: Messages.selectSubscription });
+        let selectedSubscription: QuickPickItemWithData = await this.controlProvider.showQuickPick(subscriptionList, { placeHolder: Messages.selectSubscription });
         this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
         // show available resources and get the chosen one
         this.appServiceClient = new AppServiceClient(extensionVariables.azureAccountExtensionApi.sessions[0].credentials, this.inputs.targetResource.subscriptionId);
-        let selectedResource: QuickPickItemWithData = await extensionVariables.ui.showQuickPick(
-            this.appServiceClient.GetAppServices(WebAppKind.WindowsApp).then((webApps) => webApps.map(x => { return { label: x.name, data: x }; })),
-            { placeHolder: Messages.selectWebApp });
+        let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
+            this.appServiceClient.GetAppServices(WebAppKind.WindowsApp)
+            .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; })),
+            { placeHolder: Messages.selectWebApp },
+            TelemetryKeys.WebAppListCount);
         this.inputs.targetResource.resource = selectedResource.data;
     }
 
@@ -344,7 +355,7 @@ class PipelineConfigurer {
         try {
             // TO-DO  Create a new helper function to time and log time for all user inputs.
             // Log the time taken by the user to enter GitHub PAT
-            githubPat = await extensionVariables.ui.showInputBox({ placeHolder: Messages.enterGitHubPat, prompt: Messages.githubPatTokenHelpMessage });
+            githubPat = await this.controlProvider.showInputBox({ placeHolder: Messages.enterGitHubPat, prompt: Messages.githubPatTokenHelpMessage });
             this.telemetryHelper.setTelemetry(TelemetryKeys.GitHubPatDuration, ((Date.now() - startTime) / 1000).toString());
         }
         catch (error) {

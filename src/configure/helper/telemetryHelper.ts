@@ -1,4 +1,4 @@
-import { IActionContext, ITelemetryReporter } from "vscode-azureextensionui";
+import { IActionContext, ITelemetryReporter, parseError } from "vscode-azureextensionui";
 
 import { extensionVariables } from "../model/models";
 import { TelemetryKeys } from '../resources/telemetryKeys';
@@ -29,8 +29,9 @@ export class TelemetryHelper {
     public setResult(result: 'Succeeded' | 'Failed' | 'Canceled', error?: Error) {
         this.actionContext.telemetry.properties.result = result;
         if (error) {
-            this.actionContext.telemetry.properties.error = error.stack;
-            this.actionContext.telemetry.properties.errorMessage = error.message;
+            let parsedError = parseError(error);
+            this.actionContext.telemetry.properties.error = JSON.stringify(parsedError);
+            this.actionContext.telemetry.properties.errorMessage = parsedError.message;
         }
     }
 
@@ -39,26 +40,27 @@ export class TelemetryHelper {
     }
 
     public logError(layer: string, tracePoint: string, error: Error) {
+        let parsedError = parseError(error);
         this.telemetryReporter.sendTelemetryEvent(
             tracePoint,
             {
                 'journeyId': this.journeyId,
                 'command': this.command,
-                'error': JSON.stringify(error),
-                'layer': layer
+                'layer': layer,
+                'error': JSON.stringify(parsedError)
             });
 
-            logger.log(JSON.stringify(error));
+            logger.log(JSON.stringify(parsedError));
     }
 
-    public logInfo(layer: string, tracePoint: string, data: string) {
+    public logInfo(layer: string, tracePoint: string, info: string) {
         this.telemetryReporter.sendTelemetryEvent(
             tracePoint,
             {
                 'journeyId': this.journeyId,
                 'command': this.command,
-                'data': data,
-                'layer': layer
+                'layer': layer,
+                'info': info
             });
     }
 }
