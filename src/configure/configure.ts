@@ -4,7 +4,7 @@ import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
 import { AzureTreeItem } from 'vscode-azureextensionui';
 import { exit } from 'process';
-import { generateDevOpsProjectName } from './helper/commonHelper';
+import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { GraphHelper } from './helper/graphHelper';
 import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
@@ -62,7 +62,7 @@ class PipelineConfigurer {
         await this.createPreRequisites();
         await this.checkInPipelineFileToRepository();
         let queuedPipelineUrl = await vscode.window.withProgress<string>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, () => {
-            let pipelineName = `${this.inputs.targetResource.resource.name}.${this.uniqueResourceNameSuffix}`;
+            let pipelineName = `${this.inputs.targetResource.resource.name}-${this.uniqueResourceNameSuffix}`;
             return this.azureDevOpsHelper.createAndRunPipeline(pipelineName, this.inputs);
         });
         vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
@@ -228,10 +228,19 @@ class PipelineConfigurer {
             }
             else {
                 this.inputs.isNewOrganization = true;
-                this.inputs.organizationName = await extensionVariables.ui.showInputBox({
-                    placeHolder: Messages.enterAzureDevOpsOrganizationName,
-                    validateInput: (organizationName) => this.azureDevOpsClient.validateOrganizationName(organizationName)
-                });
+                let userName = this.inputs.azureSession.userId.substring(0, this.inputs.azureSession.userId.indexOf("@"));
+                let organizationName = generateDevOpsOrganizationName(userName, this.inputs.sourceRepository.repositoryName);
+
+                let validationErrorMessage = await this.azureDevOpsClient.validateOrganizationName(organizationName);
+                if(validationErrorMessage) {
+                    this.inputs.organizationName = await extensionVariables.ui.showInputBox({
+                        placeHolder: Messages.enterAzureDevOpsOrganizationName,
+                        validateInput: (organizationName) => this.azureDevOpsClient.validateOrganizationName(organizationName)
+                    });
+                }
+                else {
+                    this.inputs.organizationName = organizationName;
+                }
             }
         }
     }
