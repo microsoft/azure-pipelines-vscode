@@ -423,7 +423,7 @@ class PipelineConfigurer {
 
         try {
             let commitOrDiscard = await vscode.window.showInformationMessage(Messages.modifyAndCommitFile, Messages.commitAndPush, Messages.discardPipeline);
-            if (commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
+            if (commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
                 await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
                     try {
                         // handle when the branch is not upto date with remote branch and push fails
