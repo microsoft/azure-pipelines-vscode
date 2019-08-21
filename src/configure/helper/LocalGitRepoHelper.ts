@@ -1,8 +1,7 @@
 import { AzureDevOpsHelper } from './devOps/azureDevOpsHelper';
-import { BranchSummary } from 'simple-git/typings/response';
 import { GitHubProvider } from './gitHubHelper';
-import { GitRepositoryParameters, RepositoryProvider } from '../model/models';
-import { Messages } from '../messages';
+import { extensionVariables, GitRepositoryParameters, RepositoryProvider } from '../model/models';
+import { Messages } from '../resources/messages';
 import * as fs from 'fs';
 import * as git from 'simple-git/promise';
 import * as path from 'path';
@@ -50,15 +49,21 @@ export class LocalGitRepoHelper {
     public async getGitRepoDetails(repositoryPath: string): Promise<GitRepositoryParameters> {
         let status = await this.gitReference.status();
         let branch = status.current;
-        let commitId = await this.getLatestCommitId(branch);
         let remote = "";
         let remoteUrl = "" || null;
         if (!status.tracking) {
             let remotes = await this.gitReference.getRemotes(false);
-            if (remotes.length !== 1) {
+            if (remotes.length === 0) {
                 throw new Error(util.format(Messages.branchRemoteMissing, branch));
             }
-            remote = remotes[0].name;
+            else if(remotes.length === 1) {
+                remote = remotes[0].name;
+            }
+            else {
+                // Show an option to user to select remote to be configured
+                let selectedRemote = await extensionVariables.ui.showQuickPick(remotes.map(remote => { return { label: remote.name }; }), { placeHolder: Messages.selectRemoteForBranch });
+                remote = selectedRemote.label;
+            }
         }
         else {
             remote = status.tracking.substr(0, status.tracking.indexOf(branch) - 1);
@@ -71,9 +76,10 @@ export class LocalGitRepoHelper {
                     repositoryProvider: RepositoryProvider.AzureRepos,
                     repositoryId: "",
                     repositoryName: AzureDevOpsHelper.getRepositoryNameFromRemoteUrl(remoteUrl),
+                    remoteName: remote,
                     remoteUrl: remoteUrl,
                     branch: branch,
-                    commitId: commitId,
+                    commitId: "",
                     localPath: repositoryPath
                 };
             }
@@ -83,9 +89,10 @@ export class LocalGitRepoHelper {
                     repositoryProvider: RepositoryProvider.Github,
                     repositoryId: repoId,
                     repositoryName: repoId,
+                    remoteName: remote,
                     remoteUrl: remoteUrl,
                     branch: branch,
-                    commitId: commitId,
+                    commitId: "",
                     localPath: repositoryPath
                 };
             }
@@ -114,28 +121,15 @@ export class LocalGitRepoHelper {
     /**
      * commits yaml pipeline file into the local repo and pushes the commit to remote branch.
      * @param pipelineYamlPath : local path of yaml pipeline in the repository
-     * @returns: thenable object which resolves once commit is pushed to remote branch, and failure message if unsuccessful
+     * @returns: thenable string which resolves to commitId once commit is pushed to remote branch, and failure message if unsuccessful
      */
-    public async commitAndPushPipelineFile(pipelineYamlPath: string): Promise<{ commitId: string, branch: string }> {
+    public async commitAndPushPipelineFile(pipelineYamlPath: string, repositoryDetails: GitRepositoryParameters): Promise<string> {
         await this.gitReference.add(pipelineYamlPath);
         await this.gitReference.commit(Messages.addYmlFile, pipelineYamlPath);
-        let status = await this.gitReference.status();
         let gitLog = await this.gitReference.log();
-        let branch = status.current;
-        let remote = status.tracking;
-        if (!remote) {
-            let remotes = await this.gitReference.getRemotes(false);
-            if (remotes.length !== 1) {
-                throw new Error(util.format(Messages.branchRemoteMissing, branch));
-            }
-            remote = remotes[0].name;
-        }
-        else {
-            remote = remote.substr(0, remote.indexOf(branch) - 1);
-        }
 
-        if (remote && branch) {
-            await this.gitReference.push(remote, branch, {
+        if (repositoryDetails.remoteName && repositoryDetails.branch) {
+            await this.gitReference.push(repositoryDetails.remoteName, repositoryDetails.branch, {
                 "--set-upstream": null
             });
         }
@@ -143,23 +137,11 @@ export class LocalGitRepoHelper {
             throw new Error(Messages.cannotAddFileRemoteMissing);
         }
 
-        return {
-            branch: branch,
-            commitId: gitLog.latest.hash
-        };
+        return gitLog.latest.hash;
     }
 
     private static getIncreamentalFileName(fileName: string, count: number): string {
         return fileName.substr(0, fileName.indexOf('.')).concat(` (${count})`, fileName.substr(fileName.indexOf('.')));
-    }
-
-    private async getLatestCommitId(branchName: string): Promise<string> {
-        let branchSummary: BranchSummary = await this.gitReference.branchLocal();
-        if (!!branchSummary.branches[branchName]) {
-            return branchSummary.branches[branchName].commit;
-        }
-
-        return "";
     }
 
     private initialize(repositoryPath: string): void {

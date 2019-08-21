@@ -10,6 +10,7 @@ export interface BuildDefinition {
     repository: BuildDefinitionRepository;
     triggers: Array<BuildDefinitionTrigger>;
     queue: { id: number };
+    properties: { [key: string]: string };
 }
 
 export interface BuildDefinitionRepository {
