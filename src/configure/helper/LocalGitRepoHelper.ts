@@ -1,7 +1,7 @@
 import { AzureDevOpsHelper } from './devOps/azureDevOpsHelper';
 import { GitHubProvider } from './gitHubHelper';
-import { GitRepositoryParameters, RepositoryProvider, extensionVariables } from '../model/models';
-import { Messages } from '../messages';
+import { extensionVariables, GitRepositoryParameters, RepositoryProvider } from '../model/models';
+import { Messages } from '../resources/messages';
 import * as fs from 'fs';
 import * as git from 'simple-git/promise';
 import * as path from 'path';

@@ -3,36 +3,55 @@
 *  Licensed under the MIT License.
 *--------------------------------------------------------------------------------------------*/
 
-import * as languageclient from 'vscode-languageclient';
-import * as logger from './logger';
 import * as path from 'path';
-import * as schemacontributor from './schema-contributor';
 import * as vscode from 'vscode';
-import * as schemaassociationservice from './schema-association-service';
-import TelemetryReporter from 'vscode-extension-telemetry';
-const fs = require('fs');
+import { createTelemetryReporter, callWithTelemetryAndErrorHandling, IActionContext, AzureUserInput, registerUIExtensionVariables } from 'vscode-azureextensionui';
+import * as languageclient from 'vscode-languageclient';
+
 import { activateConfigurePipeline } from './configure/activate';
+import { extensionVariables } from './configure/model/models';
+import * as logger from './logger';
+import * as schemaassociationservice from './schema-association-service';
+import * as schemacontributor from './schema-contributor';
+import { TelemetryHelper } from './configure/helper/telemetryHelper';
+import { TelemetryKeys } from './configure/resources/telemetryKeys';
 
-const myExtensionId = 'azure-pipelines';
-const telemetryVersion = generateVersionString(vscode.extensions.getExtension(`ms-azure-devops.${myExtensionId}`));
-const telemetryKey = 'ae672644-d394-497c-8c57-98f6eac32342';
-
-let reporter: TelemetryReporter;
+const configurePipelineEnabled: boolean = vscode.workspace.getConfiguration('[azure-pipelines]', null).get('configure') ? true : false;
 
 export async function activate(context: vscode.ExtensionContext) {
+    extensionVariables.reporter = createTelemetryReporter(context);
+    extensionVariables.reporter.sendTelemetryEvent('hiyadaPipelineExtension.Activated', { 'test': 'true' });
+    registerUiVariables(context);
+
+    await callWithTelemetryAndErrorHandling('azurePipelines.activate', async (activateContext: IActionContext) => {
+        activateContext.telemetry.properties.isActivationEvent = 'true';
+        let telemetryHelper = new TelemetryHelper(activateContext, 'activate');
+        telemetryHelper.setTelemetry('configurePipelineEnabled', `${configurePipelineEnabled}`);
+        await telemetryHelper.execteFunctionWithTimeTelemetry(
+            async () => {
+                await activateYmlContributor(context, telemetryHelper);
+                if (configurePipelineEnabled) {
+                    await activateConfigurePipeline();
+                }
+            },
+            TelemetryKeys.ExtensionActivationDuration);
+    });
+
     logger.log('Extension has been activated!', 'ExtensionActivated');
+    return schemacontributor.schemaContributor;
+}
 
-    logger.log(`Spinning up telemetry client for id ${myExtensionId}, version ${telemetryVersion}`);
-    reporter = new TelemetryReporter(myExtensionId, telemetryVersion, telemetryKey);
-    context.subscriptions.push(reporter);
+function registerUiVariables(context: vscode.ExtensionContext) {
+    // Register ui extension variables is required to be done for telemetry to start flowing for extension activation and other events.
+    // It also facilitates registering command and called events telemetry.
+    extensionVariables.outputChannel = vscode.window.createOutputChannel('Azure Pipelines');
+    context.subscriptions.push(extensionVariables.outputChannel);
+    extensionVariables.context = context;
+    extensionVariables.ui = new AzureUserInput(context.globalState);
+    registerUIExtensionVariables(extensionVariables);
+}
 
-    try {
-        reporter.sendTelemetryEvent('extension.activate');
-    } catch(e) {
-        // if something bad happens reporting telemetry, swallow it and move on
-        logger.log(e.toString());
-    }
-
+async function activateYmlContributor(context: vscode.ExtensionContext) {
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
     const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Support', serverOptions, clientOptions);
@@ -62,22 +81,21 @@ export async function activate(context: vscode.ExtensionContext) {
 
             return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
         });
-    }).catch((reason) =>{
+    })
+    .catch((reason) => {
         logger.log(JSON.stringify(reason), 'ClientOnReadyError');
-        reporter.sendTelemetryEvent('extension.languageserver.onReadyError', {'reason': JSON.stringify(reason)});
+        extensionVariables.reporter.sendTelemetryEvent('extension.languageserver.onReadyError', { 'reason': JSON.stringify(reason) });
     });
 
     // TODO: Can we get rid of this since it's set in package.json?
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
-    await activateConfigurePipeline(context, reporter);
-    return schemacontributor.schemaContributor;
 }
 
 function getServerOptions(context: vscode.ExtensionContext): languageclient.ServerOptions {
     const languageServerPath = context.asAbsolutePath(path.join('node_modules', 'azure-pipelines-language-server', 'server.js'));
 
     return {
-        run : { module: languageServerPath, transport: languageclient.TransportKind.ipc },
+        run: { module: languageServerPath, transport: languageclient.TransportKind.ipc },
         debug: { module: languageServerPath, transport: languageclient.TransportKind.ipc, options: { execArgv: ["--nolazy", "--inspect=6009"] } }
     };
 }
@@ -104,13 +122,4 @@ function getClientOptions(): languageclient.LanguageClientOptions {
 
 // this method is called when your extension is deactivated
 export function deactivate() {
-    reporter.dispose();
-}
-
-function generateVersionString(extension: vscode.Extension<any>): string {
-    // if the extensionPath is a Git repo, this is probably an extension developer
-    const isDevMode: boolean = extension ? fs.existsSync(extension.extensionPath + '/.git') : false;
-    const baseVersion: string = extension ? extension.packageJSON.version : "0.0.0";
-
-    return isDevMode ? `${baseVersion}-dev` : baseVersion;
 }

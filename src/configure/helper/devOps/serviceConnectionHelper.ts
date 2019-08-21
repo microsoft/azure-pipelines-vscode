@@ -1,6 +1,6 @@
 import { AadApplication } from '../../model/models';
 import { AzureDevOpsClient } from '../../clients/devOps/azureDevOpsClient';
-import { Messages } from '../../messages';
+import { Messages } from '../../resources/messages';
 import { ServiceConnectionClient } from '../../clients/devOps/serviceConnectionClient';
 import * as util from 'util';
 

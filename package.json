@@ -4,7 +4,7 @@
     "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines YAML",
     "version": "1.155.0",
     "publisher": "ms-azure-devops",
-    "aiKey": "ae672644-d394-497c-8c57-98f6eac32342",
+    "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "repository": {
         "type": "git",
         "url": "https://github.com/Microsoft/azure-pipelines-vscode"
@@ -71,7 +71,13 @@
         ],
         "configuration": {
             "title": "Azure Pipelines extension configuration.",
-            "properties": {}
+            "properties": {
+                "[azure-pipelines].configure": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable to opt-in for Configure Pipeline feature."
+                }
+            }
         },
         "configurationDefaults": {
             "[azure-pipelines]": {
@@ -123,7 +129,7 @@
         "ts-node": "7.0.1",
         "typescript": "3.3.1",
         "vscode": "1.1.33",
-        "vscode-azureextensiondev": "0.1.8"
+        "vscode-azureextensiondev": "0.2.1"
     },
     "dependencies": {
         "azure-arm-resource": "7.3.0",
@@ -135,7 +141,7 @@
         "typed-rest-client": "1.0.7",
         "underscore": "1.9.1",
         "uuid": "^3.3.2",
-        "vscode-azureextensionui": "0.23.0",
+        "vscode-azureextensionui": "0.26.3",
         "vscode-extension-telemetry": "0.0.18",
         "vscode-languageclient": "5.0.1",
         "vscode-nls": "3.2.4",

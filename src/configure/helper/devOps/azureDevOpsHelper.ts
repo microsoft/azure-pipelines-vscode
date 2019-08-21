@@ -1,6 +1,6 @@
 import { AzureDevOpsClient } from '../../clients/devOps/azureDevOpsClient';
 import { BuildDefinition, BuildDefinitionRepositoryProperties, Build } from '../../model/azureDevOps';
-import { Messages } from '../../messages';
+import { Messages } from '../../resources/messages';
 import { WizardInputs, RepositoryProvider } from '../../model/models';
 import * as util from 'util';
 import { HostedVS2017QueueName } from '../../constants';
@@ -83,6 +83,8 @@ export class AzureDevOpsHelper {
             };
         }
 
+        let properties = { 'source': 'ms-azure-devops.azure-pipelines' };
+
         return {
             name: pipelineName,
             type: 2, //YAML process type
@@ -113,7 +115,8 @@ export class AzureDevOpsHelper {
                 defaultBranch: inputs.sourceRepository.branch,
                 url: inputs.sourceRepository.remoteUrl,
                 properties: repositoryProperties
-            }
+            },
+            properties: properties
         };
     }
 
@@ -131,7 +134,7 @@ export class AzureDevOpsHelper {
         if(queueId) {
             return queueId;
         }
-        
+
         throw new Error(util.format(Messages.noAgentQueueFound, poolName));
     }
 

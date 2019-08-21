@@ -1,7 +1,7 @@
-import { BuildDefinition, Build } from '../../model/azureDevOps';
-import { Messages } from '../../messages';
-import { Organization, DevOpsProject } from '../../model/models';
-import { ReservedHostNames, AzureDevOpsBaseUrl } from '../../constants';
+import { Build, BuildDefinition } from '../../model/azureDevOps';
+import { Messages } from '../../resources/messages';
+import { DevOpsProject, Organization } from '../../model/models';
+import { AzureDevOpsBaseUrl, ReservedHostNames } from '../../resources/constants';
 import { RestClient } from '../restClient';
 import { ServiceClientCredentials, UrlBasedRequestPrepareOptions } from 'ms-rest';
 import { sleepForMilliSeconds, stringCompareFunction } from "../../helper/commonHelper";

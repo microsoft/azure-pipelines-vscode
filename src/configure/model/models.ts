@@ -3,15 +3,14 @@ import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { OutputChannel, ExtensionContext, QuickPickItem } from 'vscode';
 import { ServiceClientCredentials } from 'ms-rest';
 import { SubscriptionModels } from 'azure-arm-resource';
-import { UIExtensionVariables, IAzureUserInput } from 'vscode-azureextensionui';
-import TelemetryReporter from 'vscode-extension-telemetry';
+import { UIExtensionVariables, IAzureUserInput, ITelemetryReporter } from 'vscode-azureextensionui';
 
 class ExtensionVariables implements UIExtensionVariables {
     public azureAccountExtensionApi: AzureAccountExtensionExports;
 
     public context: ExtensionContext;
     public outputChannel: OutputChannel;
-    public reporter: TelemetryReporter;
+    public reporter: ITelemetryReporter;
     public ui: IAzureUserInput;
 }
 
