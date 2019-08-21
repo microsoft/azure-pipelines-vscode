@@ -26,7 +26,7 @@ export class TelemetryHelper {
         }
     }
 
-    public setResult(result: 'Succeeded' | 'Failed' | 'Canceled', error?: Error) {
+    public setResult(result: Result, error?: Error) {
         this.actionContext.telemetry.properties.result = result;
         if (error) {
             let parsedError = parseError(error);
@@ -73,4 +73,10 @@ export class TelemetryHelper {
             this.setTelemetry(telemetryKey, ((Date.now() - startTime)/1000).toString());
         }
     }
+}
+
+export enum Result {
+    'Succeeded' = 'Succeeded',
+    'Failed' = 'Failed',
+    'Canceled' = 'Canceled'
 }

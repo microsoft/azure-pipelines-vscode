@@ -1,5 +1,6 @@
 export class TelemetryKeys {
     public static Command: string = 'command';
+    public static UserId: string = 'userId';
     public static CurrentUserInput: string = 'currentUserInput';
     public static RepoProvider: string = 'repoProvider';
     public static AzureLoginRequired: string = 'azureLoginRequired';

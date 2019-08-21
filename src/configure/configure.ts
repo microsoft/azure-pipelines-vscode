@@ -18,7 +18,7 @@ import * as path from 'path';
 import * as templateHelper from './helper/templateHelper';
 import * as utils from 'util';
 import * as vscode from 'vscode';
-import { TelemetryHelper } from './helper/telemetryHelper';
+import { TelemetryHelper, Result } from './helper/telemetryHelper';
 import { ControlProvider } from './helper/controlProvider';
 
 const Layer: string = 'configure';
@@ -36,23 +36,27 @@ export async function configurePipeline(telemetryHelper: TelemetryHelper, node: 
                 }
                 else {
                     let error = new Error(Messages.azureLoginRequired);
-                    telemetryHelper.setResult('Failed', error);
+                    telemetryHelper.setResult(Result.Failed, error);
                     throw error;
                 }
             }
+
+            // Lof the user id using the extension
+            telemetryHelper.setTelemetry(TelemetryKeys.UserId, extensionVariables.azureAccountExtensionApi.sessions[0].userId);
 
             var configurer = new PipelineConfigurer(telemetryHelper);
             await configurer.configure(node);
         }
         catch (error) {
-            // log error in telemetery.
-            telemetryHelper.setResult('Failed', error);
             if (!(error instanceof UserCancelledError)) {
                 extensionVariables.outputChannel.appendLine(error.message);
                 vscode.window.showErrorMessage(error.message);
+                telemetryHelper.setResult(Result.Failed, error);
+            }
+            else {
+                telemetryHelper.setResult(Result.Canceled, error);
             }
         }
-
     }, TelemetryKeys.CommandExecutionDuration);
 }
 

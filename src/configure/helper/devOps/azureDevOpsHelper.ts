@@ -83,7 +83,7 @@ export class AzureDevOpsHelper {
             };
         }
 
-        let properties = { 'source': 'VSCode' };
+        let properties = { 'source': 'ms-azure-devops.azure-pipelines' };
 
         return {
             name: pipelineName,
@@ -134,7 +134,7 @@ export class AzureDevOpsHelper {
         if(queueId) {
             return queueId;
         }
-        
+
         throw new Error(util.format(Messages.noAgentQueueFound, poolName));
     }
 
