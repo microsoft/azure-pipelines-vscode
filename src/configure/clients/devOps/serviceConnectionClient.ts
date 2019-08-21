@@ -1,5 +1,5 @@
 import { AadApplication } from '../../model/models';
-import { AzureDevOpsBaseUrl } from "../../constants";
+import { AzureDevOpsBaseUrl } from "../../resources/constants";
 import { AzureDevOpsClient } from './azureDevOpsClient';
 import { UrlBasedRequestPrepareOptions } from 'ms-rest';
 
@@ -95,7 +95,7 @@ export class ServiceConnectionClient {
                 "Content-Type": "application/json",
                 "Accept": "application/json;api-version=5.1-preview.2;excludeUrls=true"
             },
-            method: "Get", 
+            method: "Get",
             deserializationMapper: null,
             serializationMapper: null
         });

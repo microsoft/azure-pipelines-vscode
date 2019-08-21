@@ -3,7 +3,7 @@ import { BuildDefinition, BuildDefinitionRepositoryProperties, Build } from '../
 import { Messages } from '../../resources/messages';
 import { WizardInputs, RepositoryProvider } from '../../model/models';
 import * as util from 'util';
-import { HostedVS2017QueueName } from '../../constants';
+import { HostedVS2017QueueName } from '../../resources/constants';
 
 export class AzureDevOpsHelper {
     private static AzureReposUrl = 'dev.azure.com/';
