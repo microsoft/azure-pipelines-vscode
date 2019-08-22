@@ -131,7 +131,7 @@ export class AzureDevOpsHelper {
             }
         }
 
-        if(queueId) {
+        if(queueId !== null) {
             return queueId;
         }
 

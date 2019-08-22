@@ -57,31 +57,31 @@ function isNodeRepo(files: string[]): boolean {
 
 const nodeTemplates: Array<PipelineTemplate> = [
     {
-        label: 'Node.js with npm',
+        label: 'Node.js with npm to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejs.yml'),
         language: 'node',
         targetType: TargetResourceType.WindowsWebApp
     },
     {
-        label: 'Node.js with Gulp',
+        label: 'Node.js with Gulp to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithGulp.yml'),
         language: 'node',
         targetType: TargetResourceType.WindowsWebApp
     },
     {
-        label: 'Node.js with Grunt',
+        label: 'Node.js with Grunt to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithGrunt.yml'),
         language: 'node',
         targetType: TargetResourceType.WindowsWebApp
     },
     {
-        label: 'Node.js with Angular',
+        label: 'Node.js with Angular to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithAngular.yml'),
         language: 'node',
         targetType: TargetResourceType.WindowsWebApp
     },
     {
-        label: 'Node.js with Webpack',
+        label: 'Node.js with Webpack to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithWebpack.yml'),
         language: 'node',
         targetType: TargetResourceType.WindowsWebApp
@@ -90,7 +90,7 @@ const nodeTemplates: Array<PipelineTemplate> = [
 
 const simpleWebAppTemplates: Array<PipelineTemplate> = [
     {
-        label: 'Simple web app',
+        label: 'Simple application to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/simpleWebApp.yml'),
         language: 'none',
         targetType: TargetResourceType.WindowsWebApp
