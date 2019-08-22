@@ -13,21 +13,20 @@ import { extensionVariables } from './configure/model/models';
 import * as logger from './logger';
 import * as schemaassociationservice from './schema-association-service';
 import * as schemacontributor from './schema-contributor';
-import { TelemetryHelper } from './configure/helper/telemetryHelper';
+import { telemetryHelper } from './configure/helper/telemetryHelper';
 import { TelemetryKeys } from './configure/resources/telemetryKeys';
 
 const configurePipelineEnabled: boolean = vscode.workspace.getConfiguration('[azure-pipelines]', null).get('configure') ? true : false;
 
 export async function activate(context: vscode.ExtensionContext) {
     extensionVariables.reporter = createTelemetryReporter(context);
-    extensionVariables.reporter.sendTelemetryEvent('hiyadaPipelineExtension.Activated', { 'test': 'true' });
     registerUiVariables(context);
 
     await callWithTelemetryAndErrorHandling('azurePipelines.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
-        let telemetryHelper = new TelemetryHelper(activateContext, 'activate');
+        telemetryHelper.initialize(activateContext, 'activate');
         telemetryHelper.setTelemetry('configurePipelineEnabled', `${configurePipelineEnabled}`);
-        await telemetryHelper.execteFunctionWithTimeTelemetry(
+        await telemetryHelper.executeFunctionWithTimeTelemetry(
             async () => {
                 await activateYmlContributor(context);
                 if (configurePipelineEnabled) {
@@ -82,10 +81,10 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
             return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
         });
     })
-    .catch((reason) => {
-        logger.log(JSON.stringify(reason), 'ClientOnReadyError');
-        extensionVariables.reporter.sendTelemetryEvent('extension.languageserver.onReadyError', { 'reason': JSON.stringify(reason) });
-    });
+        .catch((reason) => {
+            logger.log(JSON.stringify(reason), 'ClientOnReadyError');
+            extensionVariables.reporter.sendTelemetryEvent('extension.languageserver.onReadyError', { 'reason': JSON.stringify(reason) });
+        });
 
     // TODO: Can we get rid of this since it's set in package.json?
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
