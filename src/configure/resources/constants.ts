@@ -132,3 +132,14 @@ export const ReservedHostNames: string[] = [
     "java",
     "beta"
 ];
+
+export const SelectFolderOrRepository = 'selectFolderOrRepository';
+export const SelectOrganization = 'selectOrganization';
+export const SelectProject = 'selectProject';
+export const EnterOrganizationName = 'enterOrganizationName';
+export const SelectPipelineTemplate = 'selectPipelineTemplate';
+export const SelectSubscription = 'selectSubscription';
+export const SelectWebApp = 'selectWebApp';
+export const GitHubPat = 'gitHubPat';
+export const SelectFromMultipleWorkSpace = 'selectFromMultipleWorkSpace';
+export const SelectRemoteForRepo = 'selectRemoteForRepo';

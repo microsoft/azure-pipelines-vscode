@@ -1,13 +1,11 @@
-import { AzureDevOpsHelper } from './devOps/azureDevOpsHelper';
-import { GitHubProvider } from './gitHubHelper';
-import { extensionVariables, GitRepositoryParameters, RepositoryProvider } from '../model/models';
+import { GitRepositoryParameters, GitBranchDetails } from '../model/models';
 import { Messages } from '../resources/messages';
 import * as fs from 'fs';
 import * as git from 'simple-git/promise';
 import * as path from 'path';
 import * as Q from 'q';
-import * as util from 'util';
 import * as vscode from 'vscode';
+import { RemoteWithoutRefs } from 'simple-git/typings/response';
 
 export class LocalGitRepoHelper {
     private gitReference: git.SimpleGit;
@@ -46,63 +44,23 @@ export class LocalGitRepoHelper {
         return deferred.promise;
     }
 
-    public async getGitRepoDetails(repositoryPath: string): Promise<GitRepositoryParameters> {
+    public async getGitBranchDetails(): Promise<GitBranchDetails> {
         let status = await this.gitReference.status();
         let branch = status.current;
-        let remote = "";
-        let remoteUrl = "" || null;
-        if (!status.tracking) {
-            let remotes = await this.gitReference.getRemotes(false);
-            if (remotes.length === 0) {
-                throw new Error(util.format(Messages.branchRemoteMissing, branch));
-            }
-            else if(remotes.length === 1) {
-                remote = remotes[0].name;
-            }
-            else {
-                // Show an option to user to select remote to be configured
-                let selectedRemote = await extensionVariables.ui.showQuickPick(remotes.map(remote => { return { label: remote.name }; }), { placeHolder: Messages.selectRemoteForBranch });
-                remote = selectedRemote.label;
-            }
-        }
-        else {
-            remote = status.tracking.substr(0, status.tracking.indexOf(branch) - 1);
-        }
-        remoteUrl = await this.gitReference.remote(["get-url", remote]);
+        let remote = status.tracking ? status.tracking.substr(0, status.tracking.indexOf(branch) - 1) : null;
 
-        if (remoteUrl) {
-            if (AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
-                return <GitRepositoryParameters>{
-                    repositoryProvider: RepositoryProvider.AzureRepos,
-                    repositoryId: "",
-                    repositoryName: AzureDevOpsHelper.getRepositoryNameFromRemoteUrl(remoteUrl),
-                    remoteName: remote,
-                    remoteUrl: remoteUrl,
-                    branch: branch,
-                    commitId: "",
-                    localPath: repositoryPath
-                };
-            }
-            else if (GitHubProvider.isGitHubUrl(remoteUrl)) {
-                let repoId = GitHubProvider.getRepositoryIdFromUrl(remoteUrl);
-                return <GitRepositoryParameters>{
-                    repositoryProvider: RepositoryProvider.Github,
-                    repositoryId: repoId,
-                    repositoryName: repoId,
-                    remoteName: remote,
-                    remoteUrl: remoteUrl,
-                    branch: branch,
-                    commitId: "",
-                    localPath: repositoryPath
-                };
-            }
-            else {
-                throw new Error(Messages.cannotIdentifyRespositoryDetails);
-            }
-        }
-        else {
-            throw new Error(Messages.remoteRepositoryNotConfigured);
-        }
+        return {
+            branch: branch,
+            remoteName: remote
+        };
+    }
+
+    public async getGitRemotes(): Promise<RemoteWithoutRefs[]> {
+        return this.gitReference.getRemotes(false);
+    }
+
+    public async getGitRemoteUrl(remoteName: string): Promise<string|void> {
+        return this.gitReference.remote(["get-url", remoteName]);
     }
 
     /**

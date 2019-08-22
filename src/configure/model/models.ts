@@ -32,6 +32,7 @@ export class WizardInputs {
     targetResource: AzureParameters = new AzureParameters();
     pipelineParameters: PipelineParameters = new PipelineParameters();
     azureSession: AzureSession;
+    githubPATToken?: string;
 }
 
 export interface DevOpsProject {
@@ -129,4 +130,9 @@ export interface AadApplication {
     appId: string;
     secret: string;
     objectId: string;
+}
+
+export interface GitBranchDetails {
+    remoteName: string;
+    branch: string;
 }

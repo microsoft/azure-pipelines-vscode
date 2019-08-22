@@ -1,6 +1,4 @@
 export class TelemetryKeys {
-    public static Command: string = 'command';
-    public static UserId: string = 'userId';
     public static CurrentUserInput: string = 'currentUserInput';
     public static RepoProvider: string = 'repoProvider';
     public static AzureLoginRequired: string = 'azureLoginRequired';
@@ -10,6 +8,7 @@ export class TelemetryKeys {
     public static ChosenTemplate: string = 'chosenTemplate';
     public static PipelineDiscarded: string = 'pipelineDiscarded';
     public static BrowsePipelineClicked: string = 'browsePipelineClicked';
+    public static MultipleWorkspaceFolders: string = 'multipleWorkspaceFolders';
 
     // Durations
     public static ExtensionActivationDuration = 'extensionActivationDuration';

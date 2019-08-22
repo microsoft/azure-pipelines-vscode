@@ -5,7 +5,7 @@ import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextens
 import { configurePipeline } from './configure';
 import { Messages } from './resources/messages';
 import { AzureAccountExtensionExports, extensionVariables } from './model/models';
-import { TelemetryHelper } from './helper/telemetryHelper';
+import { telemetryHelper } from './helper/telemetryHelper';
 
 export async function activateConfigurePipeline(): Promise<AzureExtensionApiProvider> {
     let azureAccountExtension = vscode.extensions.getExtension("ms-vscode.azure-account");
@@ -24,8 +24,8 @@ export async function activateConfigurePipeline(): Promise<AzureExtensionApiProv
     // The commandId parameter must match the command field in package.json
     registerCommand('configure-pipeline', async (actionContext: IActionContext, node: any) => {
         // The code you place here will be executed every time your command is executed
-        let telemetryHelper = new TelemetryHelper(actionContext, 'configure');
-        await configurePipeline(telemetryHelper, node);
+        telemetryHelper.initialize(actionContext, 'configure-pipeline');
+        await configurePipeline(node);
     });
 
     return createApiProvider([<AzureExtensionApi>
