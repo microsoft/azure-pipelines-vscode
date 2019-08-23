@@ -1,5 +1,5 @@
-# Node.js Express Web App on Linux
-# Build a Node.js Express app and deploy it as a Linux web app.
+# Node.js App on Windows Web App
+# Build a Node.js app and deploy it to Azure as a Windows web app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 

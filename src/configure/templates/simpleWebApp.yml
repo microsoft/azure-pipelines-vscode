@@ -1,5 +1,5 @@
-# Simple Web App on Windows
-# Package and deploy a simple web application on Windows web app
+# Simple App on Windows Web App
+# Package and deploy a simple web application and deploy it to Azure as Windows web app.
 
 trigger:
 - {{ sourceRepository.branch }}

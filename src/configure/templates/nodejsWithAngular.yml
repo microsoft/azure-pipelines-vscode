@@ -1,5 +1,5 @@
-# Node.js with Angular
-# Build a Node.js project that uses Angular.
+# Node.js with Angular on Windows Web App
+# Build a Node.js project that uses Angular and deploy it to Azure as a Windows web app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
