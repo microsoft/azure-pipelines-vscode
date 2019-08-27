@@ -34,7 +34,7 @@ export class Messages {
     public static remoteRepositoryNotConfigured: string = 'Remote repository is not configured. Manage your git repository with [Azure Repos](https://docs.microsoft.com/en-us/azure/devops/repos/get-started) or [Github](https://guides.github.com/activities/hello-world/)';
     public static resourceIdMissing: string = 'Required argument: resourceId, is missing. Kindly pass the argument for getting resource.';
     public static resourceTypeIsNotSupported: string = 'Resource of type: %s is not yet supported for configuring pipelines.';
-    public static selectLabel: string = 'Select';
+    public static selectFolderLabel: string = 'Select source folder for configuring pipeline';
     public static selectOrganization: string = 'Select Azure DevOps Organization';
     public static selectPathToAppSourceCode: string = 'Select the path to your application source code.';
     public static selectPipelineTemplate: string = 'Select Azure pipelines template...';
@@ -46,4 +46,6 @@ export class Messages {
     public static signInLabel: string = 'Sign In';
     public static unableToCreateAzureServiceConnection: string = `Unable to create azure service connection.\nOperation Status: %s\nMessage: %s\nService connection is not in ready state.`;
     public static unableToCreateGitHubServiceConnection: string =`Unable to create azure service connection.\nOperation Status: %s\nService connection is not in ready state.`;
+    public static commitFailedErrorMessage: string =`Commit failed due to error: %s`;
+
 }

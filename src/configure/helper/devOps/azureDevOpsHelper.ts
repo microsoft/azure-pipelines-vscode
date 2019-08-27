@@ -7,7 +7,9 @@ import { HostedVS2017QueueName } from '../../resources/constants';
 
 export class AzureDevOpsHelper {
     private static AzureReposUrl = 'dev.azure.com/';
+    private static SSHAzureReposUrl = 'ssh.dev.azure.com:v3/';
     private static VSOUrl = 'visualstudio.com/';
+    private static SSHVsoReposUrl = 'vs-ssh.visualstudio.com:v3/';
 
     private azureDevOpsClient: AzureDevOpsClient;
 
@@ -16,39 +18,28 @@ export class AzureDevOpsHelper {
     }
 
     public static isAzureReposUrl(remoteUrl: string): boolean {
-        return (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0);
+        return (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0);
     }
 
-    public static getOrganizationAndProjectNameFromRepositoryUrl(remoteUrl: string): { orgnizationName: string, projectName: string } {
+    public static getRepositoryDetailsFromRemoteUrl(remoteUrl: string): { orgnizationName: string, projectName: string, repositoryName: string } {
         if (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0) {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
             let parts = part.split('/');
-            let organizationName = parts[0].trim();
-            let projectName = parts[1].trim();
-            return { orgnizationName: organizationName, projectName: projectName };
+            return { orgnizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[3].trim() };
         }
         else if (remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0) {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
             let parts = part.split('/');
             let organizationName = remoteUrl.substring(remoteUrl.indexOf('https://') + 'https://'.length, remoteUrl.indexOf('.visualstudio.com'));
             let projectName = parts[0].trim();
-            return { orgnizationName: organizationName, projectName: projectName };
+            return { orgnizationName: organizationName, projectName: projectName, repositoryName: parts[2].trim() };
         }
-        else {
-            throw new Error(Messages.notAzureRepoUrl);
-        }
-    }
-
-    public static getRepositoryNameFromRemoteUrl(remoteUrl: string): string {
-        if (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0) {
-            let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
+        else if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
+            let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) ? remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) + AzureDevOpsHelper.SSHAzureReposUrl.length : remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) + AzureDevOpsHelper.SSHVsoReposUrl.length);
             let parts = part.split('/');
-            return parts[3].trim();
-        }
-        else if (remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0) {
-            let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
-            let parts = part.split('/');
-            return parts[2].trim();
+            let organizationName = parts[0].trim();
+            let projectName = parts[1].trim();
+            return { orgnizationName: organizationName, projectName: projectName, repositoryName: parts[2].trim() };
         }
         else {
             throw new Error(Messages.notAzureRepoUrl);

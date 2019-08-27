@@ -31,7 +31,7 @@ export async function configurePipeline(node: AzureTreeItem) {
                 telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
 
                 let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
-                if (signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
+                if (signIn && signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
                     await vscode.commands.executeCommand("azure-account.login");
                 }
                 else {
@@ -115,7 +115,7 @@ class PipelineConfigurer {
         await this.getSourceRepositoryDetails();
         await this.getSelectedPipeline();
 
-        if(this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
+        if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
             this.inputs.githubPATToken = await this.getGitHubPATToken();
         }
 
@@ -190,7 +190,7 @@ class PipelineConfigurer {
     private async setWorkspace(): Promise<void> {
         let workspaceFolders = vscode.workspace && vscode.workspace.workspaceFolders;
         if (workspaceFolders && workspaceFolders.length > 0) {
-            telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, 'workspace');
+            telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.CurrentWorkspace);
 
             if (workspaceFolders.length === 1) {
                 telemetryHelper.setTelemetry(TelemetryKeys.MultipleWorkspaceFolders, 'false');
@@ -210,10 +210,10 @@ class PipelineConfigurer {
             }
         }
         else {
-            telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, 'browse');
+            telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.BrowseLocalMachine);
             let selectedFolder: vscode.Uri[] = await vscode.window.showOpenDialog(
                 {
-                    openLabel: Messages.selectLabel,
+                    openLabel: Messages.selectFolderLabel,
                     canSelectFiles: false,
                     canSelectFolders: true,
                     canSelectMany: false,
@@ -232,13 +232,13 @@ class PipelineConfigurer {
         this.localGitRepoHelper = await LocalGitRepoHelper.GetHelperInstance(this.workspacePath);
         let gitBranchDetails = await this.localGitRepoHelper.getGitBranchDetails();
 
-        if(!gitBranchDetails.remoteName) {
+        if (!gitBranchDetails.remoteName) {
             // Remote tracking branch is not set
             let remotes = await this.localGitRepoHelper.getGitRemotes();
             if (remotes.length === 0) {
                 throw new Error(Messages.branchRemoteMissing);
             }
-            else if(remotes.length === 1) {
+            else if (remotes.length === 1) {
                 gitBranchDetails.remoteName = remotes[0].name;
             }
             else {
@@ -265,7 +265,7 @@ class PipelineConfigurer {
                 return <GitRepositoryParameters>{
                     repositoryProvider: RepositoryProvider.AzureRepos,
                     repositoryId: "",
-                    repositoryName: AzureDevOpsHelper.getRepositoryNameFromRemoteUrl(remoteUrl),
+                    repositoryName: AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl).repositoryName,
                     remoteName: gitRepositoryDetails.remoteName,
                     remoteUrl: remoteUrl,
                     branch: gitRepositoryDetails.branch,
@@ -314,9 +314,9 @@ class PipelineConfigurer {
         try {
             let azureResource: GenericResource = await this.appServiceClient.getAppServiceResource((<AzureTreeItem>node).fullId);
 
-            switch (azureResource.type.toLowerCase()) {
+            switch (azureResource.type ? azureResource.type.toLowerCase() : '') {
                 case 'Microsoft.Web/sites'.toLowerCase():
-                    switch (azureResource.kind) {
+                    switch (azureResource.kind ? azureResource.kind.toLowerCase() : '') {
                         case WebAppKind.WindowsApp:
                             this.inputs.targetResource.resource = azureResource;
                             break;
@@ -340,9 +340,9 @@ class PipelineConfigurer {
     private async getAzureDevOpsDetails(): Promise<void> {
         try {
             if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
-                let orgAndProjectName = AzureDevOpsHelper.getOrganizationAndProjectNameFromRepositoryUrl(this.inputs.sourceRepository.remoteUrl);
-                this.inputs.organizationName = orgAndProjectName.orgnizationName;
-                this.azureDevOpsClient.getRepository(this.inputs.organizationName, orgAndProjectName.projectName, this.inputs.sourceRepository.repositoryName)
+                let repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(this.inputs.sourceRepository.remoteUrl);
+                this.inputs.organizationName = repoDetails.orgnizationName;
+                this.azureDevOpsClient.getRepository(this.inputs.organizationName, repoDetails.projectName, this.inputs.sourceRepository.repositoryName)
                     .then((repository) => {
                         this.inputs.sourceRepository.repositoryId = repository.id;
                         this.inputs.project = {
@@ -487,7 +487,7 @@ class PipelineConfigurer {
             });
     }
 
-    private async checkInPipelineFileToRepository() {
+    private async checkInPipelineFileToRepository(): Promise<void> {
         try {
             this.inputs.pipelineParameters.pipelineFilePath = await this.localGitRepoHelper.addContentToFile(
                 await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs),
@@ -501,22 +501,24 @@ class PipelineConfigurer {
         }
 
         try {
-            let commitOrDiscard = await vscode.window.showInformationMessage(utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, this.inputs.sourceRepository.branch, this.inputs.sourceRepository.remoteName), Messages.commitAndPush, Messages.discardPipeline);
-            if (commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
-                await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
-                    try {
-                        // handle when the branch is not upto date with remote branch and push fails
-                        this.inputs.sourceRepository.commitId = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFilePath, this.inputs.sourceRepository);
-                    }
-                    catch (error) {
-                        telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
-                        throw (error);
-                    }
-                });
-            }
-            else {
-                telemetryHelper.setTelemetry(TelemetryKeys.PipelineDiscarded, 'true');
-                throw new UserCancelledError(Messages.operationCancelled);
+            while (!this.inputs.sourceRepository.commitId) {
+                let commitOrDiscard = await vscode.window.showInformationMessage(utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, this.inputs.sourceRepository.branch, this.inputs.sourceRepository.remoteName), Messages.commitAndPush, Messages.discardPipeline);
+                if (commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
+                    await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
+                        try {
+                            // handle when the branch is not upto date with remote branch and push fails
+                            this.inputs.sourceRepository.commitId = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFilePath, this.inputs.sourceRepository);
+                        }
+                        catch (error) {
+                            telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
+                            vscode.window.showErrorMessage(utils.format(Messages.commitFailedErrorMessage, error.message));
+                        }
+                    });
+                }
+                else {
+                    telemetryHelper.setTelemetry(TelemetryKeys.PipelineDiscarded, 'true');
+                    throw new UserCancelledError(Messages.operationCancelled);
+                }
             }
         }
         catch (error) {
