@@ -6,6 +6,7 @@ import { telemetryHelper } from '../telemetryHelper';
 import { TracePoints } from '../../resources/tracePoints';
 import { WizardInputs, RepositoryProvider } from '../../model/models';
 import * as util from 'util';
+import * as path from 'path';
 
 const Layer: string = 'azureDevOpsHelper';
 
@@ -101,7 +102,7 @@ export class AzureDevOpsHelper {
             },
             process: {
                 type: 2,
-                yamlFileName: inputs.pipelineParameters.pipelineFilePath
+                yamlFileName: path.join(inputs.pipelineParameters.workingDirectory, inputs.pipelineParameters.pipelineFileName)
             },
             queue: {
                 id: queueId // Default queue Hosted VS 2017. This value is overriden by queue specified in YAML

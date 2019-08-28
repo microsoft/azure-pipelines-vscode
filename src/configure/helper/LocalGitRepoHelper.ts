@@ -98,6 +98,11 @@ export class LocalGitRepoHelper {
         return gitLog.latest.hash;
     }
 
+    public async getGitRootDirectory(): Promise<string> {
+        let gitRootDir = await this.gitReference.revparse(["--show-toplevel"]);
+        return path.normalize(gitRootDir.trim());
+    }
+
     private static getIncreamentalFileName(fileName: string, count: number): string {
         return fileName.substr(0, fileName.indexOf('.')).concat(` (${count})`, fileName.substr(fileName.indexOf('.')));
     }

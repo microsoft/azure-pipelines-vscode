@@ -13,6 +13,9 @@ variables:
   # Web app name
   webAppName: '{{ targetResource.resource.name }}'
 
+  # Working Directory
+  workingDirectory: '{{ pipelineParameters.workingDirectory }}'
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -33,11 +36,12 @@ stages:
         npm install
         npx webpack --config webpack.config.js
       displayName: 'npm install, run webpack'
+      workingDirectory: $(workingDirectory)
 
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '{{ pipelineParameters.workingDirectory }}'
+        rootFolderOrFile: $(workingDirectory)
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
