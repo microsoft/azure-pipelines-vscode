@@ -1,9 +1,13 @@
 import { AzureDevOpsClient } from '../../clients/devOps/azureDevOpsClient';
 import { BuildDefinition, BuildDefinitionRepositoryProperties, Build } from '../../model/azureDevOps';
+import { HostedVS2017QueueName } from '../../resources/constants';
 import { Messages } from '../../resources/messages';
+import { telemetryHelper } from '../telemetryHelper';
+import { TracePoints } from '../../resources/tracePoints';
 import { WizardInputs, RepositoryProvider } from '../../model/models';
 import * as util from 'util';
-import { HostedVS2017QueueName } from '../../resources/constants';
+
+const Layer: string = 'azureDevOpsHelper';
 
 export class AzureDevOpsHelper {
     private static AzureReposUrl = 'dev.azure.com/';
@@ -25,21 +29,31 @@ export class AzureDevOpsHelper {
         if (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0) {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
             let parts = part.split('/');
+            if(parts.length !== 4) {
+                telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${AzureDevOpsHelper.AzureReposUrl}, Parts: ${parts.length}`));
+                throw new Error(Messages.failedToDetermineAzureRepoDetails);
+            }
             return { orgnizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[3].trim() };
         }
         else if (remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0) {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
-            let parts = part.split('/');
             let organizationName = remoteUrl.substring(remoteUrl.indexOf('https://') + 'https://'.length, remoteUrl.indexOf('.visualstudio.com'));
-            let projectName = parts[0].trim();
-            return { orgnizationName: organizationName, projectName: projectName, repositoryName: parts[2].trim() };
+            let parts = part.split('/');
+            if(parts.length !== 3) {
+                telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${AzureDevOpsHelper.VSOUrl}, Parts: ${parts.length}`));
+                throw new Error(Messages.failedToDetermineAzureRepoDetails);
+            }
+            return { orgnizationName: organizationName, projectName: parts[0].trim(), repositoryName: parts[2].trim() };
         }
         else if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
-            let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) ? remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) + AzureDevOpsHelper.SSHAzureReposUrl.length : remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) + AzureDevOpsHelper.SSHVsoReposUrl.length);
+            let urlFormat = remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 ? AzureDevOpsHelper.SSHAzureReposUrl : AzureDevOpsHelper.SSHVsoReposUrl;
+            let part = remoteUrl.substr(remoteUrl.indexOf(urlFormat) + urlFormat.length);
             let parts = part.split('/');
-            let organizationName = parts[0].trim();
-            let projectName = parts[1].trim();
-            return { orgnizationName: organizationName, projectName: projectName, repositoryName: parts[2].trim() };
+            if(parts.length !== 3) {
+                telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${urlFormat}, Parts: ${parts.length}`));
+                throw new Error(Messages.failedToDetermineAzureRepoDetails);
+            }
+            return { orgnizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[2].trim() };
         }
         else {
             throw new Error(Messages.notAzureRepoUrl);

@@ -10,6 +10,7 @@ export class Messages {
     public static cannotAddFileRemoteMissing: string = 'Cannot add yml file to your git repository, remote is not set';
     public static cannotIdentifyRespositoryDetails: string = 'Could not identify repository details. Ensure your git repo is managed with [Azure Repos](https://docs.microsoft.com/en-us/azure/devops/repos/get-started) or [Github](https://guides.github.com/activities/hello-world/)';
     public static commitAndPush: string = 'Commit & Push';
+    public static commitFailedErrorMessage: string =`Commit failed due to error: %s`;
     public static configuringPipelineAndDeployment: string = 'Configuring Azure DevOps Pipeline and proceeding to deployment...';
     public static couldNotAuthorizeEndpoint: string = 'Could not authorize endpoint for use in Pipelines.';
     public static creatingAzureDevOpsOrganization: string = 'Creating Azure DevOps organization.';
@@ -20,6 +21,7 @@ export class Messages {
     public static enterGitHubPat: string = 'Enter GitHub PAT token';
     public static failedToCreateAzureDevOpsProject: string = 'Failed to create project for Azure DevOps organization. Error: %s.';
     public static failedToCreateAzurePipeline: string = 'Failed to configure Azure pipeline. Error: %s';
+    public static failedToDetermineAzureRepoDetails: string = 'Failed to determine Azure Repo details from remote url. Please ensure that the remote points to a valid Azure Repos url.';
     public static githubPatTokenHelpMessage: string = 'GitHub PAT token with following permissions: full access of repository webhooks and services, read and write access to all repositories data.';
     public static modifyAndCommitFile: string = 'Modify and save your yaml file. %s will commit this file, push the branch \'%s\' to remote \'%s\' and proceed with deployment.';
     public static noAgentQueueFound: string = 'No Agent Queue found with pool name: %s';
@@ -46,6 +48,5 @@ export class Messages {
     public static signInLabel: string = 'Sign In';
     public static unableToCreateAzureServiceConnection: string = `Unable to create azure service connection.\nOperation Status: %s\nMessage: %s\nService connection is not in ready state.`;
     public static unableToCreateGitHubServiceConnection: string =`Unable to create azure service connection.\nOperation Status: %s\nService connection is not in ready state.`;
-    public static commitFailedErrorMessage: string =`Commit failed due to error: %s`;
-
+    public static waitForAzureSignIn: string =`Waiting for Azure sign-in...`;
 }

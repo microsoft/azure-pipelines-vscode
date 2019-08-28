@@ -32,7 +32,10 @@ export async function configurePipeline(node: AzureTreeItem) {
 
                 let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
                 if (signIn && signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
-                    await vscode.commands.executeCommand("azure-account.login");
+                    await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.waitForAzureSignIn },
+                        async () => {
+                            await vscode.commands.executeCommand("azure-account.login");
+                        });
                 }
                 else {
                     let error = new Error(Messages.azureLoginRequired);
