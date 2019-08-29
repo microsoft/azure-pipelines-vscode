@@ -26,6 +26,16 @@ export class AzureDevOpsHelper {
         return (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0);
     }
 
+    public static getFormattedRemoteUrl(remoteUrl: string): string {
+        // Convert SSH based url to https based url as pipeline service doesn't accept SSH based URL
+        if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
+            let details = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
+            return `https://${details.orgnizationName}${AzureDevOpsHelper.VSOUrl}/${details.projectName}/_git/${details.repositoryName}`;
+        }
+
+        return remoteUrl;
+    }
+
     public static getRepositoryDetailsFromRemoteUrl(remoteUrl: string): { orgnizationName: string, projectName: string, repositoryName: string } {
         if (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0) {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);

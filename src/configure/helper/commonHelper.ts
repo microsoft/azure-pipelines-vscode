@@ -1,3 +1,8 @@
+import * as util from 'util';
+import { Messages } from '../resources/messages';
+import Q = require('q');
+import * as logger from '../../logger';
+
 export async function sleepForMilliSeconds(timeInMs: number): Promise<void> {
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -15,7 +20,7 @@ export function generateDevOpsOrganizationName(userName: string, repositoryName:
     if(organizationName.length > 50) {
         organizationName = organizationName.substr(0, 50);
     }
-    
+
     return organizationName;
 }
 
@@ -60,4 +65,25 @@ export function stringCompareFunction(a: string, b: string): number {
         return 1;
     }
     return 0;
+}
+
+export async function executeFunctionWithRetry(
+    func: () => Promise<any>,
+    retryCount: number = 20,
+    retryIntervalTimeInSec: number = 2,
+    errorMessage?: string): Promise<any> {
+        let internalError = null;
+        for (;retryCount > 0; retryCount--) {
+            try {
+                let result = await func();
+                return result;
+            }
+            catch (error) {
+                internalError = error;
+                logger.log(JSON.stringify(error));
+                await Q.delay((resolve) => {resolve();}, retryIntervalTimeInSec * 1000);
+            }
+        }
+
+        throw errorMessage ? errorMessage.concat(util.format(Messages.retryFailedMessage, retryCount, JSON.stringify(internalError))): util.format  (Messages.retryFailedMessage, retryCount, JSON.stringify(internalError));
 }

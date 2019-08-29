@@ -1,19 +1,18 @@
 const uuid = require('uuid/v1');
 import { AzureEnvironment } from 'ms-rest-azure';
 import { AzureSession, Token, AadApplication } from '../model/models';
-import { generateRandomPassword } from './commonHelper';
+import { generateRandomPassword, executeFunctionWithRetry } from './commonHelper';
 import { Messages } from '../resources/messages';
 import { RestClient } from '../clients/restClient';
 import { TokenCredentials, UrlBasedRequestPrepareOptions, ServiceClientCredentials } from 'ms-rest';
 import { TokenResponse, MemoryCache, AuthenticationContext } from 'adal-node';
-import * as Q from 'q';
 import * as util from 'util';
 
 export class GraphHelper {
 
     private static contributorRoleId = "b24988ac-6180-42a0-ab88-20f7382dd24c";
-    private static retryCount = 30;
-    private static retryTimeout = 2 * 1000;
+    private static retryTimeIntervalInSec = 2;
+    private static retryCount = 20;
 
     public static async createSpnAndAssignRole(session: AzureSession, aadAppName: string, scope: string): Promise<AadApplication> {
         let graphCredentials = await this.getGraphToken(session);
@@ -36,9 +35,9 @@ export class GraphHelper {
         })
         .catch((error) => {
             let errorMessage = error && error.message;
-            if(!errorMessage && error["odata.error"]) {
+            if (!errorMessage && error["odata.error"]) {
                 errorMessage = error["odata.error"]["message"];
-                if(typeof errorMessage === "object") {
+                if (typeof errorMessage === "object") {
                     errorMessage = errorMessage.value;
                 }
             }
@@ -150,62 +149,62 @@ export class GraphHelper {
         });
     }
 
-    private static createSpn(graphClient: RestClient, appId: string, tenantId: string, retries: number = 0): Promise<any> {
+    private static async createSpn(graphClient: RestClient, appId: string, tenantId: string): Promise<any> {
+        let createSpnPromise = () => {
+            return graphClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
+                url: `https://graph.windows.net/${tenantId}/servicePrincipals`,
+                queryParameters: {
+                    "api-version": "1.6"
+                },
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                method: "POST",
+                body: {
+                    "appId": appId,
+                    "accountEnabled": "true"
+                },
+                deserializationMapper: null,
+                serializationMapper: null
+            });
+        };
 
-        return graphClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
-            url: `https://graph.windows.net/${tenantId}/servicePrincipals`,
-            queryParameters: {
-                "api-version": "1.6"
-            },
-            headers: {
-                "Content-Type": "application/json",
-            },
-            method: "POST",
-            body: {
-                "appId": appId,
-                "accountEnabled": "true"
-            },
-            deserializationMapper: null,
-            serializationMapper: null
-        })
-        .catch((error) => {
-            if(retries++ < this.retryCount) {
-                return Q.delay(this.retryTimeout)
-                .then(() => this.createSpn(graphClient, appId, tenantId, retries));
-            }
-            throw error;
-        });
+        return executeFunctionWithRetry(
+            createSpnPromise,
+            GraphHelper.retryCount,
+            GraphHelper.retryTimeIntervalInSec,
+            Messages.azureServicePrincipalFailedMessage);
     }
 
-    private static async createRoleAssignment(credentials: ServiceClientCredentials, scope: string, objectId: string, retries: number = 0): Promise<any> {
+    private static async createRoleAssignment(credentials: ServiceClientCredentials, scope: string, objectId: string): Promise<any> {
         let restClient = new RestClient(credentials);
         let roleDefinitionId = `${scope}/providers/Microsoft.Authorization/roleDefinitions/${this.contributorRoleId}`;
         let guid = uuid();
+        let roleAssignementFunction = () => {
+            return restClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
+                url: `https://management.azure.com/${scope}/providers/Microsoft.Authorization/roleAssignments/${guid}`,
+                queryParameters: {
+                    "api-version": "2015-07-01"
+                },
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                method: "PUT",
+                body: {
+                    "properties": {
+                        "roleDefinitionId": roleDefinitionId,
+                        "principalId": objectId
+                    }
+                },
+                deserializationMapper: null,
+                serializationMapper: null
+            });
+        };
 
-        return restClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
-            url: `https://management.azure.com/${scope}/providers/Microsoft.Authorization/roleAssignments/${guid}`,
-            queryParameters: {
-                "api-version": "2015-07-01"
-            },
-            headers: {
-                "Content-Type": "application/json",
-            },
-            method: "PUT",
-            body: {
-                "properties": {
-                    "roleDefinitionId": roleDefinitionId,
-                    "principalId": objectId
-                }
-            },
-            deserializationMapper: null,
-            serializationMapper: null
-        })
-        .catch((error) => {
-            if(retries++ < this.retryCount) {
-                return Q.delay(this.retryTimeout)
-                .then(() => this.createRoleAssignment(credentials, scope, objectId, retries));
-            }
-            throw error;
-        });
+        return executeFunctionWithRetry(
+            roleAssignementFunction,
+            GraphHelper.retryCount,
+            GraphHelper.retryTimeIntervalInSec,
+            Messages.roleAssignmentFailedMessage);
     }
 }

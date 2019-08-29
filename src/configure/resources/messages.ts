@@ -48,5 +48,8 @@ export class Messages {
     public static signInLabel: string = 'Sign In';
     public static unableToCreateAzureServiceConnection: string = `Unable to create azure service connection.\nOperation Status: %s\nMessage: %s\nService connection is not in ready state.`;
     public static unableToCreateGitHubServiceConnection: string =`Unable to create azure service connection.\nOperation Status: %s\nService connection is not in ready state.`;
+    public static retryFailedMessage: string =`Failed after retrying: %s times. Internal Error: %s`;
+    public static azureServicePrincipalFailedMessage: string =`Failed while creating Azure service principal.`;
+    public static roleAssignmentFailedMessage: string =`Failed while role assignement.`;
     public static waitForAzureSignIn: string =`Waiting for Azure sign-in...`;
 }
