@@ -308,7 +308,13 @@ class PipelineConfigurer {
             async () => {
                 githubPat = await this.controlProvider.showInputBox(
                     constants.GitHubPat,
-                    { placeHolder: Messages.enterGitHubPat, prompt: Messages.githubPatTokenHelpMessage });
+                    {
+                        placeHolder: Messages.enterGitHubPat,
+                        prompt: Messages.githubPatTokenHelpMessage,
+                        validateInput: (inputValue) => {
+                            return !inputValue ? Messages.githubPatTokenErrorMessage : null;
+                        }
+                    });
             },
             TelemetryKeys.GitHubPatDuration);
         return githubPat;
