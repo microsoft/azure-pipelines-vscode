@@ -4,11 +4,17 @@
 
 [Get it on the VS Code Marketplace!](https://marketplace.visualstudio.com/items?itemName=ms-azure-devops.azure-pipelines)
 
-This VS Code extension helps to seamlessly create, build and deploy in continuous manner using Azure Pipelines to **Azure WebApp Service** without leaving the **Visual Studio Code interface**. Also, this extension brings syntax highlighting that's aware of the Pipelines YAML schema and autocompletion for Azure Pipelines YAML to VS Code.
+This VS Code extension adds syntax highlighting and autocompletion for Azure Pipelines YAML to VS Code. It also helps you set up continuous build and deployment for Azure WebApps without leaving VS Code.
 
-For setting up Azure Pipelines using this extension you can invoke *Azure Pipelines < Configure Pipeline* from command palette (Ctrl + Shift + P) or Right-Click in File explorer. The guided workflow will auto generate a modifiable YAML file, defining the build and deploy process, which will be added to your repository for future reference.
+To set up a pipeline, choose *Azure Pipelines: Configure Pipeline* from the command palette (Ctrl/Cmd + Shift + P) or right-click in the file explorer. The guided workflow will generate a starter YAML file defining the build and deploy process.
 
-Basic YAML validation is built in to VS Code, but now you can have syntax highlighting that's aware of the Pipelines YAML schema. This means that you get red squigglies if you say tasks: where you meant task:. IntelliSense is also schema-aware. Wherever you are in the file, press Ctrl-Space (Cmd-Space on macOS) to see what options you have at that point.
+You can customize the pipeline using all the features offered by [Azure Pipelines.](https://azure.microsoft.com/services/devops/pipelines/).
+
+Once the setup is completed, an automatic CI/CD trigger will fire for every code push. To set this up, the extension will ask for a GitHub PAT with *repo* and *admin:repo_hook* scope.
+
+![GitHub PAT scope](resources/gitHubPatScope.png)
+
+Basic YAML validation is built in to VS Code, but now you can have syntax highlighting that's aware of the Pipelines YAML schema. This means that you get red squigglies if you say tasks: where you meant task:. IntelliSense is also schema-aware. Wherever you are in the file, press Ctrl-Space to see what options you have at that point.
 
 By default, the extension will highlight known Azure Pipelines files in the root of your workspace. You can change the language mode at the lower right to work with one file at a time. Click the language picker, then choose "Azure Pipelines". If you have files which should always use this extension, set your user or workspace settings to match those file paths with this extension. For example:
 
@@ -17,12 +23,6 @@ By default, the extension will highlight known Azure Pipelines files in the root
   "**/ci/*.yml": "azure-pipelines"
 
 }
-
-Once the setup is completed, it enables automatic CI/CD trigger for every code push. You can even expand on the created pipeline to avail all other functionalities of [Azure DevOps Pipelines.](https://azure.microsoft.com/en-us/services/devops/pipelines/?nav=min)
-
-For the successful completion of the workflow and trigger setup, we would need GitHub PAT tokens with repo and *admin:repo_hook* scope.
-
-![GitHub PAT scope](resources/gitHubPatScope.png)
 
 ## Telemetry
 

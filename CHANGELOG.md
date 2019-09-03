@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 
 ## 1.157.0
 ### Added
-- Added "Configure Pipeline" option in Command Palette( Ctrl + Shift + P ) and for right click File Explorer. This will configure a continuous integration (CI) and deployment (CD) pipeline to Azure Windows Web App
+- Added "Configure Pipeline" option in Command Palette (Ctrl+Shift+P) and File Explorer. This will configure a continuous integration (CI) and deployment (CD) pipeline to Azure Windows Web App
 
 ## 1.155.0
 ### Fixed
