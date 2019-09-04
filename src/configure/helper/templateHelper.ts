@@ -48,7 +48,7 @@ async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boole
 }
 
 function isNodeRepo(files: string[]): boolean {
-    let nodeFilesRegex = '\.ts$|\.js$|package\.json$|node_modules';
+    let nodeFilesRegex = '\\.ts$|\\.js$|package\\.json$|node_modules';
     return files.some((file) => {
         let result = new RegExp(nodeFilesRegex).test(file.toLowerCase());
         return result;
@@ -85,7 +85,7 @@ const nodeTemplates: Array<PipelineTemplate> = [
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithWebpack.yml'),
         language: 'node',
         targetType: TargetResourceType.WindowsWebApp
-    }    
+    }
 ];
 
 const simpleWebAppTemplates: Array<PipelineTemplate> = [

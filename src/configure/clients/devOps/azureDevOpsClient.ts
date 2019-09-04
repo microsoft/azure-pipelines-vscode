@@ -19,7 +19,13 @@ export class AzureDevOpsClient {
     }
 
     public async sendRequest(urlBasedRequestPrepareOptions: UrlBasedRequestPrepareOptions): Promise<any> {
-        urlBasedRequestPrepareOptions.headers['X-TFS-Session'] = telemetryHelper.getJourneyId();
+        if (urlBasedRequestPrepareOptions.headers) {
+            urlBasedRequestPrepareOptions.headers['X-TFS-Session'] = telemetryHelper.getJourneyId();
+        }
+        else {
+            urlBasedRequestPrepareOptions.headers = { 'X-TFS-Session': telemetryHelper.getJourneyId() };
+        }
+
         return this.restClient.sendRequest(urlBasedRequestPrepareOptions);
     }
 
@@ -56,47 +62,47 @@ export class AzureDevOpsClient {
                 "name": projectName,
                 "visibility": 0,
                 "capabilities": {
-                    "versioncontrol": {"sourceControlType": "Git" },
+                    "versioncontrol": { "sourceControlType": "Git" },
                     "processTemplate": { "templateTypeId": "adcc42ab-9882-485e-a3ed-7678f01f66bc" }
                 }
             },
             deserializationMapper: null,
             serializationMapper: null
         })
-        .then((operation) => {
-            if(operation.url) {
-                return this.monitorOperationStatus(operation.url);
-            }
-            else {
-                throw new Error(util.format(Messages.failedToCreateAzureDevOpsProject, operation.message));
-            }
-        });
+            .then((operation) => {
+                if (operation.url) {
+                    return this.monitorOperationStatus(operation.url);
+                }
+                else {
+                    throw new Error(util.format(Messages.failedToCreateAzureDevOpsProject, operation.message));
+                }
+            });
     }
 
     public async listOrganizations(forceRefresh?: boolean): Promise<Organization[]> {
         if (!this.listOrgPromise || forceRefresh) {
             this.listOrgPromise = this.getUserData()
-            .then((connectionData) => {
-                return this.sendRequest(<UrlBasedRequestPrepareOptions>{
-                    url: "https://app.vssps.visualstudio.com/_apis/accounts",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    method: "GET",
-                    queryParameters: {
-                        "memberId": connectionData.authenticatedUser.id,
-                        "api-version": "5.0",
-                        "properties": "Microsoft.VisualStudio.Services.Account.ServiceUrl.00025394-6065-48ca-87d9-7f5672854ef7"
-                    },
-                    deserializationMapper: null,
-                    serializationMapper: null
+                .then((connectionData) => {
+                    return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+                        url: "https://app.vssps.visualstudio.com/_apis/accounts",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        method: "GET",
+                        queryParameters: {
+                            "memberId": connectionData.authenticatedUser.id,
+                            "api-version": "5.0",
+                            "properties": "Microsoft.VisualStudio.Services.Account.ServiceUrl.00025394-6065-48ca-87d9-7f5672854ef7"
+                        },
+                        deserializationMapper: null,
+                        serializationMapper: null
+                    });
+                })
+                .then((organizations) => {
+                    let organizationList: Array<Organization> = organizations.value;
+                    organizationList = organizationList.sort((org1, org2) => stringCompareFunction(org1.accountName, org2.accountName));
+                    return organizationList;
                 });
-            })
-            .then((organizations) => {
-                let organizationList: Array<Organization> = organizations.value;
-                organizationList = organizationList.sort((org1, org2) => stringCompareFunction(org1.accountName, org2.accountName));
-                return organizationList;
-            });
         }
 
         return this.listOrgPromise;
@@ -226,19 +232,19 @@ export class AzureDevOpsClient {
             serializationMapper: null,
             deserializationMapper: null
         })
-        .then((project) => {
-            return project && project.id;
-        });
+            .then((project) => {
+                return project && project.id;
+            });
     }
 
     private getUserData(): Promise<any> {
         return this.getConnectionData()
-        .catch(() => {
-            return this.createUserProfile()
-            .then(() => {
-                return this.getConnectionData();
+            .catch(() => {
+                return this.createUserProfile()
+                    .then(() => {
+                        return this.getConnectionData();
+                    });
             });
-        });
     }
 
     private getConnectionData(): Promise<any> {
@@ -269,13 +275,13 @@ export class AzureDevOpsClient {
         let retryCount = 0;
         let operationResult: any;
 
-        while(retryCount < 30) {
+        while (retryCount < 30) {
             operationResult = await this.getOperationResult(operationUrl);
             let result = operationResult.status.toLowerCase();
-            if(result === "succeeded") {
+            if (result === "succeeded") {
                 return;
             }
-            else if(result === "failed") {
+            else if (result === "failed") {
                 throw new Error(util.format(Messages.failedToCreateAzureDevOpsProject, operationResult.detailedMessage));
             }
             else {
@@ -314,8 +320,8 @@ export class AzureDevOpsClient {
             serializationMapper: null,
             deserializationMapper: null
         })
-        .then((response) => {
-            return response.value;
-        });
+            .then((response) => {
+                return response.value;
+            });
     }
 }

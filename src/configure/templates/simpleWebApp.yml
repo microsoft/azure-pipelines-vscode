@@ -1,5 +1,5 @@
-# Simple Web App on Windows
-# Package and deploy a simple web application on Windows web app
+# Simple App on Windows Web App
+# Package and deploy a simple web application and deploy it to Azure as Windows web app.
 
 trigger:
 - {{ sourceRepository.branch }}
@@ -10,6 +10,9 @@ variables:
   
   # Web app name
   webAppName: '{{ targetResource.resource.name }}'
+
+  # Working Directory
+  workingDirectory: '{{ pipelineParameters.workingDirectory }}'
 
 stages:
 - stage: Build
@@ -25,7 +28,7 @@ stages:
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '{{ pipelineParameters.workingDirectory }}'
+        rootFolderOrFile: $(workingDirectory)
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip

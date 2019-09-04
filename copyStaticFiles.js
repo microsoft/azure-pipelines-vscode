@@ -29,6 +29,6 @@ var mkdir = function (options, target) {
     shellAssert();
 };
 
-mkdir("-p", path.join(__dirname, 'out/configure'));
-cp("-Rf", path.join(__dirname, 'src/configure/templates/'), path.join(__dirname, 'out/configure'));
+mkdir("-p", path.join(__dirname, 'out/configure/templates'));
+cp("-Rf", path.join(__dirname, 'src/configure/templates/*'), path.join(__dirname, 'out/configure/templates'));
 //# sourceMappingURL=copyStaticFiles.js.map

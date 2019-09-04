@@ -10,6 +10,7 @@ export class Messages {
     public static cannotAddFileRemoteMissing: string = 'Couldn\'t add YAML file to your repo because the remote isn\'t set';
     public static cannotIdentifyRespositoryDetails: string = 'Couldn\'t get repository details. Ensure your repo is hosted on [Azure Repos](https://docs.microsoft.com/azure/devops/repos/get-started) or [GitHub](https://guides.github.com/activities/hello-world/).';
     public static commitAndPush: string = 'Commit & push';
+    public static commitFailedErrorMessage: string =`Commit failed due to error: %s`;
     public static configuringPipelineAndDeployment: string = 'Configuring pipeline and proceeding to deployment...';
     public static couldNotAuthorizeEndpoint: string = 'Couldn\'t authorize endpoint for use in Azure Pipelines.';
     public static creatingAzureDevOpsOrganization: string = 'Creating Azure DevOps organization.';
@@ -20,6 +21,8 @@ export class Messages {
     public static enterGitHubPat: string = 'Enter GitHub personal access token (PAT)';
     public static failedToCreateAzureDevOpsProject: string = 'Couldn\'t create a project in the Azure DevOps organization. Error: %s.';
     public static failedToCreateAzurePipeline: string = 'Couldn\'t configure pipeline. Error: %s';
+    public static failedToDetermineAzureRepoDetails: string = 'Failed to determine Azure Repo details from remote url. Please ensure that the remote points to a valid Azure Repos url.';
+    public static githubPatTokenErrorMessage: string = 'GitHub PAT token cannot be empty.';
     public static githubPatTokenHelpMessage: string = 'GitHub personal access token (PAT) with following permissions: full access to repository webhooks and services, read and write access to all repository data.';
     public static modifyAndCommitFile: string = 'Modify and save your YAML file. %s will commit this file, push the branch \'%s\' to remote \'%s\' and proceed with deployment.';
     public static noAgentQueueFound: string = 'No agent pool found named "%s".';
@@ -34,9 +37,8 @@ export class Messages {
     public static remoteRepositoryNotConfigured: string = 'Remote repository is not configured. This extension is compatible with [Azure Repos](https://docs.microsoft.com/en-us/azure/devops/repos/get-started) or [GitHub](https://guides.github.com/activities/hello-world/).';
     public static resourceIdMissing: string = 'Required argument "resourceId" is missing. Please pass the argument for getting resource.';
     public static resourceTypeIsNotSupported: string = '"%s" resources are not yet supported for configuring pipelines.';
-    public static selectLabel: string = 'Select';
+    public static selectFolderLabel: string = 'Select source folder for configuring pipeline';
     public static selectOrganization: string = 'Select an Azure DevOps organization';
-    public static selectPathToAppSourceCode: string = 'Select the path to your application\'s source code.';
     public static selectPipelineTemplate: string = 'Select an Azure Pipelines template...';
     public static selectProject: string = 'Select an Azure DevOps project';
     public static selectRemoteForBranch: string = 'Select the remote repository where you want to track your current branch';
@@ -46,4 +48,8 @@ export class Messages {
     public static signInLabel: string = 'Sign In';
     public static unableToCreateAzureServiceConnection: string = `Unable to store connection details for Azure subscription.\nOperation Status: %s\nMessage: %s\nService connection is not in ready state.`;
     public static unableToCreateGitHubServiceConnection: string =`Unable to store connection details for GitHub.\nOperation Status: %s\nService connection is not in ready state.`;
+    public static retryFailedMessage: string =`Failed after retrying: %s times. Internal Error: %s`;
+    public static azureServicePrincipalFailedMessage: string =`Failed while creating Azure service principal.`;
+    public static roleAssignmentFailedMessage: string =`Failed while role assignement.`;
+    public static waitForAzureSignIn: string =`Waiting for Azure sign-in...`;
 }

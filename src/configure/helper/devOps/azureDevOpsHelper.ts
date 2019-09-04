@@ -1,13 +1,20 @@
 import { AzureDevOpsClient } from '../../clients/devOps/azureDevOpsClient';
 import { BuildDefinition, BuildDefinitionRepositoryProperties, Build } from '../../model/azureDevOps';
+import { HostedVS2017QueueName } from '../../resources/constants';
 import { Messages } from '../../resources/messages';
+import { telemetryHelper } from '../telemetryHelper';
+import { TracePoints } from '../../resources/tracePoints';
 import { WizardInputs, RepositoryProvider } from '../../model/models';
 import * as util from 'util';
-import { HostedVS2017QueueName } from '../../resources/constants';
+import * as path from 'path';
+
+const Layer: string = 'azureDevOpsHelper';
 
 export class AzureDevOpsHelper {
     private static AzureReposUrl = 'dev.azure.com/';
+    private static SSHAzureReposUrl = 'ssh.dev.azure.com:v3/';
     private static VSOUrl = 'visualstudio.com/';
+    private static SSHVsoReposUrl = 'vs-ssh.visualstudio.com:v3/';
 
     private azureDevOpsClient: AzureDevOpsClient;
 
@@ -16,39 +23,48 @@ export class AzureDevOpsHelper {
     }
 
     public static isAzureReposUrl(remoteUrl: string): boolean {
-        return (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0);
+        return (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0);
     }
 
-    public static getOrganizationAndProjectNameFromRepositoryUrl(remoteUrl: string): { orgnizationName: string, projectName: string } {
+    public static getFormattedRemoteUrl(remoteUrl: string): string {
+        // Convert SSH based url to https based url as pipeline service doesn't accept SSH based URL
+        if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
+            let details = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
+            return `https://${details.orgnizationName}${AzureDevOpsHelper.VSOUrl}/${details.projectName}/_git/${details.repositoryName}`;
+        }
+
+        return remoteUrl;
+    }
+
+    public static getRepositoryDetailsFromRemoteUrl(remoteUrl: string): { orgnizationName: string, projectName: string, repositoryName: string } {
         if (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0) {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
             let parts = part.split('/');
-            let organizationName = parts[0].trim();
-            let projectName = parts[1].trim();
-            return { orgnizationName: organizationName, projectName: projectName };
+            if(parts.length !== 4) {
+                telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${AzureDevOpsHelper.AzureReposUrl}, Parts: ${parts.length}`));
+                throw new Error(Messages.failedToDetermineAzureRepoDetails);
+            }
+            return { orgnizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[3].trim() };
         }
         else if (remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0) {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
-            let parts = part.split('/');
             let organizationName = remoteUrl.substring(remoteUrl.indexOf('https://') + 'https://'.length, remoteUrl.indexOf('.visualstudio.com'));
-            let projectName = parts[0].trim();
-            return { orgnizationName: organizationName, projectName: projectName };
-        }
-        else {
-            throw new Error(Messages.notAzureRepoUrl);
-        }
-    }
-
-    public static getRepositoryNameFromRemoteUrl(remoteUrl: string): string {
-        if (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0) {
-            let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
             let parts = part.split('/');
-            return parts[3].trim();
+            if(parts.length !== 3) {
+                telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${AzureDevOpsHelper.VSOUrl}, Parts: ${parts.length}`));
+                throw new Error(Messages.failedToDetermineAzureRepoDetails);
+            }
+            return { orgnizationName: organizationName, projectName: parts[0].trim(), repositoryName: parts[2].trim() };
         }
-        else if (remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0) {
-            let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
+        else if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
+            let urlFormat = remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 ? AzureDevOpsHelper.SSHAzureReposUrl : AzureDevOpsHelper.SSHVsoReposUrl;
+            let part = remoteUrl.substr(remoteUrl.indexOf(urlFormat) + urlFormat.length);
             let parts = part.split('/');
-            return parts[2].trim();
+            if(parts.length !== 3) {
+                telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${urlFormat}, Parts: ${parts.length}`));
+                throw new Error(Messages.failedToDetermineAzureRepoDetails);
+            }
+            return { orgnizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[2].trim() };
         }
         else {
             throw new Error(Messages.notAzureRepoUrl);
@@ -96,7 +112,7 @@ export class AzureDevOpsHelper {
             },
             process: {
                 type: 2,
-                yamlFileName: inputs.pipelineParameters.pipelineFilePath
+                yamlFileName: path.join(inputs.pipelineParameters.workingDirectory, inputs.pipelineParameters.pipelineFileName)
             },
             queue: {
                 id: queueId // Default queue Hosted VS 2017. This value is overriden by queue specified in YAML

@@ -1,5 +1,5 @@
-# Node.js with Grunt
-# Build a Node.js project using the Grunt task runner.
+# Node.js with Grunt on Windows Web App
+# Build a Node.js project using the Grunt task runner and deploy it to Azure as a Windows web app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
@@ -12,6 +12,9 @@ variables:
   
   # Web app name
   webAppName: '{{ targetResource.resource.name }}'
+
+  # Working Directory
+  workingDirectory: '{{ pipelineParameters.workingDirectory }}'
 
 stages:
 - stage: Build
@@ -32,11 +35,12 @@ stages:
         npm install
         grunt --gruntfile Gruntfile.js
       displayName: 'npm install and run grunt'
+      workingDirectory: $(workingDirectory)
 
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '{{ pipelineParameters.workingDirectory }}'
+        rootFolderOrFile: $(workingDirectory)
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
