@@ -20,6 +20,7 @@ import * as vscode from 'vscode';
 import { Result, telemetryHelper } from './helper/telemetryHelper';
 import { ControlProvider } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
+import { getSubscriptionSession } from './helper/azureSessionHelper';
 
 const Layer: string = 'configure';
 
@@ -73,9 +74,6 @@ class PipelineConfigurer {
 
     public constructor() {
         this.inputs = new WizardInputs();
-        this.inputs.azureSession = extensionVariables.azureAccountExtensionApi.sessions[0];
-        this.azureDevOpsClient = new AzureDevOpsClient(this.inputs.azureSession.credentials);
-        this.azureDevOpsHelper = new AzureDevOpsHelper(this.azureDevOpsClient);
         this.uniqueResourceNameSuffix = uuid().substr(0, 5);
         this.controlProvider = new ControlProvider();
     }
@@ -122,11 +120,11 @@ class PipelineConfigurer {
             this.inputs.githubPATToken = await this.getGitHubPATToken();
         }
 
-        await this.getAzureDevOpsDetails();
-
         if (!this.inputs.targetResource.resource) {
             await this.getAzureResourceDetails();
         }
+
+        await this.getAzureDevOpsDetails();
     }
 
     private async createPreRequisites(): Promise<void> {
@@ -322,6 +320,7 @@ class PipelineConfigurer {
 
     private async extractAzureResourceFromNode(node: any): Promise<void> {
         this.inputs.targetResource.subscriptionId = node.root.subscriptionId;
+        this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
         this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.targetResource.subscriptionId);
 
         try {
@@ -352,6 +351,7 @@ class PipelineConfigurer {
 
     private async getAzureDevOpsDetails(): Promise<void> {
         try {
+            this.createAzureDevOpsClient();
             if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
                 let repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(this.inputs.sourceRepository.remoteUrl);
                 this.inputs.organizationName = repoDetails.orgnizationName;
@@ -434,14 +434,17 @@ class PipelineConfigurer {
         // show available subscriptions and get the chosen one
         let subscriptionList = extensionVariables.azureAccountExtensionApi.filters.map((subscriptionObject) => {
             return <QuickPickItemWithData>{
-                label: <string>subscriptionObject.subscription.displayName,
-                data: subscriptionObject
+                label: `${<string>subscriptionObject.subscription.displayName}`,
+                data: subscriptionObject,
+                description: `${<string>subscriptionObject.subscription.subscriptionId}`
             };
         });
         let selectedSubscription: QuickPickItemWithData = await this.controlProvider.showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
         this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
+        this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
+
         // show available resources and get the chosen one
-        this.appServiceClient = new AppServiceClient(extensionVariables.azureAccountExtensionApi.sessions[0].credentials, this.inputs.targetResource.subscriptionId);
+        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.targetResource.subscriptionId);
         let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
             constants.SelectWebApp,
             this.appServiceClient.GetAppServices(WebAppKind.WindowsApp)
@@ -538,6 +541,11 @@ class PipelineConfigurer {
             telemetryHelper.logError(Layer, TracePoints.PipelineFileCheckInFailed, error);
             throw error;
         }
+    }
+
+    private createAzureDevOpsClient(): void {
+        this.azureDevOpsClient = new AzureDevOpsClient(this.inputs.azureSession.credentials);
+        this.azureDevOpsHelper = new AzureDevOpsHelper(this.azureDevOpsClient);
     }
 }
 

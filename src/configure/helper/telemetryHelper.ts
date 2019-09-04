@@ -39,7 +39,7 @@ class TelemetryHelper {
         }
     }
 
-    public setCurrentStep(stepName: string) : void{
+    public setCurrentStep(stepName: string): void {
         this.actionContext.telemetry.properties.cancelStep = stepName;
     }
 
