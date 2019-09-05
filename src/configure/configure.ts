@@ -355,7 +355,7 @@ class PipelineConfigurer {
             if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
                 let repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(this.inputs.sourceRepository.remoteUrl);
                 this.inputs.organizationName = repoDetails.orgnizationName;
-                this.azureDevOpsClient.getRepository(this.inputs.organizationName, repoDetails.projectName, this.inputs.sourceRepository.repositoryName)
+                await this.azureDevOpsClient.getRepository(this.inputs.organizationName, repoDetails.projectName, this.inputs.sourceRepository.repositoryName)
                     .then((repository) => {
                         this.inputs.sourceRepository.repositoryId = repository.id;
                         this.inputs.project = {
