@@ -3,6 +3,10 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.157.1
+### Fixed
+- Azure Repos scenario for `Configure Pipeline`
+
 ## 1.157.0
 ### Added
 - Added "Configure Pipeline" option in Command Palette (Ctrl+Shift+P) and File Explorer. This will configure a continuous integration (CI) and deployment (CD) pipeline to Azure Windows Web App
