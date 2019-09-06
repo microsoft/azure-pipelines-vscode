@@ -28,6 +28,22 @@ By default, the extension will highlight known Azure Pipelines files in the root
 
 VS Code collects usage data and sends it to Microsoft to help improve our products and services. Read our [privacy statement](https://go.microsoft.com/fwlink/?LinkID=528096&clcid=0x409) to learn more. If you don’t wish to send usage data to Microsoft, you can set the `telemetry.enableTelemetry` setting to `false`. Learn more in our [FAQ](https://code.visualstudio.com/docs/supporting/faq#_how-to-disable-telemetry-reporting).
 
+## Troubleshooting failures
+
+- **Selected workspace is not a Git repository**: You can Configure Pipeline on git repository backed by GitHub or Azure Repos. Initialize your workspace as git repository, commit your files and add new remote git repository. Run the following commands to configure git repository:
+
+    `git init`
+
+    `git add *`
+
+    `git commit -m <commit-message>`
+
+    `git remote add <remote-name> <remote-url>`
+
+- **The current branch doesn't have a tracking branch, and the selected repository has no remotes**: You can Configure Pipeline on git repository backed by GitHub or Azure Repos. To add a new remote git repository, run `git remote add <remote-name> <remote-url>`
+
+- **Failed to determine Azure Repo details from remote url**: If you are configuring pipeline for a git repository backed by Azure Repos, ensure that the remote-url points to a valid Azure Repos git repository url.
+
 # Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) if you want to jump in!
