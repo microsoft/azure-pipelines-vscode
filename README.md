@@ -6,6 +6,8 @@
 
 This VS Code extension adds syntax highlighting and autocompletion for Azure Pipelines YAML to VS Code. It also helps you set up continuous build and deployment for Azure WebApps without leaving VS Code.
 
+![Configure Pipeline Demo](https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/master/resources/configure-pipeline.gif)
+
 To set up a pipeline, choose *Azure Pipelines: Configure Pipeline* from the command palette (Ctrl/Cmd + Shift + P) or right-click in the file explorer. The guided workflow will generate a starter YAML file defining the build and deploy process.
 
 You can customize the pipeline using all the features offered by [Azure Pipelines.](https://azure.microsoft.com/services/devops/pipelines/).
