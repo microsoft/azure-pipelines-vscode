@@ -10,7 +10,7 @@ export class Messages {
     public static cannotAddFileRemoteMissing: string = 'Couldn\'t add YAML file to your repo because the remote isn\'t set';
     public static cannotIdentifyRespositoryDetails: string = 'Couldn\'t get repository details. Ensure your repo is hosted on [Azure Repos](https://docs.microsoft.com/azure/devops/repos/get-started) or [GitHub](https://guides.github.com/activities/hello-world/).';
     public static commitAndPush: string = 'Commit & push';
-    public static commitFailedErrorMessage: string =`Commit failed due to error: %s`;
+    public static commitFailedErrorMessage: string = `Commit failed due to error: %s`;
     public static configuringPipelineAndDeployment: string = 'Configuring pipeline and proceeding to deployment...';
     public static couldNotAuthorizeEndpoint: string = 'Couldn\'t authorize endpoint for use in Azure Pipelines.';
     public static creatingAzureDevOpsOrganization: string = 'Creating Azure DevOps organization.';
@@ -47,9 +47,10 @@ export class Messages {
     public static selectWorkspaceFolder: string = 'Select a folder from your workspace to deploy';
     public static signInLabel: string = 'Sign In';
     public static unableToCreateAzureServiceConnection: string = `Unable to store connection details for Azure subscription.\nOperation Status: %s\nMessage: %s\nService connection is not in ready state.`;
-    public static unableToCreateGitHubServiceConnection: string =`Unable to store connection details for GitHub.\nOperation Status: %s\nService connection is not in ready state.`;
-    public static retryFailedMessage: string =`Failed after retrying: %s times. Internal Error: %s`;
-    public static azureServicePrincipalFailedMessage: string =`Failed while creating Azure service principal.`;
-    public static roleAssignmentFailedMessage: string =`Failed while role assignement.`;
-    public static waitForAzureSignIn: string =`Waiting for Azure sign-in...`;
+    public static unableToCreateGitHubServiceConnection: string = `Unable to store connection details for GitHub.\nOperation Status: %s\nService connection is not in ready state.`;
+    public static retryFailedMessage: string = `Failed after retrying: %s times. Internal Error: %s`;
+    public static azureServicePrincipalFailedMessage: string = `Failed while creating Azure service principal.`;
+    public static roleAssignmentFailedMessage: string = `Failed while role assignement.`;
+    public static waitForAzureSignIn: string = `Waiting for Azure sign-in...`;
+    public static noOrgFoundByName: string = `Failed to find an Azure DevOps organization with name %s`;
 }

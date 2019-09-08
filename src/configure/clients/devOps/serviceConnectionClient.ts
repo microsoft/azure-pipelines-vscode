@@ -17,7 +17,7 @@ export class ServiceConnectionClient {
     public async createGitHubServiceConnection(endpointName: string, gitHubPat: string): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/serviceendpoint/endpoints`;
 
-        return this.azureDevOpsClient.sendRequest(<UrlBasedRequestPrepareOptions>
+        return this.azureDevOpsClient.sendRequestWithMsaOrgCheck(<UrlBasedRequestPrepareOptions>
             {
                 url: url,
                 headers: {
@@ -43,13 +43,13 @@ export class ServiceConnectionClient {
                 },
                 deserializationMapper: null,
                 serializationMapper: null
-            });
+            }, this.organizationName);
     }
 
     public async createAzureServiceConnection(endpointName: string, tenantId: string, subscriptionId: string, scope: string, aadApp: AadApplication): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/serviceendpoint/endpoints`;
 
-        return this.azureDevOpsClient.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.azureDevOpsClient.sendRequestWithMsaOrgCheck(<UrlBasedRequestPrepareOptions>{
             url: url,
             headers: {
                 "Content-Type": "application/json",
@@ -83,13 +83,13 @@ export class ServiceConnectionClient {
             },
             deserializationMapper: null,
             serializationMapper: null
-        });
+        }, this.organizationName);
     }
 
     public async getEndpointStatus(endpointId: string): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/serviceendpoint/endpoints/${endpointId}`;
 
-        return this.azureDevOpsClient.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.azureDevOpsClient.sendRequestWithMsaOrgCheck(<UrlBasedRequestPrepareOptions>{
             url: url,
             headers: {
                 "Content-Type": "application/json",
@@ -98,13 +98,13 @@ export class ServiceConnectionClient {
             method: "Get",
             deserializationMapper: null,
             serializationMapper: null
-        });
+        }, this.organizationName);
     }
 
     public async authorizeEndpointForAllPipelines(endpointId: string): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/pipelines/pipelinePermissions/endpoint/${endpointId}`;
 
-        return this.azureDevOpsClient.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.azureDevOpsClient.sendRequestWithMsaOrgCheck(<UrlBasedRequestPrepareOptions>{
             url: url,
             headers: {
                 "Content-Type": "application/json",
@@ -125,7 +125,7 @@ export class ServiceConnectionClient {
             },
             deserializationMapper: null,
             serializationMapper: null
-        });
+        }, this.organizationName);
     }
 
 }

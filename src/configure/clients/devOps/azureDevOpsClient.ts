@@ -18,7 +18,7 @@ export class AzureDevOpsClient {
         this.listOrgPromise = this.listOrganizations();
     }
 
-    public async sendRequest(urlBasedRequestPrepareOptions: UrlBasedRequestPrepareOptions): Promise<any> {
+    public async sendRequest(urlBasedRequestPrepareOptions: UrlBasedRequestPrepareOptions, isMsaPassthrough?: boolean): Promise<any> {
         if (urlBasedRequestPrepareOptions.headers) {
             urlBasedRequestPrepareOptions.headers['X-TFS-Session'] = telemetryHelper.getJourneyId();
         }
@@ -26,7 +26,20 @@ export class AzureDevOpsClient {
             urlBasedRequestPrepareOptions.headers = { 'X-TFS-Session': telemetryHelper.getJourneyId() };
         }
 
+        if (isMsaPassthrough) {
+            urlBasedRequestPrepareOptions.headers['X-VSS-ForceMsaPassThrough'] = true;
+        }
+
         return this.restClient.sendRequest(urlBasedRequestPrepareOptions);
+    }
+
+    public async sendRequestWithMsaOrgCheck(urlBasedRequestPrepareOptions: UrlBasedRequestPrepareOptions, orgName: string): Promise<any> {
+        let isMsaPassthrough: boolean = false;
+        if (orgName) {
+            isMsaPassthrough = (await this.getOrganizationByName(orgName)).isMSAOrg;
+        }
+
+        return this.sendRequest(urlBasedRequestPrepareOptions, isMsaPassthrough);
     }
 
     public async createOrganization(organizationName: string): Promise<any> {
@@ -81,28 +94,12 @@ export class AzureDevOpsClient {
 
     public async listOrganizations(forceRefresh?: boolean): Promise<Organization[]> {
         if (!this.listOrgPromise || forceRefresh) {
-            this.listOrgPromise = this.getUserData()
-                .then((connectionData) => {
-                    return this.sendRequest(<UrlBasedRequestPrepareOptions>{
-                        url: "https://app.vssps.visualstudio.com/_apis/accounts",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        method: "GET",
-                        queryParameters: {
-                            "memberId": connectionData.authenticatedUser.id,
-                            "api-version": "5.0",
-                            "properties": "Microsoft.VisualStudio.Services.Account.ServiceUrl.00025394-6065-48ca-87d9-7f5672854ef7"
-                        },
-                        deserializationMapper: null,
-                        serializationMapper: null
-                    });
-                })
-                .then((organizations) => {
-                    let organizationList: Array<Organization> = organizations.value;
-                    organizationList = organizationList.sort((org1, org2) => stringCompareFunction(org1.accountName, org2.accountName));
-                    return organizationList;
-                });
+            this.listOrgPromise = new Promise<Organization[]>(async (resolve) => {
+                let [aadUserConnection, msaUserConnection] = await Promise.all([this.getUserData(false), this.getUserData(true)]);
+                let [nonMsaOrgs, msaOrgs] = await Promise.all([this.listOrgsInternal(aadUserConnection, false)
+                    , this.listOrgsInternal(msaUserConnection, true)]);
+                resolve(nonMsaOrgs.concat(msaOrgs));
+            });
         }
 
         return this.listOrgPromise;
@@ -110,7 +107,8 @@ export class AzureDevOpsClient {
 
     public async listProjects(organizationName: string): Promise<Array<DevOpsProject>> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/_apis/projects`;
-        let response = await this.sendRequest(<UrlBasedRequestPrepareOptions>{
+
+        let response = await this.sendRequestWithMsaOrgCheck(<UrlBasedRequestPrepareOptions>{
             url: url,
             headers: {
                 "Content-Type": "application/json"
@@ -121,7 +119,7 @@ export class AzureDevOpsClient {
             },
             deserializationMapper: null,
             serializationMapper: null
-        });
+        }, organizationName);
 
         let projects: Array<DevOpsProject> = [];
         if (response.value && response.value.length > 0) {
@@ -136,7 +134,7 @@ export class AzureDevOpsClient {
     public async getRepository(organizationName: string, projectName: string, repositoryName: string): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/${projectName}/_apis/git/repositories/${repositoryName}`;
 
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequestWithMsaOrgCheck(<UrlBasedRequestPrepareOptions>{
             url: url,
             headers: {
                 "Content-Type": "application/json",
@@ -147,13 +145,13 @@ export class AzureDevOpsClient {
             },
             deserializationMapper: null,
             serializationMapper: null
-        });
+        }, organizationName);
     }
 
     public async createBuildDefinition(organizationName: string, buildDefinition: BuildDefinition): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/${buildDefinition.project.id}/_apis/build/definitions`;
 
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequestWithMsaOrgCheck(<UrlBasedRequestPrepareOptions>{
             url: url,
             method: "POST",
             headers: {
@@ -162,13 +160,13 @@ export class AzureDevOpsClient {
             body: buildDefinition,
             serializationMapper: null,
             deserializationMapper: null
-        });
+        }, organizationName);
     }
 
     public async queueBuild(organizationName: string, build: Build): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/${build.project.id}/_apis/build/builds`;
 
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequestWithMsaOrgCheck(<UrlBasedRequestPrepareOptions>{
             url: url,
             method: "POST",
             headers: {
@@ -177,7 +175,7 @@ export class AzureDevOpsClient {
             body: build,
             serializationMapper: null,
             deserializationMapper: null
-        });
+        }, organizationName);
     }
 
     public async validateOrganizationName(organizationName: string): Promise<string> {
@@ -219,7 +217,7 @@ export class AzureDevOpsClient {
     public async getProjectIdFromName(organizationName: string, projectName: string): Promise<string> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/_apis/projects/${projectName}`;
 
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequestWithMsaOrgCheck(<UrlBasedRequestPrepareOptions>{
             url: url,
             method: "GET",
             headers: {
@@ -231,23 +229,55 @@ export class AzureDevOpsClient {
             },
             serializationMapper: null,
             deserializationMapper: null
-        })
+        }, organizationName)
             .then((project) => {
                 return project && project.id;
             });
     }
 
-    private getUserData(): Promise<any> {
-        return this.getConnectionData()
-            .catch(() => {
-                return this.createUserProfile()
-                    .then(() => {
-                        return this.getConnectionData();
-                    });
+    public async getOrganizationByName(orgName: string, force?: boolean): Promise<Organization> {
+        let organizations = await this.listOrgPromise;
+        let organization: Organization = organizations.find(o => o.accountName.toLowerCase() === orgName.toLowerCase());
+        if (!organization) {
+            throw new Error(Messages.noOrgFoundByName);
+        }
+
+        return organization;
+    }
+
+    private async listOrgsInternal(connectionData: any, isMsaPassthrough: boolean): Promise<Array<Organization>> {
+        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+            url: "https://app.vssps.visualstudio.com/_apis/accounts",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "GET",
+            queryParameters: {
+                "memberId": connectionData.authenticatedUser.id,
+                "api-version": "5.0",
+                "properties": "Microsoft.VisualStudio.Services.Account.ServiceUrl.00025394-6065-48ca-87d9-7f5672854ef7"
+            },
+            deserializationMapper: null,
+            serializationMapper: null
+        }, isMsaPassthrough)
+            .then((organizations) => {
+                let organizationList: Array<Organization> = organizations.value.map((org: Organization) =>
+                    <Organization>{ ...org, isMSAOrg: isMsaPassthrough });
+                organizationList = organizationList.sort((org1, org2) => stringCompareFunction(org1.accountName, org2.accountName));
+                return organizationList;
             });
     }
 
-    private getConnectionData(): Promise<any> {
+    private async getUserData(isMsaPassthrough: boolean): Promise<any> {
+        try {
+            return await this.getConnectionData(isMsaPassthrough);
+        } catch (error) {
+            await this.createUserProfile(isMsaPassthrough);
+            return await this.getConnectionData(isMsaPassthrough);
+        }
+    }
+
+    private async getConnectionData(isMsaPassthrough: boolean): Promise<any> {
         return this.sendRequest(<UrlBasedRequestPrepareOptions>{
             url: "https://app.vssps.visualstudio.com/_apis/connectiondata",
             headers: {
@@ -256,10 +286,10 @@ export class AzureDevOpsClient {
             method: "GET",
             deserializationMapper: null,
             serializationMapper: null
-        });
+        }, isMsaPassthrough);
     }
 
-    private createUserProfile(): Promise<any> {
+    private async createUserProfile(isMsaPassthrough: boolean): Promise<any> {
         return this.sendRequest(<UrlBasedRequestPrepareOptions>{
             url: "https://app.vssps.visualstudio.com/_apis/_AzureProfile/CreateProfile",
             headers: {
@@ -268,7 +298,7 @@ export class AzureDevOpsClient {
             method: "POST",
             deserializationMapper: null,
             serializationMapper: null
-        });
+        }, isMsaPassthrough);
     }
 
     private async monitorOperationStatus(operationUrl: string): Promise<void> {
@@ -305,8 +335,9 @@ export class AzureDevOpsClient {
         });
     }
 
-    public getAgentQueues(organizationName: string, projectName: string): Promise<Array<any>> {
+    public async getAgentQueues(organizationName: string, projectName: string): Promise<Array<any>> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/${projectName}/_apis/distributedtask/queues`;
+        let organization = await this.getOrganizationByName(organizationName);
 
         return this.sendRequest(<UrlBasedRequestPrepareOptions>{
             url: url,
@@ -319,7 +350,7 @@ export class AzureDevOpsClient {
             },
             serializationMapper: null,
             deserializationMapper: null
-        })
+        }, organization.isMSAOrg)
             .then((response) => {
                 return response.value;
             });
