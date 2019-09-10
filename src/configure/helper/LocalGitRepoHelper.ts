@@ -8,6 +8,8 @@ import * as vscode from 'vscode';
 import { RemoteWithoutRefs } from 'simple-git/typings/response';
 import {AzureDevOpsHelper} from './devOps/azureDevOpsHelper';
 import {GitHubProvider} from './gitHubHelper';
+import { telemetryHelper } from "./telemetryHelper";
+import { TelemetryKeys } from "../resources/telemetryKeys";
 
 export class LocalGitRepoHelper {
     private gitReference: git.SimpleGit;
@@ -23,6 +25,8 @@ export class LocalGitRepoHelper {
             return repoService;
         }
         catch(error) {
+            let gitFolderExists = fs.existsSync(path.join(repositoryPath, ".git"));
+            telemetryHelper.setTelemetry(TelemetryKeys.GitFolderExists, gitFolderExists.toString());
             throw new Error(Messages.notAGitRepository);
         }
     }

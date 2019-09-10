@@ -9,6 +9,7 @@ export class TelemetryKeys {
     public static PipelineDiscarded: string = 'pipelineDiscarded';
     public static BrowsePipelineClicked: string = 'browsePipelineClicked';
     public static MultipleWorkspaceFolders: string = 'multipleWorkspaceFolders';
+    public static GitFolderExists: string = 'gitFolderExists';
 
     // Durations
     public static ExtensionActivationDuration = 'extensionActivationDuration';
