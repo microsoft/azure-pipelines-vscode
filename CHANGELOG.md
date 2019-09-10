@@ -6,7 +6,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 ## 1.157.2
 ### Added
 - Added troubleshooting steps in README
-- Added more telemetry
 
 ## 1.157.1
 ### Fixed
