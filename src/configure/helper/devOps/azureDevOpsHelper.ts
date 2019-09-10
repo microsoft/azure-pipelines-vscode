@@ -13,7 +13,7 @@ const Layer: string = 'azureDevOpsHelper';
 export class AzureDevOpsHelper {
     private static AzureReposUrl = 'dev.azure.com/';
     private static SSHAzureReposUrl = 'ssh.dev.azure.com:v3/';
-    private static VSOUrl = 'visualstudio.com/';
+    private static VSOUrl = '.visualstudio.com/';
     private static SSHVsoReposUrl = 'vs-ssh.visualstudio.com:v3/';
 
     private azureDevOpsClient: AzureDevOpsClient;
