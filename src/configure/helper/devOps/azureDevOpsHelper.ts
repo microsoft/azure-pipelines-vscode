@@ -50,6 +50,12 @@ export class AzureDevOpsHelper {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
             let organizationName = remoteUrl.substring(remoteUrl.indexOf('https://') + 'https://'.length, remoteUrl.indexOf('.visualstudio.com'));
             let parts = this.sanitizeArray(part.split('/'));
+
+            if(parts.length === 4 && parts[0].toLowerCase() === "defaultcollection") {
+                // Handle scenario where part is 'DefaultCollection/<project>/_git/<repository>'
+                parts=parts.slice(1);
+            }
+
             if(parts.length !== 3) {
                 telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${AzureDevOpsHelper.VSOUrl}, Parts: ${parts.slice(1).toString()}, Length: ${parts.length}`));
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
