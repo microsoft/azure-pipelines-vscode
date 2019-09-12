@@ -3,6 +3,10 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.157.3
+### Fixed
+- Azure Repos scenario for `Configure Pipeline` where url contains DefaultCollection
+
 ## 1.157.2
 ### Added
 - Added troubleshooting steps in README
