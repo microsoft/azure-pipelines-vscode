@@ -39,7 +39,7 @@ export class AzureDevOpsHelper {
     public static getRepositoryDetailsFromRemoteUrl(remoteUrl: string): { orgnizationName: string, projectName: string, repositoryName: string } {
         if (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0) {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
-            let parts = this.sanitizeArray(part.split('/'));
+            let parts = part.split('/').filter((value) => !!value);
             if(parts.length !== 4) {
                 telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${AzureDevOpsHelper.AzureReposUrl}, Parts: ${parts.slice(2).toString()}, Length: ${parts.length}`));
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
@@ -49,11 +49,11 @@ export class AzureDevOpsHelper {
         else if (remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0) {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
             let organizationName = remoteUrl.substring(remoteUrl.indexOf('https://') + 'https://'.length, remoteUrl.indexOf('.visualstudio.com'));
-            let parts = this.sanitizeArray(part.split('/'));
+            let parts = part.split('/').filter((value) => !!value);
 
-            if(parts.length === 4 && parts[0].toLowerCase() === "defaultcollection") {
+            if (parts.length === 4 && parts[0].toLowerCase() === 'defaultcollection') {
                 // Handle scenario where part is 'DefaultCollection/<project>/_git/<repository>'
-                parts=parts.slice(1);
+                parts = parts.slice(1);
             }
 
             if(parts.length !== 3) {
@@ -65,7 +65,7 @@ export class AzureDevOpsHelper {
         else if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
             let urlFormat = remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 ? AzureDevOpsHelper.SSHAzureReposUrl : AzureDevOpsHelper.SSHVsoReposUrl;
             let part = remoteUrl.substr(remoteUrl.indexOf(urlFormat) + urlFormat.length);
-            let parts = this.sanitizeArray(part.split('/'));
+            let parts = part.split('/').filter((value) => !!value);
             if(parts.length !== 3) {
                 telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${urlFormat}, Parts: ${parts.slice(2).toString()}, Length: ${parts.length}`));
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
@@ -167,15 +167,5 @@ export class AzureDevOpsHelper {
             sourceBranch: inputs.sourceRepository.branch,
             sourceVersion: inputs.sourceRepository.commitId
         };
-    }
-
-    private static sanitizeArray(elements: Array<string>): Array<string> {
-        let result: Array<string> = [];
-        for(let value of elements) {
-            if(value) {
-                result.push(value);
-            }
-        }
-        return result;
     }
 }
