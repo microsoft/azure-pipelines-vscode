@@ -21,6 +21,7 @@ import { Result, telemetryHelper } from './helper/telemetryHelper';
 import { ControlProvider } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
+import {Build} from './model/azureDevOps';
 
 const Layer: string = 'configure';
 
@@ -89,7 +90,7 @@ class PipelineConfigurer {
         await this.checkInPipelineFileToRepository();
 
         telemetryHelper.setCurrentStep('CreateAndRunPipeline');
-        let queuedPipelineUrl = await vscode.window.withProgress<string>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
+        let queuedPipeline = await vscode.window.withProgress<Build>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
             try {
                 let pipelineName = `${this.inputs.targetResource.resource.name}-${this.uniqueResourceNameSuffix}`;
                 return await this.azureDevOpsHelper.createAndRunPipeline(pipelineName, this.inputs);
@@ -100,13 +101,14 @@ class PipelineConfigurer {
             }
 
         });
+        this.updateScmType(queuedPipeline);
 
         telemetryHelper.setCurrentStep('DisplayCreatedPipeline');
         vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
             .then((action: string) => {
                 if (action && action.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
                     telemetryHelper.setTelemetry(TelemetryKeys.BrowsePipelineClicked, 'true');
-                    vscode.env.openExternal(vscode.Uri.parse(queuedPipelineUrl));
+                    vscode.env.openExternal(vscode.Uri.parse(queuedPipeline._links.web.href));
                 }
             });
     }
@@ -342,6 +344,8 @@ class PipelineConfigurer {
                 default:
                     throw new Error(utils.format(Messages.resourceTypeIsNotSupported, azureResource.type));
             }
+
+            await this.validateIfPipelineCanBeSetupOnResource(azureResource.id);
         }
         catch (error) {
             telemetryHelper.logError(Layer, TracePoints.ExtractAzureResourceFromNodeFailed, error);
@@ -451,7 +455,58 @@ class PipelineConfigurer {
                 .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; })),
             { placeHolder: Messages.selectWebApp },
             TelemetryKeys.WebAppListCount);
+
+        await this.validateIfPipelineCanBeSetupOnResource(selectedResource.data.id);
         this.inputs.targetResource.resource = selectedResource.data;
+    }
+
+    private async validateIfPipelineCanBeSetupOnResource(resourceId: string): Promise<void> {
+        // Check for SCM type, if its value is set then a pipeline is already setup.
+        let siteConfig = await this.appServiceClient.getAppServiceConfig(resourceId);
+        if (siteConfig.scmType && siteConfig.scmType.toLowerCase() == 'VSTSRM') {
+            // if pipeline is already setup, the ask the user if we should continue.
+            telemetryHelper.setTelemetry(TelemetryKeys.PipelineAlreadyConfigured, 'true');
+            telemetryHelper.setTelemetry(TelemetryKeys.ScmType, siteConfig.scmType);
+
+            let browsePipeline = await this.controlProvider.showInformationBox(
+                constants.PipelineAlreadyConfigure,
+                Messages.pipelineAlreadyConfigured,
+                constants.BrowsePipeline);
+            if (browsePipeline) {
+                let existingPipelineUrl = await this.appServiceClient.getVstsPipelineUrl(resourceId);
+                telemetryHelper.setTelemetry(TelemetryKeys.BrowsedExistingPipeline, 'true');
+                vscode.env.openExternal(vscode.Uri.parse(existingPipelineUrl));
+                throw new UserCancelledError();
+            }
+        }
+        else if (siteConfig.scmType && siteConfig.scmType.toLowerCase() != '') {
+            let result = await this.controlProvider.showInformationBox(constants.DeploymentResourceAlreadyConfigured, Messages.deploymentCenterAlreadyConfigured, constants.BrowseDeploymentSource);
+            if (result == constants.BrowsePipeline) {
+                let deploymentCenterUrl: string = await this.appServiceClient.getDeploymentCenterUrl(resourceId);
+                telemetryHelper.setTelemetry(TelemetryKeys.OpenedDeploymentCenter, 'true');
+                await vscode.env.openExternal(vscode.Uri.parse(deploymentCenterUrl));
+                throw new UserCancelledError();
+            }
+        }
+    }
+
+    private async updateScmType(queuedPipeline: Build) {
+        await this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
+
+        let metadata = await this.appServiceClient.getSiteMetadata(this.inputs.targetResource.resource.id);
+        // insert BD, RD and other information
+        metadata["properties"] = {
+            "CURRENT_STACK": "dotnetcore",
+            "VSTSRM_ProjectId": `${this.inputs.project.id}`,
+            "VSTSRM_AccountId": `${this.inputs.organizationName}`,
+            "VSTSRM_BuildDefinitionId": `${queuedPipeline.id}`,
+            "VSTSRM_BuildDefinitionWebAccessUrl": `${queuedPipeline._links.web.href}`,
+            "VSTSRM_ConfiguredCDEndPoint": `${queuedPipeline._links.web.href}`,
+            "VSTSRM_ReleaseDefinitionId": `${queuedPipeline.id}`,
+            "VSTSRM_ProdAppName": `${this.inputs.targetResource.resource.name}`,
+        };
+        await this.appServiceClient.updateSiteMetadata(this.inputs.targetResource.resource.id, metadata);
+        await this.appServiceClient.publishDeploymentToAppService(this.inputs.targetResource.resource.id);
     }
 
     private async createGithubServiceConnection(): Promise<void> {

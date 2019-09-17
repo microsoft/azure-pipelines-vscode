@@ -10,6 +10,10 @@ export class TelemetryKeys {
     public static BrowsePipelineClicked: string = 'browsePipelineClicked';
     public static MultipleWorkspaceFolders: string = 'multipleWorkspaceFolders';
     public static GitFolderExists: string = 'gitFolderExists';
+    public static PipelineAlreadyConfigured: string = 'pipelineAlreadyConfigured';
+    public static ScmType: string = 'scmType';
+    public static OpenedDeploymentCenter = 'openedDeploymentCenter';
+    public static BrowsedExistingPipeline = 'browsedExistingPipeline';
 
     // Durations
     public static ExtensionActivationDuration = 'extensionActivationDuration';
