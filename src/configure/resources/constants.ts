@@ -148,3 +148,4 @@ export const DeploymentResourceAlreadyConfigured = 'DeploymentResourceAlreadyCon
 export const PipelineAlreadyConfigure = 'PipelineAlreadyConfigure';
 export const BrowseDeploymentSource = 'BrowseDeploymentSource';
 export const BrowsePipeline = 'BrowsePipeline';
+export const BrowseNotAvailableConfigurePipeline =  'BrowseNotAvailableConfigurePipeline';

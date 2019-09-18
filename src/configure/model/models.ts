@@ -124,7 +124,7 @@ export class QuickPickItemWithData implements QuickPickItem {
 
 export class ParsedAzureResourceId {
     public resourceId: string;
-    public subscription: string;
+    public subscriptionId: string;
     public resourceGroup: string;
     public resourceType: string;
     public resourceProvider: string;
@@ -148,7 +148,7 @@ export class ParsedAzureResourceId {
             for (let i = 0; i < parts.length; i++) {
                 switch (i) {
                     case 1:
-                            this.subscription = parts[1];
+                            this.subscriptionId = parts[1];
                             break;
                     case 3:
                             this.resourceGroup = parts[3];

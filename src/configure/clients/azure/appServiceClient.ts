@@ -6,7 +6,6 @@ import { ServiceClientCredentials } from 'ms-rest';
 
 import { AzureResourceClient } from './azureResourceClient';
 import { WebAppKind, ParsedAzureResourceId } from '../../model/models';
-import * as Constants from '../../resources/constants';
 import {Messages} from '../../resources/messages';
 
 export class AppServiceClient extends AzureResourceClient {
@@ -48,7 +47,7 @@ export class AppServiceClient extends AzureResourceClient {
     }
 
     public async getVstsPipelineUrl(resourceId: string): Promise<string> {
-        let metadata = await this.getSiteMetadata(resourceId);
+        let metadata = await this.getAppServiceMetadata(resourceId);
         if (metadata.properties['VSTSRM_BuildDefinitionWebAccessUrl']) {
             return metadata.properties['VSTSRM_BuildDefinitionWebAccessUrl'];
         }
@@ -63,7 +62,7 @@ export class AppServiceClient extends AzureResourceClient {
 
     public async updateScmType(resourceId: string): Promise<SiteConfigResource> {
         let siteConfig = await this.getAppServiceConfig(resourceId);
-        siteConfig.scmType = Constants.VstsRmScmType;
+        siteConfig.scmType = ScmTypes.VSTSRM;
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
         return this.webSiteManagementClient.webApps.updateConfiguration(parsedResourceId.resourceGroup, parsedResourceId.resourceName, siteConfig);
     }
@@ -73,12 +72,12 @@ export class AppServiceClient extends AzureResourceClient {
         return this.webSiteManagementClient.webApps.updateConfiguration(parsedResourceId.resourceGroup, parsedResourceId.resourceName, siteConfig);
     }
 
-    public async getSiteMetadata(resourceId: string): Promise<StringDictionary> {
+    public async getAppServiceMetadata(resourceId: string): Promise<StringDictionary> {
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
         return this.webSiteManagementClient.webApps.listMetadata(parsedResourceId.resourceGroup, parsedResourceId.resourceName);
     }
 
-    public async updateSiteMetadata(resourceId: string, metadata: StringDictionary): Promise<StringDictionary> {
+    public async updateAppServiceMetadata(resourceId: string, metadata: StringDictionary): Promise<StringDictionary> {
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
         return this.webSiteManagementClient.webApps.updateMetadata(parsedResourceId.resourceGroup, parsedResourceId.resourceName, metadata);
     }
@@ -110,6 +109,11 @@ export class AppServiceClient extends AzureResourceClient {
         deployment.message = JSON.stringify(deploymentMessage);
         return deployment;
     }
+}
+
+export enum ScmTypes {
+    VSTSRM = 'VSTSRM',
+    NONE = 'NONE'
 }
 
 interface DeploymentMessage {

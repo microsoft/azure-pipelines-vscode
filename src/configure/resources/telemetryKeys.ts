@@ -12,8 +12,9 @@ export class TelemetryKeys {
     public static GitFolderExists: string = 'gitFolderExists';
     public static PipelineAlreadyConfigured: string = 'pipelineAlreadyConfigured';
     public static ScmType: string = 'scmType';
-    public static OpenedDeploymentCenter = 'openedDeploymentCenter';
+    public static BrowsedDeploymentCenter = 'openedDeploymentCenter';
     public static BrowsedExistingPipeline = 'browsedExistingPipeline';
+    public static ClickedConfigurePipeline = 'ClickedConfigurePipeline';
 
     // Durations
     public static ExtensionActivationDuration = 'extensionActivationDuration';

@@ -1,8 +1,8 @@
 const uuid = require('uuid/v4');
-import { AppServiceClient } from './clients/azure/appServiceClient';
+import { AppServiceClient, ScmTypes } from './clients/azure/appServiceClient';
 import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
-import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
+import { AzureTreeItem, UserCancelledError, AzureParentTreeItem, SubscriptionTreeItemBase } from 'vscode-azureextensionui';
 import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { GraphHelper } from './helper/graphHelper';
@@ -170,7 +170,7 @@ class PipelineConfigurer {
     }
 
     private async analyzeNode(node: any): Promise<void> {
-        if (node instanceof AzureTreeItem) {
+        if (!!node && !!node.fullId) {
             await this.extractAzureResourceFromNode(node);
         }
         else if (node && node.fsPath) {
@@ -359,7 +359,7 @@ class PipelineConfigurer {
     private async validateIfPipelineCanBeSetupOnResource(resourceId: string): Promise<void> {
         // Check for SCM type, if its value is set then a pipeline is already setup.
         let siteConfig = await this.appServiceClient.getAppServiceConfig(resourceId);
-        if (siteConfig.scmType && siteConfig.scmType.toLowerCase() === 'vstsrm') {
+        if (siteConfig.scmType && siteConfig.scmType.toLowerCase() === ScmTypes.VSTSRM.toLowerCase()) {
             // if pipeline is already setup, the ask the user if we should continue.
             telemetryHelper.setTelemetry(TelemetryKeys.PipelineAlreadyConfigured, 'true');
             telemetryHelper.setTelemetry(TelemetryKeys.ScmType, siteConfig.scmType);
@@ -369,17 +369,18 @@ class PipelineConfigurer {
                 Messages.pipelineAlreadyConfigured,
                 constants.BrowsePipeline);
             if (browsePipeline) {
+                vscode.commands.executeCommand('browse-pipeline', { fullId: resourceId });
                 let existingPipelineUrl = await this.appServiceClient.getVstsPipelineUrl(resourceId);
                 telemetryHelper.setTelemetry(TelemetryKeys.BrowsedExistingPipeline, 'true');
                 vscode.env.openExternal(vscode.Uri.parse(existingPipelineUrl));
                 throw new UserCancelledError();
             }
         }
-        else if (siteConfig.scmType && siteConfig.scmType.toLowerCase() !== '' && siteConfig.scmType.toLowerCase() !== 'none') {
+        else if (siteConfig.scmType && siteConfig.scmType !== '' && siteConfig.scmType.toLowerCase() !== ScmTypes.NONE.toLowerCase()) {
             let result = await this.controlProvider.showInformationBox(constants.DeploymentResourceAlreadyConfigured, Messages.deploymentCenterAlreadyConfigured, constants.BrowseDeploymentSource);
             if (result === constants.BrowseDeploymentSource) {
                 let deploymentCenterUrl: string = await this.appServiceClient.getDeploymentCenterUrl(resourceId);
-                telemetryHelper.setTelemetry(TelemetryKeys.OpenedDeploymentCenter, 'true');
+                telemetryHelper.setTelemetry(TelemetryKeys.BrowsedDeploymentCenter, 'true');
                 await vscode.env.openExternal(vscode.Uri.parse(deploymentCenterUrl));
                 throw new UserCancelledError();
             }
@@ -496,7 +497,7 @@ class PipelineConfigurer {
     private async updateScmType(queuedPipeline: Build) {
         await this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
 
-        let metadata = await this.appServiceClient.getSiteMetadata(this.inputs.targetResource.resource.id);
+        let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
         let organizationId = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
         metadata["properties"] = {
             "VSTSRM_ProjectId": `${this.inputs.project.id}`,
@@ -506,7 +507,7 @@ class PipelineConfigurer {
             "VSTSRM_ConfiguredCDEndPoint": `${queuedPipeline.definition._links.web.href}`,
             "VSTSRM_ReleaseDefinitionId": `${queuedPipeline.definition.id}`
         };
-        await this.appServiceClient.updateSiteMetadata(this.inputs.targetResource.resource.id, metadata);
+        await this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
         await this.appServiceClient.publishDeploymentToAppService(
             this.inputs.targetResource.resource.id,
             queuedPipeline.definition._links.web.href,

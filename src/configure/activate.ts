@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
-import { registerCommand, IActionContext, createApiProvider } from 'vscode-azureextensionui';
+import { registerCommand, IActionContext, createApiProvider, AzureTreeItem } from 'vscode-azureextensionui';
 import { AzureExtensionApi, AzureExtensionApiProvider } from 'vscode-azureextensionui/api';
 
+import { browsePipeline } from './browse';
 import { configurePipeline } from './configure';
 import { Messages } from './resources/messages';
 import { AzureAccountExtensionExports, extensionVariables } from './model/models';
@@ -28,9 +29,16 @@ export async function activateConfigurePipeline(): Promise<AzureExtensionApiProv
         await configurePipeline(node);
     });
 
+    registerCommand('browse-pipeline', async (actionContext: IActionContext, node: AzureTreeItem) => {
+        // The code you place here will be executed every time your command is executed
+        telemetryHelper.initialize(actionContext, 'browse-pipeline');
+        await browsePipeline(node);
+    });
+
     return createApiProvider([<AzureExtensionApi>
         {
             configurePipelineApi: configurePipeline,
+            browsePipeline: browsePipeline,
             apiVersion: "0.0.1"
         }]);
 }
