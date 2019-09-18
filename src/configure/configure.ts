@@ -460,25 +460,36 @@ class PipelineConfigurer {
         this.inputs.targetResource.resource = selectedResource.data;
     }
 
-    private async updateScmType(queuedPipeline: Build) {
+    private async updateScmType(queuedPipeline: Build): Promise<void> {
+        // update SCM type
         this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
 
-        let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
-        let organizationId = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
-        metadata["properties"] = {
-            "VSTSRM_ProjectId": `${this.inputs.project.id}`,
-            "VSTSRM_AccountId": `${organizationId}`,
-            "VSTSRM_BuildDefinitionId": `${queuedPipeline.definition.id}`,
-            "VSTSRM_BuildDefinitionWebAccessUrl": `${queuedPipeline.definition.url}`,
-            "VSTSRM_ConfiguredCDEndPoint": `${queuedPipeline.definition.url}`,
-            "VSTSRM_ReleaseDefinitionId": `${queuedPipeline.definition.id}`
-        };
-        this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
+        let buildDefinitionUrl = this.azureDevOpsClient.getOldFormatBuildDefinitionUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.definition.id);
+        let buildUrl = this.azureDevOpsClient.getOldFormatBuildUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.id);
+
+        // update metadata of app service to store information about the pipeline deploying to web app.
+        new Promise<void>(async (resolve) => {
+            let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
+            let organizationId = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
+            metadata["properties"] = {
+                "VSTSRM_ProjectId": `${this.inputs.project.id}`,
+                "VSTSRM_AccountId": `${organizationId}`,
+                "VSTSRM_BuildDefinitionId": `${queuedPipeline.definition.id}`,
+                "VSTSRM_BuildDefinitionWebAccessUrl": `${buildDefinitionUrl}`,
+                "VSTSRM_ConfiguredCDEndPoint": `${buildDefinitionUrl}`,
+                "VSTSRM_ReleaseDefinitionId": `${queuedPipeline.definition.id}`
+            };
+
+            this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
+            resolve();
+        });
+
+        // send a deployment log with information about the setup pipeline and links.
         this.appServiceClient.publishDeploymentToAppService(
             this.inputs.targetResource.resource.id,
-            queuedPipeline.definition.url,
-            queuedPipeline.definition.url,
-            queuedPipeline._links.web.href);
+            buildDefinitionUrl,
+            buildDefinitionUrl,
+            buildUrl);
     }
 
     private async createGithubServiceConnection(): Promise<void> {
