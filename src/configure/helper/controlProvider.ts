@@ -1,6 +1,6 @@
-import { QuickPickItem, InputBoxOptions, window, env, Uri } from 'vscode';
+import { QuickPickItem, InputBoxOptions, window } from 'vscode';
 import { IAzureQuickPickOptions, UserCancelledError } from 'vscode-azureextensionui';
-import { telemetryHelper } from '../helper/telemetryHelper'
+import { telemetryHelper } from '../helper/telemetryHelper';
 import { extensionVariables } from '../model/models';
 import { TelemetryKeys } from '../resources/telemetryKeys';
 import {Messages} from '../resources/messages';

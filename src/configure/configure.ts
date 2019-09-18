@@ -101,7 +101,10 @@ class PipelineConfigurer {
             }
 
         });
-        this.updateScmType(queuedPipeline);
+
+        telemetryHelper.setCurrentStep('PostPipelineCreation');
+        // This step should be determined by the resoruce target provider (azure app service, function app, aks) type and pipelineProvider(azure pipeline vs github)
+        await this.updateScmType(queuedPipeline);
 
         telemetryHelper.setCurrentStep('DisplayCreatedPipeline');
         vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
@@ -353,6 +356,36 @@ class PipelineConfigurer {
         }
     }
 
+    private async validateIfPipelineCanBeSetupOnResource(resourceId: string): Promise<void> {
+        // Check for SCM type, if its value is set then a pipeline is already setup.
+        let siteConfig = await this.appServiceClient.getAppServiceConfig(resourceId);
+        if (siteConfig.scmType && siteConfig.scmType.toLowerCase() === 'vstsrm') {
+            // if pipeline is already setup, the ask the user if we should continue.
+            telemetryHelper.setTelemetry(TelemetryKeys.PipelineAlreadyConfigured, 'true');
+            telemetryHelper.setTelemetry(TelemetryKeys.ScmType, siteConfig.scmType);
+
+            let browsePipeline = await this.controlProvider.showInformationBox(
+                constants.PipelineAlreadyConfigure,
+                Messages.pipelineAlreadyConfigured,
+                constants.BrowsePipeline);
+            if (browsePipeline) {
+                let existingPipelineUrl = await this.appServiceClient.getVstsPipelineUrl(resourceId);
+                telemetryHelper.setTelemetry(TelemetryKeys.BrowsedExistingPipeline, 'true');
+                vscode.env.openExternal(vscode.Uri.parse(existingPipelineUrl));
+                throw new UserCancelledError();
+            }
+        }
+        else if (siteConfig.scmType && siteConfig.scmType.toLowerCase() !== '' && siteConfig.scmType.toLowerCase() !== 'none') {
+            let result = await this.controlProvider.showInformationBox(constants.DeploymentResourceAlreadyConfigured, Messages.deploymentCenterAlreadyConfigured, constants.BrowseDeploymentSource);
+            if (result === constants.BrowseDeploymentSource) {
+                let deploymentCenterUrl: string = await this.appServiceClient.getDeploymentCenterUrl(resourceId);
+                telemetryHelper.setTelemetry(TelemetryKeys.OpenedDeploymentCenter, 'true');
+                await vscode.env.openExternal(vscode.Uri.parse(deploymentCenterUrl));
+                throw new UserCancelledError();
+            }
+        }
+    }
+
     private async getAzureDevOpsDetails(): Promise<void> {
         try {
             this.createAzureDevOpsClient();
@@ -460,53 +493,25 @@ class PipelineConfigurer {
         this.inputs.targetResource.resource = selectedResource.data;
     }
 
-    private async validateIfPipelineCanBeSetupOnResource(resourceId: string): Promise<void> {
-        // Check for SCM type, if its value is set then a pipeline is already setup.
-        let siteConfig = await this.appServiceClient.getAppServiceConfig(resourceId);
-        if (siteConfig.scmType && siteConfig.scmType.toLowerCase() == 'VSTSRM') {
-            // if pipeline is already setup, the ask the user if we should continue.
-            telemetryHelper.setTelemetry(TelemetryKeys.PipelineAlreadyConfigured, 'true');
-            telemetryHelper.setTelemetry(TelemetryKeys.ScmType, siteConfig.scmType);
-
-            let browsePipeline = await this.controlProvider.showInformationBox(
-                constants.PipelineAlreadyConfigure,
-                Messages.pipelineAlreadyConfigured,
-                constants.BrowsePipeline);
-            if (browsePipeline) {
-                let existingPipelineUrl = await this.appServiceClient.getVstsPipelineUrl(resourceId);
-                telemetryHelper.setTelemetry(TelemetryKeys.BrowsedExistingPipeline, 'true');
-                vscode.env.openExternal(vscode.Uri.parse(existingPipelineUrl));
-                throw new UserCancelledError();
-            }
-        }
-        else if (siteConfig.scmType && siteConfig.scmType.toLowerCase() != '') {
-            let result = await this.controlProvider.showInformationBox(constants.DeploymentResourceAlreadyConfigured, Messages.deploymentCenterAlreadyConfigured, constants.BrowseDeploymentSource);
-            if (result == constants.BrowsePipeline) {
-                let deploymentCenterUrl: string = await this.appServiceClient.getDeploymentCenterUrl(resourceId);
-                telemetryHelper.setTelemetry(TelemetryKeys.OpenedDeploymentCenter, 'true');
-                await vscode.env.openExternal(vscode.Uri.parse(deploymentCenterUrl));
-                throw new UserCancelledError();
-            }
-        }
-    }
-
     private async updateScmType(queuedPipeline: Build) {
         await this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
 
         let metadata = await this.appServiceClient.getSiteMetadata(this.inputs.targetResource.resource.id);
-        // insert BD, RD and other information
+        let organizationId = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
         metadata["properties"] = {
-            "CURRENT_STACK": "dotnetcore",
             "VSTSRM_ProjectId": `${this.inputs.project.id}`,
-            "VSTSRM_AccountId": `${this.inputs.organizationName}`,
-            "VSTSRM_BuildDefinitionId": `${queuedPipeline.id}`,
-            "VSTSRM_BuildDefinitionWebAccessUrl": `${queuedPipeline._links.web.href}`,
-            "VSTSRM_ConfiguredCDEndPoint": `${queuedPipeline._links.web.href}`,
-            "VSTSRM_ReleaseDefinitionId": `${queuedPipeline.id}`,
-            "VSTSRM_ProdAppName": `${this.inputs.targetResource.resource.name}`,
+            "VSTSRM_AccountId": `${organizationId}`,
+            "VSTSRM_BuildDefinitionId": `${queuedPipeline.definition.id}`,
+            "VSTSRM_BuildDefinitionWebAccessUrl": `${queuedPipeline.definition._links.web.href}`,
+            "VSTSRM_ConfiguredCDEndPoint": `${queuedPipeline.definition._links.web.href}`,
+            "VSTSRM_ReleaseDefinitionId": `${queuedPipeline.definition.id}`
         };
         await this.appServiceClient.updateSiteMetadata(this.inputs.targetResource.resource.id, metadata);
-        await this.appServiceClient.publishDeploymentToAppService(this.inputs.targetResource.resource.id);
+        await this.appServiceClient.publishDeploymentToAppService(
+            this.inputs.targetResource.resource.id,
+            queuedPipeline.definition._links.web.href,
+            queuedPipeline.definition._links.web.href,
+            queuedPipeline._links.web.href);
     }
 
     private async createGithubServiceConnection(): Promise<void> {

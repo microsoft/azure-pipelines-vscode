@@ -57,4 +57,5 @@ export class Messages {
     public static deploymentCenterAlreadyConfigured = 'Deployment source of type: %s is already setup for your web app, you can view more by browsing to deployment center.';
     public static pipelineAlreadyConfigured = 'Pipeline is already setup for your web app.';
     public static cannotFindPipelineUrlInMetaDataException = 'We were unable to find pipeline url for the app service. This can be caused due to corrupt/invalida metadata of site. You can open deployment center for more information.'
+    public static cannotFindOrganizationWithName = 'Unable to find organization with name: %s';
 }

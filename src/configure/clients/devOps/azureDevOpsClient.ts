@@ -237,6 +237,25 @@ export class AzureDevOpsClient {
             });
     }
 
+    public async getOrganizationIdFromName(organizationName: string) {
+        let organization = (await this.listOrgPromise).find((org) => {
+            return org.accountName === organizationName;
+        });
+
+        if(!organizationName) {
+            await this.listOrganizations(true);
+            organization = (await this.listOrgPromise).find((org) => {
+                return org.accountName === organizationName;
+            });
+
+            if (!organization) {
+                throw new Error(Messages.cannotFindOrganizationWithName);
+            }
+        }
+
+        return organization.accountId;
+    }
+
     private getUserData(): Promise<any> {
         return this.getConnectionData()
             .catch(() => {

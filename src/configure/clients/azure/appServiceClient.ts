@@ -7,7 +7,6 @@ import { ServiceClientCredentials } from 'ms-rest';
 import { AzureResourceClient } from './azureResourceClient';
 import { WebAppKind, ParsedAzureResourceId } from '../../model/models';
 import * as Constants from '../../resources/constants';
-import {Build} from '../../model/azureDevOps';
 import {Messages} from '../../resources/messages';
 
 export class AppServiceClient extends AzureResourceClient {
@@ -42,7 +41,10 @@ export class AppServiceClient extends AzureResourceClient {
         return resourceList;
     }
 
-    public async getDeploymentCenterUrl(resourceId: string): string {
+    public getDeploymentCenterUrl(resourceId: string): string {
+        // the url needs to be corrected.
+        let deploymentCenterUrl = `https://portal.azure.com/#@microsoft.onmicrosoft.com/resource/${resourceId}/vstscd`;
+        return deploymentCenterUrl;
     }
 
     public async getVstsPipelineUrl(resourceId: string): Promise<string> {
@@ -92,7 +94,10 @@ export class AppServiceClient extends AzureResourceClient {
 
     private createDeploymentObject(deploymentId: string, buildDefinitionUrl: string, releaseDefinitionUrl: string, triggeredBuildUrl: string): Deployment {
         let deployment: Deployment = {
-            id: deploymentId
+            id: deploymentId,
+            status: 4,
+            author: 'VSTS',
+            deployer: 'VSTS'
         };
 
         let deploymentMessage: DeploymentMessage = {
@@ -108,9 +113,9 @@ export class AppServiceClient extends AzureResourceClient {
 }
 
 interface DeploymentMessage {
-    type: string,
-    message: string,
-    VSTSRM_BuildDefinitionWebAccessUrl: string,
-    VSTSRM_ConfiguredCDEndPoint: string,
-    VSTSRM_BuildWebAccessUrl: string
-};
+    type: string;
+    message: string;
+    VSTSRM_BuildDefinitionWebAccessUrl: string;
+    VSTSRM_ConfiguredCDEndPoint: string;
+    VSTSRM_BuildWebAccessUrl: string;
+}

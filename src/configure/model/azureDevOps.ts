@@ -44,10 +44,10 @@ export interface YamlProcess {
 }
 
 export interface Build {
-    _links: { web: { href: string } };
     id: string;
-    definition: { id: number, _links: { web: { href: string } } };
+    definition: { id: number, _links?: { web: { href: string } } };
     project: { id: string };
     sourceBranch: string;
     sourceVersion: string;
+    _links?: { web: { href: string } };
 }

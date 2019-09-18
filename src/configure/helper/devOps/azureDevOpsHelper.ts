@@ -162,6 +162,7 @@ export class AzureDevOpsHelper {
 
     private getQueueBuildPayload(inputs: WizardInputs, buildDefinitionId: number, projectId: string): Build {
         return {
+            id: '',
             definition: { id: buildDefinitionId },
             project: { id: projectId },
             sourceBranch: inputs.sourceRepository.branch,
