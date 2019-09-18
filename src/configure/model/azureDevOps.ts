@@ -45,7 +45,7 @@ export interface YamlProcess {
 
 export interface Build {
     id: string;
-    definition: { id: number, _links?: { web: { href: string } } };
+    definition: { id: number, url?: string };
     project: { id: string };
     sourceBranch: string;
     sourceVersion: string;

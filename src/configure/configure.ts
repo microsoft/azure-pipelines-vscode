@@ -1,8 +1,8 @@
 const uuid = require('uuid/v4');
-import { AppServiceClient, ScmTypes } from './clients/azure/appServiceClient';
+import { AppServiceClient } from './clients/azure/appServiceClient';
 import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
-import { AzureTreeItem, UserCancelledError, AzureParentTreeItem, SubscriptionTreeItemBase } from 'vscode-azureextensionui';
+import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
 import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { GraphHelper } from './helper/graphHelper';
@@ -104,7 +104,7 @@ class PipelineConfigurer {
 
         telemetryHelper.setCurrentStep('PostPipelineCreation');
         // This step should be determined by the resoruce target provider (azure app service, function app, aks) type and pipelineProvider(azure pipeline vs github)
-        await this.updateScmType(queuedPipeline);
+        this.updateScmType(queuedPipeline);
 
         telemetryHelper.setCurrentStep('DisplayCreatedPipeline');
         vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
@@ -326,7 +326,7 @@ class PipelineConfigurer {
     private async extractAzureResourceFromNode(node: any): Promise<void> {
         this.inputs.targetResource.subscriptionId = node.root.subscriptionId;
         this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
-        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.targetResource.subscriptionId);
+        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
 
         try {
             let azureResource: GenericResource = await this.appServiceClient.getAppServiceResource((<AzureTreeItem>node).fullId);
@@ -347,43 +347,10 @@ class PipelineConfigurer {
                 default:
                     throw new Error(utils.format(Messages.resourceTypeIsNotSupported, azureResource.type));
             }
-
-            await this.validateIfPipelineCanBeSetupOnResource(azureResource.id);
         }
         catch (error) {
             telemetryHelper.logError(Layer, TracePoints.ExtractAzureResourceFromNodeFailed, error);
             throw error;
-        }
-    }
-
-    private async validateIfPipelineCanBeSetupOnResource(resourceId: string): Promise<void> {
-        // Check for SCM type, if its value is set then a pipeline is already setup.
-        let siteConfig = await this.appServiceClient.getAppServiceConfig(resourceId);
-        if (siteConfig.scmType && siteConfig.scmType.toLowerCase() === ScmTypes.VSTSRM.toLowerCase()) {
-            // if pipeline is already setup, the ask the user if we should continue.
-            telemetryHelper.setTelemetry(TelemetryKeys.PipelineAlreadyConfigured, 'true');
-            telemetryHelper.setTelemetry(TelemetryKeys.ScmType, siteConfig.scmType);
-
-            let browsePipeline = await this.controlProvider.showInformationBox(
-                constants.PipelineAlreadyConfigure,
-                Messages.pipelineAlreadyConfigured,
-                constants.BrowsePipeline);
-            if (browsePipeline) {
-                vscode.commands.executeCommand('browse-pipeline', { fullId: resourceId });
-                let existingPipelineUrl = await this.appServiceClient.getVstsPipelineUrl(resourceId);
-                telemetryHelper.setTelemetry(TelemetryKeys.BrowsedExistingPipeline, 'true');
-                vscode.env.openExternal(vscode.Uri.parse(existingPipelineUrl));
-                throw new UserCancelledError();
-            }
-        }
-        else if (siteConfig.scmType && siteConfig.scmType !== '' && siteConfig.scmType.toLowerCase() !== ScmTypes.NONE.toLowerCase()) {
-            let result = await this.controlProvider.showInformationBox(constants.DeploymentResourceAlreadyConfigured, Messages.deploymentCenterAlreadyConfigured, constants.BrowseDeploymentSource);
-            if (result === constants.BrowseDeploymentSource) {
-                let deploymentCenterUrl: string = await this.appServiceClient.getDeploymentCenterUrl(resourceId);
-                telemetryHelper.setTelemetry(TelemetryKeys.BrowsedDeploymentCenter, 'true');
-                await vscode.env.openExternal(vscode.Uri.parse(deploymentCenterUrl));
-                throw new UserCancelledError();
-            }
         }
     }
 
@@ -482,7 +449,7 @@ class PipelineConfigurer {
         this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
 
         // show available resources and get the chosen one
-        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.targetResource.subscriptionId);
+        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
         let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
             constants.SelectWebApp,
             this.appServiceClient.GetAppServices(WebAppKind.WindowsApp)
@@ -490,12 +457,11 @@ class PipelineConfigurer {
             { placeHolder: Messages.selectWebApp },
             TelemetryKeys.WebAppListCount);
 
-        await this.validateIfPipelineCanBeSetupOnResource(selectedResource.data.id);
         this.inputs.targetResource.resource = selectedResource.data;
     }
 
     private async updateScmType(queuedPipeline: Build) {
-        await this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
+        this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
 
         let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
         let organizationId = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
@@ -503,15 +469,15 @@ class PipelineConfigurer {
             "VSTSRM_ProjectId": `${this.inputs.project.id}`,
             "VSTSRM_AccountId": `${organizationId}`,
             "VSTSRM_BuildDefinitionId": `${queuedPipeline.definition.id}`,
-            "VSTSRM_BuildDefinitionWebAccessUrl": `${queuedPipeline.definition._links.web.href}`,
-            "VSTSRM_ConfiguredCDEndPoint": `${queuedPipeline.definition._links.web.href}`,
+            "VSTSRM_BuildDefinitionWebAccessUrl": `${queuedPipeline.definition.url}`,
+            "VSTSRM_ConfiguredCDEndPoint": `${queuedPipeline.definition.url}`,
             "VSTSRM_ReleaseDefinitionId": `${queuedPipeline.definition.id}`
         };
-        await this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
-        await this.appServiceClient.publishDeploymentToAppService(
+        this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
+        this.appServiceClient.publishDeploymentToAppService(
             this.inputs.targetResource.resource.id,
-            queuedPipeline.definition._links.web.href,
-            queuedPipeline.definition._links.web.href,
+            queuedPipeline.definition.url,
+            queuedPipeline.definition.url,
             queuedPipeline._links.web.href);
     }
 

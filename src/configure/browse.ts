@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
+import * as utils from 'util';
 
 import { AppServiceClient, ScmTypes } from './clients/azure/appServiceClient';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
@@ -16,7 +17,7 @@ export async function browsePipeline(node: AzureTreeItem): Promise<void> {
             if (!!node && !!node.fullId) {
                 let parsedAzureResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(node.fullId);
                 let session: AzureSession = getSubscriptionSession(parsedAzureResourceId.subscriptionId);
-                let appServiceClient = new AppServiceClient(session.credentials, parsedAzureResourceId.subscriptionId);
+                let appServiceClient = new AppServiceClient(session.credentials, session.tenantId, session.environment.portalUrl, parsedAzureResourceId.subscriptionId);
                 let siteConfig = await appServiceClient.getAppServiceConfig(node.fullId);
                 telemetryHelper.setTelemetry(TelemetryKeys.ScmType, siteConfig.scmType);
                 let controlProvider = new ControlProvider();
@@ -38,7 +39,10 @@ export async function browsePipeline(node: AzureTreeItem): Promise<void> {
                     }
                 }
                 else {
-                    let result = await controlProvider.showInformationBox(constants.DeploymentResourceAlreadyConfigured, Messages.deploymentCenterAlreadyConfigured, constants.BrowseDeploymentSource);
+                    let result = await controlProvider.showInformationBox(
+                        constants.DeploymentResourceAlreadyConfigured,
+                        utils.format(Messages.deploymentCenterAlreadyConfigured, siteConfig.scmType),
+                        constants.BrowseDeploymentSource);
                     if (result === constants.BrowseDeploymentSource) {
                         let deploymentCenterUrl: string = await appServiceClient.getDeploymentCenterUrl(node.fullId);
                         await vscode.env.openExternal(vscode.Uri.parse(deploymentCenterUrl));

@@ -12,10 +12,14 @@ export class AppServiceClient extends AzureResourceClient {
 
     private static resourceType = 'Microsoft.Web/sites';
     private webSiteManagementClient: WebSiteManagementClient;
+    private tenantId: string;
+    private portalUrl: string;
 
-    constructor(credentials: ServiceClientCredentials, subscriptionId: string) {
+    constructor(credentials: ServiceClientCredentials, tenantId: string, portalUrl: string, subscriptionId: string) {
         super(credentials, subscriptionId);
         this.webSiteManagementClient = new WebSiteManagementClient(credentials, subscriptionId);
+        this.tenantId = tenantId;
+        this.portalUrl = portalUrl;
     }
 
     public async getAppServiceResource(resourceId: string): Promise<GenericResource> {
@@ -25,7 +29,6 @@ export class AppServiceClient extends AzureResourceClient {
 
     public async GetAppServices(filterForResourceKind: WebAppKind): Promise<ResourceListResult> {
         let resourceList: ResourceListResult = await this.getResourceList(AppServiceClient.resourceType);
-        // this.webSiteManagementClient.webApps.list();
         if (!!filterForResourceKind) {
             let filteredResourceList: ResourceListResult = [];
             resourceList.forEach((resource) => {
@@ -40,9 +43,8 @@ export class AppServiceClient extends AzureResourceClient {
         return resourceList;
     }
 
-    public getDeploymentCenterUrl(resourceId: string): string {
-        // the url needs to be corrected.
-        let deploymentCenterUrl = `https://portal.azure.com/#@microsoft.onmicrosoft.com/resource/${resourceId}/vstscd`;
+    public async getDeploymentCenterUrl(resourceId: string): Promise<string> {
+        let deploymentCenterUrl = `${this.portalUrl}/#@${this.tenantId}/resource/${resourceId}/vstscd`;
         return deploymentCenterUrl;
     }
 
