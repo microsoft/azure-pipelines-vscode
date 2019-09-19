@@ -53,10 +53,10 @@ export class Messages {
     public static roleAssignmentFailedMessage: string =`Failed while role assignement.`;
     public static waitForAzureSignIn: string =`Waiting for Azure sign-in...`;
     public static userCancelledExcecption = 'User cancelled the action';
-    public static deploymentCenterAlreadyConfigured = 'Deployment source of type: %s is already setup for your web app, you can view more by browsing to deployment center.';
-    public static cannotFindPipelineUrlInMetaDataException = 'We were unable to find pipeline url for the app service. This can be caused due to corrupt/invalid metadata of site. You can open deployment center for more information.';
+    public static deploymentCenterAlreadyConfigured = 'Deployment source of type: %s is setup for your web app.';
+    public static cannotFindPipelineUrlInMetaDataException = 'We were unable to find Azure Pipeline associated with the app service. Navigate to Deployment Center of the app service to know more.';
     public static cannotFindOrganizationWithName = 'Unable to find organization with name: %s';
-    public static browseNotAvailableConfigurePipeline = 'Pipeline is not setup on the Azure resource. Click on Configure to set up pipeline.';
-    public static didNotRecieveAzureResourceNodeToProcess = 'Unable to browse pipeline as the selected item is not a valid Azure Resource node. Kindly select a valid Azure Resource.';
+    public static browseNotAvailableConfigurePipeline = 'Pipeline is not setup on the Azure resource. Click on configure to set up pipeline.';
+    public static didNotRecieveAzureResourceNodeToProcess = 'Unable to browse pipeline as the selected item is not a valid Azure resource node. Kindly select a valid Azure resource.';
 
 }

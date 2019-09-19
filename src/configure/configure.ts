@@ -471,6 +471,7 @@ class PipelineConfigurer {
             // update metadata of app service to store information about the pipeline deploying to web app.
             new Promise<void>(async (resolve) => {
                 let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
+                metadata["properties"] = metadata["properties"] ? metadata["properties"] : {};
                 metadata["properties"]["VSTSRM_ProjectId"] = `${this.inputs.project.id}`;
                 metadata["properties"]["VSTSRM_AccountId"] = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
                 metadata["properties"]["VSTSRM_BuildDefinitionId"] = `${queuedPipeline.definition.id}`;
