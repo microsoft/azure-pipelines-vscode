@@ -239,12 +239,12 @@ export class AzureDevOpsClient {
 
     public async getOrganizationIdFromName(organizationName: string) {
         let organization = (await this.listOrgPromise).find((org) => {
-            return org.accountName === organizationName;
+            return org.accountName.toLowerCase() === organizationName.toLowerCase();
         });
 
         if(!organizationName) {
             organization = (await this.listOrganizations(true)).find((org) => {
-                return org.accountName === organizationName;
+                return org.accountName.toLowerCase() === organizationName.toLowerCase();
             });
 
             if (!organization) {

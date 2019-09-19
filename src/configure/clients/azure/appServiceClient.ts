@@ -44,11 +44,10 @@ export class AppServiceClient extends AzureResourceClient {
     }
 
     public async getDeploymentCenterUrl(resourceId: string): Promise<string> {
-        let deploymentCenterUrl = `${this.portalUrl}/#@${this.tenantId}/resource/${resourceId}/vstscd`;
-        return deploymentCenterUrl;
+        return `${this.portalUrl}/#@${this.tenantId}/resource/${resourceId}/vstscd`;
     }
 
-    public async getVstsPipelineUrl(resourceId: string): Promise<string> {
+    public async getAzurePipelineUrl(resourceId: string): Promise<string> {
         let metadata = await this.getAppServiceMetadata(resourceId);
         if (metadata.properties['VSTSRM_BuildDefinitionWebAccessUrl']) {
             return metadata.properties['VSTSRM_BuildDefinitionWebAccessUrl'];
@@ -64,7 +63,7 @@ export class AppServiceClient extends AzureResourceClient {
 
     public async updateScmType(resourceId: string): Promise<SiteConfigResource> {
         let siteConfig = await this.getAppServiceConfig(resourceId);
-        siteConfig.scmType = ScmTypes.VSTSRM;
+        siteConfig.scmType = ScmType.VSTSRM;
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
         return this.webSiteManagementClient.webApps.updateConfiguration(parsedResourceId.resourceGroup, parsedResourceId.resourceName, siteConfig);
     }
@@ -108,7 +107,7 @@ export class AppServiceClient extends AzureResourceClient {
     }
 }
 
-export enum ScmTypes {
+export enum ScmType {
     VSTSRM = 'VSTSRM',
     NONE = 'NONE'
 }

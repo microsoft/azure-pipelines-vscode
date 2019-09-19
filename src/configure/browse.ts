@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
 import * as utils from 'util';
 
-import { AppServiceClient, ScmTypes } from './clients/azure/appServiceClient';
+import { AppServiceClient, ScmType } from './clients/azure/appServiceClient';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
 import { ControlProvider } from './helper/controlProvider';
 import { AzureSession, ParsedAzureResourceId, extensionVariables } from './model/models';
@@ -22,12 +22,12 @@ export async function browsePipeline(node: AzureTreeItem): Promise<void> {
                 telemetryHelper.setTelemetry(TelemetryKeys.ScmType, siteConfig.scmType);
                 let controlProvider = new ControlProvider();
 
-                if (siteConfig.scmType.toLowerCase() === ScmTypes.VSTSRM.toLowerCase()) {
-                    let pipelineUrl = await appServiceClient.getVstsPipelineUrl(node.fullId);
+                if (siteConfig.scmType.toLowerCase() === ScmType.VSTSRM.toLowerCase()) {
+                    let pipelineUrl = await appServiceClient.getAzurePipelineUrl(node.fullId);
                     vscode.env.openExternal(vscode.Uri.parse(pipelineUrl));
                     telemetryHelper.setTelemetry(TelemetryKeys.BrowsedExistingPipeline, 'true');
                 }
-                else if (siteConfig.scmType === '' || siteConfig.scmType.toLowerCase() === ScmTypes.NONE.toLowerCase()) {
+                else if (siteConfig.scmType === '' || siteConfig.scmType.toLowerCase() === ScmType.NONE.toLowerCase()) {
                     let result = await controlProvider.showInformationBox(
                         constants.BrowseNotAvailableConfigurePipeline,
                         Messages.browseNotAvailableConfigurePipeline,

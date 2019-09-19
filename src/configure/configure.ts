@@ -461,35 +461,37 @@ class PipelineConfigurer {
     }
 
     private async updateScmType(queuedPipeline: Build): Promise<void> {
-        // update SCM type
-        this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
+        try {
+            // update SCM type
+            this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
 
-        let buildDefinitionUrl = this.azureDevOpsClient.getOldFormatBuildDefinitionUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.definition.id);
-        let buildUrl = this.azureDevOpsClient.getOldFormatBuildUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.id);
+            let buildDefinitionUrl = this.azureDevOpsClient.getOldFormatBuildDefinitionUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.definition.id);
+            let buildUrl = this.azureDevOpsClient.getOldFormatBuildUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.id);
 
-        // update metadata of app service to store information about the pipeline deploying to web app.
-        new Promise<void>(async (resolve) => {
-            let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
-            let organizationId = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
-            metadata["properties"] = {
-                "VSTSRM_ProjectId": `${this.inputs.project.id}`,
-                "VSTSRM_AccountId": `${organizationId}`,
-                "VSTSRM_BuildDefinitionId": `${queuedPipeline.definition.id}`,
-                "VSTSRM_BuildDefinitionWebAccessUrl": `${buildDefinitionUrl}`,
-                "VSTSRM_ConfiguredCDEndPoint": `${buildDefinitionUrl}`,
-                "VSTSRM_ReleaseDefinitionId": `${queuedPipeline.definition.id}`
-            };
+            // update metadata of app service to store information about the pipeline deploying to web app.
+            new Promise<void>(async (resolve) => {
+                let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
+                metadata["properties"]["VSTSRM_ProjectId"] = `${this.inputs.project.id}`;
+                metadata["properties"]["VSTSRM_AccountId"] = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
+                metadata["properties"]["VSTSRM_BuildDefinitionId"] = `${queuedPipeline.definition.id}`;
+                metadata["properties"]["VSTSRM_BuildDefinitionWebAccessUrl"] = `${buildDefinitionUrl}`;
+                metadata["properties"]["VSTSRM_ConfiguredCDEndPoint"] = `${buildDefinitionUrl}`;
+                metadata["properties"]["VSTSRM_ReleaseDefinitionId"] = `${queuedPipeline.definition.id}`;
 
-            this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
-            resolve();
-        });
+                this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
+                resolve();
+            });
 
-        // send a deployment log with information about the setup pipeline and links.
-        this.appServiceClient.publishDeploymentToAppService(
-            this.inputs.targetResource.resource.id,
-            buildDefinitionUrl,
-            buildDefinitionUrl,
-            buildUrl);
+            // send a deployment log with information about the setup pipeline and links.
+            this.appServiceClient.publishDeploymentToAppService(
+                this.inputs.targetResource.resource.id,
+                buildDefinitionUrl,
+                buildDefinitionUrl,
+                buildUrl);
+        }
+        catch (error) {
+            telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error);
+        }
     }
 
     private async createGithubServiceConnection(): Promise<void> {

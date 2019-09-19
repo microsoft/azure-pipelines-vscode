@@ -23,10 +23,10 @@ export class ControlProvider {
         return await extensionVariables.ui.showInputBox(options);
     }
 
-    public async showInformationBox(informationIdentifier: string, informationMessage: string, actions?): Promise<any> {
+    public async showInformationBox(informationIdentifier: string, informationMessage: string, ...actions: string[]): Promise<string> {
         telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, informationIdentifier);
         if (!!actions && actions.length > 0) {
-            let result = await window.showInformationMessage(informationMessage, actions);
+            let result = await window.showInformationMessage(informationMessage, ...actions);
             if (!result) {
                 throw new UserCancelledError(Messages.userCancelledExcecption);
             }
@@ -34,7 +34,7 @@ export class ControlProvider {
             return result;
         }
         else {
-            return await window.showInformationMessage(informationMessage, actions);
+            return await window.showInformationMessage(informationMessage, ...actions);
         }
 
     }

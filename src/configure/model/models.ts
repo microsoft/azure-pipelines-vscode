@@ -148,25 +148,25 @@ export class ParsedAzureResourceId {
             for (let i = 0; i < parts.length; i++) {
                 switch (i) {
                     case 1:
-                            this.subscriptionId = parts[1];
+                            this.subscriptionId = parts[i];
                             break;
                     case 3:
-                            this.resourceGroup = parts[3];
+                            this.resourceGroup = parts[i];
                             break;
                     case 5:
-                            this.resourceProvider = parts[5];
+                            this.resourceProvider = parts[i];
                             break;
                     case 6:
-                            this.resourceType = parts[6];
+                            this.resourceType = parts[i];
                             break;
                     case 7:
-                            this.resourceName = parts[7];
+                            this.resourceName = parts[i];
                             break;
                     case 8:
-                            this.childResourceType = parts[8];
+                            this.childResourceType = parts[i];
                             break;
                     case 9:
-                            this.childResource = parts[9];
+                            this.childResource = parts[i];
                             break;
                 }
             }
