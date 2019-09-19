@@ -129,12 +129,12 @@ export class ParsedAzureResourceId {
     public resourceType: string;
     public resourceProvider: string;
     public resourceName: string;
-    public childResourceType: string;
-    public childResource: string;
+    public childResourceType?: string;
+    public childResource?: string;
 
     constructor(resourceId: string) {
         if (!resourceId) {
-            throw Messages.invalidAzureResourceId;
+            throw new Error(Messages.resourceIdMissing);
         }
 
         this.resourceId = resourceId;

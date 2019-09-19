@@ -243,8 +243,7 @@ export class AzureDevOpsClient {
         });
 
         if(!organizationName) {
-            await this.listOrganizations(true);
-            organization = (await this.listOrgPromise).find((org) => {
+            organization = (await this.listOrganizations(true)).find((org) => {
                 return org.accountName === organizationName;
             });
 

@@ -1,9 +1,9 @@
-import { QuickPickItem, InputBoxOptions, window } from 'vscode';
+import { InputBoxOptions, QuickPickItem, window } from 'vscode';
 import { IAzureQuickPickOptions, UserCancelledError } from 'vscode-azureextensionui';
 import { telemetryHelper } from '../helper/telemetryHelper';
 import { extensionVariables } from '../model/models';
-import { TelemetryKeys } from '../resources/telemetryKeys';
 import {Messages} from '../resources/messages';
+import { TelemetryKeys } from '../resources/telemetryKeys';
 
 export class ControlProvider {
     public async showQuickPick<T extends QuickPickItem>(listName: string, listItems: T[] | Thenable<T[]>, options: IAzureQuickPickOptions, itemCountTelemetryKey?: string): Promise<T> {

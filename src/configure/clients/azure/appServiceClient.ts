@@ -69,11 +69,6 @@ export class AppServiceClient extends AzureResourceClient {
         return this.webSiteManagementClient.webApps.updateConfiguration(parsedResourceId.resourceGroup, parsedResourceId.resourceName, siteConfig);
     }
 
-    public async updateAppServiceConfig(resourceId: string, siteConfig: SiteConfigResource): Promise<SiteConfigResource> {
-        let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
-        return this.webSiteManagementClient.webApps.updateConfiguration(parsedResourceId.resourceGroup, parsedResourceId.resourceName, siteConfig);
-    }
-
     public async getAppServiceMetadata(resourceId: string): Promise<StringDictionary> {
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
         return this.webSiteManagementClient.webApps.listMetadata(parsedResourceId.resourceGroup, parsedResourceId.resourceName);

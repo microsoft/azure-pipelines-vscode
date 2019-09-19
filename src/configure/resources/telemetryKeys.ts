@@ -13,7 +13,7 @@ export class TelemetryKeys {
     public static ScmType: string = 'scmType';
     public static BrowsedDeploymentCenter = 'openedDeploymentCenter';
     public static BrowsedExistingPipeline = 'browsedExistingPipeline';
-    public static ClickedConfigurePipeline = 'ClickedConfigurePipeline';
+    public static ClickedConfigurePipeline = 'clickedConfigurePipeline';
 
     // Durations
     public static ExtensionActivationDuration = 'extensionActivationDuration';
