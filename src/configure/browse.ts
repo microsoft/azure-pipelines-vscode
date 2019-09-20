@@ -39,15 +39,9 @@ export async function browsePipeline(node: AzureTreeItem): Promise<void> {
                     }
                 }
                 else {
-                    let result = await controlProvider.showInformationBox(
-                        constants.DeploymentResourceAlreadyConfigured,
-                        utils.format(Messages.deploymentCenterAlreadyConfigured, siteConfig.scmType),
-                        constants.BrowseDeploymentSource);
-                    if (result === constants.BrowseDeploymentSource) {
-                        let deploymentCenterUrl: string = await appServiceClient.getDeploymentCenterUrl(node.fullId);
-                        await vscode.env.openExternal(vscode.Uri.parse(deploymentCenterUrl));
-                        telemetryHelper.setTelemetry(TelemetryKeys.BrowsedDeploymentCenter, 'true');
-                    }
+                    let deploymentCenterUrl: string = await appServiceClient.getDeploymentCenterUrl(node.fullId);
+                    await vscode.env.openExternal(vscode.Uri.parse(deploymentCenterUrl));
+                    telemetryHelper.setTelemetry(TelemetryKeys.BrowsedDeploymentCenter, 'true');
                 }
             }
             else {

@@ -53,10 +53,9 @@ export class Messages {
     public static roleAssignmentFailedMessage: string =`Failed while role assignement.`;
     public static waitForAzureSignIn: string =`Waiting for Azure sign-in...`;
     public static userCancelledExcecption = 'User cancelled the action';
-    public static deploymentCenterAlreadyConfigured = 'Deployment source of type: %s is setup for your web app.';
-    public static cannotFindPipelineUrlInMetaDataException = 'We were unable to find Azure Pipeline associated with the app service. Navigate to Deployment Center of the app service to know more.';
+    public static cannotFindPipelineUrlInMetaDataException = 'We were unable to find pipeline associated with the Azure Web App. Please click on "Browse Pipeline" to explore.';
     public static cannotFindOrganizationWithName = 'Unable to find organization with name: %s';
-    public static browseNotAvailableConfigurePipeline = 'Pipeline is not setup on the Azure resource. Click on configure to set up pipeline.';
-    public static didNotRecieveAzureResourceNodeToProcess = 'Unable to browse pipeline as the selected item is not a valid Azure resource node. Kindly select a valid Azure resource.';
+    public static browseNotAvailableConfigurePipeline = 'Unable to find a pipeline for this Azure Web App. Please click on "Configure Pipeline" to setup.';
+    public static didNotRecieveAzureResourceNodeToProcess = 'Unable to browse the pipeline for you. Please raise an issue in the [repo](https://github.com/Microsoft/azure-pipelines-vscode/issues).';
 
 }

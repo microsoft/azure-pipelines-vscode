@@ -5,8 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 
 ## 1.157.4
 ### Added
-- Added browse pipeline command that takes user to Azure pipeline setup on the Azure resource.
-- Added updation of config, metadata and deployment logs of Azure Apps when configure pipeline is complete.
+- Added an option to browse the pipeline targeting Azure Resource.
 
 ## 1.157.3
 ### Fixed
