@@ -52,4 +52,10 @@ export class Messages {
     public static azureServicePrincipalFailedMessage: string =`Failed while creating Azure service principal.`;
     public static roleAssignmentFailedMessage: string =`Failed while role assignement.`;
     public static waitForAzureSignIn: string =`Waiting for Azure sign-in...`;
+    public static userCancelledExcecption = 'User cancelled the action';
+    public static cannotFindPipelineUrlInMetaDataException = 'We were unable to find pipeline associated with the Azure Web App. Please click on "Browse Pipeline" to explore.';
+    public static cannotFindOrganizationWithName = 'Unable to find organization with name: %s';
+    public static browseNotAvailableConfigurePipeline = 'Unable to find a pipeline for this Azure Web App. Please click on "Configure Pipeline" to setup.';
+    public static didNotRecieveAzureResourceNodeToProcess = 'Unable to browse the pipeline for you. Please raise an issue in the [repo](https://github.com/Microsoft/azure-pipelines-vscode/issues).';
+
 }

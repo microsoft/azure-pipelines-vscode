@@ -2,7 +2,7 @@
     "name": "azure-pipelines",
     "displayName": "Azure Pipelines",
     "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines YAML",
-    "version": "1.157.3",
+    "version": "1.157.4",
     "publisher": "ms-azure-devops",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "repository": {
@@ -96,6 +96,11 @@
                 "command": "configure-pipeline",
                 "title": "Configure Pipeline",
                 "category": "Azure Pipelines"
+            },
+            {
+                "command": "browse-pipeline",
+                "title": "Browse Pipeline",
+                "category": "Azure Pipelines"
             }
         ],
         "menus": {
@@ -104,6 +109,12 @@
                     "command": "configure-pipeline",
                     "group": "Azure Pipelines",
                     "when": "explorerResourceIsFolder == true"
+                }
+            ],
+            "commandPalette": [
+                {
+                    "command": "browse-pipeline",
+                    "when": "never"
                 }
             ]
         }
@@ -134,6 +145,7 @@
     },
     "dependencies": {
         "azure-arm-resource": "7.3.0",
+        "azure-arm-website": "5.7.0",
         "azure-pipelines-language-server": "0.5.9",
         "mustache": "3.0.1",
         "q": "1.5.1",

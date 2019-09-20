@@ -1,7 +1,8 @@
-import { QuickPickItem, InputBoxOptions } from 'vscode';
-import { IAzureQuickPickOptions } from 'vscode-azureextensionui';
-import { telemetryHelper } from '../helper/telemetryHelper'
+import { InputBoxOptions, QuickPickItem, window } from 'vscode';
+import { IAzureQuickPickOptions, UserCancelledError } from 'vscode-azureextensionui';
+import { telemetryHelper } from '../helper/telemetryHelper';
 import { extensionVariables } from '../model/models';
+import {Messages} from '../resources/messages';
 import { TelemetryKeys } from '../resources/telemetryKeys';
 
 export class ControlProvider {
@@ -20,5 +21,21 @@ export class ControlProvider {
     public async showInputBox(inputName: string, options: InputBoxOptions): Promise<string> {
         telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, inputName);
         return await extensionVariables.ui.showInputBox(options);
+    }
+
+    public async showInformationBox(informationIdentifier: string, informationMessage: string, ...actions: string[]): Promise<string> {
+        telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, informationIdentifier);
+        if (!!actions && actions.length > 0) {
+            let result = await window.showInformationMessage(informationMessage, ...actions);
+            if (!result) {
+                throw new UserCancelledError(Messages.userCancelledExcecption);
+            }
+
+            return result;
+        }
+        else {
+            return await window.showInformationMessage(informationMessage, ...actions);
+        }
+
     }
 }

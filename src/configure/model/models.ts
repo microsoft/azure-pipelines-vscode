@@ -4,6 +4,7 @@ import { OutputChannel, ExtensionContext, QuickPickItem } from 'vscode';
 import { ServiceClientCredentials } from 'ms-rest';
 import { SubscriptionModels } from 'azure-arm-resource';
 import { UIExtensionVariables, IAzureUserInput, ITelemetryReporter } from 'vscode-azureextensionui';
+import { Messages } from '../resources/messages';
 
 class ExtensionVariables implements UIExtensionVariables {
     public azureAccountExtensionApi: AzureAccountExtensionExports;
@@ -119,6 +120,58 @@ export class QuickPickItemWithData implements QuickPickItem {
     data: any;
     description?: string;
     detail?: string;
+}
+
+export class ParsedAzureResourceId {
+    public resourceId: string;
+    public subscriptionId: string;
+    public resourceGroup: string;
+    public resourceType: string;
+    public resourceProvider: string;
+    public resourceName: string;
+    public childResourceType?: string;
+    public childResource?: string;
+
+    constructor(resourceId: string) {
+        if (!resourceId) {
+            throw new Error(Messages.resourceIdMissing);
+        }
+
+        this.resourceId = resourceId;
+        this.parseId();
+    }
+
+    private parseId() {
+        // remove all empty parts in the resource to avoid failing in case there are leading/trailing/extra '/'
+        let parts = this.resourceId.split('/').filter((part) => !!part);
+        if (!!parts) {
+            for (let i = 0; i < parts.length; i++) {
+                switch (i) {
+                    case 1:
+                            this.subscriptionId = parts[i];
+                            break;
+                    case 3:
+                            this.resourceGroup = parts[i];
+                            break;
+                    case 5:
+                            this.resourceProvider = parts[i];
+                            break;
+                    case 6:
+                            this.resourceType = parts[i];
+                            break;
+                    case 7:
+                            this.resourceName = parts[i];
+                            break;
+                    case 8:
+                            this.childResourceType = parts[i];
+                            break;
+                    case 9:
+                            this.childResource = parts[i];
+                            break;
+                }
+            }
+        }
+    }
 }
 
 export interface Token {

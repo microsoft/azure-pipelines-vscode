@@ -4,17 +4,17 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- {{ sourceRepository.branch }}
+- {{{ sourceRepository.branch }}}
 
 variables:
   # Azure Resource Manager connection
-  azureSubscription: '{{ targetResource.serviceConnectionId }}'
-  
+  azureSubscription: '{{{ targetResource.serviceConnectionId }}}'
+
   # Web app name
-  webAppName: '{{ targetResource.resource.name }}'
+  webAppName: '{{{ targetResource.resource.name }}}'
 
   # Working Directory
-  workingDirectory: '{{ pipelineParameters.workingDirectory }}'
+  workingDirectory: '{{{ pipelineParameters.workingDirectory }}}'
 
 stages:
 - stage: Build
@@ -49,7 +49,7 @@ stages:
 
     - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
       artifact: drop
-      
+
 - stage: Deploy
   displayName: Deploy stage
   dependsOn: Build

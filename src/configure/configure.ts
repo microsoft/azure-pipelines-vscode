@@ -21,6 +21,7 @@ import { Result, telemetryHelper } from './helper/telemetryHelper';
 import { ControlProvider } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
+import {Build} from './model/azureDevOps';
 
 const Layer: string = 'configure';
 
@@ -89,7 +90,7 @@ class PipelineConfigurer {
         await this.checkInPipelineFileToRepository();
 
         telemetryHelper.setCurrentStep('CreateAndRunPipeline');
-        let queuedPipelineUrl = await vscode.window.withProgress<string>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
+        let queuedPipeline = await vscode.window.withProgress<Build>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
             try {
                 let pipelineName = `${this.inputs.targetResource.resource.name}-${this.uniqueResourceNameSuffix}`;
                 return await this.azureDevOpsHelper.createAndRunPipeline(pipelineName, this.inputs);
@@ -101,12 +102,16 @@ class PipelineConfigurer {
 
         });
 
+        telemetryHelper.setCurrentStep('PostPipelineCreation');
+        // This step should be determined by the resoruce target provider (azure app service, function app, aks) type and pipelineProvider(azure pipeline vs github)
+        this.updateScmType(queuedPipeline);
+
         telemetryHelper.setCurrentStep('DisplayCreatedPipeline');
         vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
             .then((action: string) => {
                 if (action && action.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
                     telemetryHelper.setTelemetry(TelemetryKeys.BrowsePipelineClicked, 'true');
-                    vscode.env.openExternal(vscode.Uri.parse(queuedPipelineUrl));
+                    vscode.env.openExternal(vscode.Uri.parse(queuedPipeline._links.web.href));
                 }
             });
     }
@@ -165,7 +170,7 @@ class PipelineConfigurer {
     }
 
     private async analyzeNode(node: any): Promise<void> {
-        if (node instanceof AzureTreeItem) {
+        if (!!node && !!node.fullId) {
             await this.extractAzureResourceFromNode(node);
         }
         else if (node && node.fsPath) {
@@ -321,7 +326,7 @@ class PipelineConfigurer {
     private async extractAzureResourceFromNode(node: any): Promise<void> {
         this.inputs.targetResource.subscriptionId = node.root.subscriptionId;
         this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
-        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.targetResource.subscriptionId);
+        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
 
         try {
             let azureResource: GenericResource = await this.appServiceClient.getAppServiceResource((<AzureTreeItem>node).fullId);
@@ -444,14 +449,50 @@ class PipelineConfigurer {
         this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
 
         // show available resources and get the chosen one
-        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.targetResource.subscriptionId);
+        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
         let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
             constants.SelectWebApp,
             this.appServiceClient.GetAppServices(WebAppKind.WindowsApp)
                 .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; })),
             { placeHolder: Messages.selectWebApp },
             TelemetryKeys.WebAppListCount);
+
         this.inputs.targetResource.resource = selectedResource.data;
+    }
+
+    private async updateScmType(queuedPipeline: Build): Promise<void> {
+        try {
+            // update SCM type
+            this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
+
+            let buildDefinitionUrl = this.azureDevOpsClient.getOldFormatBuildDefinitionUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.definition.id);
+            let buildUrl = this.azureDevOpsClient.getOldFormatBuildUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.id);
+
+            // update metadata of app service to store information about the pipeline deploying to web app.
+            new Promise<void>(async (resolve) => {
+                let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
+                metadata["properties"] = metadata["properties"] ? metadata["properties"] : {};
+                metadata["properties"]["VSTSRM_ProjectId"] = `${this.inputs.project.id}`;
+                metadata["properties"]["VSTSRM_AccountId"] = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
+                metadata["properties"]["VSTSRM_BuildDefinitionId"] = `${queuedPipeline.definition.id}`;
+                metadata["properties"]["VSTSRM_BuildDefinitionWebAccessUrl"] = `${buildDefinitionUrl}`;
+                metadata["properties"]["VSTSRM_ConfiguredCDEndPoint"] = '';
+                metadata["properties"]["VSTSRM_ReleaseDefinitionId"] = '';
+
+                this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
+                resolve();
+            });
+
+            // send a deployment log with information about the setup pipeline and links.
+            this.appServiceClient.publishDeploymentToAppService(
+                this.inputs.targetResource.resource.id,
+                buildDefinitionUrl,
+                buildDefinitionUrl,
+                buildUrl);
+        }
+        catch (error) {
+            telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error);
+        }
     }
 
     private async createGithubServiceConnection(): Promise<void> {

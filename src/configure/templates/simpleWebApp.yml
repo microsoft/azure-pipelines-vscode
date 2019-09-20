@@ -2,17 +2,17 @@
 # Package and deploy a simple web application and deploy it to Azure as Windows web app.
 
 trigger:
-- {{ sourceRepository.branch }}
+- {{{ sourceRepository.branch }}}
 
 variables:
   # Azure Resource Manager connection
-  azureSubscription: '{{ targetResource.serviceConnectionId }}'
-  
+  azureSubscription: '{{{ targetResource.serviceConnectionId }}}'
+
   # Web app name
-  webAppName: '{{ targetResource.resource.name }}'
+  webAppName: '{{{ targetResource.resource.name }}}'
 
   # Working Directory
-  workingDirectory: '{{ pipelineParameters.workingDirectory }}'
+  workingDirectory: '{{{ pipelineParameters.workingDirectory }}}'
 
 stages:
 - stage: Build

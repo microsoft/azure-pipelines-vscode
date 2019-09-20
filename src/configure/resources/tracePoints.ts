@@ -12,4 +12,5 @@ export class TracePoints {
     public static GetSourceRepositoryDetailsFailed = 'getSourceRepositoryDetailsFailed';
     public static GitHubServiceConnectionError = 'gitHubServiceConnectionError';
     public static PipelineFileCheckInFailed = 'PipelineFileCheckInFailed';
+    public static PostDeploymentActionFailed = 'PostDeploymentActionFailed';
 }

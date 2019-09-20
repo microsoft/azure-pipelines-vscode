@@ -237,6 +237,32 @@ export class AzureDevOpsClient {
             });
     }
 
+    public async getOrganizationIdFromName(organizationName: string) {
+        let organization = (await this.listOrgPromise).find((org) => {
+            return org.accountName.toLowerCase() === organizationName.toLowerCase();
+        });
+
+        if(!organizationName) {
+            organization = (await this.listOrganizations(true)).find((org) => {
+                return org.accountName.toLowerCase() === organizationName.toLowerCase();
+            });
+
+            if (!organization) {
+                throw new Error(Messages.cannotFindOrganizationWithName);
+            }
+        }
+
+        return organization.accountId;
+    }
+
+    public getOldFormatBuildDefinitionUrl(accountName: string, projectName: string, buildDefinitionId: number) {
+        return `https://${accountName}.visualstudio.com/${projectName}/_build?definitionId=${buildDefinitionId}&_a=summary`;
+    }
+
+    public getOldFormatBuildUrl(accountName: string, projectName: string, buildId: string) {
+        return `https://${accountName}.visualstudio.com/${projectName}/_build/results?buildId=${buildId}&view=results`;
+    }
+
     private getUserData(): Promise<any> {
         return this.getConnectionData()
             .catch(() => {

@@ -77,12 +77,12 @@ export class AzureDevOpsHelper {
         }
     }
 
-    public async createAndRunPipeline(pipelineName: string, inputs: WizardInputs): Promise<string> {
+    public async createAndRunPipeline(pipelineName: string, inputs: WizardInputs): Promise<Build> {
         try {
             let buildDefinitionPayload = await this.getBuildDefinitionPayload(pipelineName, inputs);
             let definition = await this.azureDevOpsClient.createBuildDefinition(inputs.organizationName, buildDefinitionPayload);
             let build = await this.azureDevOpsClient.queueBuild(inputs.organizationName, this.getQueueBuildPayload(inputs, definition.id, definition.project.id));
-            return build._links.web.href;
+            return build;
         }
         catch (error) {
             throw new Error(util.format(Messages.failedToCreateAzurePipeline, error.message));
@@ -162,6 +162,7 @@ export class AzureDevOpsHelper {
 
     private getQueueBuildPayload(inputs: WizardInputs, buildDefinitionId: number, projectId: string): Build {
         return {
+            id: '',
             definition: { id: buildDefinitionId },
             project: { id: projectId },
             sourceBranch: inputs.sourceRepository.branch,
