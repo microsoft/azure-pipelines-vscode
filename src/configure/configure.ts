@@ -476,8 +476,8 @@ class PipelineConfigurer {
                 metadata["properties"]["VSTSRM_AccountId"] = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
                 metadata["properties"]["VSTSRM_BuildDefinitionId"] = `${queuedPipeline.definition.id}`;
                 metadata["properties"]["VSTSRM_BuildDefinitionWebAccessUrl"] = `${buildDefinitionUrl}`;
-                metadata["properties"]["VSTSRM_ConfiguredCDEndPoint"] = `${buildDefinitionUrl}`;
-                metadata["properties"]["VSTSRM_ReleaseDefinitionId"] = `${queuedPipeline.definition.id}`;
+                metadata["properties"]["VSTSRM_ConfiguredCDEndPoint"] = '';
+                metadata["properties"]["VSTSRM_ReleaseDefinitionId"] = '';
 
                 this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
                 resolve();

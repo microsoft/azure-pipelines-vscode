@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
-import * as utils from 'util';
 
 import { AppServiceClient, ScmType } from './clients/azure/appServiceClient';
 import { getSubscriptionSession } from './helper/azureSessionHelper';

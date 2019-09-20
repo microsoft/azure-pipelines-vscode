@@ -99,7 +99,7 @@ export class AppServiceClient extends AzureResourceClient {
             type: "CDDeploymentConfiguration",
             message: "Successfully set up continuous delivery from VS Code and triggered deployment to Azure Web App.",
             VSTSRM_BuildDefinitionWebAccessUrl: `${buildDefinitionUrl}`,
-            VSTSRM_ConfiguredCDEndPoint: `${releaseDefinitionUrl}`,
+            VSTSRM_ConfiguredCDEndPoint: '',
             VSTSRM_BuildWebAccessUrl: `${triggeredBuildUrl}`,
         };
         deployment.message = JSON.stringify(deploymentMessage);
