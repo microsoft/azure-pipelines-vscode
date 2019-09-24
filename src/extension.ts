@@ -16,8 +16,6 @@ import * as schemacontributor from './schema-contributor';
 import { telemetryHelper } from './configure/helper/telemetryHelper';
 import { TelemetryKeys } from './configure/resources/telemetryKeys';
 
-const configurePipelineEnabled: boolean = vscode.workspace.getConfiguration('[azure-pipelines]', null).get('configure') ? true : false;
-
 export async function activate(context: vscode.ExtensionContext) {
     extensionVariables.reporter = createTelemetryReporter(context);
     registerUiVariables(context);
@@ -25,13 +23,10 @@ export async function activate(context: vscode.ExtensionContext) {
     await callWithTelemetryAndErrorHandling('azurePipelines.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
         telemetryHelper.initialize(activateContext, 'activate');
-        telemetryHelper.setTelemetry('configurePipelineEnabled', `${configurePipelineEnabled}`);
         await telemetryHelper.executeFunctionWithTimeTelemetry(
             async () => {
                 await activateYmlContributor(context);
-                if (configurePipelineEnabled) {
-                    await activateConfigurePipeline();
-                }
+                await activateConfigurePipeline();
             },
             TelemetryKeys.ExtensionActivationDuration);
     });
