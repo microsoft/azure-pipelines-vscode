@@ -22,6 +22,10 @@ import { ControlProvider } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
 import {Build} from './model/azureDevOps';
+import Q = require('q');
+import { AzureResourceClient } from './clients/azure/azureResourceClient';
+import { Configurer } from './configurers/configurerBase';
+import { ConfigurerFactory } from './configurers/configurerFactory';
 
 const Layer: string = 'configure';
 
@@ -46,7 +50,7 @@ export async function configurePipeline(node: AzureTreeItem) {
                 }
             }
 
-            var configurer = new PipelineConfigurer();
+            var configurer = new Orchestrator();
             await configurer.configure(node);
         }
         catch (error) {
@@ -62,7 +66,7 @@ export async function configurePipeline(node: AzureTreeItem) {
     }, TelemetryKeys.CommandExecutionDuration);
 }
 
-class PipelineConfigurer {
+class Orchestrator {
     private inputs: WizardInputs;
     private localGitRepoHelper: LocalGitRepoHelper;
     private azureDevOpsClient: AzureDevOpsClient;
@@ -72,6 +76,7 @@ class PipelineConfigurer {
     private workspacePath: string;
     private uniqueResourceNameSuffix: string;
     private controlProvider: ControlProvider;
+    private pipelineConfigurer: Configurer;
 
     public constructor() {
         this.inputs = new WizardInputs();
@@ -121,15 +126,17 @@ class PipelineConfigurer {
         await this.getSourceRepositoryDetails();
         await this.getSelectedPipeline();
 
-        if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
-            this.inputs.githubPATToken = await this.getGitHubPATToken();
-        }
-
         if (!this.inputs.targetResource.resource) {
             await this.getAzureResourceDetails();
         }
 
-        await this.getAzureDevOpsDetails();
+        this.pipelineConfigurer = ConfigurerFactory.GetConfigurer(this.inputs.sourceRepository);
+        if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
+            await this.pipelineConfigurer.createPreRequisites();
+        }
+        else if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
+            await this.getAzureDevOpsDetails();
+        }
     }
 
     private async createPreRequisites(): Promise<void> {
@@ -330,23 +337,8 @@ class PipelineConfigurer {
 
         try {
             let azureResource: GenericResource = await this.appServiceClient.getAppServiceResource((<AzureTreeItem>node).fullId);
-
-            switch (azureResource.type ? azureResource.type.toLowerCase() : '') {
-                case 'Microsoft.Web/sites'.toLowerCase():
-                    switch (azureResource.kind ? azureResource.kind.toLowerCase() : '') {
-                        case WebAppKind.WindowsApp:
-                            this.inputs.targetResource.resource = azureResource;
-                            break;
-                        case WebAppKind.FunctionApp:
-                        case WebAppKind.LinuxApp:
-                        case WebAppKind.LinuxContainerApp:
-                        default:
-                            throw new Error(utils.format(Messages.appKindIsNotSupported, azureResource.kind));
-                    }
-                    break;
-                default:
-                    throw new Error(utils.format(Messages.resourceTypeIsNotSupported, azureResource.type));
-            }
+            AzureResourceClient.validateTargetResourceType(azureResource);
+            this.inputs.targetResource.resource = azureResource;
         }
         catch (error) {
             telemetryHelper.logError(Layer, TracePoints.ExtractAzureResourceFromNodeFailed, error);
@@ -420,7 +412,10 @@ class PipelineConfigurer {
     private async getSelectedPipeline(): Promise<void> {
         let appropriatePipelines: PipelineTemplate[] = await vscode.window.withProgress(
             { location: vscode.ProgressLocation.Notification, title: Messages.analyzingRepo },
-            () => templateHelper.analyzeRepoAndListAppropriatePipeline(this.inputs.sourceRepository.localPath)
+            () => templateHelper.analyzeRepoAndListAppropriatePipeline(
+                this.inputs.sourceRepository.localPath,
+                this.inputs.sourceRepository.repositoryProvider,
+                this.inputs.targetResource.resource)
         );
 
         // TO:DO- Get applicable pipelines for the repo type and azure target type if target already selected
@@ -463,13 +458,13 @@ class PipelineConfigurer {
     private async updateScmType(queuedPipeline: Build): Promise<void> {
         try {
             // update SCM type
-            this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
+            let updateScmPromise = this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
 
             let buildDefinitionUrl = this.azureDevOpsClient.getOldFormatBuildDefinitionUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.definition.id);
             let buildUrl = this.azureDevOpsClient.getOldFormatBuildUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.id);
 
             // update metadata of app service to store information about the pipeline deploying to web app.
-            new Promise<void>(async (resolve) => {
+            let updateMetadataPromise = new Promise<void>(async (resolve) => {
                 let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
                 metadata["properties"] = metadata["properties"] ? metadata["properties"] : {};
                 metadata["properties"]["VSTSRM_ProjectId"] = `${this.inputs.project.id}`;
@@ -484,11 +479,20 @@ class PipelineConfigurer {
             });
 
             // send a deployment log with information about the setup pipeline and links.
-            this.appServiceClient.publishDeploymentToAppService(
+            let updateDeploymentLogPromise = this.appServiceClient.publishDeploymentToAppService(
                 this.inputs.targetResource.resource.id,
                 buildDefinitionUrl,
                 buildDefinitionUrl,
                 buildUrl);
+
+                Q.all([updateScmPromise, updateMetadataPromise, updateDeploymentLogPromise])
+                .then(() => {
+                    telemetryHelper.setTelemetry(TelemetryKeys.UpdatedWebAppMetadata, 'true');
+                })
+                .catch((error) => {
+                    telemetryHelper.setTelemetry(TelemetryKeys.UpdatedWebAppMetadata, 'false');
+                    throw error;
+                });
         }
         catch (error) {
             telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error);

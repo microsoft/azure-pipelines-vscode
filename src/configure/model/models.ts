@@ -85,6 +85,7 @@ export interface PipelineTemplate {
     label: string;
     language: string;
     targetType: TargetResourceType;
+    targetKind?: any;
 }
 
 export enum SourceOptions {
@@ -100,7 +101,7 @@ export enum RepositoryProvider {
 
 export enum TargetResourceType {
     None = 'none',
-    WindowsWebApp = 'windowsWebApp'
+    WebApp = 'Microsoft.Web/sites'
 }
 
 export enum ServiceConnectionType {

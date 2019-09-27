@@ -1,22 +1,45 @@
-import { PipelineTemplate, TargetResourceType, WizardInputs } from '../model/models';
+import { PipelineTemplate, WizardInputs, RepositoryProvider } from '../model/models';
 import * as fs from 'fs';
 import * as Mustache from 'mustache';
-import * as path from 'path';
 import * as Q from 'q';
+import { Messages } from '../resources/messages';
+import { pipelineTemplates } from '../configurers/azurePipelineConfigurer';
+import { githubWorklowTemplates } from '../configurers/githubWorkflowConfigurer';
+import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 
-export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): Promise<PipelineTemplate[]> {
-    // TO-DO: To populate the possible templates on the basis of azure target resource.
-    let templateList = simpleWebAppTemplates;
+
+export async function analyzeRepoAndListAppropriatePipeline(repoPath: string, repositoryProvider: RepositoryProvider, targetResource?: GenericResource): Promise<PipelineTemplate[]> {
     let analysisResult = await analyzeRepo(repoPath);
 
-
-    if (analysisResult.isNodeApplication) {
-        // add all node application templates
-        templateList = nodeTemplates.concat(templateList);
+    let templateList: { [key: string]: PipelineTemplate[] } = {};
+    switch(repositoryProvider) {
+        case RepositoryProvider.AzureRepos:
+            templateList = pipelineTemplates;
+            break;
+        case RepositoryProvider.Github:
+            templateList = githubWorklowTemplates;
+            break;
+        default:
+            throw new Error(Messages.cannotIdentifyRespositoryDetails);
     }
 
-    // add all possible templates as we could not detect the appropriate onesı
-    return templateList;
+    let templateResult: PipelineTemplate[] = [];
+    switch(analysisResult.language) {
+        case SupportedLanguage.NODE:
+            templateResult = templateList[SupportedLanguage.NODE];
+            break;
+        case SupportedLanguage.NONE:
+        default:
+            break;
+    }
+
+    if (templateList['none']) {
+        templateResult = templateResult.concat(templateList['none']);
+    }
+
+    templateResult = targetResource && !!targetResource.type ? templateResult.filter((template) => !template.targetType || template.targetType.toLowerCase() === targetResource.type.toLowerCase()): templateResult;
+    templateResult = targetResource && !!targetResource.kind ? templateResult.filter((template) => !template.targetKind || template.targetKind.toLowerCase() === targetResource.kind.toLowerCase()): templateResult;
+    return templateResult;
 }
 
 export async function renderContent(templateFilePath: string, context: WizardInputs): Promise<string> {
@@ -34,11 +57,11 @@ export async function renderContent(templateFilePath: string, context: WizardInp
     return deferred.promise;
 }
 
-async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boolean }> {
-    let deferred: Q.Deferred<{ isNodeApplication: boolean }> = Q.defer();
+async function analyzeRepo(repoPath: string): Promise<AnalysisResult> {
+    let deferred: Q.Deferred<AnalysisResult> = Q.defer();
     fs.readdir(repoPath, (err, files: string[]) => {
         let result = {
-            isNodeApplication: err ? true : isNodeRepo(files)
+            language: err ? SupportedLanguage.NONE : isNodeRepo(files) ? SupportedLanguage.NODE : SupportedLanguage.NONE
             // isContainerApplication: isDockerRepo(files)
         };
         deferred.resolve(result);
@@ -55,44 +78,12 @@ function isNodeRepo(files: string[]): boolean {
     });
 }
 
-const nodeTemplates: Array<PipelineTemplate> = [
-    {
-        label: 'Node.js with npm to Windows Web App',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejs.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WindowsWebApp
-    },
-    {
-        label: 'Node.js with Gulp to Windows Web App',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithGulp.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WindowsWebApp
-    },
-    {
-        label: 'Node.js with Grunt to Windows Web App',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithGrunt.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WindowsWebApp
-    },
-    {
-        label: 'Node.js with Angular to Windows Web App',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithAngular.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WindowsWebApp
-    },
-    {
-        label: 'Node.js with Webpack to Windows Web App',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithWebpack.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WindowsWebApp
-    }
-];
+export class AnalysisResult {
+    public language: SupportedLanguage;
+    // public isContainerized: boolean;
+}
 
-const simpleWebAppTemplates: Array<PipelineTemplate> = [
-    {
-        label: 'Simple application to Windows Web App',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/simpleWebApp.yml'),
-        language: 'none',
-        targetType: TargetResourceType.WindowsWebApp
-    }
-];
+export enum SupportedLanguage {
+    NODE = 'node',
+    NONE = 'none'
+}

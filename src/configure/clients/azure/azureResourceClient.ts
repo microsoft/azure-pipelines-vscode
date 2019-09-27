@@ -1,6 +1,9 @@
 import { ResourceListResult, GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { ServiceClientCredentials } from 'ms-rest';
 import * as ResourceManagementClient from 'azure-arm-resource/lib/resource/resourceManagementClient';
+import { TargetResourceType, WebAppKind } from '../../model/models';
+import * as utils from 'util';
+import { Messages } from '../../resources/messages';
 
 export class AzureResourceClient {
 
@@ -8,6 +11,27 @@ export class AzureResourceClient {
 
     constructor(credentials: ServiceClientCredentials, subscriptionId: string) {
         this.azureRmClient = new ResourceManagementClient.ResourceManagementClient(credentials, subscriptionId);
+    }
+
+    public static validateTargetResourceType(resource: GenericResource): void {
+        if (!resource) {
+            throw new Error('Argument: resource, is Null');
+        }
+
+        switch (resource.type.toLowerCase()) {
+            case TargetResourceType.WebApp.toLowerCase():
+                switch (resource.kind ? resource.kind.toLowerCase() : '') {
+                    case WebAppKind.WindowsApp:
+                    case WebAppKind.LinuxApp:
+                        return;
+                    case WebAppKind.FunctionApp:
+                    case WebAppKind.LinuxContainerApp:
+                    default:
+                        throw new Error(utils.format(Messages.appKindIsNotSupported, resource.kind));
+                }
+            default:
+                throw new Error(utils.format(Messages.resourceTypeIsNotSupported, resource.type));
+        }
     }
 
     public async getResourceList(resourceType: string, followNextLink: boolean = true): Promise<ResourceListResult> {

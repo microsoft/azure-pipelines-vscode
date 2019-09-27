@@ -57,5 +57,4 @@ export class Messages {
     public static cannotFindOrganizationWithName = 'Unable to find organization with name: %s';
     public static browseNotAvailableConfigurePipeline = 'Unable to find a pipeline for this Azure Web App. Please click on "Configure Pipeline" to setup.';
     public static didNotRecieveAzureResourceNodeToProcess = 'Unable to browse the pipeline for you. Please raise an issue in the [repo](https://github.com/Microsoft/azure-pipelines-vscode/issues).';
-
 }
