@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Configurer } from "./configurerBase";
-import { PipelineTemplate, TargetResourceType, WebAppKind } from "../model/models";
+import { PipelineTemplate, TargetResourceType, WebAppKind, WizardInputs } from "../model/models";
 import { SupportedLanguage } from "../helper/templateHelper";
 
 export class GitHubWorkflowConfigurer implements Configurer {
@@ -8,7 +8,7 @@ export class GitHubWorkflowConfigurer implements Configurer {
         return;
     }
 
-    public async createPreRequisites(): Promise<any> {
+    public async createPreRequisites(inputs: WizardInputs): Promise<void> {
         throw new Error("Method not implemented.");
     }
 
@@ -16,10 +16,13 @@ export class GitHubWorkflowConfigurer implements Configurer {
         throw new Error("Method not implemented.");
     }
 
-    public async createPipeline(): Promise<any> {
+    public async createAndQueuePipeline(inputs: WizardInputs): Promise<any> {
         throw new Error("Method not implemented.");
     }
 
+    public async postPipelineCreationSteps(): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
 }
 
 export const githubWorklowTemplates: { [key: string]: PipelineTemplate[] } = {

@@ -1,7 +1,7 @@
 const uuid = require('uuid/v4');
 import { ResourceListResult, GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { WebSiteManagementClient } from 'azure-arm-website';
-import { SiteConfigResource, StringDictionary, Deployment } from 'azure-arm-website/lib/models';
+import { SiteConfigResource, StringDictionary, Deployment, User } from 'azure-arm-website/lib/models';
 import { ServiceClientCredentials } from 'ms-rest';
 
 import { AzureResourceClient } from './azureResourceClient';
@@ -41,6 +41,16 @@ export class AppServiceClient extends AzureResourceClient {
         }
 
         return resourceList;
+    }
+
+    public async getWebAppPublishXml(resourceId: string): Promise<string> {
+        let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
+        let publishingProfileStream = await this.webSiteManagementClient.webApps.listPublishingProfileXmlWithSecrets(parsedResourceId.resourceGroup, parsedResourceId.resourceName, null);
+        while (!publishingProfileStream.readable) {
+            // wait for stream to be readable.
+        }
+
+        return publishingProfileStream.read();
     }
 
     public async getDeploymentCenterUrl(resourceId: string): Promise<string> {

@@ -5,7 +5,6 @@ import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
 import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
 import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
-import { GraphHelper } from './helper/graphHelper';
 import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
 import { Messages } from './resources/messages';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
@@ -28,6 +27,7 @@ import { Configurer } from './configurers/configurerBase';
 import { ConfigurerFactory } from './configurers/configurerFactory';
 
 const Layer: string = 'configure';
+export const UniqueResourceNameSuffix: string = uuid().substr(0, 5);
 
 export async function configurePipeline(node: AzureTreeItem) {
     await telemetryHelper.executeFunctionWithTimeTelemetry(async () => {
@@ -66,7 +66,7 @@ export async function configurePipeline(node: AzureTreeItem) {
     }, TelemetryKeys.CommandExecutionDuration);
 }
 
-class Orchestrator {
+export class Orchestrator {
     private inputs: WizardInputs;
     private localGitRepoHelper: LocalGitRepoHelper;
     private azureDevOpsClient: AzureDevOpsClient;
@@ -74,13 +74,11 @@ class Orchestrator {
     private azureDevOpsHelper: AzureDevOpsHelper;
     private appServiceClient: AppServiceClient;
     private workspacePath: string;
-    private uniqueResourceNameSuffix: string;
     private controlProvider: ControlProvider;
     private pipelineConfigurer: Configurer;
 
     public constructor() {
         this.inputs = new WizardInputs();
-        this.uniqueResourceNameSuffix = uuid().substr(0, 5);
         this.controlProvider = new ControlProvider();
     }
 
@@ -95,17 +93,7 @@ class Orchestrator {
         await this.checkInPipelineFileToRepository();
 
         telemetryHelper.setCurrentStep('CreateAndRunPipeline');
-        let queuedPipeline = await vscode.window.withProgress<Build>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
-            try {
-                let pipelineName = `${this.inputs.targetResource.resource.name}-${this.uniqueResourceNameSuffix}`;
-                return await this.azureDevOpsHelper.createAndRunPipeline(pipelineName, this.inputs);
-            }
-            catch (error) {
-                telemetryHelper.logError(Layer, TracePoints.CreateAndQueuePipelineFailed, error);
-                throw error;
-            }
-
-        });
+        let queuedPipeline = await this.pipelineConfigurer.createAndQueuePipeline(this.inputs);
 
         telemetryHelper.setCurrentStep('PostPipelineCreation');
         // This step should be determined by the resoruce target provider (azure app service, function app, aks) type and pipelineProvider(azure pipeline vs github)
@@ -132,7 +120,7 @@ class Orchestrator {
 
         this.pipelineConfigurer = ConfigurerFactory.GetConfigurer(this.inputs.sourceRepository);
         if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
-            await this.pipelineConfigurer.createPreRequisites();
+            await this.pipelineConfigurer.createPreRequisites(this.inputs);
         }
         else if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
             await this.getAzureDevOpsDetails();
@@ -173,7 +161,7 @@ class Orchestrator {
             await this.createGithubServiceConnection();
         }
 
-        await this.createAzureRMServiceConnection();
+        await this.pipelineConfigurer.createPreRequisites(this.inputs);
     }
 
     private async analyzeNode(node: any): Promise<void> {
@@ -512,37 +500,11 @@ class Orchestrator {
             },
             async () => {
                 try {
-                    let serviceConnectionName = `${this.inputs.sourceRepository.repositoryName}-${this.uniqueResourceNameSuffix}`;
+                    let serviceConnectionName = `${this.inputs.sourceRepository.repositoryName}-${UniqueResourceNameSuffix}`;
                     this.inputs.sourceRepository.serviceConnectionId = await this.serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, this.inputs.githubPATToken);
                 }
                 catch (error) {
                     telemetryHelper.logError(Layer, TracePoints.GitHubServiceConnectionError, error);
-                    throw error;
-                }
-            });
-    }
-
-    private async createAzureRMServiceConnection(): Promise<void> {
-        if (!this.serviceConnectionHelper) {
-            this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, this.azureDevOpsClient);
-        }
-        // TODO: show notification while setup is being done.
-        // ?? should SPN created be scoped to resource group of target azure resource.
-        this.inputs.targetResource.serviceConnectionId = await vscode.window.withProgress(
-            {
-                location: vscode.ProgressLocation.Notification,
-                title: utils.format(Messages.creatingAzureServiceConnection, this.inputs.targetResource.subscriptionId)
-            },
-            async () => {
-                try {
-                    let scope = this.inputs.targetResource.resource.id;
-                    let aadAppName = GraphHelper.generateAadApplicationName(this.inputs.organizationName, this.inputs.project.name);
-                    let aadApp = await GraphHelper.createSpnAndAssignRole(this.inputs.azureSession, aadAppName, scope);
-                    let serviceConnectionName = `${this.inputs.targetResource.resource.name}-${this.uniqueResourceNameSuffix}`;
-                    return await this.serviceConnectionHelper.createAzureServiceConnection(serviceConnectionName, this.inputs.azureSession.tenantId, this.inputs.targetResource.subscriptionId, scope, aadApp);
-                }
-                catch (error) {
-                    telemetryHelper.logError(Layer, TracePoints.AzureServiceConnectionCreateFailure, error);
                     throw error;
                 }
             });
