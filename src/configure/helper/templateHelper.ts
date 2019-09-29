@@ -1,12 +1,10 @@
-import { PipelineTemplate, WizardInputs, RepositoryProvider } from '../model/models';
+import { PipelineTemplate, WizardInputs, RepositoryProvider, TargetResourceType, WebAppKind } from '../model/models';
 import * as fs from 'fs';
 import * as Mustache from 'mustache';
+import * as path from 'path';
 import * as Q from 'q';
 import { Messages } from '../resources/messages';
-import { pipelineTemplates } from '../configurers/azurePipelineConfigurer';
-import { githubWorklowTemplates } from '../configurers/githubWorkflowConfigurer';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
-
 
 export async function analyzeRepoAndListAppropriatePipeline(repoPath: string, repositoryProvider: RepositoryProvider, targetResource?: GenericResource): Promise<PipelineTemplate[]> {
     let analysisResult = await analyzeRepo(repoPath);
@@ -87,3 +85,65 @@ export enum SupportedLanguage {
     NODE = 'node',
     NONE = 'none'
 }
+
+let pipelineTemplates: { [key: string]: PipelineTemplate[] } =
+{
+    'none': [
+        {
+            label: 'Simple application to Windows Web App',
+            path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/azurePipelineTemplates/simpleWebApp.yml'),
+            language: SupportedLanguage.NONE,
+            targetType: TargetResourceType.WebApp,
+            targetKind: WebAppKind.WindowsApp
+        }
+    ],
+    'node': [
+        {
+            label: 'Node.js with npm to Windows Web App',
+            path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/azurePipelineTemplates/nodejs.yml'),
+            language: SupportedLanguage.NODE,
+            targetType: TargetResourceType.WebApp,
+            targetKind: WebAppKind.WindowsApp
+        },
+        {
+            label: 'Node.js with Gulp to Windows Web App',
+            path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/azurePipelineTemplates/nodejsWithGulp.yml'),
+            language: SupportedLanguage.NODE,
+            targetType: TargetResourceType.WebApp,
+            targetKind: WebAppKind.WindowsApp
+        },
+        {
+            label: 'Node.js with Grunt to Windows Web App',
+            path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/azurePipelineTemplates/nodejsWithGrunt.yml'),
+            language: SupportedLanguage.NODE,
+            targetType: TargetResourceType.WebApp,
+            targetKind: WebAppKind.WindowsApp
+        },
+        {
+            label: 'Node.js with Angular to Windows Web App',
+            path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/azurePipelineTemplates/nodejsWithAngular.yml'),
+            language: SupportedLanguage.NODE,
+            targetType: TargetResourceType.WebApp,
+            targetKind: WebAppKind.WindowsApp
+        },
+        {
+            label: 'Node.js with Webpack to Windows Web App',
+            path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/azurePipelineTemplates/nodejsWithWebpack.yml'),
+            language: SupportedLanguage.NODE,
+            targetType: TargetResourceType.WebApp,
+            targetKind: WebAppKind.WindowsApp
+        }
+    ]
+};
+
+let githubWorklowTemplates: { [key: string]: PipelineTemplate[] } = {
+    'node': [
+        {
+            label: 'Node.js with npm to Windows Web App',
+            path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/githubWorkflowTemplates/nodejs.yml'),
+            language: SupportedLanguage.NODE,
+            targetType: TargetResourceType.WebApp,
+            targetKind: WebAppKind.LinuxApp
+        }
+    ]
+};

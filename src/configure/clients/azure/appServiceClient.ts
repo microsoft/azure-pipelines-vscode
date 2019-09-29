@@ -1,7 +1,7 @@
 const uuid = require('uuid/v4');
 import { ResourceListResult, GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { WebSiteManagementClient } from 'azure-arm-website';
-import { SiteConfigResource, StringDictionary, Deployment, User } from 'azure-arm-website/lib/models';
+import { SiteConfigResource, StringDictionary, Deployment } from 'azure-arm-website/lib/models';
 import { ServiceClientCredentials } from 'ms-rest';
 
 import { AzureResourceClient } from './azureResourceClient';
