@@ -15,6 +15,7 @@ import { AzureResourceClient } from '../clients/azure/azureResourceClient';
 import { TelemetryKeys } from '../resources/telemetryKeys';
 import Q = require('q');
 import { Build } from '../model/azureDevOps';
+import { LocalGitRepoHelper } from '../helper/LocalGitRepoHelper';
 
 const Layer = 'AzurePipelineConfigurer';
 
@@ -58,8 +59,8 @@ export class AzurePipelineConfigurer implements Configurer {
         throw new Error("Method not implemented.");
     }
 
-    public async createPipelineFile(): Promise<any> {
-        throw new Error("Method not implemented.");
+    public async getPipelineFileName(inputs: WizardInputs) {
+        return await LocalGitRepoHelper.GetAvailableFileName('azure-pipelines.yml', inputs.sourceRepository.localPath);
     }
 
     public async createAndQueuePipeline(inputs: WizardInputs): Promise<any> {
@@ -121,5 +122,15 @@ export class AzurePipelineConfigurer implements Configurer {
                 telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error);
             }
         }
+    }
+
+    public async browseQueuedPipeline(): Promise<void> {
+        vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
+            .then((action: string) => {
+                if (action && action.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
+                    telemetryHelper.setTelemetry(TelemetryKeys.BrowsePipelineClicked, 'true');
+                    vscode.env.openExternal(vscode.Uri.parse(this.queuedPipeline._links.web.href));
+                }
+            });
     }
 }

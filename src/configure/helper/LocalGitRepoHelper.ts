@@ -89,11 +89,10 @@ export class LocalGitRepoHelper {
      * @param context: inputs required to be filled in the yaml pipelines
      * @returns: thenable object which resolves once all files are added to the repository
      */
-    public async addContentToFile(content: string, fileName: string, repoPath: string): Promise<string> {
-        let filePath = path.join(repoPath, "/" + fileName);
-        fs.writeFileSync(filePath, content);
+    public async addContentToFile(content: string, pathToFile: string): Promise<string> {
+        fs.writeFileSync(pathToFile, content);
         await vscode.workspace.saveAll(true);
-        return fileName;
+        return pathToFile;
     }
 
     /**
