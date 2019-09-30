@@ -82,6 +82,7 @@ export class Orchestrator {
         await this.getAllRequiredInputs(node);
 
         telemetryHelper.setCurrentStep('CreatePreRequisites');
+        this.pipelineConfigurer = this.pipelineConfigurer ? this.pipelineConfigurer : ConfigurerFactory.GetConfigurer(this.inputs.sourceRepository, this.inputs.azureSession, this.inputs.targetResource.subscriptionId);
         await this.pipelineConfigurer.createPreRequisites(this.inputs);
         // await this.createPreRequisites();
 
@@ -109,7 +110,7 @@ export class Orchestrator {
             await this.getAzureResourceDetails();
         }
 
-        this.pipelineConfigurer = ConfigurerFactory.GetConfigurer(this.inputs.sourceRepository);
+        this.pipelineConfigurer = ConfigurerFactory.GetConfigurer(this.inputs.sourceRepository, this.inputs.azureSession, this.inputs.targetResource.subscriptionId);
         if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
             await this.getAzureDevOpsDetails();
         }
@@ -503,11 +504,11 @@ export class Orchestrator {
 
     private async checkInPipelineFileToRepository(): Promise<void> {
         try {
-            let pipelineFilePath = this.pipelineConfigurer.getPipelineFileName(this.inputs);
+            let pipelineFilePath = await this.pipelineConfigurer.getPathToPipelineFile(this.inputs);
             this.inputs.pipelineParameters.pipelineFileName = await this.localGitRepoHelper.addContentToFile(
                 await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs),
                 pipelineFilePath);
-            await vscode.window.showTextDocument(vscode.Uri.file(path.join(this.inputs.sourceRepository.localPath, this.inputs.pipelineParameters.pipelineFileName)));
+            await vscode.window.showTextDocument(vscode.Uri.file(this.inputs.pipelineParameters.pipelineFileName));
         }
         catch (error) {
             telemetryHelper.logError(Layer, TracePoints.AddingContentToPipelineFileFailed, error);

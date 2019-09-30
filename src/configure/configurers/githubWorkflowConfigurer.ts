@@ -10,12 +10,13 @@ import { UserCancelledError } from 'vscode-azureextensionui';
 import { AppServiceClient } from '../clients/azure/appServiceClient';
 import { telemetryHelper } from '../helper/telemetryHelper';
 import { TelemetryKeys } from '../resources/telemetryKeys';
+import { ControlProvider } from '../helper/controlProvider';
 
 export class GitHubWorkflowConfigurer implements Configurer {
     private appServiceClient: AppServiceClient;
     private queuedPipelineUrl: string;
 
-    public GitHubWorkflowConfigurer(azureSession: AzureSession, subscriptionId: string) {
+    constructor(azureSession: AzureSession, subscriptionId: string) {
         this.appServiceClient = new AppServiceClient(azureSession.credentials, azureSession.tenantId, azureSession.environment.portalUrl, subscriptionId);
     }
 
@@ -40,9 +41,11 @@ export class GitHubWorkflowConfigurer implements Configurer {
                 }
             }
         }
+
+        inputs.targetResource.serviceConnectionId = 'publishProfile';
     }
 
-    public async getPipelineFileName(inputs: WizardInputs) {
+    public async getPathToPipelineFile(inputs: WizardInputs) {
         // Create .github directory
         let workflowDirectoryPath = path.join(inputs.sourceRepository.localPath, '.github');
         if (!fs.existsSync(workflowDirectoryPath)) {
@@ -80,7 +83,11 @@ export class GitHubWorkflowConfigurer implements Configurer {
 
     private async showCopyAndOpenNotification(inputs: WizardInputs, publishXml: string, showNextButton = false): Promise<string> {
         let actions: Array<string> = showNextButton ? [Messages.copyAndOpenLabel, Messages.nextLabel] : [Messages.copyAndOpenLabel];
-        let copyAndOpen = await vscode.window.showInformationMessage(utils.format(Messages.copyPublishingCredentials, inputs.targetResource.serviceConnectionId), ...actions);
+        let controlProvider = new ControlProvider();
+        let copyAndOpen = await controlProvider.showInformationBox(
+            'copyPublishingCredentials',
+            utils.format(Messages.copyPublishingCredentials, inputs.targetResource.serviceConnectionId),
+            ...actions);
         if (copyAndOpen === Messages.copyAndOpenLabel) {
             await vscode.env.clipboard.writeText(publishXml);
             await vscode.env.openExternal(vscode.Uri.parse(`https://github.com/${inputs.sourceRepository.repositoryId}/settings/secrets`));

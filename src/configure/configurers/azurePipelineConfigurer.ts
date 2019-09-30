@@ -1,3 +1,4 @@
+import Q = require('q');
 import * as utils from 'util';
 import * as vscode from 'vscode';
 import { Configurer } from "./configurerBase";
@@ -13,7 +14,6 @@ import { UniqueResourceNameSuffix } from '../configure';
 import { AppServiceClient } from '../clients/azure/appServiceClient';
 import { AzureResourceClient } from '../clients/azure/azureResourceClient';
 import { TelemetryKeys } from '../resources/telemetryKeys';
-import Q = require('q');
 import { Build } from '../model/azureDevOps';
 import { LocalGitRepoHelper } from '../helper/LocalGitRepoHelper';
 
@@ -24,7 +24,7 @@ export class AzurePipelineConfigurer implements Configurer {
     private azureDevOpsClient: AzureDevOpsClient;
     private queuedPipeline: Build;
 
-    public AzurePipelineConfigurer(azureSession: AzureSession, subscriptionId: string) {
+    constructor(azureSession: AzureSession, subscriptionId: string) {
         this.azureDevOpsClient = new AzureDevOpsClient(azureSession.credentials);
         this.azureDevOpsHelper = new AzureDevOpsHelper(this.azureDevOpsClient);
     }
@@ -59,7 +59,7 @@ export class AzurePipelineConfigurer implements Configurer {
         throw new Error("Method not implemented.");
     }
 
-    public async getPipelineFileName(inputs: WizardInputs) {
+    public async getPathToPipelineFile(inputs: WizardInputs) {
         return await LocalGitRepoHelper.GetAvailableFileName('azure-pipelines.yml', inputs.sourceRepository.localPath);
     }
 
