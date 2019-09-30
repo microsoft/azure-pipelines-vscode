@@ -63,8 +63,8 @@ export class GitHubWorkflowConfigurer implements Configurer {
     }
 
     public async createAndQueuePipeline(inputs: WizardInputs): Promise<any> {
-        let gitHubWorkflowUrl = `https://github.com/${inputs.sourceRepository.repositoryId}/commit/${inputs.sourceRepository.commitId}/checks`;
-        return gitHubWorkflowUrl;
+        this.queuedPipelineUrl = `https://github.com/${inputs.sourceRepository.repositoryId}/commit/${inputs.sourceRepository.commitId}/checks`;
+        return this.queuedPipelineUrl;
     }
 
     public async postPipelineCreationSteps(): Promise<void> {

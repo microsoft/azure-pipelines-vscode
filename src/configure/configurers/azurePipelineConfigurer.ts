@@ -1,3 +1,4 @@
+import * as path from 'path';
 import Q = require('q');
 import * as utils from 'util';
 import * as vscode from 'vscode';
@@ -60,7 +61,7 @@ export class AzurePipelineConfigurer implements Configurer {
     }
 
     public async getPathToPipelineFile(inputs: WizardInputs) {
-        return await LocalGitRepoHelper.GetAvailableFileName('azure-pipelines.yml', inputs.sourceRepository.localPath);
+        return path.join(inputs.sourceRepository.localPath, await LocalGitRepoHelper.GetAvailableFileName('azure-pipelines.yml', inputs.sourceRepository.localPath));
     }
 
     public async createAndQueuePipeline(inputs: WizardInputs): Promise<any> {
