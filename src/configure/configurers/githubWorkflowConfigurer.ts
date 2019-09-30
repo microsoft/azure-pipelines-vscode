@@ -68,7 +68,7 @@ export class GitHubWorkflowConfigurer implements Configurer {
     }
 
     public async postPipelineCreationSteps(): Promise<void> {
-        throw new Error("Method not implemented.");
+        return;
     }
 
     public async browseQueuedPipeline(): Promise<void> {

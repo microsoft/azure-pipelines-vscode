@@ -84,7 +84,6 @@ export class Orchestrator {
         telemetryHelper.setCurrentStep('CreatePreRequisites');
         this.pipelineConfigurer = this.pipelineConfigurer ? this.pipelineConfigurer : ConfigurerFactory.GetConfigurer(this.inputs.sourceRepository, this.inputs.azureSession, this.inputs.targetResource.subscriptionId);
         await this.pipelineConfigurer.createPreRequisites(this.inputs);
-        // await this.createPreRequisites();
 
         telemetryHelper.setCurrentStep('CheckInPipeline');
         await this.checkInPipelineFileToRepository();
@@ -95,7 +94,6 @@ export class Orchestrator {
         telemetryHelper.setCurrentStep('PostPipelineCreation');
         // This step should be determined by the resoruce target provider (azure app service, function app, aks) type and pipelineProvider(azure pipeline vs github)
         this.pipelineConfigurer.postPipelineCreationSteps(this.inputs, this.appServiceClient);
-        // this.updateScmType(queuedPipeline);
 
         telemetryHelper.setCurrentStep('DisplayCreatedPipeline');
         this.pipelineConfigurer.browseQueuedPipeline();
@@ -115,41 +113,6 @@ export class Orchestrator {
             await this.getAzureDevOpsDetails();
         }
     }
-
-    // private async createPreRequisites(): Promise<void> {
-        // if (this.inputs.isNewOrganization) {
-        //     this.inputs.project = {
-        //         id: "",
-        //         name: generateDevOpsProjectName(this.inputs.sourceRepository.repositoryName)
-        //     };
-        //     await vscode.window.withProgress(
-        //         {
-        //             location: vscode.ProgressLocation.Notification,
-        //             title: Messages.creatingAzureDevOpsOrganization
-        //         },
-        //         () => {
-        //             return this.azureDevOpsClient.createOrganization(this.inputs.organizationName)
-        //                 .then(() => {
-        //                     this.azureDevOpsClient.listOrganizations(true);
-        //                     return this.azureDevOpsClient.createProject(this.inputs.organizationName, this.inputs.project.name);
-        //                 })
-        //                 .then(() => {
-        //                     return this.azureDevOpsClient.getProjectIdFromName(this.inputs.organizationName, this.inputs.project.name);
-        //                 })
-        //                 .then((projectId) => {
-        //                     this.inputs.project.id = projectId;
-        //                 })
-        //                 .catch((error) => {
-        //                     telemetryHelper.logError(Layer, TracePoints.CreateNewOrganizationAndProjectFailure, error);
-        //                     throw error;
-        //                 });
-        //         });
-        // }
-
-        // if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
-        //     await this.createGithubServiceConnection();
-        // }
-    // }
 
     private async analyzeNode(node: any): Promise<void> {
         if (!!node && !!node.fullId) {
@@ -287,24 +250,6 @@ export class Orchestrator {
         }
     }
 
-    // private async getGitHubPATToken(): Promise<string> {
-    //     let githubPat = null;
-    //     await telemetryHelper.executeFunctionWithTimeTelemetry(
-    //         async () => {
-    //             githubPat = await this.controlProvider.showInputBox(
-    //                 constants.GitHubPat,
-    //                 {
-    //                     placeHolder: Messages.enterGitHubPat,
-    //                     prompt: Messages.githubPatTokenHelpMessage,
-    //                     validateInput: (inputValue) => {
-    //                         return !inputValue ? Messages.githubPatTokenErrorMessage : null;
-    //                     }
-    //                 });
-    //         },
-    //         TelemetryKeys.GitHubPatDuration);
-    //     return githubPat;
-    // }
-
     private async extractAzureResourceFromNode(node: any): Promise<void> {
         this.inputs.targetResource.subscriptionId = node.root.subscriptionId;
         this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
@@ -434,73 +379,6 @@ export class Orchestrator {
                 this.inputs.targetResource.resource = selectedResource.data;
         }
     }
-
-    // private async updateScmType(queuedPipeline: Build): Promise<void> {
-    //     try {
-    //         // update SCM type
-    //         let updateScmPromise = this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
-
-    //         let buildDefinitionUrl = this.azureDevOpsClient.getOldFormatBuildDefinitionUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.definition.id);
-    //         let buildUrl = this.azureDevOpsClient.getOldFormatBuildUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.id);
-
-    //         // update metadata of app service to store information about the pipeline deploying to web app.
-    //         let updateMetadataPromise = new Promise<void>(async (resolve) => {
-    //             let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
-    //             metadata["properties"] = metadata["properties"] ? metadata["properties"] : {};
-    //             metadata["properties"]["VSTSRM_ProjectId"] = `${this.inputs.project.id}`;
-    //             metadata["properties"]["VSTSRM_AccountId"] = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
-    //             metadata["properties"]["VSTSRM_BuildDefinitionId"] = `${queuedPipeline.definition.id}`;
-    //             metadata["properties"]["VSTSRM_BuildDefinitionWebAccessUrl"] = `${buildDefinitionUrl}`;
-    //             metadata["properties"]["VSTSRM_ConfiguredCDEndPoint"] = '';
-    //             metadata["properties"]["VSTSRM_ReleaseDefinitionId"] = '';
-
-    //             this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
-    //             resolve();
-    //         });
-
-    //         // send a deployment log with information about the setup pipeline and links.
-    //         let updateDeploymentLogPromise = this.appServiceClient.publishDeploymentToAppService(
-    //             this.inputs.targetResource.resource.id,
-    //             buildDefinitionUrl,
-    //             buildDefinitionUrl,
-    //             buildUrl);
-
-    //             Q.all([updateScmPromise, updateMetadataPromise, updateDeploymentLogPromise])
-    //             .then(() => {
-    //                 telemetryHelper.setTelemetry(TelemetryKeys.UpdatedWebAppMetadata, 'true');
-    //             })
-    //             .catch((error) => {
-    //                 telemetryHelper.setTelemetry(TelemetryKeys.UpdatedWebAppMetadata, 'false');
-    //                 throw error;
-    //             });
-    //     }
-    //     catch (error) {
-    //         telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error);
-    //     }
-    // }
-
-    // private async createGithubServiceConnection(): Promise<void> {
-    //     if (!this.serviceConnectionHelper) {
-    //         this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, this.azureDevOpsClient);
-    //     }
-
-    //     // Create GitHub service connection in Azure DevOps
-    //     await vscode.window.withProgress(
-    //         {
-    //             location: vscode.ProgressLocation.Notification,
-    //             title: Messages.creatingGitHubServiceConnection
-    //         },
-    //         async () => {
-    //             try {
-    //                 let serviceConnectionName = `${this.inputs.sourceRepository.repositoryName}-${UniqueResourceNameSuffix}`;
-    //                 this.inputs.sourceRepository.serviceConnectionId = await this.serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, this.inputs.githubPATToken);
-    //             }
-    //             catch (error) {
-    //                 telemetryHelper.logError(Layer, TracePoints.GitHubServiceConnectionError, error);
-    //                 throw error;
-    //             }
-    //         });
-    // }
 
     private async checkInPipelineFileToRepository(): Promise<void> {
         try {
