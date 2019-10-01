@@ -9,7 +9,7 @@ import { GraphHelper } from './helper/graphHelper';
 import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
 import { Messages } from './resources/messages';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
-import { SourceOptions, RepositoryProvider, extensionVariables, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails } from './model/models';
+import { SourceOptions, RepositoryProvider, extensionVariables, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails, TargetResourceType } from './model/models';
 import { TracePoints } from './resources/tracePoints';
 import { TelemetryKeys } from './resources/telemetryKeys';
 import * as constants from './resources/constants';
@@ -450,10 +450,30 @@ class PipelineConfigurer {
 
         // show available resources and get the chosen one
         this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
+        
+        let resourceArray: Promise<Array<{label: string, data: GenericResource}>> = null;
+
+        switch(this.inputs.pipelineParameters.pipelineTemplate.targetType) {
+            case TargetResourceType.WindowsFunctionApp:
+                resourceArray = this.appServiceClient.GetAppServices(WebAppKind.FunctionApp)
+                    .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
+                break;
+            case TargetResourceType.LinuxFunctionApp:
+                resourceArray = this.appServiceClient.GetAppServices(WebAppKind.FunctionAppLinux)
+                    .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
+                break;
+            case TargetResourceType.WindowsWebApp:
+                resourceArray = this.appServiceClient.GetAppServices(WebAppKind.WindowsApp)
+                    .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
+                break;
+
+            default:
+                break;
+        }
+
         let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
             constants.SelectWebApp,
-            this.appServiceClient.GetAppServices(WebAppKind.WindowsApp)
-                .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; })),
+            resourceArray,
             { placeHolder: Messages.selectWebApp },
             TelemetryKeys.WebAppListCount);
 

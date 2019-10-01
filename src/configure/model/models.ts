@@ -100,7 +100,9 @@ export enum RepositoryProvider {
 
 export enum TargetResourceType {
     None = 'none',
-    WindowsWebApp = 'windowsWebApp'
+    WindowsWebApp = 'windowsWebApp',
+    WindowsFunctionApp = 'windowsFunctionApp',
+    LinuxFunctionApp = 'linuxFunctionApp'
 }
 
 export enum ServiceConnectionType {
@@ -111,6 +113,7 @@ export enum ServiceConnectionType {
 export enum WebAppKind {
     WindowsApp = 'app',
     FunctionApp = 'functionapp',
+    FunctionAppLinux = 'functionapp,linux',
     LinuxApp = 'app,linux',
     LinuxContainerApp = 'app,linux,container'
 }
