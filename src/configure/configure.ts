@@ -453,30 +453,27 @@ class PipelineConfigurer {
         
         let resourceArray: Promise<Array<{label: string, data: GenericResource}>> = null;
         let selectAppText: string = "";
+        let placeHolderText: string = "";
 
         switch(this.inputs.pipelineParameters.pipelineTemplate.targetType) {
-            case TargetResourceType.WindowsFunctionApp:
-                resourceArray = this.appServiceClient.GetAppServices(WebAppKind.FunctionApp)
+            case TargetResourceType.WebApp:
+                resourceArray = this.appServiceClient.GetAppServices(this.inputs.pipelineParameters.pipelineTemplate.targetKind)
                     .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
                 selectAppText = constants.SelectFunctionApp;
+                placeHolderText = Messages.selectFunctionApp;
                 break;
-            case TargetResourceType.LinuxFunctionApp:
-                resourceArray = this.appServiceClient.GetAppServices(WebAppKind.FunctionAppLinux)
-                    .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
-                selectAppText = constants.SelectFunctionApp;
-                break;
-            case TargetResourceType.WindowsWebApp:
             default:
                 resourceArray = this.appServiceClient.GetAppServices(WebAppKind.WindowsApp)
                     .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
-                selectAppText = constants.SelectWebApp;    
+                selectAppText = constants.SelectWebApp;
+                placeHolderText = Messages.selectWebApp;
                 break;
         }
 
         let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
             selectAppText,
             resourceArray,
-            { placeHolder:  selectAppText == constants.SelectFunctionApp ? Messages.selectFunctionApp : Messages.selectWebApp },
+            { placeHolder:  placeHolderText },
             TelemetryKeys.WebAppListCount);
 
         this.inputs.targetResource.resource = selectedResource.data;

@@ -1,4 +1,4 @@
-import { PipelineTemplate, TargetResourceType, WizardInputs } from '../model/models';
+import { PipelineTemplate, TargetResourceType, WizardInputs, WebAppKind } from '../model/models';
 import * as fs from 'fs';
 import * as Mustache from 'mustache';
 import * as path from 'path';
@@ -71,31 +71,36 @@ const nodeTemplates: Array<PipelineTemplate> = [
         label: 'Node.js with npm to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejs.yml'),
         language: 'node',
-        targetType: TargetResourceType.WindowsWebApp
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
     },
     {
         label: 'Node.js with Gulp to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithGulp.yml'),
         language: 'node',
-        targetType: TargetResourceType.WindowsWebApp
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
     },
     {
         label: 'Node.js with Grunt to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithGrunt.yml'),
         language: 'node',
-        targetType: TargetResourceType.WindowsWebApp
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
     },
     {
         label: 'Node.js with Angular to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithAngular.yml'),
         language: 'node',
-        targetType: TargetResourceType.WindowsWebApp
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
     },
     {
         label: 'Node.js with Webpack to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithWebpack.yml'),
         language: 'node',
-        targetType: TargetResourceType.WindowsWebApp
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
     }
 ];
 
@@ -104,7 +109,8 @@ const simpleWebAppTemplates: Array<PipelineTemplate> = [
         label: 'Simple application to Windows Web App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/simpleWebApp.yml'),
         language: 'none',
-        targetType: TargetResourceType.WindowsWebApp
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
     }
 ];
 
@@ -113,12 +119,14 @@ const functionTemplates: Array<PipelineTemplate> = [
         label: 'Python Function App to Linux Azure Function',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonLinuxFunctionApp.yml'),
         language: 'python',
-        targetType: TargetResourceType.LinuxFunctionApp
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.FunctionAppLinux
     },
     {
         label: 'Node.js Function App to Windows Azure Function',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWindowsFunctionApp.yml'),
         language: 'node',
-        targetType: TargetResourceType.LinuxFunctionApp
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.FunctionApp
     },
 ]
