@@ -14,7 +14,7 @@ variables:
   functionAppName: '{{{ targetResource.resource.name }}}'
 
   # Environment name
-  environmentName: '{{ functionAppName }}'
+  environmentName: '{{ pipelineParameters.environment }}'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'

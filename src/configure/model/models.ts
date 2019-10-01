@@ -66,6 +66,7 @@ export class PipelineParameters {
     pipelineFileName: string;
     pipelineTemplate: PipelineTemplate;
     workingDirectory: string;
+    environment: string;
 }
 
 export interface GitRepositoryParameters {

@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import * as Mustache from 'mustache';
 import * as path from 'path';
 import * as Q from 'q';
-import { FileSystemError } from 'vscode';
 
 export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): Promise<PipelineTemplate[]> {
     // TO-DO: To populate the possible templates on the basis of azure target resource.
@@ -118,7 +117,7 @@ const functionTemplates: Array<PipelineTemplate> = [
     },
     {
         label: 'Node.js Function App to Windows Azure Function',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodeWindowsFunctionApp.yml'),
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWindowsFunctionApp.yml'),
         language: 'node',
         targetType: TargetResourceType.LinuxFunctionApp
     },

@@ -452,32 +452,35 @@ class PipelineConfigurer {
         this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
         
         let resourceArray: Promise<Array<{label: string, data: GenericResource}>> = null;
+        let selectAppText: string = "";
 
         switch(this.inputs.pipelineParameters.pipelineTemplate.targetType) {
             case TargetResourceType.WindowsFunctionApp:
                 resourceArray = this.appServiceClient.GetAppServices(WebAppKind.FunctionApp)
                     .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
+                selectAppText = constants.SelectFunctionApp;
                 break;
             case TargetResourceType.LinuxFunctionApp:
                 resourceArray = this.appServiceClient.GetAppServices(WebAppKind.FunctionAppLinux)
                     .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
+                selectAppText = constants.SelectFunctionApp;
                 break;
             case TargetResourceType.WindowsWebApp:
+            default:
                 resourceArray = this.appServiceClient.GetAppServices(WebAppKind.WindowsApp)
                     .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
-                break;
-
-            default:
+                selectAppText = constants.SelectWebApp;    
                 break;
         }
 
         let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
-            constants.SelectWebApp,
+            selectAppText,
             resourceArray,
-            { placeHolder: Messages.selectWebApp },
+            { placeHolder:  selectAppText == constants.SelectFunctionApp ? Messages.selectFunctionApp : Messages.selectWebApp },
             TelemetryKeys.WebAppListCount);
 
         this.inputs.targetResource.resource = selectedResource.data;
+        this.inputs.pipelineParameters.environment = selectedResource.label;
     }
 
     private async updateScmType(queuedPipeline: Build): Promise<void> {
