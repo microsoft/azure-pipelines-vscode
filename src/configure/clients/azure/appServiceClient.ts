@@ -43,14 +43,25 @@ export class AppServiceClient extends AzureResourceClient {
         return resourceList;
     }
 
-    public async getWebAppPublishXml(resourceId: string): Promise<string> {
+    public async getWebAppPublishProfileXml(resourceId: string): Promise<string> {
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
         let publishingProfileStream = await this.webSiteManagementClient.webApps.listPublishingProfileXmlWithSecrets(parsedResourceId.resourceGroup, parsedResourceId.resourceName, {});
         while (!publishingProfileStream.readable) {
             // wait for stream to be readable.
         }
 
-        return publishingProfileStream.read().toString();
+        let publishProfile = '';
+        while (true) {
+            let moreData: Buffer = publishingProfileStream.read();
+            if (moreData) {
+                publishProfile += moreData.toString();
+            }
+            else {
+                break;
+            }
+        }
+
+        return publishProfile;
     }
 
     public async getDeploymentCenterUrl(resourceId: string): Promise<string> {

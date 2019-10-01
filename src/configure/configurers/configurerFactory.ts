@@ -10,7 +10,7 @@ export class ConfigurerFactory {
             case RepositoryProvider.Github:
                 return new GitHubWorkflowConfigurer(azureSession, subscriptionId);
             case RepositoryProvider.AzureRepos:
-                return new AzurePipelineConfigurer(azureSession, subscriptionId);
+                return new AzurePipelineConfigurer(azureSession);
             default:
                 throw new Error(Messages.cannotIdentifyRespositoryDetails);
         }

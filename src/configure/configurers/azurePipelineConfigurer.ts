@@ -3,9 +3,11 @@ import Q = require('q');
 import * as utils from 'util';
 import * as vscode from 'vscode';
 import { Configurer } from "./configurerBase";
+import * as constants from '../resources/constants';
 import { AzureDevOpsClient } from "../clients/devOps/azureDevOpsClient";
+import { generateDevOpsOrganizationName } from '../helper/commonHelper';
 import { AzureDevOpsHelper } from "../helper/devOps/azureDevOpsHelper";
-import { TargetResourceType, WizardInputs, AzureSession } from "../model/models";
+import { TargetResourceType, WizardInputs, AzureSession, RepositoryProvider } from "../model/models";
 import { ServiceConnectionHelper } from '../helper/devOps/serviceConnectionHelper';
 import { Messages } from '../resources/messages';
 import { GraphHelper } from '../helper/graphHelper';
@@ -17,6 +19,7 @@ import { AzureResourceClient } from '../clients/azure/azureResourceClient';
 import { TelemetryKeys } from '../resources/telemetryKeys';
 import { Build } from '../model/azureDevOps';
 import { LocalGitRepoHelper } from '../helper/LocalGitRepoHelper';
+import { ControlProvider } from '../helper/controlProvider';
 
 const Layer = 'AzurePipelineConfigurer';
 
@@ -25,12 +28,74 @@ export class AzurePipelineConfigurer implements Configurer {
     private azureDevOpsClient: AzureDevOpsClient;
     private queuedPipeline: Build;
 
-    constructor(azureSession: AzureSession, subscriptionId: string) {
+    constructor(azureSession: AzureSession) {
         this.azureDevOpsClient = new AzureDevOpsClient(azureSession.credentials);
         this.azureDevOpsHelper = new AzureDevOpsHelper(this.azureDevOpsClient);
     }
 
-    public async validatePermissions(): Promise<any> {
+    public async getConfigurerInputs(inputs: WizardInputs): Promise<void> {
+        try {
+            if (inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
+                let repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(inputs.sourceRepository.remoteUrl);
+                inputs.organizationName = repoDetails.orgnizationName;
+                await this.azureDevOpsClient.getRepository(inputs.organizationName, repoDetails.projectName, inputs.sourceRepository.repositoryName)
+                    .then((repository) => {
+                        inputs.sourceRepository.repositoryId = repository.id;
+                        inputs.project = {
+                            id: repository.project.id,
+                            name: repository.project.name
+                        };
+                    });
+            }
+            else {
+                inputs.isNewOrganization = false;
+                let devOpsOrganizations = await this.azureDevOpsClient.listOrganizations();
+                let controlProvider = new ControlProvider();
+                if (devOpsOrganizations && devOpsOrganizations.length > 0) {
+                    let selectedOrganization = await controlProvider.showQuickPick(
+                        constants.SelectOrganization,
+                        devOpsOrganizations.map(x => { return { label: x.accountName }; }),
+                        { placeHolder: Messages.selectOrganization },
+                        TelemetryKeys.OrganizationListCount);
+                    inputs.organizationName = selectedOrganization.label;
+
+                    let selectedProject = await controlProvider.showQuickPick(
+                        constants.SelectProject,
+                        this.azureDevOpsClient.listProjects(inputs.organizationName)
+                            .then((projects) => projects.map(x => { return { label: x.name, data: x }; })),
+                        { placeHolder: Messages.selectProject },
+                        TelemetryKeys.ProjectListCount);
+                    inputs.project = selectedProject.data;
+                }
+                else {
+                    telemetryHelper.setTelemetry(TelemetryKeys.NewOrganization, 'true');
+
+                    inputs.isNewOrganization = true;
+                    let userName = inputs.azureSession.userId.substring(0, inputs.azureSession.userId.indexOf("@"));
+                    let organizationName = generateDevOpsOrganizationName(userName, inputs.sourceRepository.repositoryName);
+
+                    let validationErrorMessage = await this.azureDevOpsClient.validateOrganizationName(organizationName);
+                    if (validationErrorMessage) {
+                        inputs.organizationName = await controlProvider.showInputBox(
+                            constants.EnterOrganizationName,
+                            {
+                                placeHolder: Messages.enterAzureDevOpsOrganizationName,
+                                validateInput: (organizationName) => this.azureDevOpsClient.validateOrganizationName(organizationName)
+                            });
+                    }
+                    else {
+                        inputs.organizationName = organizationName;
+                    }
+                }
+            }
+        }
+        catch (error) {
+            telemetryHelper.logError(Layer, TracePoints.GetAzureDevOpsDetailsFailed, error);
+            throw error;
+        }
+    }
+
+    public async validatePermissions(): Promise<void> {
         throw new Error("Method not implemented.");
     }
 
@@ -56,15 +121,13 @@ export class AzurePipelineConfigurer implements Configurer {
                     throw error;
                 }
             });
-
-        throw new Error("Method not implemented.");
     }
 
-    public async getPathToPipelineFile(inputs: WizardInputs) {
+    public async getPathToPipelineFile(inputs: WizardInputs): Promise<string> {
         return path.join(inputs.sourceRepository.localPath, await LocalGitRepoHelper.GetAvailableFileName('azure-pipelines.yml', inputs.sourceRepository.localPath));
     }
 
-    public async createAndQueuePipeline(inputs: WizardInputs): Promise<any> {
+    public async createAndQueuePipeline(inputs: WizardInputs): Promise<string> {
         this.queuedPipeline = await vscode.window.withProgress<Build>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
             try {
                 let pipelineName = `${inputs.targetResource.resource.name}-${UniqueResourceNameSuffix}`;
@@ -76,7 +139,7 @@ export class AzurePipelineConfigurer implements Configurer {
             }
         });
 
-        return this.queuedPipeline;
+        return this.queuedPipeline._links.web.href;
     }
 
     public async postPipelineCreationSteps(inputs: WizardInputs, azureResourceClient: AzureResourceClient): Promise<void> {
@@ -110,7 +173,7 @@ export class AzurePipelineConfigurer implements Configurer {
                     buildDefinitionUrl,
                     buildUrl);
 
-                    Q.all([updateScmPromise, updateMetadataPromise, updateDeploymentLogPromise])
+                Q.all([updateScmPromise, updateMetadataPromise, updateDeploymentLogPromise])
                     .then(() => {
                         telemetryHelper.setTelemetry(TelemetryKeys.UpdatedWebAppMetadata, 'true');
                     })

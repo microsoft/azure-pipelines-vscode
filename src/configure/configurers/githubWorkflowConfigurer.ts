@@ -20,13 +20,17 @@ export class GitHubWorkflowConfigurer implements Configurer {
         this.appServiceClient = new AppServiceClient(azureSession.credentials, azureSession.tenantId, azureSession.environment.portalUrl, subscriptionId);
     }
 
+    public async getConfigurerInputs(inputs: WizardInputs): Promise<void> {
+        return;
+    }
+
     public async validatePermissions(): Promise<void> {
         return;
     }
 
     public async createPreRequisites(inputs: WizardInputs): Promise<void> {
         // Get publish profile for web app
-        let publishXml = await this.appServiceClient.getWebAppPublishXml(inputs.targetResource.resource.id);
+        let publishXml = await this.appServiceClient.getWebAppPublishProfileXml(inputs.targetResource.resource.id);
 
         //Copy secret and open browser window
         let copyAndOpen = await this.showCopyAndOpenNotification(inputs, publishXml);
@@ -45,7 +49,7 @@ export class GitHubWorkflowConfigurer implements Configurer {
         inputs.targetResource.serviceConnectionId = 'publishProfile';
     }
 
-    public async getPathToPipelineFile(inputs: WizardInputs) {
+    public async getPathToPipelineFile(inputs: WizardInputs): Promise<string>{
         // Create .github directory
         let workflowDirectoryPath = path.join(inputs.sourceRepository.localPath, '.github');
         if (!fs.existsSync(workflowDirectoryPath)) {
@@ -62,7 +66,7 @@ export class GitHubWorkflowConfigurer implements Configurer {
         return path.join(workflowDirectoryPath, pipelineFileName);
     }
 
-    public async createAndQueuePipeline(inputs: WizardInputs): Promise<any> {
+    public async createAndQueuePipeline(inputs: WizardInputs): Promise<string> {
         this.queuedPipelineUrl = `https://github.com/${inputs.sourceRepository.repositoryId}/commit/${inputs.sourceRepository.commitId}/checks`;
         return this.queuedPipelineUrl;
     }
@@ -72,9 +76,9 @@ export class GitHubWorkflowConfigurer implements Configurer {
     }
 
     public async browseQueuedPipeline(): Promise<void> {
-        vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
+        vscode.window.showInformationMessage(Messages.githubWorkflowSetupSuccessfully, Messages.browseWorkflow)
             .then((action: string) => {
-                if (action && action.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
+                if (action && action.toLowerCase() === Messages.browseWorkflow.toLowerCase()) {
                     telemetryHelper.setTelemetry(TelemetryKeys.BrowsePipelineClicked, 'true');
                     vscode.env.openExternal(vscode.Uri.parse(this.queuedPipelineUrl));
                 }

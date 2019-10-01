@@ -3,7 +3,6 @@ import { AppServiceClient } from './clients/azure/appServiceClient';
 import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
 import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
-import { generateDevOpsOrganizationName } from './helper/commonHelper';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
 import { Messages } from './resources/messages';
@@ -47,8 +46,8 @@ export async function configurePipeline(node: AzureTreeItem) {
                 }
             }
 
-            var configurer = new Orchestrator();
-            await configurer.configure(node);
+            var orchestrator = new Orchestrator();
+            await orchestrator.configure(node);
         }
         catch (error) {
             if (!(error instanceof UserCancelledError)) {
@@ -63,10 +62,9 @@ export async function configurePipeline(node: AzureTreeItem) {
     }, TelemetryKeys.CommandExecutionDuration);
 }
 
-export class Orchestrator {
+class Orchestrator {
     private inputs: WizardInputs;
     private localGitRepoHelper: LocalGitRepoHelper;
-    private azureDevOpsClient: AzureDevOpsClient;
     private appServiceClient: AppServiceClient;
     private workspacePath: string;
     private controlProvider: ControlProvider;
@@ -109,9 +107,7 @@ export class Orchestrator {
         }
 
         this.pipelineConfigurer = ConfigurerFactory.GetConfigurer(this.inputs.sourceRepository, this.inputs.azureSession, this.inputs.targetResource.subscriptionId);
-        if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
-            await this.getAzureDevOpsDetails();
-        }
+        await this.pipelineConfigurer.getConfigurerInputs(this.inputs);
     }
 
     private async analyzeNode(node: any): Promise<void> {
@@ -266,69 +262,6 @@ export class Orchestrator {
         }
     }
 
-    private async getAzureDevOpsDetails(): Promise<void> {
-        try {
-            this.createAzureDevOpsClient();
-            if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
-                let repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(this.inputs.sourceRepository.remoteUrl);
-                this.inputs.organizationName = repoDetails.orgnizationName;
-                await this.azureDevOpsClient.getRepository(this.inputs.organizationName, repoDetails.projectName, this.inputs.sourceRepository.repositoryName)
-                    .then((repository) => {
-                        this.inputs.sourceRepository.repositoryId = repository.id;
-                        this.inputs.project = {
-                            id: repository.project.id,
-                            name: repository.project.name
-                        };
-                    });
-            }
-            else {
-                this.inputs.isNewOrganization = false;
-                let devOpsOrganizations = await this.azureDevOpsClient.listOrganizations();
-
-                if (devOpsOrganizations && devOpsOrganizations.length > 0) {
-                    let selectedOrganization = await this.controlProvider.showQuickPick(
-                        constants.SelectOrganization,
-                        devOpsOrganizations.map(x => { return { label: x.accountName }; }),
-                        { placeHolder: Messages.selectOrganization },
-                        TelemetryKeys.OrganizationListCount);
-                    this.inputs.organizationName = selectedOrganization.label;
-
-                    let selectedProject = await this.controlProvider.showQuickPick(
-                        constants.SelectProject,
-                        this.azureDevOpsClient.listProjects(this.inputs.organizationName)
-                            .then((projects) => projects.map(x => { return { label: x.name, data: x }; })),
-                        { placeHolder: Messages.selectProject },
-                        TelemetryKeys.ProjectListCount);
-                    this.inputs.project = selectedProject.data;
-                }
-                else {
-                    telemetryHelper.setTelemetry(TelemetryKeys.NewOrganization, 'true');
-
-                    this.inputs.isNewOrganization = true;
-                    let userName = this.inputs.azureSession.userId.substring(0, this.inputs.azureSession.userId.indexOf("@"));
-                    let organizationName = generateDevOpsOrganizationName(userName, this.inputs.sourceRepository.repositoryName);
-
-                    let validationErrorMessage = await this.azureDevOpsClient.validateOrganizationName(organizationName);
-                    if (validationErrorMessage) {
-                        this.inputs.organizationName = await this.controlProvider.showInputBox(
-                            constants.EnterOrganizationName,
-                            {
-                                placeHolder: Messages.enterAzureDevOpsOrganizationName,
-                                validateInput: (organizationName) => this.azureDevOpsClient.validateOrganizationName(organizationName)
-                            });
-                    }
-                    else {
-                        this.inputs.organizationName = organizationName;
-                    }
-                }
-            }
-        }
-        catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.GetAzureDevOpsDetailsFailed, error);
-            throw error;
-        }
-    }
-
     private async getSelectedPipeline(): Promise<void> {
         let appropriatePipelines: PipelineTemplate[] = await vscode.window.withProgress(
             { location: vscode.ProgressLocation.Notification, title: Messages.analyzingRepo },
@@ -395,7 +328,11 @@ export class Orchestrator {
 
         try {
             while (!this.inputs.sourceRepository.commitId) {
-                let commitOrDiscard = await vscode.window.showInformationMessage(utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, this.inputs.sourceRepository.branch, this.inputs.sourceRepository.remoteName), Messages.commitAndPush, Messages.discardPipeline);
+                let commitOrDiscard = await vscode.window.showInformationMessage(
+                    utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, this.inputs.sourceRepository.branch, this.inputs.sourceRepository.remoteName),
+                    Messages.commitAndPush,
+                    Messages.discardPipeline);
+
                 if (commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
                     await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
                         try {
@@ -418,10 +355,6 @@ export class Orchestrator {
             telemetryHelper.logError(Layer, TracePoints.PipelineFileCheckInFailed, error);
             throw error;
         }
-    }
-
-    private createAzureDevOpsClient(): void {
-        this.azureDevOpsClient = new AzureDevOpsClient(this.inputs.azureSession.credentials);
     }
 }
 
