@@ -457,16 +457,11 @@ class PipelineConfigurer {
 
         switch(this.inputs.pipelineParameters.pipelineTemplate.targetType) {
             case TargetResourceType.WebApp:
+            default:
                 resourceArray = this.appServiceClient.GetAppServices(this.inputs.pipelineParameters.pipelineTemplate.targetKind)
                     .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
-                selectAppText = constants.SelectFunctionApp;
-                placeHolderText = Messages.selectFunctionApp;
-                break;
-            default:
-                resourceArray = this.appServiceClient.GetAppServices(WebAppKind.WindowsApp)
-                    .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
-                selectAppText = constants.SelectWebApp;
-                placeHolderText = Messages.selectWebApp;
+                selectAppText = this.getSelectAppText(this.inputs.pipelineParameters.pipelineTemplate.targetKind);
+                placeHolderText = this.getPlaceholderText(this.inputs.pipelineParameters.pipelineTemplate.targetKind);
                 break;
         }
 
@@ -478,6 +473,30 @@ class PipelineConfigurer {
 
         this.inputs.targetResource.resource = selectedResource.data;
         this.inputs.pipelineParameters.environment = selectedResource.label;
+    }
+
+    private getSelectAppText(appKind: WebAppKind) : string {
+        switch(appKind) {
+            case WebAppKind.FunctionApp:
+            case WebAppKind.FunctionAppLinux:
+                return constants.SelectFunctionApp;
+            case WebAppKind.WindowsApp:
+            case WebAppKind.LinuxApp:
+            default:
+                return constants.SelectWebApp;
+        }
+    }
+
+    private getPlaceholderText(appKind: WebAppKind) : string {
+        switch(appKind) {
+            case WebAppKind.FunctionApp:
+            case WebAppKind.FunctionAppLinux:
+                return Messages.selectFunctionApp;
+            case WebAppKind.WindowsApp:
+            case WebAppKind.LinuxApp:
+            default:
+                return Messages.selectWebApp;
+        }
     }
 
     private async updateScmType(queuedPipeline: Build): Promise<void> {
