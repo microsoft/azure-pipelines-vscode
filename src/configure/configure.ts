@@ -1,6 +1,5 @@
 const uuid = require('uuid/v4');
 import { AppServiceClient } from './clients/azure/appServiceClient';
-import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
 import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
