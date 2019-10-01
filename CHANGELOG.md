@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 
 ## 1.157.4
 ### Added
+- Added support to configure GitHub Action on Azure Linux Web App.
 - Added an option to browse the pipeline targeting Azure Resource.
+
 
 ## 1.157.3
 ### Fixed
