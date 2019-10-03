@@ -13,9 +13,6 @@ variables:
   # Web app name
   functionAppName: '{{{ targetResource.resource.name }}}'
 
-  # Environment name
-  environmentName: '{{ pipelineParameters.environment }}'
-
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
@@ -65,7 +62,7 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: $(environmentName)
+    environment: $(functionAppName)
     pool: 
       vmImage: $(vmImageName)
     strategy:

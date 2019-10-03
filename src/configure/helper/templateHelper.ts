@@ -129,4 +129,11 @@ const functionTemplates: Array<PipelineTemplate> = [
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.FunctionApp
     },
+    {
+        label: '.NET Core Function App to Windows Azure Function',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/dotnetcoreWindowsFunctionApp.yml'),
+        language: 'dotnet',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.FunctionApp
+    },
 ]

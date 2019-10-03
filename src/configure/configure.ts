@@ -472,7 +472,6 @@ class PipelineConfigurer {
             TelemetryKeys.WebAppListCount);
 
         this.inputs.targetResource.resource = selectedResource.data;
-        this.inputs.pipelineParameters.environment = selectedResource.label;
     }
 
     private getSelectAppText(appKind: WebAppKind) : string {
