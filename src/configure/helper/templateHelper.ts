@@ -139,7 +139,7 @@ let pipelineTemplates: { [key: string]: PipelineTemplate[] } =
 let githubWorklowTemplates: { [key: string]: PipelineTemplate[] } = {
     'node': [
         {
-            label: 'Node.js with npm to Windows Web App',
+            label: 'Node.js with npm to Linux Web App',
             path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/githubWorkflowTemplates/nodejs.yml'),
             language: SupportedLanguage.NODE,
             targetType: TargetResourceType.WebApp,

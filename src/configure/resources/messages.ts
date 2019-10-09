@@ -1,6 +1,7 @@
 export class Messages {
     public static acquireTokenFromRefreshTokenFailed: string = 'Acquiring token with refresh token failed. Error: %s.';
-    public static addYmlFile: string = 'Add Azure Pipelines YAML definition.';
+    public static addAzurePipelinesYmlFile: string = 'Added Azure Pipelines YAML definition.';
+    public static addGitHubWorkflowYmlFile: string = 'Added GitHub Workflow YAML definition.';
     public static analyzingRepo: string = 'Analyzing your repository';
     public static appKindIsNotSupported: string = 'App type "%s" is not yet supported.';
     public static azureAccountExntesionUnavailable: string = 'Azure-Account extension could not be fetched. Please ensure it\'s installed and activated.';

@@ -336,7 +336,7 @@ class Orchestrator {
                     await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
                         try {
                             // handle when the branch is not upto date with remote branch and push fails
-                            this.inputs.sourceRepository.commitId = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFileName, this.inputs.sourceRepository);
+                            this.inputs.sourceRepository.commitId = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFileName, this.inputs.sourceRepository, this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos ? Messages.addAzurePipelinesYmlFile : Messages.addGitHubWorkflowYmlFile);
                         }
                         catch (error) {
                             telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
