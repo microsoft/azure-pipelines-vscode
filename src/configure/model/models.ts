@@ -192,3 +192,25 @@ export interface GitBranchDetails {
     remoteName: string;
     branch: string;
 }
+
+export enum Language {
+    Any,
+    Javascript,
+    DotNetCore
+}
+
+export enum Resource {
+    WebApp,
+    FunctionApp
+}
+
+export interface ResourceDetectionModal {
+    resource: Resource;
+    settings: any;
+}
+
+export interface BuildTarget {
+    language: Language;
+    resource: Resource
+    settings: any;
+}
