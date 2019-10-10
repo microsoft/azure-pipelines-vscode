@@ -1,11 +1,9 @@
 {
-    "functionApp": [
-        {
-            "label": "Python Function App to Linux Azure Function",
-            "path": "pythonLinuxFunctionApp.yml",
-            "language": "python",
-            "targetType": "Microsoft.Web/sites",
-            "targetKind": "functionapp,linux"
-        }
-    ]
+    "pythonLinuxFunctionApp": {
+        "label": "Python Function App to Linux Azure Function",
+        "path": "pythonLinuxFunctionApp.yml",
+        "language": "python",
+        "targetType": "Microsoft.Web/sites",
+        "targetKind": "functionapp,linux"
+    }
 }

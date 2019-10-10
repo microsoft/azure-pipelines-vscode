@@ -1,0 +1,11 @@
+{
+    "functionApp": [
+        {
+            "label": ".NET Core Function App to Windows Azure Function",
+            "path": "dotnetcoreWindowsFunctionApp.yml",
+            "language": "dotnet",
+            "targetType": "Microsoft.Web/sites",
+            "targetKind": "functionapp"
+        }
+    ]
+}

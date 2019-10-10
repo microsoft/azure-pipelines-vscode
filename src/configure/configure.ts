@@ -585,7 +585,7 @@ class PipelineConfigurer {
     private async checkInPipelineFileToRepository(): Promise<void> {
         try {
             this.inputs.pipelineParameters.pipelineFileName = await this.localGitRepoHelper.addContentToFile(
-                await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs),
+                await templateHelper.renderContent(path.join(__dirname, "templates", this.inputs.pipelineParameters.pipelineTemplate.path), this.inputs),
                 await LocalGitRepoHelper.GetAvailableFileName("azure-pipelines.yml", this.inputs.sourceRepository.localPath),
                 this.inputs.sourceRepository.localPath);
             await vscode.window.showTextDocument(vscode.Uri.file(path.join(this.inputs.sourceRepository.localPath, this.inputs.pipelineParameters.pipelineFileName)));

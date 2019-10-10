@@ -51,27 +51,3 @@ const simpleWebAppTemplates: Array<PipelineTemplate> = [
         targetKind: WebAppKind.WindowsApp
     }
 ];
-
-const functionTemplates: Array<PipelineTemplate> = [
-    {
-        label: 'Python Function App to Linux Azure Function',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonLinuxFunctionApp.yml'),
-        language: 'python',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.FunctionAppLinux
-    },
-    {
-        label: 'Node.js Function App to Windows Azure Function',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWindowsFunctionApp.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.FunctionApp
-    },
-    {
-        label: '.NET Core Function App to Windows Azure Function',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/dotnetcoreWindowsFunctionApp.yml'),
-        language: 'dotnet',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.FunctionApp
-    },
-]

@@ -1,36 +1,29 @@
 import { PipelineTemplate, BuildFramework } from "../../../model/models";
-import * as path from 'path';
 import { GenericTemplateProvider } from "./GenericTemplateProvider";
 import { NodeJSDetector } from "../../buildDetector/languageDetectors/NodeJSDetector";
-import * as fs from "fs";
+import { TemplateIds } from "../../templateIds";
 
 export class NodeJSTemplateProvider extends GenericTemplateProvider {
-    
-    definitions: any;
 
     constructor() {
         super();
-        this.loadDefinitions();
+        super.loadDefinitions("node.json");
     }
 
     public getTemplates(buildFramework: BuildFramework): Array<PipelineTemplate> {
         var result: Array<PipelineTemplate> = [];
         
         if(buildFramework.buildTargets.some(a => a.type == NodeJSDetector.WellKnownTypes.WebApp)) {
-            result = result.concat(this.definitions.webApp);
+            result.push(this.definitions[TemplateIds.Node.Gulp]);
+            result.push(this.definitions[TemplateIds.Node.Grunt]);
+            result.push(this.definitions[TemplateIds.Node.Angular]);
+            result.push(this.definitions[TemplateIds.Node.Webpack]);
         }
 
         if(buildFramework.buildTargets.some(a => a.type == NodeJSDetector.WellKnownTypes.AzureFunctionApp)) {
-            result = result.concat(this.definitions.functionApp);
+            result.push(this.definitions[TemplateIds.Node.FunctionApp]);
         }
         
         return result;
-    }
-
-    private loadDefinitions() {
-        var dir = path.dirname(path.dirname(path.dirname(__dirname)));
-        var fullPath = path.join(dir, "templates", "templateDefinitions", "node.json");
-        
-        this.definitions = JSON.parse(fs.readFileSync(fullPath).toString());
     }
 }
