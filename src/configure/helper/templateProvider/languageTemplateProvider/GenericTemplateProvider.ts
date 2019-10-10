@@ -1,11 +1,15 @@
-import { BuildTarget, PipelineTemplate } from "../../../model/models";
+import { BuildTarget, PipelineTemplate, BuildFramework } from "../../../model/models";
 
 export class GenericTemplateProvider {
     constructor() {
 
     }
 
-    public getTemplates(buildTargets: Array<BuildTarget>): Array<PipelineTemplate> {
+    public getTemplates(buildFramework: BuildFramework): Array<PipelineTemplate> {
         return [];
+    }
+
+    public GetTemplate(templateId: string) {
+        
     }
 }

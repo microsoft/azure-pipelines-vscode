@@ -1,5 +1,5 @@
 import { BuildFramework } from "../model/models"
-import { JavascriptDetector } from "./buildDetector/languageDetectors/JavascriptDetector";
+import { NodeJSDetector } from "./buildDetector/languageDetectors/NodeJSDetector";
 import { PythonDetector } from "./buildDetector/languageDetectors/PythonDetector";
 
 export class WeightProvider {
@@ -31,7 +31,7 @@ export class WeightProvider {
     }
 
     private InitializeWeights() {
-        this.frameworkOrder[JavascriptDetector.id] = 2000;
+        this.frameworkOrder[NodeJSDetector.id] = 2000;
         this.frameworkOrder[PythonDetector.id] = 1800;
     }
 }

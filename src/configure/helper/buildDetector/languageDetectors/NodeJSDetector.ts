@@ -2,7 +2,7 @@ import { BuildTarget, BuildFramework } from "../../../model/models";
 import { FunctionAppDetector, FunctionApp } from "../resourceDetectors/functionAppDetector";
 import { GenericLanguageDetector } from "./GenericLanguageDetector";
 
-export class JavascriptDetector extends GenericLanguageDetector {
+export class NodeJSDetector extends GenericLanguageDetector {
     
     static WellKnownTypes = class {
         static AzureFunctionApp : string = "azurefunctionappnode";
@@ -32,7 +32,7 @@ export class JavascriptDetector extends GenericLanguageDetector {
         result = result.concat(functionAppBuildTargets);
 
         return {
-            id: JavascriptDetector.id,
+            id: NodeJSDetector.id,
             version: "",
             weight: 0,
             buildTargets: result
@@ -41,9 +41,9 @@ export class JavascriptDetector extends GenericLanguageDetector {
 
     private getDetectedWebAppBuildTargets(files: Array<string>) : Array<BuildTarget> {
         var result: Array<BuildTarget> = [];
-
+        // TODO: Distinguish between types of WebApp by gulp, grunt, Angular etc.
         result.push({
-            type: JavascriptDetector.WellKnownTypes.WebApp,
+            type: NodeJSDetector.WellKnownTypes.WebApp,
             path: "",
             settings: {} as Map<string, any>
         })
@@ -53,11 +53,11 @@ export class JavascriptDetector extends GenericLanguageDetector {
 
     private getDetectedAzureFunctionBuildTargets(files: Array<string>) : Array<BuildTarget> {
         var functionAppDetector: FunctionAppDetector = new FunctionAppDetector();
-        var detectedResourceTarget: Array<FunctionApp> = functionAppDetector.GetAzureFunctionApps(files, JavascriptDetector.id);
+        var detectedResourceTarget: Array<FunctionApp> = functionAppDetector.GetAzureFunctionApps(files, NodeJSDetector.id);
         
         var detectedBuildTargets = detectedResourceTarget.map((val) => {
             return {
-                type: JavascriptDetector.WellKnownTypes.AzureFunctionApp,
+                type: NodeJSDetector.WellKnownTypes.AzureFunctionApp,
                 path: val.hostJsonFilePath,
                 settings: {},
             } as BuildTarget

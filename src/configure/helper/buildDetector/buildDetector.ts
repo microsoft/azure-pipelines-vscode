@@ -1,10 +1,10 @@
-import { JavascriptDetector } from './languageDetectors/JavascriptDetector';
+import { NodeJSDetector } from './languageDetectors/NodeJSDetector';
 import { BuildFramework } from '../../model/models';
 import { PythonDetector } from './languageDetectors/PythonDetector';
 
 export class BuildDetector {
     buildDetector: Array<any> = [
-        new JavascriptDetector(),
+        new NodeJSDetector(),
         new PythonDetector()
     ]
 

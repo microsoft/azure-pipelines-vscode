@@ -1,0 +1,48 @@
+{
+    "webApp": [
+        {
+            "label": "Node.js with npm to Windows Web App",
+            "path": "nodejs.yml",
+            "language": "node",
+            "targetType": "Microsoft.Web/sites",
+            "targetKind": "webapp"
+        },
+        {
+            "label": "Node.js with Gulp to Windows Web App",
+            "path": "nodejsWithGulp.yml",
+            "language": "node",
+            "targetType": "Microsoft.Web/sites",
+            "targetKind": "webapp"
+        },
+        {
+            "label": "Node.js with Grunt to Windows Web App",
+            "path": "nodejsWithGrunt.yml",
+            "language": "node",
+            "targetType": "Microsoft.Web/sites",
+            "targetKind": "webapp"
+        },
+        {
+            "label": "Node.js with Angular to Windows Web App",
+            "path": "nodejsWithAngular.yml",
+            "language": "node",
+            "targetType": "Microsoft.Web/sites",
+            "targetKind": "webapp"
+        },
+        {
+            "label": "Node.js with Webpack to Windows Web App",
+            "path": "nodejsWithWebpack.yml",
+            "language": "node",
+            "targetType": "Microsoft.Web/sites",
+            "targetKind": "webapp"
+        }
+    ],
+    "functionApp": [
+        {
+            "label": "Node.js Function App to Windows Azure Function",
+            "path": "nodejsWindowsFunctionApp.yml",
+            "language": "node",
+            "targetType": "Microsoft.Web/sites",
+            "targetKind": "functionapp"
+        }
+    ]
+}

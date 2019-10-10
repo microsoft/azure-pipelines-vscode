@@ -1,8 +1,8 @@
 import { PipelineTemplate, BuildFramework } from "../../model/models";
-import { JavascriptTemplateProvider } from "./languageTemplateProvider/JavascriptTemplateProvider";
+import { NodeJSTemplateProvider } from "./languageTemplateProvider/NodeJSTemplateProvider";
 import { GenericTemplateProvider } from "./languageTemplateProvider/GenericTemplateProvider";
 import { PythonTemplateProvider } from "./languageTemplateProvider/PythonTemplateProvider";
-import { JavascriptDetector } from "../buildDetector/languageDetectors/JavascriptDetector";
+import { NodeJSDetector } from "../buildDetector/languageDetectors/NodeJSDetector";
 import { PythonDetector } from "../buildDetector/languageDetectors/PythonDetector";
 
 export class TemplateProvider {
@@ -16,7 +16,7 @@ export class TemplateProvider {
 
         for(var i = 0; i < buildFrameworks.length; i++) {
             var provider = this.getTemplateProvider(buildFrameworks[i].id);
-            templateList = templateList.concat(provider.getTemplates(buildFrameworks[i].buildTargets));    
+            templateList = templateList.concat(provider.getTemplates(buildFrameworks[i]));    
         }
 
         return templateList;
@@ -24,8 +24,8 @@ export class TemplateProvider {
 
     public getTemplateProvider(buildFramework: string) {
         switch(buildFramework) {
-            case JavascriptDetector.id:
-                return new JavascriptTemplateProvider();
+            case NodeJSDetector.id:
+                return new NodeJSTemplateProvider();
             case PythonDetector.id:
                 return new PythonTemplateProvider();
             default:
