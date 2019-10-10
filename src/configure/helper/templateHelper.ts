@@ -1,4 +1,4 @@
-import { PipelineTemplate, TargetResourceType, WizardInputs, WebAppKind, BuildTarget } from '../model/models';
+import { PipelineTemplate, TargetResourceType, WizardInputs, WebAppKind, BuildFramework } from '../model/models';
 import * as fs from 'fs';
 import * as Mustache from 'mustache';
 import * as path from 'path';
@@ -6,17 +6,20 @@ import * as Q from 'q';
 import { BuildDetector } from './buildDetector/buildDetector';
 import { TemplateProvider } from './templateProvider/templateProvider';
 import { WeightProvider } from './weightProvider';
+import { TreeAnalysisHelper } from './treeAnalysisHelper';
 
 export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): Promise<PipelineTemplate[]> {
     // TO-DO: To populate the possible templates on the basis of azure target resource.
     let templateList = simpleWebAppTemplates;
-    let analysisResult = await analyzeRepo(repoPath);
+
+    var treeAnalyser: TreeAnalysisHelper = new TreeAnalysisHelper(repoPath);
+    let analysisResult = await treeAnalyser.analyseRepo();
 
     var detector: BuildDetector = new BuildDetector();
     var templateProvider : TemplateProvider = new TemplateProvider();
     var weightProvider: WeightProvider = new WeightProvider();
 
-    var detectedTargets: Array<BuildTarget> = detector.getDetectedBuildTargets(analysisResult);
+    var detectedTargets: Array<BuildFramework> = detector.getDetectedBuildFrameworks(analysisResult);
     detectedTargets = weightProvider.AssignAndSortByWeights(detectedTargets);
 
     templateList = templateList.concat(templateProvider.getTemplatesForBuildTargets(detectedTargets));
@@ -38,66 +41,6 @@ export async function renderContent(templateFilePath: string, context: WizardInp
 
     return deferred.promise;
 }
-
-async function analyzeRepo(repoPath: string): Promise<string[]> {
-    let deferred: Q.Deferred<string[]> = Q.defer();
-    fs.readdir(repoPath, (err, files: string[]) => {
-        deferred.resolve(files);
-    });
-    return deferred.promise;
-}
-
-function isNodeRepo(files: string[]): boolean {
-    let nodeFilesRegex = '\\.ts$|\\.js$|package\\.json$|node_modules';
-    return files.some((file) => {
-        let result = new RegExp(nodeFilesRegex).test(file.toLowerCase());
-        return result;
-    });
-}
-
-function isFunctionApp(files: string[]): boolean {
-    return files.some((file) => {
-        return file.toLowerCase().endsWith("host.json");
-    });   
-}
-
-const nodeTemplates: Array<PipelineTemplate> = [
-    {
-        label: 'Node.js with npm to Windows Web App',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejs.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.WindowsApp
-    },
-    {
-        label: 'Node.js with Gulp to Windows Web App',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithGulp.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.WindowsApp
-    },
-    {
-        label: 'Node.js with Grunt to Windows Web App',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithGrunt.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.WindowsApp
-    },
-    {
-        label: 'Node.js with Angular to Windows Web App',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithAngular.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.WindowsApp
-    },
-    {
-        label: 'Node.js with Webpack to Windows Web App',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWithWebpack.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.WindowsApp
-    }
-];
 
 const simpleWebAppTemplates: Array<PipelineTemplate> = [
     {

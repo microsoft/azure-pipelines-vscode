@@ -1,6 +1,7 @@
-import { BuildTarget, PipelineTemplate, Language, Resource, TargetResourceType, WebAppKind } from "../../../model/models";
+import { BuildTarget, PipelineTemplate, TargetResourceType, WebAppKind } from "../../../model/models";
 import * as path from 'path';
 import { GenericTemplateProvider } from "./GenericTemplateProvider";
+import { JavascriptDetector } from "../../buildDetector/languageDetectors/JavascriptDetector";
 
 export class JavascriptTemplateProvider extends GenericTemplateProvider {
     nodeFunctionAppTemplates = [
@@ -58,11 +59,12 @@ export class JavascriptTemplateProvider extends GenericTemplateProvider {
     public getTemplates(buildTargets: Array<BuildTarget>): Array<PipelineTemplate> {
         var result: Array<PipelineTemplate> = [];
         
-        if(buildTargets.some(a => a.language == Language.Javascript)) {
+        if(buildTargets.some(a => a.type == JavascriptDetector.WellKnownTypes.WebApp)) {
             result = result.concat(this.nodeWebAppTemplate);
-            if(buildTargets.some(a => a.resource == Resource.FunctionApp)) {
-                result = result.concat(this.nodeFunctionAppTemplates);
-            }
+        }
+
+        if(buildTargets.some(a => a.type == JavascriptDetector.WellKnownTypes.AzureFunctionApp)) {
+            result = result.concat(this.nodeFunctionAppTemplates);
         }
         
         return result;

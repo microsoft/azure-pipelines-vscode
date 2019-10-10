@@ -1,11 +1,11 @@
-import { BuildTarget } from "../../../model/models";
+import { BuildFramework } from "../../../model/models";
 
 export class GenericLanguageDetector {
     constructor() {
         
     }
 
-    public getDetectedBuildTargets(files: Array<string>): Array<BuildTarget> {
-        return [];
+    public getDetectedBuildFramework(files: Array<string>): BuildFramework {
+        return null;
     }
 }

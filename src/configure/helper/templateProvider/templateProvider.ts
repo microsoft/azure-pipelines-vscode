@@ -1,7 +1,9 @@
-import { BuildTarget, Language, PipelineTemplate } from "../../model/models";
+import { PipelineTemplate, BuildFramework } from "../../model/models";
 import { JavascriptTemplateProvider } from "./languageTemplateProvider/JavascriptTemplateProvider";
 import { GenericTemplateProvider } from "./languageTemplateProvider/GenericTemplateProvider";
 import { PythonTemplateProvider } from "./languageTemplateProvider/PythonTemplateProvider";
+import { JavascriptDetector } from "../buildDetector/languageDetectors/JavascriptDetector";
+import { PythonDetector } from "../buildDetector/languageDetectors/PythonDetector";
 
 export class TemplateProvider {
 
@@ -9,22 +11,22 @@ export class TemplateProvider {
 
     }
 
-    public getTemplatesForBuildTargets(buildTargets: Array<BuildTarget>): Array<PipelineTemplate> {
+    public getTemplatesForBuildTargets(buildFrameworks: Array<BuildFramework>): Array<PipelineTemplate> {
         var templateList: Array<PipelineTemplate> = [];
 
-        for(var i = 0; i < buildTargets.length; i++) {
-            var provider = this.getTemplateProvider(buildTargets[i].language);
-            templateList = templateList.concat(provider.getTemplates(buildTargets));    
+        for(var i = 0; i < buildFrameworks.length; i++) {
+            var provider = this.getTemplateProvider(buildFrameworks[i].id);
+            templateList = templateList.concat(provider.getTemplates(buildFrameworks[i].buildTargets));    
         }
 
         return templateList;
     }
 
-    public getTemplateProvider(lang: Language) {
-        switch(lang) {
-            case Language.Javascript:
+    public getTemplateProvider(buildFramework: string) {
+        switch(buildFramework) {
+            case JavascriptDetector.id:
                 return new JavascriptTemplateProvider();
-            case Language.Python:
+            case PythonDetector.id:
                 return new PythonTemplateProvider();
             default:
                 return new GenericTemplateProvider();

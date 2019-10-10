@@ -1,37 +1,37 @@
-import { Language, BuildTarget } from "../model/models"
+import { BuildFramework } from "../model/models"
+import { JavascriptDetector } from "./buildDetector/languageDetectors/JavascriptDetector";
+import { PythonDetector } from "./buildDetector/languageDetectors/PythonDetector";
 
 export class WeightProvider {
-    frameworkOrder: Map<Language, number>;
+    frameworkOrder: Map<string, number> = {} as Map<string, number>;
 
     constructor() {
         this.InitializeWeights();
     }
 
-    public AssignAndSortByWeights(buildTargets: Array<BuildTarget>): Array<BuildTarget> {
-        var _buildTargets = this.AssignWeights(buildTargets);
-        _buildTargets.sort((a, b) => {
+    public AssignAndSortByWeights(buildFramework: Array<BuildFramework>): Array<BuildFramework> {
+        var _buildFramework = this.AssignWeights(buildFramework);
+        _buildFramework.sort((a, b) => {
             return a.weight - b.weight;
         });
-        return _buildTargets;
+        return _buildFramework;
     }
 
-    public AssignWeights(buildTargets : Array<BuildTarget>) : Array<BuildTarget>  {
+    public AssignWeights(buildFramework : Array<BuildFramework>) : Array<BuildFramework>  {
         
-        for(var i = 0; i < buildTargets.length; i++) {
-            buildTargets[i].weight = this.GetWeight(buildTargets[i]);
+        for(var i = 0; i < buildFramework.length; i++) {
+            buildFramework[i].weight = this.GetWeight(buildFramework[i]);
         }
 
-        return buildTargets;
+        return buildFramework;
     }
 
-    private GetWeight(buildTarget: BuildTarget) : number {
-        return this.frameworkOrder[buildTarget.language];
+    private GetWeight(buildFramework: BuildFramework) : number {
+        return this.frameworkOrder[buildFramework.id];
     }
 
     private InitializeWeights() {
-        this.frameworkOrder[Language.Javascript] = 2000;
-        this.frameworkOrder[Language.DotNetCore] = 1900;
-        this.frameworkOrder[Language.Python] = 1800;
-        this.frameworkOrder[Language.Any] = 1700;
+        this.frameworkOrder[JavascriptDetector.id] = 2000;
+        this.frameworkOrder[PythonDetector.id] = 1800;
     }
 }

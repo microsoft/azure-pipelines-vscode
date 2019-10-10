@@ -1,61 +1,49 @@
-import { ResourceDetectionModal, Language, Resource } from "../../../model/models";
 import * as path from 'path';
 
 
 export class FunctionAppDetector {
-    id: Resource = Resource.FunctionApp;
 
     constructor() {
 
     }
 
-    public TryDetect(files: Array<string>, language: Language): FunctionAppDetectionModal {
-        if(language == Language.DotNetCore) {
-            return this.TryDetectDotNetCoreFunctionApp(files);
+    public GetAzureFunctionApps(files: Array<string>, language: string): Array<FunctionApp> {
+        if(language == 'dotnetcore') {
+            return this.GetAzureFunctionAppsForDotNetCore(files);
         } 
 
-        return this.TryDetectAny(files);
+        return this.GetAzureFunctionAppsAny(files);
     }
 
-    public TryDetectAny(files: Array<string>): FunctionAppDetectionModal {
+    public GetAzureFunctionAppsAny(files: Array<string>): Array<FunctionApp> {
 
-        var result: FunctionAppDetectionModal = null;
-
-        var hostJsonFiles = files.filter((val) => { val.endsWith("host.json") });
-        var functionJsonFiles = files.filter((val) => { val.endsWith("function.json") });
+        var hostJsonFiles = files.filter((val) => { return val.endsWith("host.json") });
+        var functionJsonFiles = files.filter((val) => { return val.endsWith("function.json") });
         var functionAppObjects: Array<FunctionApp> = [];
 
         for(var i = 0; i < hostJsonFiles.length; i++) {
             var hostJsonDirectory = path.dirname(hostJsonFiles[i]);
-            var functionJsonFilesForSpecificHostJson = functionJsonFiles.filter((val) => val.indexOf(hostJsonDirectory) != -1);
-            if(functionJsonFilesForSpecificHostJson.length == 0) continue;
+            var functionJsonFilesForSpecificHostJson = functionJsonFiles.filter((val) => { return val.indexOf(hostJsonDirectory) != -1; });
+            
+            if(functionJsonFilesForSpecificHostJson.length == 0) {
+                continue;
+            }
+
             var functionAppObject: FunctionApp = {
                 hostJsonFilePath : hostJsonFiles[i],
                 functionJsonFilePaths: functionJsonFilesForSpecificHostJson
             }
             functionAppObjects.push(functionAppObject);
         }   
-
-        result = {
-            resource: this.id,
-            settings: {},
-            functionApps: functionAppObjects
-        };
-
-        return result;
+        return functionAppObjects;
     }
 
-    public TryDetectDotNetCoreFunctionApp(files: Array<string>): FunctionAppDetectionModal {
-
-        return {} as FunctionAppDetectionModal;
+    public GetAzureFunctionAppsForDotNetCore(files: Array<string>): Array<FunctionApp> {
+        return [];
     }
 }
 
-export interface FunctionAppDetectionModal extends ResourceDetectionModal {
-    functionApps: Array<FunctionApp>;
-}
-
-interface FunctionApp {
+export interface FunctionApp {
     hostJsonFilePath: string;
     functionJsonFilePaths: Array<string>;
 }

@@ -1,5 +1,5 @@
 import { JavascriptDetector } from './languageDetectors/JavascriptDetector';
-import { BuildTarget } from '../../model/models';
+import { BuildFramework } from '../../model/models';
 import { PythonDetector } from './languageDetectors/PythonDetector';
 
 export class BuildDetector {
@@ -12,12 +12,14 @@ export class BuildDetector {
 
     }
 
-    public getDetectedBuildTargets(files: any) : Array<BuildTarget> {
-        var result: Array<BuildTarget> = [];
+    public getDetectedBuildFrameworks(files: any) : Array<BuildFramework> {
+        var result: Array<BuildFramework> = [];
         
         for(var i = 0; i < this.buildDetector.length; i++) {
-            var detectedBuildTargets = this.buildDetector[i].getDetectedBuildTargets(files); 
-            result = result.concat(detectedBuildTargets);
+            var detectedBuildFramework = this.buildDetector[i].getDetectedBuildFramework(files); 
+            if(!!detectedBuildFramework) {
+                result = result.concat(detectedBuildFramework);
+            }
         }
 
         return result;
