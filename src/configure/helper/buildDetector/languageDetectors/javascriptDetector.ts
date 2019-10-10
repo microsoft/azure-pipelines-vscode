@@ -1,7 +1,6 @@
 import { BuildTarget, Language, Resource } from "../../../model/models";
 import { FunctionAppDetector } from "../resourceDetectors/functionAppDetector";
 import { GenericLanguageDetector } from "./GenericLanguageDetector";
-import { BindOptions } from "dgram";
 
 export class JavascriptDetector extends GenericLanguageDetector {
     id: Language = Language.Javascript;

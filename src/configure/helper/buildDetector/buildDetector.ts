@@ -1,9 +1,11 @@
 import { JavascriptDetector } from './languageDetectors/JavascriptDetector';
 import { BuildTarget } from '../../model/models';
+import { PythonDetector } from './languageDetectors/PythonDetector';
 
 export class BuildDetector {
     buildDetector: Array<any> = [
-        new JavascriptDetector()
+        new JavascriptDetector(),
+        new PythonDetector()
     ]
 
     constructor() {

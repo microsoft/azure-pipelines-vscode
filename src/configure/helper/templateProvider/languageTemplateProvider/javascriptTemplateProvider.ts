@@ -3,13 +3,15 @@ import * as path from 'path';
 import { GenericTemplateProvider } from "./GenericTemplateProvider";
 
 export class JavascriptTemplateProvider extends GenericTemplateProvider {
-    nodeFunctionAppTemplate = {
-        label: 'Node.js Function App to Windows Azure Function',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWindowsFunctionApp.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.FunctionApp
-    };
+    nodeFunctionAppTemplates = [
+        {
+            label: 'Node.js Function App to Windows Azure Function',
+            path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWindowsFunctionApp.yml'),
+            language: 'node',
+            targetType: TargetResourceType.WebApp,
+            targetKind: WebAppKind.FunctionApp
+        }
+    ];
 
     nodeWebAppTemplate = [
         {
@@ -59,7 +61,7 @@ export class JavascriptTemplateProvider extends GenericTemplateProvider {
         if(buildTargets.some(a => a.language == Language.Javascript)) {
             result = result.concat(this.nodeWebAppTemplate);
             if(buildTargets.some(a => a.resource == Resource.FunctionApp)) {
-                result.push(this.nodeFunctionAppTemplate);
+                result = result.concat(this.nodeFunctionAppTemplates);
             }
         }
         

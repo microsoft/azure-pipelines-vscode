@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as Q from 'q';
 import { BuildDetector } from './buildDetector/buildDetector';
 import { TemplateProvider } from './templateProvider/templateProvider';
+import { WeightProvider } from './weightProvider';
 
 export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): Promise<PipelineTemplate[]> {
     // TO-DO: To populate the possible templates on the basis of azure target resource.
@@ -13,7 +14,11 @@ export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): P
 
     var detector: BuildDetector = new BuildDetector();
     var templateProvider : TemplateProvider = new TemplateProvider();
+    var weightProvider: WeightProvider = new WeightProvider();
+
     var detectedTargets: Array<BuildTarget> = detector.getDetectedBuildTargets(analysisResult);
+    detectedTargets = weightProvider.AssignAndSortByWeights(detectedTargets);
+
     templateList = templateList.concat(templateProvider.getTemplatesForBuildTargets(detectedTargets));
     // add all possible templates as we could not detect the appropriate onesı
     return templateList;

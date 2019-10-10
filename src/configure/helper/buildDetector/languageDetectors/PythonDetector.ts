@@ -11,9 +11,9 @@ export class PythonDetector extends GenericLanguageDetector {
 
 
     public getDetectedBuildTargets(files: Array<string>): Array<BuildTarget> {
-        // 1. Check if node
-        // 2. Check if node function app
-        // 3. Check if node AKS
+        // 1. Check if python
+        // 2. Check if python function app
+        // 3. Check if python AKS
 
         if(files.filter(a => {
                 return a.endsWith('.py')

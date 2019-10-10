@@ -214,4 +214,5 @@ export interface BuildTarget {
     language: Language;
     resource: Resource
     settings: any;
+    weight: number;
 }

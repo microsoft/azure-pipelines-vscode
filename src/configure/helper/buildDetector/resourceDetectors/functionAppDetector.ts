@@ -1,4 +1,5 @@
 import { ResourceDetectionModal, Language, Resource } from "../../../model/models";
+import * as path from 'path';
 
 
 export class FunctionAppDetector {
@@ -8,7 +9,7 @@ export class FunctionAppDetector {
 
     }
 
-    public TryDetect(files: Array<string>, language: Language): ResourceDetectionModal {
+    public TryDetect(files: Array<string>, language: Language): FunctionAppDetectionModal {
         if(language == Language.DotNetCore) {
             return this.TryDetectDotNetCoreFunctionApp(files);
         } 
@@ -16,22 +17,45 @@ export class FunctionAppDetector {
         return this.TryDetectAny(files);
     }
 
-    public TryDetectAny(files: Array<string>): ResourceDetectionModal {
+    public TryDetectAny(files: Array<string>): FunctionAppDetectionModal {
 
-        var result: ResourceDetectionModal = null;
+        var result: FunctionAppDetectionModal = null;
 
-        if(files.some(a => a.toLowerCase() == "host.json") && files.some(a => a.toLowerCase() == "function.json")) {
-            result = {
-                resource: this.id,
-                settings: {}
-            } as ResourceDetectionModal;    
-        }
+        var hostJsonFiles = files.filter((val) => { val.endsWith("host.json") });
+        var functionJsonFiles = files.filter((val) => { val.endsWith("function.json") });
+        var functionAppObjects: Array<FunctionApp> = [];
+
+        for(var i = 0; i < hostJsonFiles.length; i++) {
+            var hostJsonDirectory = path.dirname(hostJsonFiles[i]);
+            var functionJsonFilesForSpecificHostJson = functionJsonFiles.filter((val) => val.indexOf(hostJsonDirectory) != -1);
+            if(functionJsonFilesForSpecificHostJson.length == 0) continue;
+            var functionAppObject: FunctionApp = {
+                hostJsonFilePath : hostJsonFiles[i],
+                functionJsonFilePaths: functionJsonFilesForSpecificHostJson
+            }
+            functionAppObjects.push(functionAppObject);
+        }   
+
+        result = {
+            resource: this.id,
+            settings: {},
+            functionApps: functionAppObjects
+        };
 
         return result;
     }
 
-    public TryDetectDotNetCoreFunctionApp(files: Array<string>): ResourceDetectionModal {
+    public TryDetectDotNetCoreFunctionApp(files: Array<string>): FunctionAppDetectionModal {
 
-        return {} as ResourceDetectionModal;
+        return {} as FunctionAppDetectionModal;
     }
+}
+
+export interface FunctionAppDetectionModal extends ResourceDetectionModal {
+    functionApps: Array<FunctionApp>;
+}
+
+interface FunctionApp {
+    hostJsonFilePath: string;
+    functionJsonFilePaths: Array<string>;
 }
