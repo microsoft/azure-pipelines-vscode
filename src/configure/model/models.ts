@@ -196,6 +196,7 @@ export interface GitBranchDetails {
 export enum Language {
     Any,
     Javascript,
+    Python,
     DotNetCore
 }
 

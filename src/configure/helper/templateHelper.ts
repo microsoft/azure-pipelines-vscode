@@ -1,24 +1,20 @@
-import { PipelineTemplate, TargetResourceType, WizardInputs, WebAppKind } from '../model/models';
+import { PipelineTemplate, TargetResourceType, WizardInputs, WebAppKind, BuildTarget } from '../model/models';
 import * as fs from 'fs';
 import * as Mustache from 'mustache';
 import * as path from 'path';
 import * as Q from 'q';
+import { BuildDetector } from './buildDetector/buildDetector';
+import { TemplateProvider } from './templateProvider/templateProvider';
 
 export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): Promise<PipelineTemplate[]> {
     // TO-DO: To populate the possible templates on the basis of azure target resource.
     let templateList = simpleWebAppTemplates;
     let analysisResult = await analyzeRepo(repoPath);
 
-
-    if (analysisResult.isNodeApplication) {
-        // add all node application templates
-        templateList = nodeTemplates.concat(templateList);
-    }
-
-    if (analysisResult.isFunctionApplication) {
-        templateList = functionTemplates.concat(templateList);
-    }
-
+    var detector: BuildDetector = new BuildDetector();
+    var templateProvider : TemplateProvider = new TemplateProvider();
+    var detectedTargets: Array<BuildTarget> = detector.getDetectedBuildTargets(analysisResult);
+    templateList = templateList.concat(templateProvider.getTemplatesForBuildTargets(detectedTargets));
     // add all possible templates as we could not detect the appropriate onesı
     return templateList;
 }
@@ -38,17 +34,11 @@ export async function renderContent(templateFilePath: string, context: WizardInp
     return deferred.promise;
 }
 
-async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boolean, isFunctionApplication: boolean }> {
-    let deferred: Q.Deferred<{ isNodeApplication: boolean, isFunctionApplication: boolean }> = Q.defer();
+async function analyzeRepo(repoPath: string): Promise<string[]> {
+    let deferred: Q.Deferred<string[]> = Q.defer();
     fs.readdir(repoPath, (err, files: string[]) => {
-        let result = {
-            isNodeApplication: err ? true : isNodeRepo(files),
-            isFunctionApplication: err ? true : isFunctionApp(files)
-            // isContainerApplication: isDockerRepo(files)
-        };
-        deferred.resolve(result);
+        deferred.resolve(files);
     });
-
     return deferred.promise;
 }
 

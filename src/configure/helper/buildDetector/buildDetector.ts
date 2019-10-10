@@ -1,4 +1,4 @@
-import { JavascriptDetector } from './languageDetectors/javascriptDetector';
+import { JavascriptDetector } from './languageDetectors/JavascriptDetector';
 import { BuildTarget } from '../../model/models';
 
 export class BuildDetector {
@@ -14,7 +14,8 @@ export class BuildDetector {
         var result: Array<BuildTarget> = [];
         
         for(var i = 0; i < this.buildDetector.length; i++) {
-            result.concat(this.buildDetector[i].getDetectedBuildTargets(files));
+            var detectedBuildTargets = this.buildDetector[i].getDetectedBuildTargets(files); 
+            result = result.concat(detectedBuildTargets);
         }
 
         return result;

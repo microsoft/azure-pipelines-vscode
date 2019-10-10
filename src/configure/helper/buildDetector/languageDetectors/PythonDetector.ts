@@ -1,14 +1,14 @@
-import { BuildTarget, Language, Resource } from "../../../model/models";
-import { FunctionAppDetector } from "../resourceDetectors/functionAppDetector";
 import { GenericLanguageDetector } from "./GenericLanguageDetector";
-import { BindOptions } from "dgram";
+import { Language, Resource, BuildTarget } from "../../../model/models";
+import { FunctionAppDetector } from "../resourceDetectors/functionAppDetector";
 
-export class JavascriptDetector extends GenericLanguageDetector {
-    id: Language = Language.Javascript;
+export class PythonDetector extends GenericLanguageDetector {
+    id: Language = Language.Python;
 
     constructor() {
         super();
     }
+
 
     public getDetectedBuildTargets(files: Array<string>): Array<BuildTarget> {
         // 1. Check if node
@@ -16,22 +16,22 @@ export class JavascriptDetector extends GenericLanguageDetector {
         // 3. Check if node AKS
 
         if(files.filter(a => {
-                return a.endsWith('.js') || a.endsWith('.ts') || a.toLowerCase() == "package.json";
+                return a.endsWith('.py')
             }).length == 0) {
             return Array<BuildTarget>();
         }
 
         var result: Array<BuildTarget> = [];
 
-        // Since there are javascript files, it could be a webapp
+        // Since there are python files, it could be a webapp
         result.push({
-            language: Language.Javascript,
+            language: Language.Python,
             resource: Resource.WebApp,
             settings: {}
         } as BuildTarget);
 
         var functionAppDetector: FunctionAppDetector = new FunctionAppDetector();
-        var detectedResourceTarget = functionAppDetector.TryDetect(files, Language.Javascript);
+        var detectedResourceTarget = functionAppDetector.TryDetect(files, Language.Python);
 
         if(detectedResourceTarget != null) {
             var buildTarget: BuildTarget = {
