@@ -40,7 +40,7 @@ export class Messages {
     public static resourceTypeIsNotSupported: string = '"%s" resources are not yet supported for configuring pipelines.';
     public static selectFolderLabel: string = 'Select source folder for configuring pipeline';
     public static selectOrganization: string = 'Select an Azure DevOps organization';
-    public static selectPipelineTemplate: string = 'Select an Azure Pipelines template...';
+    public static selectPipelineTemplate: string = 'Select a pipelines template...';
     public static selectProject: string = 'Select an Azure DevOps project';
     public static selectRemoteForBranch: string = 'Select the remote repository where you want to track your current branch';
     public static selectSubscription: string = 'Select an Azure subscription';

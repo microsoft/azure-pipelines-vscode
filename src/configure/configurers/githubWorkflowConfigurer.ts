@@ -33,6 +33,7 @@ export class GitHubWorkflowConfigurer implements Configurer {
         let publishXml = await this.appServiceClient.getWebAppPublishProfileXml(inputs.targetResource.resource.id);
 
         //Copy secret and open browser window
+        inputs.targetResource.serviceConnectionId = 'publishProfile';
         let copyAndOpen = await this.showCopyAndOpenNotification(inputs, publishXml);
 
         if (copyAndOpen === Messages.copyAndOpenLabel) {
@@ -45,8 +46,6 @@ export class GitHubWorkflowConfigurer implements Configurer {
                 }
             }
         }
-
-        inputs.targetResource.serviceConnectionId = 'publishProfile';
     }
 
     public async getPathToPipelineFile(inputs: WizardInputs): Promise<string>{
