@@ -203,4 +203,5 @@ export interface BuildFramework {
     version: string;
     weight: number;
     buildTargets: Array<BuildTarget>;
+    settings: Map<string, any>;
 }

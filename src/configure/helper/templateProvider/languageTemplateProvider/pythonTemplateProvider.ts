@@ -14,7 +14,16 @@ export class PythonTemplateProvider extends GenericTemplateProvider {
         var result: Array<PipelineTemplate> = [];
         
         if(buildFramework.buildTargets.some(a => a.type == PythonDetector.WellKnownTypes.WebApp)) {
-            // TODO:
+            let pythonBuildTargets = buildFramework.buildTargets.filter((val) => {return val.type == PythonDetector.WellKnownTypes.WebApp});
+            if(pythonBuildTargets.some((val) => { return val.settings[PythonDetector.Settings.WebFramework] == PythonDetector.WebFrameworks.Django})) {
+                result.push(this.definitions[TemplateIds.Python.DjangoWebApp]);
+            }
+            if(pythonBuildTargets.some((val) => { return val.settings[PythonDetector.Settings.WebFramework] == PythonDetector.WebFrameworks.Bottle})) {
+                result.push(this.definitions[TemplateIds.Python.Bottle]);
+            }
+            if(pythonBuildTargets.some((val) => { return val.settings[PythonDetector.Settings.WebFramework] == PythonDetector.WebFrameworks.Flask})) {
+                result.push(this.definitions[TemplateIds.Python.Flask]);
+            }
         }
 
         if(buildFramework.buildTargets.some(a => a.type == PythonDetector.WellKnownTypes.AzureFunctionApp)) {
