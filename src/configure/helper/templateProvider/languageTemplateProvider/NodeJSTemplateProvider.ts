@@ -14,8 +14,19 @@ export class NodeJSTemplateProvider extends GenericTemplateProvider {
         var result: Array<PipelineTemplate> = [];
         
         if(buildFramework.buildTargets.some(a => a.type == NodeJSDetector.WellKnownTypes.WebApp)) {
-            result.push(this.definitions[TemplateIds.Node.Gulp]);
-            result.push(this.definitions[TemplateIds.Node.Grunt]);
+            let nodeWebApps = buildFramework.buildTargets.filter((target) => {
+                return target.type == NodeJSDetector.WellKnownTypes.WebApp;
+            })
+
+            for(let webapp of nodeWebApps) {
+                if(webapp.settings[NodeJSDetector.Settings.WebFramework] == NodeJSDetector.WebFrameworks.Gulp) {
+                    result.push(this.definitions[TemplateIds.Node.Gulp]);
+                }
+                
+                if(webapp.settings[NodeJSDetector.Settings.WebFramework] == NodeJSDetector.WebFrameworks.Grunt) {
+                    result.push(this.definitions[TemplateIds.Node.Grunt]);
+                }
+            }
             result.push(this.definitions[TemplateIds.Node.Angular]);
             result.push(this.definitions[TemplateIds.Node.Webpack]);
         }

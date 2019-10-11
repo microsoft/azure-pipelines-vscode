@@ -15,7 +15,7 @@ export class PythonRequirementsParser {
             return null;
         }
         var fileContent: Array<string> = fs.readFileSync(this.requirementsFilePath).toString().split('\n');
-        for(var [key, line] of fileContent.entries()) {
+        for(var line in fileContent.entries()) {
             let _line = line.trim();
             let packageName = this.TryGetPackageName(_line);
             if(!!packageName) {

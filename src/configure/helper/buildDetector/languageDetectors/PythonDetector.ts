@@ -33,7 +33,7 @@ export class PythonDetector extends GenericLanguageDetector {
 
 
     public getDetectedBuildFramework(files: Array<string>): BuildFramework {
-        
+
         if(!this.LooksLikePython(files)) {
             return null;
         }
@@ -54,12 +54,6 @@ export class PythonDetector extends GenericLanguageDetector {
 
     private getDetectedWebAppBuildTargets(files: Array<string>): Array<BuildTarget> {
         var result: Array<BuildTarget> = [];
-
-        result.push({
-            type: PythonDetector.WellKnownTypes.WebApp,
-            path: "",
-            settings: {} as Map<string, any>
-        })
 
         if(this.LooksLikeDjango(files)) {
             var settings: Map<string, any> = {} as Map<string, any>;

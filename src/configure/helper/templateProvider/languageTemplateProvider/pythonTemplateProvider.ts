@@ -16,13 +16,13 @@ export class PythonTemplateProvider extends GenericTemplateProvider {
         if(buildFramework.buildTargets.some(a => a.type == PythonDetector.WellKnownTypes.WebApp)) {
             let pythonBuildTargets = buildFramework.buildTargets.filter((val) => {return val.type == PythonDetector.WellKnownTypes.WebApp});
             if(pythonBuildTargets.some((val) => { return val.settings[PythonDetector.Settings.WebFramework] == PythonDetector.WebFrameworks.Django})) {
-                result.push(this.definitions[TemplateIds.Python.DjangoWebApp]);
+                result.push(this.definitions[TemplateIds.Python.FunctionApp]); //TODO
             }
             if(pythonBuildTargets.some((val) => { return val.settings[PythonDetector.Settings.WebFramework] == PythonDetector.WebFrameworks.Bottle})) {
-                result.push(this.definitions[TemplateIds.Python.Bottle]);
+                result.push(this.definitions[TemplateIds.Python.FunctionApp]);
             }
             if(pythonBuildTargets.some((val) => { return val.settings[PythonDetector.Settings.WebFramework] == PythonDetector.WebFrameworks.Flask})) {
-                result.push(this.definitions[TemplateIds.Python.Flask]);
+                result.push(this.definitions[TemplateIds.Python.FunctionApp]);
             }
         }
 
