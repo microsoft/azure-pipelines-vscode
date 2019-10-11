@@ -140,6 +140,7 @@ export const EnterOrganizationName = 'enterOrganizationName';
 export const SelectPipelineTemplate = 'selectPipelineTemplate';
 export const SelectSubscription = 'selectSubscription';
 export const SelectWebApp = 'selectWebApp';
+export const SelectFunctionApp = 'selectFunctionApp';
 export const GitHubPat = 'gitHubPat';
 export const SelectFromMultipleWorkSpace = 'selectFromMultipleWorkSpace';
 export const SelectRemoteForRepo = 'selectRemoteForRepo';

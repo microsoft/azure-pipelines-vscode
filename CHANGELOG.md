@@ -3,6 +3,10 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.157.5
+### Added
+- Added YAML Templates and detection logic for Function App
+
 ## 1.157.4
 ### Added
 - Added an option to browse the pipeline targeting Azure Resource.
