@@ -144,6 +144,13 @@ let githubWorklowTemplates: { [key: string]: PipelineTemplate[] } = {
             language: SupportedLanguage.NODE,
             targetType: TargetResourceType.WebApp,
             targetKind: WebAppKind.LinuxApp
+        },
+        {
+            label: 'Node.js with npm to Windows Web App',
+            path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/githubWorkflowTemplates/nodejsOnWindows.yml'),
+            language: SupportedLanguage.NODE,
+            targetType: TargetResourceType.WebApp,
+            targetKind: WebAppKind.WindowsApp
         }
     ]
 };
