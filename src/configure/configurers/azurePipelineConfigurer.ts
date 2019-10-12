@@ -33,7 +33,7 @@ export class AzurePipelineConfigurer implements Configurer {
         this.azureDevOpsHelper = new AzureDevOpsHelper(this.azureDevOpsClient);
     }
 
-    public async getConfigurerInputs(inputs: WizardInputs): Promise<void> {
+    public async getInputs(inputs: WizardInputs): Promise<void> {
         try {
             if (inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
                 let repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(inputs.sourceRepository.remoteUrl);
@@ -142,7 +142,7 @@ export class AzurePipelineConfigurer implements Configurer {
         return this.queuedPipeline._links.web.href;
     }
 
-    public async postPipelineCreationSteps(inputs: WizardInputs, azureResourceClient: AzureResourceClient): Promise<void> {
+    public async executePostPipelineCreationSteps(inputs: WizardInputs, azureResourceClient: AzureResourceClient): Promise<void> {
         if (inputs.targetResource.resource.type === TargetResourceType.WebApp) {
             try {
                 // update SCM type

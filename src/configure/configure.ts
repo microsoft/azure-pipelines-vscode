@@ -67,7 +67,6 @@ class Orchestrator {
     private appServiceClient: AppServiceClient;
     private workspacePath: string;
     private controlProvider: ControlProvider;
-    private pipelineConfigurer: Configurer;
 
     public constructor() {
         this.inputs = new WizardInputs();
@@ -76,27 +75,28 @@ class Orchestrator {
 
     public async configure(node: any) {
         telemetryHelper.setCurrentStep('GetAllRequiredInputs');
-        await this.getAllRequiredInputs(node);
+        await this.getInputs(node);
+        let pipelineConfigurer = ConfigurerFactory.GetConfigurer(this.inputs.sourceRepository, this.inputs.azureSession, this.inputs.targetResource.subscriptionId);
+        await pipelineConfigurer.getInputs(this.inputs);
 
         telemetryHelper.setCurrentStep('CreatePreRequisites');
-        this.pipelineConfigurer = this.pipelineConfigurer ? this.pipelineConfigurer : ConfigurerFactory.GetConfigurer(this.inputs.sourceRepository, this.inputs.azureSession, this.inputs.targetResource.subscriptionId);
-        await this.pipelineConfigurer.createPreRequisites(this.inputs);
+        await pipelineConfigurer.createPreRequisites(this.inputs);
 
         telemetryHelper.setCurrentStep('CheckInPipeline');
-        await this.checkInPipelineFileToRepository();
+        await this.checkInPipelineFileToRepository(pipelineConfigurer);
 
         telemetryHelper.setCurrentStep('CreateAndRunPipeline');
-        await this.pipelineConfigurer.createAndQueuePipeline(this.inputs);
+        await pipelineConfigurer.createAndQueuePipeline(this.inputs);
 
         telemetryHelper.setCurrentStep('PostPipelineCreation');
         // This step should be determined by the resoruce target provider (azure app service, function app, aks) type and pipelineProvider(azure pipeline vs github)
-        this.pipelineConfigurer.postPipelineCreationSteps(this.inputs, this.appServiceClient);
+        pipelineConfigurer.executePostPipelineCreationSteps(this.inputs, this.appServiceClient);
 
         telemetryHelper.setCurrentStep('DisplayCreatedPipeline');
-        this.pipelineConfigurer.browseQueuedPipeline();
+        pipelineConfigurer.browseQueuedPipeline();
     }
 
-    private async getAllRequiredInputs(node: any) {
+    private async getInputs(node: any) {
         await this.analyzeNode(node);
         await this.getSourceRepositoryDetails();
         await this.getSelectedPipeline();
@@ -104,9 +104,6 @@ class Orchestrator {
         if (!this.inputs.targetResource.resource) {
             await this.getAzureResourceDetails();
         }
-
-        this.pipelineConfigurer = ConfigurerFactory.GetConfigurer(this.inputs.sourceRepository, this.inputs.azureSession, this.inputs.targetResource.subscriptionId);
-        await this.pipelineConfigurer.getConfigurerInputs(this.inputs);
     }
 
     private async analyzeNode(node: any): Promise<void> {
@@ -312,9 +309,9 @@ class Orchestrator {
         }
     }
 
-    private async checkInPipelineFileToRepository(): Promise<void> {
+    private async checkInPipelineFileToRepository(pipelineConfigurer: Configurer): Promise<void> {
         try {
-            let pipelineFilePath = await this.pipelineConfigurer.getPathToPipelineFile(this.inputs);
+            let pipelineFilePath = await pipelineConfigurer.getPathToPipelineFile(this.inputs);
             this.inputs.pipelineParameters.pipelineFileName = await this.localGitRepoHelper.addContentToFile(
                 await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs),
                 pipelineFilePath);

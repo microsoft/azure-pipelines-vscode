@@ -20,7 +20,7 @@ export class GitHubWorkflowConfigurer implements Configurer {
         this.appServiceClient = new AppServiceClient(azureSession.credentials, azureSession.tenantId, azureSession.environment.portalUrl, subscriptionId);
     }
 
-    public async getConfigurerInputs(inputs: WizardInputs): Promise<void> {
+    public async getInputs(inputs: WizardInputs): Promise<void> {
         return;
     }
 
@@ -70,7 +70,7 @@ export class GitHubWorkflowConfigurer implements Configurer {
         return this.queuedPipelineUrl;
     }
 
-    public async postPipelineCreationSteps(): Promise<void> {
+    public async executePostPipelineCreationSteps(): Promise<void> {
         return;
     }
 
