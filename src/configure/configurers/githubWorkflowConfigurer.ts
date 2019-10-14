@@ -11,6 +11,9 @@ import { AppServiceClient } from '../clients/azure/appServiceClient';
 import { telemetryHelper } from '../helper/telemetryHelper';
 import { TelemetryKeys } from '../resources/telemetryKeys';
 import { ControlProvider } from '../helper/controlProvider';
+import { TracePoints } from '../resources/tracePoints';
+
+const Layer = 'GitHubWorkflowConfigurer';
 
 export class GitHubWorkflowConfigurer implements Configurer {
     private appServiceClient: AppServiceClient;
@@ -63,6 +66,36 @@ export class GitHubWorkflowConfigurer implements Configurer {
 
         let pipelineFileName = await LocalGitRepoHelper.GetAvailableFileName('workflow.yml', workflowDirectoryPath);
         return path.join(workflowDirectoryPath, pipelineFileName);
+    }
+
+    public async checkInPipelineFileToRepository(inputs: WizardInputs, localGitRepoHelper: LocalGitRepoHelper): Promise<string> {
+
+        while (!inputs.sourceRepository.commitId) {
+            let commitOrDiscard = await vscode.window.showInformationMessage(
+                utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, inputs.sourceRepository.branch, inputs.sourceRepository.remoteName),
+                Messages.commitAndPush,
+                Messages.discardPipeline);
+
+            if (commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
+                inputs.sourceRepository.commitId = await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
+                    try {
+                        // handle when the branch is not upto date with remote branch and push fails
+                        return await localGitRepoHelper.commitAndPushPipelineFile(inputs.pipelineParameters.pipelineFileName, inputs.sourceRepository, Messages.addAzurePipelinesYmlFile);
+                    }
+                    catch (error) {
+                        telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
+                        vscode.window.showErrorMessage(utils.format(Messages.commitFailedErrorMessage, error.message));
+                        return null;
+                    }
+                });
+            }
+            else {
+                telemetryHelper.setTelemetry(TelemetryKeys.PipelineDiscarded, 'true');
+                throw new UserCancelledError(Messages.operationCancelled);
+            }
+        }
+        
+        return inputs.sourceRepository.commitId;
     }
 
     public async createAndQueuePipeline(inputs: WizardInputs): Promise<string> {

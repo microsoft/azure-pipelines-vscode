@@ -11,7 +11,6 @@ import { TelemetryKeys } from './resources/telemetryKeys';
 import * as constants from './resources/constants';
 import * as path from 'path';
 import * as templateHelper from './helper/templateHelper';
-import * as utils from 'util';
 import * as vscode from 'vscode';
 import { Result, telemetryHelper } from './helper/telemetryHelper';
 import { ControlProvider } from './helper/controlProvider';
@@ -173,35 +172,55 @@ class Orchestrator {
 
     private async getGitDetailsFromRepository(): Promise<void> {
         this.localGitRepoHelper = await LocalGitRepoHelper.GetHelperInstance(this.workspacePath);
-        let gitBranchDetails = await this.localGitRepoHelper.getGitBranchDetails();
+        let isGitRepository = await this.localGitRepoHelper.isGitRepository();
 
-        if (!gitBranchDetails.remoteName) {
-            // Remote tracking branch is not set
-            let remotes = await this.localGitRepoHelper.getGitRemotes();
-            if (remotes.length === 0) {
-                throw new Error(Messages.branchRemoteMissing);
+        if (isGitRepository) {
+            let gitBranchDetails = await this.localGitRepoHelper.getGitBranchDetails();
+
+            if (!gitBranchDetails.remoteName) {
+                // Remote tracking branch is not set
+                let remotes = await this.localGitRepoHelper.getGitRemotes();
+                if (remotes.length === 0) {
+                    this.setDefaultRepositoryDetails();
+                }
+                else if (remotes.length === 1) {
+                    gitBranchDetails.remoteName = remotes[0].name;
+                }
+                else {
+                    // Show an option to user to select remote to be configured
+                    let selectedRemote = await this.controlProvider.showQuickPick(
+                        constants.SelectRemoteForRepo,
+                        remotes.map(remote => { return { label: remote.name }; }),
+                        { placeHolder: Messages.selectRemoteForBranch });
+                    gitBranchDetails.remoteName = selectedRemote.label;
+                }
             }
-            else if (remotes.length === 1) {
-                gitBranchDetails.remoteName = remotes[0].name;
-            }
-            else {
-                // Show an option to user to select remote to be configured
-                let selectedRemote = await this.controlProvider.showQuickPick(
-                    constants.SelectRemoteForRepo,
-                    remotes.map(remote => { return { label: remote.name }; }),
-                    { placeHolder: Messages.selectRemoteForBranch });
-                gitBranchDetails.remoteName = selectedRemote.label;
-            }
+
+            // Set working directory relative to repository root
+            let gitRootDir = await this.localGitRepoHelper.getGitRootDirectory();
+            this.inputs.pipelineParameters.workingDirectory = path.relative(gitRootDir, this.workspacePath);
+
+            this.inputs.sourceRepository = await this.getGitRepositoryParameters(gitBranchDetails);
         }
-
-        // Set working directory relative to repository root
-        let gitRootDir = await this.localGitRepoHelper.getGitRootDirectory();
-        this.inputs.pipelineParameters.workingDirectory = path.relative(gitRootDir, this.workspacePath);
-
-        this.inputs.sourceRepository = await this.getGitRepositoryParameters(gitBranchDetails);
-
+        else {
+            this.setDefaultRepositoryDetails();
+        }
         // set telemetry
         telemetryHelper.setTelemetry(TelemetryKeys.RepoProvider, this.inputs.sourceRepository.repositoryProvider);
+    }
+
+    private setDefaultRepositoryDetails(): void {
+        this.inputs.pipelineParameters.workingDirectory = '';
+            this.inputs.sourceRepository = {
+                branch: '',
+                commitId: '',
+                localPath: this.workspacePath,
+                remoteName: 'origin',
+                remoteUrl: '',
+                repositoryId: '',
+                repositoryName: '',
+                repositoryProvider: RepositoryProvider.AzureRepos
+            }
     }
 
     private async getGitRepositoryParameters(gitRepositoryDetails: GitBranchDetails): Promise<GitRepositoryParameters> {
@@ -323,29 +342,7 @@ class Orchestrator {
         }
 
         try {
-            while (!this.inputs.sourceRepository.commitId) {
-                let commitOrDiscard = await vscode.window.showInformationMessage(
-                    utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, this.inputs.sourceRepository.branch, this.inputs.sourceRepository.remoteName),
-                    Messages.commitAndPush,
-                    Messages.discardPipeline);
-
-                if (commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
-                    await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
-                        try {
-                            // handle when the branch is not upto date with remote branch and push fails
-                            this.inputs.sourceRepository.commitId = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFileName, this.inputs.sourceRepository, this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos ? Messages.addAzurePipelinesYmlFile : Messages.addGitHubWorkflowYmlFile);
-                        }
-                        catch (error) {
-                            telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
-                            vscode.window.showErrorMessage(utils.format(Messages.commitFailedErrorMessage, error.message));
-                        }
-                    });
-                }
-                else {
-                    telemetryHelper.setTelemetry(TelemetryKeys.PipelineDiscarded, 'true');
-                    throw new UserCancelledError(Messages.operationCancelled);
-                }
-            }
+            this.inputs.sourceRepository.commitId = await pipelineConfigurer.checkInPipelineFileToRepository(this.inputs, this.localGitRepoHelper);
         }
         catch (error) {
             telemetryHelper.logError(Layer, TracePoints.PipelineFileCheckInFailed, error);
