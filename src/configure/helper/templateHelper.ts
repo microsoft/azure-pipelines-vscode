@@ -119,18 +119,18 @@ const nodeTemplates: Array<PipelineTemplate> = [
 
 const pythonTemplates: Array<PipelineTemplate> = [
     {
-        label: 'Python Linux Web App to Azure',
+        label: 'Python to Linux Web App on Azure',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonLinuxWebApp.yml'),
         language: 'python',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.LinuxApp
     },
     {
-        label: 'Python Django',
+        label: 'Build and Test Python Django App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonDjango.yml'),
         language: 'python',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.LinuxApp
+        targetType: null,
+        targetKind: null
     }
 ];
 

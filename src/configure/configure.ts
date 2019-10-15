@@ -166,7 +166,9 @@ class PipelineConfigurer {
             await this.createGithubServiceConnection();
         }
 
-        await this.createAzureRMServiceConnection();
+        if(!!this.inputs.pipelineParameters.pipelineTemplate.targetType && !!this.inputs.pipelineParameters.pipelineTemplate.targetKind) {
+            await this.createAzureRMServiceConnection();
+        }
     }
 
     private async analyzeNode(node: any): Promise<void> {
@@ -465,13 +467,15 @@ class PipelineConfigurer {
                 break;
         }
 
-        let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
-            selectAppText,
-            resourceArray,
-            { placeHolder:  placeHolderText },
-            TelemetryKeys.WebAppListCount);
-
-        this.inputs.targetResource.resource = selectedResource.data;
+        if(!!this.inputs.pipelineParameters.pipelineTemplate.targetType && !!this.inputs.pipelineParameters.pipelineTemplate.targetKind) {
+            let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
+                selectAppText,
+                resourceArray,
+                { placeHolder:  placeHolderText },
+                TelemetryKeys.WebAppListCount);
+    
+            this.inputs.targetResource.resource = selectedResource.data;
+        }
     }
 
     private getSelectAppText(appKind: WebAppKind) : string {
@@ -500,6 +504,9 @@ class PipelineConfigurer {
 
     private async updateScmType(queuedPipeline: Build): Promise<void> {
         try {
+            if(!this.inputs.targetResource.resource) {
+                return;
+            }
             // update SCM type
             this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
 
