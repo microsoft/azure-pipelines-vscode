@@ -166,7 +166,7 @@ class PipelineConfigurer {
             await this.createGithubServiceConnection();
         }
 
-        if(!!this.inputs.pipelineParameters.pipelineTemplate.targetType && !!this.inputs.pipelineParameters.pipelineTemplate.targetKind) {
+        if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None && !!this.inputs.pipelineParameters.pipelineTemplate.targetKind) {
             await this.createAzureRMServiceConnection();
         }
     }
@@ -450,24 +450,24 @@ class PipelineConfigurer {
         this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
         this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
 
-        // show available resources and get the chosen one
-        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
-        
-        let resourceArray: Promise<Array<{label: string, data: GenericResource}>> = null;
-        let selectAppText: string = "";
-        let placeHolderText: string = "";
+        if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None && !!this.inputs.pipelineParameters.pipelineTemplate.targetKind) {
+            // show available resources and get the chosen one
+            this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
+            
+            let resourceArray: Promise<Array<{label: string, data: GenericResource}>> = null;
+            let selectAppText: string = "";
+            let placeHolderText: string = "";
 
-        switch(this.inputs.pipelineParameters.pipelineTemplate.targetType) {
-            case TargetResourceType.WebApp:
-            default:
-                resourceArray = this.appServiceClient.GetAppServices(this.inputs.pipelineParameters.pipelineTemplate.targetKind)
-                    .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
-                selectAppText = this.getSelectAppText(this.inputs.pipelineParameters.pipelineTemplate.targetKind);
-                placeHolderText = this.getPlaceholderText(this.inputs.pipelineParameters.pipelineTemplate.targetKind);
-                break;
-        }
+            switch(this.inputs.pipelineParameters.pipelineTemplate.targetType) {
+                case TargetResourceType.WebApp:
+                default:
+                    resourceArray = this.appServiceClient.GetAppServices(this.inputs.pipelineParameters.pipelineTemplate.targetKind)
+                        .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
+                    selectAppText = this.getSelectAppText(this.inputs.pipelineParameters.pipelineTemplate.targetKind);
+                    placeHolderText = this.getPlaceholderText(this.inputs.pipelineParameters.pipelineTemplate.targetKind);
+                    break;
+            }
 
-        if(!!this.inputs.pipelineParameters.pipelineTemplate.targetType && !!this.inputs.pipelineParameters.pipelineTemplate.targetKind) {
             let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
                 selectAppText,
                 resourceArray,

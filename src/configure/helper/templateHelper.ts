@@ -129,7 +129,7 @@ const pythonTemplates: Array<PipelineTemplate> = [
         label: 'Build and Test Python Django App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonDjango.yml'),
         language: 'python',
-        targetType: null,
+        targetType: TargetResourceType.None,
         targetKind: null
     }
 ];
