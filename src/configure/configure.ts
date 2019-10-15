@@ -92,7 +92,7 @@ class PipelineConfigurer {
         telemetryHelper.setCurrentStep('CreateAndRunPipeline');
         let queuedPipeline = await vscode.window.withProgress<Build>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
             try {
-                let pipelineName = `${this.inputs.targetResource.resource.name}-${this.uniqueResourceNameSuffix}`;
+                let pipelineName = `${(this.inputs.targetResource.resource ? this.inputs.targetResource.resource.name : this.inputs.pipelineParameters.pipelineTemplate.label)}-${this.uniqueResourceNameSuffix}`;
                 return await this.azureDevOpsHelper.createAndRunPipeline(pipelineName, this.inputs);
             }
             catch (error) {
