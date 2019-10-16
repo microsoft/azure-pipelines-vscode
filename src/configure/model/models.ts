@@ -63,7 +63,7 @@ export class AzureParameters {
 }
 
 export class PipelineParameters {
-    pipelineFileName: string;
+    pipelineFilePath: string;
     pipelineTemplate: PipelineTemplate;
     workingDirectory: string;
 }

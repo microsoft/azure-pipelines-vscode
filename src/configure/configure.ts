@@ -330,11 +330,11 @@ class Orchestrator {
 
     private async checkInPipelineFileToRepository(pipelineConfigurer: Configurer): Promise<void> {
         try {
-            let pipelineFilePath = await pipelineConfigurer.getPathToPipelineFile(this.inputs);
-            this.inputs.pipelineParameters.pipelineFileName = await this.localGitRepoHelper.addContentToFile(
+            this.inputs.pipelineParameters.pipelineFilePath = await pipelineConfigurer.getPathToPipelineFile(this.inputs);
+            await this.localGitRepoHelper.addContentToFile(
                 await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs),
-                pipelineFilePath);
-            await vscode.window.showTextDocument(vscode.Uri.file(this.inputs.pipelineParameters.pipelineFileName));
+                this.inputs.pipelineParameters.pipelineFilePath);
+            await vscode.window.showTextDocument(vscode.Uri.file(this.inputs.pipelineParameters.pipelineFilePath));
         }
         catch (error) {
             telemetryHelper.logError(Layer, TracePoints.AddingContentToPipelineFileFailed, error);
