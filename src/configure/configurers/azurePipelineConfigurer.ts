@@ -61,8 +61,6 @@ export class AzurePipelineConfigurer implements Configurer {
                     inputs.project = selectedProject.data;
                 }
                 else {
-                    telemetryHelper.setTelemetry(TelemetryKeys.NewOrganization, 'true');
-
                     inputs.isNewOrganization = true;
                     let userName = inputs.azureSession.userId.substring(0, inputs.azureSession.userId.indexOf("@"));
                     let organizationName = generateDevOpsOrganizationName(userName, inputs.sourceRepository.repositoryName);
@@ -97,6 +95,8 @@ export class AzurePipelineConfigurer implements Configurer {
                         };
                     });
             }
+
+            telemetryHelper.setTelemetry(TelemetryKeys.NewOrganization, inputs.isNewOrganization.toString());
         }
         catch (error) {
             telemetryHelper.logError(Layer, TracePoints.GetAzureDevOpsDetailsFailed, error);
@@ -172,9 +172,11 @@ export class AzurePipelineConfigurer implements Configurer {
             inputs.sourceRepository.repositoryId = repository.id;
             inputs.sourceRepository.remoteUrl = repository.remoteUrl;
             commitMessage = 'We will intialize your workspace as git repository and commit all changes';
+            telemetryHelper.setTelemetry(TelemetryKeys.NewDevOpsRepository, 'true');
         }
         else {
             commitMessage = utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, inputs.sourceRepository.branch, inputs.sourceRepository.remoteName);
+            telemetryHelper.setTelemetry(TelemetryKeys.NewDevOpsRepository, 'false');
         }
 
         while (!inputs.sourceRepository.commitId) {
