@@ -311,11 +311,11 @@ class Orchestrator {
 
     private async checkInPipelineFileToRepository(pipelineConfigurer: Configurer): Promise<void> {
         try {
-            let pipelineFilePath = await pipelineConfigurer.getPathToPipelineFile(this.inputs);
-            this.inputs.pipelineParameters.pipelineFileName = await this.localGitRepoHelper.addContentToFile(
+            this.inputs.pipelineParameters.pipelineFilePath = await pipelineConfigurer.getPathToPipelineFile(this.inputs);
+            await this.localGitRepoHelper.addContentToFile(
                 await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs),
-                pipelineFilePath);
-            await vscode.window.showTextDocument(vscode.Uri.file(this.inputs.pipelineParameters.pipelineFileName));
+                this.inputs.pipelineParameters.pipelineFilePath);
+            await vscode.window.showTextDocument(vscode.Uri.file(this.inputs.pipelineParameters.pipelineFilePath));
         }
         catch (error) {
             telemetryHelper.logError(Layer, TracePoints.AddingContentToPipelineFileFailed, error);
@@ -333,7 +333,7 @@ class Orchestrator {
                     await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
                         try {
                             // handle when the branch is not upto date with remote branch and push fails
-                            this.inputs.sourceRepository.commitId = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFileName, this.inputs.sourceRepository, this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos ? Messages.addAzurePipelinesYmlFile : Messages.addGitHubWorkflowYmlFile);
+                            this.inputs.sourceRepository.commitId = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFilePath, this.inputs.sourceRepository, this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos ? Messages.addAzurePipelinesYmlFile : Messages.addGitHubWorkflowYmlFile);
                         }
                         catch (error) {
                             telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
