@@ -23,6 +23,10 @@ export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): P
         templateList = functionTemplates.concat(templateList);
     }
 
+    if(analysisResult.isDotnetCoreApplication) {
+        templateList = dotnetCoreTemplates.concat(templateList);
+    }
+
     // add all possible templates as we could not detect the appropriate onesı
     return templateList;
 }
@@ -48,7 +52,8 @@ async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boole
         let result = {
             isNodeApplication: err ? true : isNodeRepo(files),
             isFunctionApplication: err ? true : isFunctionApp(files),
-            isPythonApplication: err ? true : isPythonRepo(files)
+            isPythonApplication: err ? true : isPythonRepo(files),
+            isDotnetCoreApplication: err ? true : isDotnetCoreApplication(files)
             // isContainerApplication: isDockerRepo(files)
         };
         deferred.resolve(result);
@@ -76,6 +81,12 @@ function isPythonRepo(files: string[]): boolean {
     return files.some((file) => {
         let result = new RegExp(pythonRegex).test(file.toLowerCase());
         return result;
+    })
+}
+
+function isDotnetCoreApplication(files: string[]): boolean {
+    return files.some((file) => {
+        return file.toLowerCase().endsWith("sln") || file.toLowerCase().endsWith("csproj") || file.toLowerCase().endsWith("fsproj"); 
     })
 }
 
@@ -126,6 +137,13 @@ const pythonTemplates: Array<PipelineTemplate> = [
         targetKind: WebAppKind.LinuxApp
     },
     {
+        label: 'Python Windows Web App using Flask to Azure',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonWindowsWebAppFlask.yml'),
+        language: 'python',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
+    },
+    {
         label: 'Build and Test Python Django App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonDjango.yml'),
         language: 'python',
@@ -133,6 +151,16 @@ const pythonTemplates: Array<PipelineTemplate> = [
         targetKind: null
     }
 ];
+
+const dotnetCoreTemplates: Array<PipelineTemplate> = [
+    {
+        label: '.NET Core WebApp to Windows on Azure',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/dotnetcoreWindowsWebApp.yml'),
+        language: 'dotnetcore',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
+    }
+]
 
 const simpleWebAppTemplates: Array<PipelineTemplate> = [
     {
