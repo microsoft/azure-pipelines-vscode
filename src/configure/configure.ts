@@ -92,7 +92,7 @@ class PipelineConfigurer {
         telemetryHelper.setCurrentStep('CreateAndRunPipeline');
         let queuedPipeline = await vscode.window.withProgress<Build>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
             try {
-                let pipelineName = `${this.inputs.targetResource.resource.name}-${this.uniqueResourceNameSuffix}`;
+                let pipelineName = `${(this.inputs.targetResource.resource ? this.inputs.targetResource.resource.name : this.inputs.pipelineParameters.pipelineTemplate.label)}-${this.uniqueResourceNameSuffix}`;
                 return await this.azureDevOpsHelper.createAndRunPipeline(pipelineName, this.inputs);
             }
             catch (error) {
@@ -166,7 +166,9 @@ class PipelineConfigurer {
             await this.createGithubServiceConnection();
         }
 
-        await this.createAzureRMServiceConnection();
+        if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
+            await this.createAzureRMServiceConnection();
+        }
     }
 
     private async analyzeNode(node: any): Promise<void> {
@@ -444,34 +446,40 @@ class PipelineConfigurer {
                 description: `${<string>subscriptionObject.subscription.subscriptionId}`
             };
         });
-        let selectedSubscription: QuickPickItemWithData = await this.controlProvider.showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
-        this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
-        this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
 
-        // show available resources and get the chosen one
-        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
-        
-        let resourceArray: Promise<Array<{label: string, data: GenericResource}>> = null;
-        let selectAppText: string = "";
-        let placeHolderText: string = "";
+        if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
+            let selectedSubscription: QuickPickItemWithData = await this.controlProvider.showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
+            this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
+            this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
+            
+            // show available resources and get the chosen one
+            this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
+            
+            let resourceArray: Promise<Array<{label: string, data: GenericResource}>> = null;
+            let selectAppText: string = "";
+            let placeHolderText: string = "";
 
-        switch(this.inputs.pipelineParameters.pipelineTemplate.targetType) {
-            case TargetResourceType.WebApp:
-            default:
-                resourceArray = this.appServiceClient.GetAppServices(this.inputs.pipelineParameters.pipelineTemplate.targetKind)
-                    .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
-                selectAppText = this.getSelectAppText(this.inputs.pipelineParameters.pipelineTemplate.targetKind);
-                placeHolderText = this.getPlaceholderText(this.inputs.pipelineParameters.pipelineTemplate.targetKind);
-                break;
+            switch(this.inputs.pipelineParameters.pipelineTemplate.targetType) {
+                case TargetResourceType.WebApp:
+                default:
+                    resourceArray = this.appServiceClient.GetAppServices(this.inputs.pipelineParameters.pipelineTemplate.targetKind)
+                        .then((webApps) => webApps.map(x => { return { label: x.name, data: x }; }));
+                    selectAppText = this.getSelectAppText(this.inputs.pipelineParameters.pipelineTemplate.targetKind);
+                    placeHolderText = this.getPlaceholderText(this.inputs.pipelineParameters.pipelineTemplate.targetKind);
+                    break;
+            }
+
+            let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
+                selectAppText,
+                resourceArray,
+                { placeHolder:  placeHolderText },
+                TelemetryKeys.WebAppListCount);
+    
+            this.inputs.targetResource.resource = selectedResource.data;
+        } else if(subscriptionList.length > 0 ) {
+            this.inputs.targetResource.subscriptionId = subscriptionList[0].data.subscription.subscriptionId;
+            this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
         }
-
-        let selectedResource: QuickPickItemWithData = await this.controlProvider.showQuickPick(
-            selectAppText,
-            resourceArray,
-            { placeHolder:  placeHolderText },
-            TelemetryKeys.WebAppListCount);
-
-        this.inputs.targetResource.resource = selectedResource.data;
     }
 
     private getSelectAppText(appKind: WebAppKind) : string {
@@ -500,6 +508,9 @@ class PipelineConfigurer {
 
     private async updateScmType(queuedPipeline: Build): Promise<void> {
         try {
+            if(!this.inputs.targetResource.resource) {
+                return;
+            }
             // update SCM type
             this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
 

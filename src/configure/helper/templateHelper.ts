@@ -15,6 +15,10 @@ export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): P
         templateList = nodeTemplates.concat(templateList);
     }
 
+    if (analysisResult.isPythonApplication) {
+        templateList = pythonTemplates.concat(templateList);
+    }
+    
     if (analysisResult.isFunctionApplication) {
         templateList = functionTemplates.concat(templateList);
     }
@@ -38,12 +42,13 @@ export async function renderContent(templateFilePath: string, context: WizardInp
     return deferred.promise;
 }
 
-async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boolean, isFunctionApplication: boolean }> {
-    let deferred: Q.Deferred<{ isNodeApplication: boolean, isFunctionApplication: boolean }> = Q.defer();
+async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean }> {
+    let deferred: Q.Deferred<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean }> = Q.defer();
     fs.readdir(repoPath, (err, files: string[]) => {
         let result = {
             isNodeApplication: err ? true : isNodeRepo(files),
-            isFunctionApplication: err ? true : isFunctionApp(files)
+            isFunctionApplication: err ? true : isFunctionApp(files),
+            isPythonApplication: err ? true : isPythonRepo(files)
             // isContainerApplication: isDockerRepo(files)
         };
         deferred.resolve(result);
@@ -64,6 +69,14 @@ function isFunctionApp(files: string[]): boolean {
     return files.some((file) => {
         return file.toLowerCase().endsWith("host.json");
     });   
+}
+
+function isPythonRepo(files: string[]): boolean {
+    let pythonRegex = '.py$';
+    return files.some((file) => {
+        let result = new RegExp(pythonRegex).test(file.toLowerCase());
+        return result;
+    })
 }
 
 const nodeTemplates: Array<PipelineTemplate> = [
@@ -101,6 +114,23 @@ const nodeTemplates: Array<PipelineTemplate> = [
         language: 'node',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.WindowsApp
+    }
+];
+
+const pythonTemplates: Array<PipelineTemplate> = [
+    {
+        label: 'Python to Linux Web App on Azure',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonLinuxWebApp.yml'),
+        language: 'python',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.LinuxApp
+    },
+    {
+        label: 'Build and Test Python Django App',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonDjango.yml'),
+        language: 'python',
+        targetType: TargetResourceType.None,
+        targetKind: null
     }
 ];
 
