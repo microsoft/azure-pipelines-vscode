@@ -166,7 +166,7 @@ class PipelineConfigurer {
             await this.createGithubServiceConnection();
         }
 
-        if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None && !!this.inputs.pipelineParameters.pipelineTemplate.targetKind) {
+        if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
             await this.createAzureRMServiceConnection();
         }
     }
