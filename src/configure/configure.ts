@@ -166,7 +166,7 @@ class PipelineConfigurer {
             await this.createGithubServiceConnection();
         }
 
-        if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None && !!this.inputs.pipelineParameters.pipelineTemplate.targetKind) {
+        if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
             await this.createAzureRMServiceConnection();
         }
     }
@@ -446,11 +446,12 @@ class PipelineConfigurer {
                 description: `${<string>subscriptionObject.subscription.subscriptionId}`
             };
         });
-        let selectedSubscription: QuickPickItemWithData = await this.controlProvider.showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
-        this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
-        this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
 
-        if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None && !!this.inputs.pipelineParameters.pipelineTemplate.targetKind) {
+        if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
+            let selectedSubscription: QuickPickItemWithData = await this.controlProvider.showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
+            this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
+            this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
+            
             // show available resources and get the chosen one
             this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
             
@@ -475,6 +476,9 @@ class PipelineConfigurer {
                 TelemetryKeys.WebAppListCount);
     
             this.inputs.targetResource.resource = selectedResource.data;
+        } else if(subscriptionList.length > 0 ) {
+            this.inputs.targetResource.subscriptionId = subscriptionList[0].data.subscription.subscriptionId;
+            this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
         }
     }
 

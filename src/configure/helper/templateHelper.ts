@@ -46,8 +46,8 @@ export async function renderContent(templateFilePath: string, context: WizardInp
     return deferred.promise;
 }
 
-async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean }> {
-    let deferred: Q.Deferred<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean }> = Q.defer();
+async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean, isDotnetCoreApplication: boolean }> {
+    let deferred: Q.Deferred<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean, isDotnetCoreApplication: boolean }> = Q.defer();
     fs.readdir(repoPath, (err, files: string[]) => {
         let result = {
             isNodeApplication: err ? true : isNodeRepo(files),
