@@ -1,5 +1,5 @@
-# .NET Core Web App to Windows on Azure
-# Build a .NET Core Web App and deploy it to Azure as a Windows Web App.
+# .NET Core Web App to Linux on Azure
+# Build a .NET Core Web App and deploy it to Azure as a Linux Web App.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/dotnet-core
 
@@ -14,7 +14,7 @@ variables:
   webAppName: '{{{ targetResource.resource.name }}}'
 
   # Agent VM image name
-  vmImageName: 'vs2017-win2016'
+  vmImageName: 'ubuntu-latest'
 
   # Working Directory
   workingDirectory: '$(System.DefaultWorkingDirectory)'
@@ -39,6 +39,12 @@ stages:
       vmImage: $(vmImageName)
 
     steps:
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk'
+      inputs:
+        packageType: sdk
+        version: 2.x
+        
     - task: DotNetCoreCLI@2
       displayName: Restore
       inputs:
@@ -93,6 +99,6 @@ stages:
               ConnectionType: "AzureRM"
               ConnectedServiceName: $(azureSubscription)
               WebAppName: $(webAppName)
-              WebAppKind: webApp
+              WebAppKind: webAppLinux
               Package: $(Pipeline.Workspace)/**/*.zip
               DeploymentType: "webDeploy"

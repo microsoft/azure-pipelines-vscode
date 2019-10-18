@@ -147,11 +147,18 @@ const pythonTemplates: Array<PipelineTemplate> = [
 
 const dotnetCoreTemplates: Array<PipelineTemplate> = [
     {
-        label: '.NET Core WebApp to Windows on Azure',
+        label: '.NET Core Web App to Windows on Azure',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/dotnetcoreWindowsWebApp.yml'),
         language: 'dotnetcore',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.WindowsApp
+    },
+    {
+        label: '.NET Core Web App to Linux on Azure',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/dotnetcoreLinuxWebApp.yml'),
+        language: 'dotnetcore',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.LinuxApp
     }
 ]
 
