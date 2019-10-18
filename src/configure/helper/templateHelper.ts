@@ -137,13 +137,6 @@ const pythonTemplates: Array<PipelineTemplate> = [
         targetKind: WebAppKind.LinuxApp
     },
     {
-        label: 'Python Windows Web App using Flask to Azure',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonWindowsWebAppFlask.yml'),
-        language: 'python',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.WindowsApp
-    },
-    {
         label: 'Build and Test Python Django App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonDjango.yml'),
         language: 'python',
