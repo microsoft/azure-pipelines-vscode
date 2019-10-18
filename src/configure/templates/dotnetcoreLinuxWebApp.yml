@@ -28,6 +28,9 @@ variables:
   # Test Projects
   testProjects: "**/*[Tt]est*/*.csproj"
 
+  # Dotnet Core Version
+  dotnetCoreVersion: 2.x
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -43,7 +46,7 @@ stages:
       displayName: 'Use .NET Core sdk'
       inputs:
         packageType: sdk
-        version: 2.x
+        version: $(dotnetCoreVersion)
         
     - task: DotNetCoreCLI@2
       displayName: Restore
