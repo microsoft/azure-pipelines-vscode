@@ -153,11 +153,11 @@ const functionTemplates: Array<PipelineTemplate> = [
         targetKind: WebAppKind.FunctionAppLinux
     },
     {
-        label: 'Node.js Function App to Windows Azure Function',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWindowsFunctionApp.yml'),
+        label: 'Node.js Function App to Linux Azure Function',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsLinuxFunctionApp.yml'),
         language: 'node',
         targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.FunctionApp
+        targetKind: WebAppKind.FunctionAppLinux
     },
     {
         label: '.NET Core Function App to Windows Azure Function',
