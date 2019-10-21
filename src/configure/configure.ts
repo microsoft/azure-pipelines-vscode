@@ -171,7 +171,7 @@ class Orchestrator {
     }
 
     private async getGitDetailsFromRepository(): Promise<void> {
-        this.localGitRepoHelper = await LocalGitRepoHelper.GetHelperInstance(this.workspacePath);
+        this.localGitRepoHelper = LocalGitRepoHelper.GetHelperInstance(this.workspacePath);
         let isGitRepository = await this.localGitRepoHelper.isGitRepository();
 
         if (isGitRepository) {
@@ -342,7 +342,7 @@ class Orchestrator {
         }
 
         try {
-            this.inputs.sourceRepository.commitId = await pipelineConfigurer.checkInPipelineFileToRepository(this.inputs, this.localGitRepoHelper);
+            await pipelineConfigurer.checkInPipelineFileToRepository(this.inputs, this.localGitRepoHelper);
         }
         catch (error) {
             telemetryHelper.logError(Layer, TracePoints.PipelineFileCheckInFailed, error);

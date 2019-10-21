@@ -76,7 +76,7 @@ export class GitHubWorkflowConfigurer implements Configurer {
                 Messages.commitAndPush,
                 Messages.discardPipeline);
 
-            if (commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
+            if (!!commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
                 inputs.sourceRepository.commitId = await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
                     try {
                         // handle when the branch is not upto date with remote branch and push fails

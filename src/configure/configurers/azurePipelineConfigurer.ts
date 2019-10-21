@@ -85,7 +85,7 @@ export class AzurePipelineConfigurer implements Configurer {
             }
             else {
                 let repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(inputs.sourceRepository.remoteUrl);
-                inputs.organizationName = repoDetails.orgnizationName;
+                inputs.organizationName = repoDetails.organizationName;
                 await this.azureDevOpsClient.getRepository(inputs.organizationName, repoDetails.projectName, inputs.sourceRepository.repositoryName)
                     .then((repository) => {
                         inputs.sourceRepository.repositoryId = repository.id;
@@ -171,7 +171,7 @@ export class AzurePipelineConfigurer implements Configurer {
             inputs.sourceRepository.repositoryName = repository.name;
             inputs.sourceRepository.repositoryId = repository.id;
             inputs.sourceRepository.remoteUrl = repository.remoteUrl;
-            commitMessage = 'We will intialize your workspace as git repository and commit all changes';
+            commitMessage = Messages.modifyAndCommitFileWithGitInitialization;
             telemetryHelper.setTelemetry(TelemetryKeys.NewDevOpsRepository, 'true');
         }
         else {
@@ -185,7 +185,7 @@ export class AzurePipelineConfigurer implements Configurer {
                 Messages.commitAndPush,
                 Messages.discardPipeline);
 
-            if (commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
+            if (!!commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
                 inputs.sourceRepository.commitId = await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
                     try {
                         if (initializeGitRepository) {

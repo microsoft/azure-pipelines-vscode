@@ -17,7 +17,7 @@ export class LocalGitRepoHelper {
     private constructor() {
     }
 
-    public static async GetHelperInstance(repositoryPath: string): Promise<LocalGitRepoHelper> {
+    public static GetHelperInstance(repositoryPath: string): LocalGitRepoHelper {
         var repoService = new LocalGitRepoHelper();
         repoService.initialize(repositoryPath);
 
@@ -128,7 +128,7 @@ export class LocalGitRepoHelper {
         return path.normalize(gitRootDir.trim());
     }
 
-    public async initializeGitRepository(remoteName: string, remoteUrl: string, filesToExclude?: string): Promise<void> {
+    public async initializeGitRepository(remoteName: string, remoteUrl: string, filesToExcludeRegex?: string): Promise<void> {
         let isGitRepository = await this.isGitRepository()
 
         if(!isGitRepository) {
@@ -141,11 +141,11 @@ export class LocalGitRepoHelper {
         }
         catch(error) {
             // Commit all files if there are not commits on this branch
-            await this.gitReference.add(`:!${filesToExclude}`);
+            await this.gitReference.add(`:!${filesToExcludeRegex}`);
             await this.gitReference.commit("Initialized git repository");
         }
 
-        await this.gitReference.remote(['add', remoteName, remoteUrl]);
+        await this.gitReference.addRemote(remoteName, remoteUrl);
     }
 
     private static getIncreamentalFileName(fileName: string, count: number): string {

@@ -30,13 +30,13 @@ export class AzureDevOpsHelper {
         // Convert SSH based url to https based url as pipeline service doesn't accept SSH based URL
         if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
             let details = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
-            return `https://${details.orgnizationName}${AzureDevOpsHelper.VSOUrl}/${details.projectName}/_git/${details.repositoryName}`;
+            return `https://${details.organizationName}${AzureDevOpsHelper.VSOUrl}/${details.projectName}/_git/${details.repositoryName}`;
         }
 
         return remoteUrl;
     }
 
-    public static getRepositoryDetailsFromRemoteUrl(remoteUrl: string): { orgnizationName: string, projectName: string, repositoryName: string } {
+    public static getRepositoryDetailsFromRemoteUrl(remoteUrl: string): { organizationName: string, projectName: string, repositoryName: string } {
         if (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0) {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
             let parts = part.split('/').filter((value) => !!value);
@@ -44,7 +44,7 @@ export class AzureDevOpsHelper {
                 telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${AzureDevOpsHelper.AzureReposUrl}, Parts: ${parts.slice(2).toString()}, Length: ${parts.length}`));
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
             }
-            return { orgnizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[3].trim() };
+            return { organizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[3].trim() };
         }
         else if (remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0) {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
@@ -60,7 +60,7 @@ export class AzureDevOpsHelper {
                 telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${AzureDevOpsHelper.VSOUrl}, Parts: ${parts.slice(1).toString()}, Length: ${parts.length}`));
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
             }
-            return { orgnizationName: organizationName, projectName: parts[0].trim(), repositoryName: parts[2].trim() };
+            return { organizationName: organizationName, projectName: parts[0].trim(), repositoryName: parts[2].trim() };
         }
         else if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
             let urlFormat = remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 ? AzureDevOpsHelper.SSHAzureReposUrl : AzureDevOpsHelper.SSHVsoReposUrl;
@@ -70,7 +70,7 @@ export class AzureDevOpsHelper {
                 telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${urlFormat}, Parts: ${parts.slice(2).toString()}, Length: ${parts.length}`));
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
             }
-            return { orgnizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[2].trim() };
+            return { organizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[2].trim() };
         }
         else {
             throw new Error(Messages.notAzureRepoUrl);
