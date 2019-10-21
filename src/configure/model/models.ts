@@ -33,7 +33,6 @@ export class WizardInputs {
     targetResource: AzureParameters = new AzureParameters();
     pipelineParameters: PipelineParameters = new PipelineParameters();
     azureSession: AzureSession;
-    githubPATToken?: string;
 }
 
 export interface DevOpsProject {

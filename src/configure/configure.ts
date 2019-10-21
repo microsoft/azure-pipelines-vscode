@@ -249,6 +249,8 @@ class Orchestrator {
 
         try {
             let azureResource: GenericResource = await this.appServiceClient.getAppServiceResource((<AzureTreeItem>node).fullId);
+            telemetryHelper.setTelemetry(TelemetryKeys.resourceType, azureResource.type);
+            telemetryHelper.setTelemetry(TelemetryKeys.resourceKind, azureResource.kind);
             AzureResourceClient.validateTargetResourceType(azureResource);
             this.inputs.targetResource.resource = azureResource;
         }

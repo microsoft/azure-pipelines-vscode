@@ -12,7 +12,7 @@ export async function analyzeRepoAndListAppropriatePipeline(repoPath: string, re
     let templateList: { [key: string]: PipelineTemplate[] } = {};
     switch(repositoryProvider) {
         case RepositoryProvider.AzureRepos:
-            templateList = pipelineTemplates;
+            templateList = azurePipelineTemplates;
             break;
         case RepositoryProvider.Github:
             templateList = githubWorklowTemplates;
@@ -86,7 +86,7 @@ export enum SupportedLanguage {
     NONE = 'none'
 }
 
-let pipelineTemplates: { [key: string]: PipelineTemplate[] } =
+let azurePipelineTemplates: { [key: string]: PipelineTemplate[] } =
 {
     'none': [
         {
@@ -140,7 +140,7 @@ let githubWorklowTemplates: { [key: string]: PipelineTemplate[] } = {
     'node': [
         {
             label: 'Node.js with npm to Linux Web App',
-            path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/githubWorkflowTemplates/nodejs.yml'),
+            path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/githubWorkflowTemplates/nodejsOnLinux.yml'),
             language: SupportedLanguage.NODE,
             targetType: TargetResourceType.WebApp,
             targetKind: WebAppKind.LinuxApp

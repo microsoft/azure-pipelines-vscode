@@ -96,7 +96,7 @@ export class AzurePipelineConfigurer implements Configurer {
     }
 
     public async validatePermissions(): Promise<void> {
-        throw new Error("Method not implemented.");
+        return;
     }
 
     public async createPreRequisites(inputs: WizardInputs): Promise<void> {

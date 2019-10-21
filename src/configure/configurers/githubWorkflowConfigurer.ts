@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as utils from 'util';
 import * as vscode from 'vscode';
 import { Configurer } from "./configurerBase";
-import { WizardInputs, AzureSession } from "../model/models";
+import { WizardInputs, AzureSession, TargetResourceType } from "../model/models";
 import { LocalGitRepoHelper } from '../helper/LocalGitRepoHelper';
 import { Messages } from '../resources/messages';
 import { UserCancelledError } from 'vscode-azureextensionui';
@@ -13,11 +13,9 @@ import { TelemetryKeys } from '../resources/telemetryKeys';
 import { ControlProvider } from '../helper/controlProvider';
 
 export class GitHubWorkflowConfigurer implements Configurer {
-    private appServiceClient: AppServiceClient;
     private queuedPipelineUrl: string;
 
     constructor(azureSession: AzureSession, subscriptionId: string) {
-        this.appServiceClient = new AppServiceClient(azureSession.credentials, azureSession.tenantId, azureSession.environment.portalUrl, subscriptionId);
     }
 
     public async getInputs(inputs: WizardInputs): Promise<void> {
@@ -29,26 +27,29 @@ export class GitHubWorkflowConfigurer implements Configurer {
     }
 
     public async createPreRequisites(inputs: WizardInputs): Promise<void> {
-        // Get publish profile for web app
-        let publishXml = await this.appServiceClient.getWebAppPublishProfileXml(inputs.targetResource.resource.id);
+        if (inputs.targetResource.resource.type === TargetResourceType.WebApp) {
+            // Get publish profile for web app
+            let appServiceClient = new AppServiceClient(inputs.azureSession.credentials, inputs.azureSession.tenantId, inputs.azureSession.environment.portalUrl, inputs.targetResource.subscriptionId);
+            let publishXml = await appServiceClient.getWebAppPublishProfileXml(inputs.targetResource.resource.id);
 
-        //Copy secret and open browser window
-        inputs.targetResource.serviceConnectionId = 'publishProfile';
-        let copyAndOpen = await this.showCopyAndOpenNotification(inputs, publishXml);
+            //Copy secret and open browser window
+            inputs.targetResource.serviceConnectionId = 'publishProfile';
+            let copyAndOpen = await this.showCopyAndOpenNotification(inputs, publishXml);
 
-        if (copyAndOpen === Messages.copyAndOpenLabel) {
+            if (copyAndOpen === Messages.copyAndOpenLabel) {
 
-            let nextSelected = "";
-            while (nextSelected !== Messages.nextLabel) {
-                nextSelected = await this.showCopyAndOpenNotification(inputs, publishXml, true);
-                if (nextSelected === undefined) {
-                    throw new UserCancelledError(Messages.operationCancelled);
+                let nextSelected = "";
+                while (nextSelected !== Messages.nextLabel) {
+                    nextSelected = await this.showCopyAndOpenNotification(inputs, publishXml, true);
+                    if (nextSelected === undefined) {
+                        throw new UserCancelledError(Messages.operationCancelled);
+                    }
                 }
             }
         }
     }
 
-    public async getPathToPipelineFile(inputs: WizardInputs): Promise<string>{
+    public async getPathToPipelineFile(inputs: WizardInputs): Promise<string> {
         // Create .github directory
         let workflowDirectoryPath = path.join(inputs.sourceRepository.localPath, '.github');
         if (!fs.existsSync(workflowDirectoryPath)) {

@@ -15,7 +15,7 @@ export class AzureResourceClient {
 
     public static validateTargetResourceType(resource: GenericResource): void {
         if (!resource) {
-            throw new Error('Argument: resource, is Null');
+            throw new Error(Messages.azureResourceIsNull);
         }
 
         switch (resource.type.toLowerCase()) {
