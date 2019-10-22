@@ -17,6 +17,9 @@ export class TelemetryKeys {
     public static UpdatedWebAppMetadata = 'updatedWebAppMetadata';
     public static NewDevOpsRepository = 'newDevOpsRepository';
 
+    public static resourceType = 'resourceType';
+    public static resourceKind = 'resourceKind';
+
     // Durations
     public static ExtensionActivationDuration = 'extensionActivationDuration';
     public static CommandExecutionDuration = 'commandExecutionDuration';

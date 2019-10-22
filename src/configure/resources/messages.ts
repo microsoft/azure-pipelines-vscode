@@ -4,6 +4,7 @@ export class Messages {
     public static addGitHubWorkflowYmlFile: string = 'Added GitHub Workflow YAML definition.';
     public static analyzingRepo: string = 'Analyzing your repository';
     public static appKindIsNotSupported: string = 'App type "%s" is not yet supported.';
+    public static azureResourceIsNull: string = 'ArgumentNullException: resource. The Azure target resource is empty, kindly select a resource and try again.';
     public static azureAccountExntesionUnavailable: string = 'Azure-Account extension could not be fetched. Please ensure it\'s installed and activated.';
     public static azureLoginRequired: string = 'Please sign in to your Azure account first.';
     public static branchRemoteMissing: string = `The current branch doesn't have a tracking branch, and the selected repository has no remotes. We're unable to create a remote tracking branch. Please [set a remote tracking branch](https://git-scm.com/docs/git-branch#Documentation/git-branch.txt---track) first, and then try this again.`;
