@@ -27,6 +27,7 @@ export class Messages {
     public static githubPatTokenErrorMessage: string = 'GitHub PAT token cannot be empty.';
     public static githubPatTokenHelpMessage: string = 'GitHub personal access token (PAT) with following permissions: full access to repository webhooks and services, read and write access to all repository data.';
     public static modifyAndCommitFile: string = 'Modify and save your YAML file. %s will commit this file, push the branch \'%s\' to remote \'%s\' and proceed with deployment.';
+    public static modifyAndCommitFileWithGitInitialization: string = 'Modify and save your YAML file to proceed with deployment.';
     public static noAgentQueueFound: string = 'No agent pool found named "%s".';
     public static notAGitRepository: string = 'Selected workspace is not a [Git](https://git-scm.com/docs/git) repository. Please select a Git repository.';
     public static notAzureRepoUrl: string = 'The repo isn\'t hosted with Azure Repos.';

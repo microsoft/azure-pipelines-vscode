@@ -51,3 +51,9 @@ export interface Build {
     sourceVersion: string;
     _links?: { web: { href: string } };
 }
+
+export interface Repository {
+    id: string;
+    name: string;
+    remoteUrl: string;
+}

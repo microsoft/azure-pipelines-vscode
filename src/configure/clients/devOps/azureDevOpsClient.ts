@@ -1,4 +1,4 @@
-import { Build, BuildDefinition } from '../../model/azureDevOps';
+import { Build, BuildDefinition, Repository } from '../../model/azureDevOps';
 import { Messages } from '../../resources/messages';
 import { DevOpsProject, Organization } from '../../model/models';
 import { AzureDevOpsBaseUrl, ReservedHostNames } from '../../resources/constants';
@@ -349,5 +349,23 @@ export class AzureDevOpsClient {
             .then((response) => {
                 return response.value;
             });
+    }
+
+    public createRepository(organizationName: string, projectId: string, repositoryName: string): Promise<Repository> {
+        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+            url: `${AzureDevOpsBaseUrl}/${organizationName}/${projectId}/_apis/git/repositories`,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            method: 'POST',
+            queryParameters: {
+                'api-version': '5.1'
+            },
+            body: {
+                'name': repositoryName
+            },
+            deserializationMapper: null,
+            serializationMapper: null
+        });
     }
 }
