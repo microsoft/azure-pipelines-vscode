@@ -7,10 +7,13 @@ import { WizardInputs, AzureSession, TargetResourceType } from "../model/models"
 import { LocalGitRepoHelper } from '../helper/LocalGitRepoHelper';
 import { Messages } from '../resources/messages';
 import { UserCancelledError } from 'vscode-azureextensionui';
-import { AppServiceClient } from '../clients/azure/appServiceClient';
 import { telemetryHelper } from '../helper/telemetryHelper';
 import { TelemetryKeys } from '../resources/telemetryKeys';
 import { ControlProvider } from '../helper/controlProvider';
+import { GraphHelper } from '../helper/graphHelper';
+import { TracePoints } from '../resources/tracePoints';
+
+const Layer = 'GitHubPipelineConfigurer';
 
 export class GitHubWorkflowConfigurer implements Configurer {
     private queuedPipelineUrl: string;
@@ -27,20 +30,44 @@ export class GitHubWorkflowConfigurer implements Configurer {
     }
 
     public async createPreRequisites(inputs: WizardInputs): Promise<void> {
-        if (inputs.targetResource.resource.type === TargetResourceType.WebApp) {
-            // Get publish profile for web app
-            let appServiceClient = new AppServiceClient(inputs.azureSession.credentials, inputs.azureSession.tenantId, inputs.azureSession.environment.portalUrl, inputs.targetResource.subscriptionId);
-            let publishXml = await appServiceClient.getWebAppPublishProfileXml(inputs.targetResource.resource.id);
+        if (inputs.targetResource.resource.type.toLowerCase() === TargetResourceType.WebApp.toLowerCase()) {
+            let azureConnectionSecret = await vscode.window.withProgress(
+                {
+                    location: vscode.ProgressLocation.Notification,
+                    title: utils.format(Messages.creatingAzureServiceConnection, inputs.targetResource.subscriptionId)
+                },
+                async () => {
+                    try {
+                        let scope = inputs.targetResource.resource.id;
+                        let aadAppName = GraphHelper.generateAadApplicationName(inputs.sourceRepository.remoteName, 'github');
+                        let aadApp = await GraphHelper.createSpnAndAssignRole(inputs.azureSession, aadAppName, scope);
+                        return {
+                            "clientId": `${aadApp.appId}`,
+                            "clientSecret": `${aadApp.secret}`,
+                            "subscriptionId": `${inputs.targetResource.subscriptionId}`,
+                            "tenantId": `${inputs.azureSession.tenantId}`,
+                        };
+                    }
+                    catch (error) {
+                        telemetryHelper.logError(Layer, TracePoints.AzureServiceConnectionCreateFailure, error);
+                        throw error;
+                    }
+                });
+            inputs.targetResource.serviceConnectionId = 'AZURE_CREDENTIALS';
+            let showCopyAndOpenNotificationFunction = (nextLabel = false) => {
+                return this.showCopyAndOpenNotification(
+                    JSON.stringify(azureConnectionSecret),
+                    `https://github.com/${inputs.sourceRepository.repositoryId}/settings/secrets`,
+                    utils.format(Messages.copyAndCreateSecretMessage, inputs.targetResource.serviceConnectionId),
+                    'copyAzureCredentials',
+                    nextLabel);
+            };
 
-            //Copy secret and open browser window
-            inputs.targetResource.serviceConnectionId = 'publishProfile';
-            let copyAndOpen = await this.showCopyAndOpenNotification(inputs, publishXml);
-
+            let copyAndOpen = await showCopyAndOpenNotificationFunction();
             if (copyAndOpen === Messages.copyAndOpenLabel) {
-
                 let nextSelected = "";
                 while (nextSelected !== Messages.nextLabel) {
-                    nextSelected = await this.showCopyAndOpenNotification(inputs, publishXml, true);
+                    nextSelected = await showCopyAndOpenNotificationFunction(true);
                     if (nextSelected === undefined) {
                         throw new UserCancelledError(Messages.operationCancelled);
                     }
@@ -85,17 +112,18 @@ export class GitHubWorkflowConfigurer implements Configurer {
             });
     }
 
-    private async showCopyAndOpenNotification(inputs: WizardInputs, publishXml: string, showNextButton = false): Promise<string> {
+    private async showCopyAndOpenNotification(valueToBeCopied: string, urlToBeOpened: string, messageToBeShown: string, messageIdentifier: string, showNextButton = false): Promise<string> {
         let actions: Array<string> = showNextButton ? [Messages.copyAndOpenLabel, Messages.nextLabel] : [Messages.copyAndOpenLabel];
         let controlProvider = new ControlProvider();
         let copyAndOpen = await controlProvider.showInformationBox(
-            'copyPublishingCredentials',
-            utils.format(Messages.copyPublishingCredentials, inputs.targetResource.serviceConnectionId),
+            messageIdentifier,
+            messageToBeShown,
             ...actions);
         if (copyAndOpen === Messages.copyAndOpenLabel) {
-            await vscode.env.clipboard.writeText(publishXml);
-            await vscode.env.openExternal(vscode.Uri.parse(`https://github.com/${inputs.sourceRepository.repositoryId}/settings/secrets`));
+            await vscode.env.clipboard.writeText(valueToBeCopied);
+            await vscode.env.openExternal(vscode.Uri.parse(urlToBeOpened));
         }
+
         return copyAndOpen;
     }
 }

@@ -4,7 +4,7 @@ import { HostedVS2017QueueName } from '../../resources/constants';
 import { Messages } from '../../resources/messages';
 import { telemetryHelper } from '../telemetryHelper';
 import { TracePoints } from '../../resources/tracePoints';
-import { WizardInputs, RepositoryProvider } from '../../model/models';
+import { WizardInputs } from '../../model/models';
 import * as util from 'util';
 import * as path from 'path';
 
@@ -92,19 +92,6 @@ export class AzureDevOpsHelper {
     private async getBuildDefinitionPayload(pipelineName: string, inputs: WizardInputs): Promise<BuildDefinition> {
         let queueId = await this.getAgentQueueId(inputs.organizationName, inputs.project.name, HostedVS2017QueueName);
         let repositoryProperties: BuildDefinitionRepositoryProperties = null;
-
-        if (inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
-            repositoryProperties = {
-                apiUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}`,
-                branchesUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}/branches`,
-                cloneUrl: inputs.sourceRepository.remoteUrl,
-                connectedServiceId: inputs.sourceRepository.serviceConnectionId,
-                defaultBranch: inputs.sourceRepository.branch,
-                fullName: inputs.sourceRepository.repositoryName,
-                refsUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}/git/refs`
-            };
-        }
-
         let properties = { 'source': 'ms-azure-devops.azure-pipelines' };
 
         return {

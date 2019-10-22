@@ -12,6 +12,10 @@ jobs:
     # checkout the repo
     - uses: actions/checkout@master
 
+    - uses: azure/login@v1
+      with:
+        creds: {{=<% %>=}}${{ secrets.<% targetResource.serviceConnectionId %> }}<%={{ }}=%>
+
     # install dependencies, build, and test
     - name: npm install, build, and test
       run: |
@@ -19,8 +23,17 @@ jobs:
         npm run build --if-present
         npm run test --if-present
 
+    - uses: azure/appservice-settings@v1
+      with:
+        app-name: {{{ targetResource.resource.name }}}
+        general-settings-json: '{"linuxFxVersion": "NODE|lts"}' #'General configuration settings as Key Value pairs'
+
     # deploy web app using publish profile credentials
     - uses: azure/webapps-deploy@v1
       with:
         app-name: {{{ targetResource.resource.name }}}
-        publish-profile: {{=<% %>=}}${{ secrets.<% targetResource.serviceConnectionId %> }}<%={{ }}=%>
+
+    # Azure logout
+    - name: logout
+      run: |
+        az logout

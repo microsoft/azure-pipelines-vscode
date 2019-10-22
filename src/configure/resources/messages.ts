@@ -16,7 +16,7 @@ export class Messages {
     public static configuringPipelineAndDeployment: string = 'Configuring pipeline and proceeding to deployment...';
     public static couldNotAuthorizeEndpoint: string = 'Couldn\'t authorize endpoint for use in Azure Pipelines.';
     public static creatingAzureDevOpsOrganization: string = 'Creating Azure DevOps organization.';
-    public static creatingAzureServiceConnection: string = 'Connecting Azure Pipelines with your subscription: %s';
+    public static creatingAzureServiceConnection: string = 'Creating Azure deployment credentials with your subscription: %s';
     public static creatingGitHubServiceConnection: string = 'Creating GitHub service connection';
     public static discardPipeline: string = 'Discard pipeline';
     public static enterAzureDevOpsOrganizationName: string = 'Azure DevOps organization name where your pipeline will be hosted';
@@ -62,6 +62,6 @@ export class Messages {
     public static copyAndOpenLabel: string = 'Copy & Open';
     public static nextLabel: string = 'Next';
     public static githubWorkflowSetupSuccessfully: string = 'GitHub workflow set up successfully !';
-    public static copyPublishingCredentials: string = 'To deploy to Azure App Service via GitHub workflow, create a new secret with name \'%s\' in your repository. Copy the below secret value to add the secret';
+    public static copyAndCreateSecretMessage: string = 'To deploy to Azure App Service via GitHub workflow, create a new secret with name \'%s\' in your repository. Copy the below secret value to add the secret';
     public static browseWorkflow: string = 'Browse Workflow';
 }

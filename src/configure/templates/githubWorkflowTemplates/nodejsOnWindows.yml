@@ -12,6 +12,10 @@ jobs:
     # checkout the repo
     - uses: actions/checkout@master
 
+    - uses: azure/login@v1
+      with:
+        creds: {{=<% %>=}}${{ secrets.<% targetResource.serviceConnectionId %> }}<%={{ }}=%>
+
     # install dependencies, build, and test
     - name: npm install, build, and test
       run: |
@@ -23,4 +27,8 @@ jobs:
     - uses: azure/webapps-deploy@v1
       with:
         app-name: {{{ targetResource.resource.name }}}
-        publish-profile: {{=<% %>=}}${{ secrets.<% targetResource.serviceConnectionId %> }}<%={{ }}=%>
+
+    # Azure logout
+    - name: logout
+      run: |
+        az logout
