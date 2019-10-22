@@ -27,8 +27,8 @@ export interface AzureAccountExtensionExports {
 
 export class WizardInputs {
     organizationName: string;
-    isNewOrganization: boolean;
     project: DevOpsProject;
+    isNewOrganization: boolean;
     sourceRepository: GitRepositoryParameters;
     targetResource: AzureParameters = new AzureParameters();
     pipelineParameters: PipelineParameters = new PipelineParameters();
@@ -75,7 +75,7 @@ export interface GitRepositoryParameters {
     remoteUrl: string;
     branch: string;
     commitId: string;
-    localPath?: string;
+    localPath: string;
 }
 
 export interface PipelineTemplate {
