@@ -119,19 +119,20 @@ const nodeTemplates: Array<PipelineTemplate> = [
 
 const pythonTemplates: Array<PipelineTemplate> = [
     {
-        label: 'Python to Linux Web App on Azure',
-        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonLinuxWebApp.yml'),
-        language: 'python',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.LinuxApp
-    },
-    {
         label: 'Python to Windows Web App on Azure',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonWindowsWebApp.yml'),
         language: 'python',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.WindowsApp
     },
+    {
+        label: 'Python to Linux Web App on Azure',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonLinuxWebApp.yml'),
+        language: 'python',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.LinuxApp
+    },
+    
     {
         label: 'Build and Test Python Django App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonDjango.yml'),
@@ -160,6 +161,13 @@ const functionTemplates: Array<PipelineTemplate> = [
         targetKind: WebAppKind.FunctionAppLinux
     },
     {
+        label: 'Node.js Function App to Windows Azure Function',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsWindowsFunctionApp.yml'),
+        language: 'node',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.FunctionApp
+    },
+    {
         label: 'Node.js Function App to Linux Azure Function',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/nodejsLinuxFunctionApp.yml'),
         language: 'node',
@@ -173,4 +181,11 @@ const functionTemplates: Array<PipelineTemplate> = [
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.FunctionApp
     },
+    {
+        label: '.NET Core Function App to Linux Azure Function',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/dotnetcoreLinuxFunctionApp.yml'),
+        language: 'dotnet',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.FunctionAppLinux
+    }
 ]
