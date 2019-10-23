@@ -126,6 +126,13 @@ const pythonTemplates: Array<PipelineTemplate> = [
         targetKind: WebAppKind.LinuxApp
     },
     {
+        label: 'Python to Windows Web App on Azure',
+        path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonWindowsWebApp.yml'),
+        language: 'python',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
+    },
+    {
         label: 'Build and Test Python Django App',
         path: path.join(path.dirname(path.dirname(__dirname)), 'configure/templates/pythonDjango.yml'),
         language: 'python',

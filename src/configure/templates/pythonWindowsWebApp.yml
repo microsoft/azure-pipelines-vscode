@@ -1,5 +1,5 @@
-# Python to Linux Web App on Azure
-# Build your Python project and deploy it to Azure as a Linux Web App.
+# Python to Windows Web App on Azure
+# Build your Python project and deploy it to Azure as a Windows Web App.
 # Change python version to one thats appropriate for your application.
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
@@ -14,7 +14,7 @@ variables:
   webAppName: '{{{ targetResource.resource.name }}}'
 
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  vmImageName: 'vs2017-win2016'
 
   # Environment name
   environmentName: '{{{ targetResource.resource.name }}}'
