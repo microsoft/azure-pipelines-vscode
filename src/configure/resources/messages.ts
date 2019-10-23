@@ -47,6 +47,7 @@ export class Messages {
     public static selectFunctionApp: string = 'Select Function App';
     public static selectWorkspaceFolder: string = 'Select a folder from your workspace to deploy';
     public static signInLabel: string = 'Sign In';
+    public static signUpLabel: string = 'Sign Up';
     public static unableToCreateAzureServiceConnection: string = `Unable to store connection details for Azure subscription.\nOperation Status: %s\nMessage: %s\nService connection is not in ready state.`;
     public static unableToCreateGitHubServiceConnection: string =`Unable to store connection details for GitHub.\nOperation Status: %s\nService connection is not in ready state.`;
     public static retryFailedMessage: string =`Failed after retrying: %s times. Internal Error: %s`;

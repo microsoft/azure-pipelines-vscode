@@ -34,13 +34,31 @@ export class GraphHelper {
             return aadApp;
         })
         .catch((error) => {
-            let errorMessage = error && error.message;
-            if (!errorMessage && error["odata.error"]) {
-                errorMessage = error["odata.error"]["message"];
-                if (typeof errorMessage === "object") {
-                    errorMessage = errorMessage.value;
+            let errorMessage = "";
+
+            if (typeof error == "string") {
+                errorMessage = error;
+            }
+            else {
+                errorMessage = !!error && error.message;
+                if (!errorMessage && error["odata.error"]) {
+                    if (typeof error["odata.error"]["message"] === "object") {
+                        errorMessage = error["odata.error"]["message"].value;
+                    }
+                    else {
+                        errorMessage = error["odata.error"]["message"];
+                    }
+                }
+                if(!errorMessage) {
+                    try {
+                        errorMessage = JSON.stringify(error);
+                    }
+                    catch (err) {
+
+                    }
                 }
             }
+            
             throw new Error(errorMessage);
         });
     }
