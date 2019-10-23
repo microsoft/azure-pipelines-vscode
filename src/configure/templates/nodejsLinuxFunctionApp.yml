@@ -76,3 +76,4 @@ stages:
               appType: functionAppLinux
               appName: $(functionAppName)
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              runtimeStack: 'DOCKER|microsoft/azure-functions-node8:2.0'

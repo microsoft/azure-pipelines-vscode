@@ -105,3 +105,4 @@ stages:
               WebAppKind: webAppLinux
               Package: $(Pipeline.Workspace)/**/*.zip
               DeploymentType: "webDeploy"
+              RuntimeStack: "DOTNETCORE|2.2"
