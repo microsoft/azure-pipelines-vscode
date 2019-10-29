@@ -1,4 +1,4 @@
-[![Build Status](https://mseng.visualstudio.com/AzureDevOps/_build/latest?definitionId=9436)](https://dev.azure.com/ms/azure-pipelines-vscode/_build/latest?definitionId=11)
+[![Build Status](https://dev.azure.com/ms/azure-pipelines-vscode/_apis/build/status/CI-and-PR)](https://dev.azure.com/ms/azure-pipelines-vscode/_build/latest?definitionId=11)
 
 # Azure Pipelines for VS Code
 
