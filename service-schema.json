@@ -8579,11 +8579,10 @@
 									"ignoreCase": "key"
 								},
 								"SecretsFilter": {
+									"type": "string",
 									"description": "Secrets filter",
-									"ignoreCase": "all",
-									"enum": [
-										"EditableOptions"
-									]
+									"ignoreCase": "key",
+									"pattern": "^[A-Za-z0-9-]*$"
 								}
 							},
 							"additionalProperties": false,
