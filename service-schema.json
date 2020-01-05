@@ -3092,6 +3092,13 @@
 							"description": "Run Azure CLI commands against an Azure subscription in a Shell script when running on Linux agent or Batch script when running on Windows agent.",
 							"ignoreCase": "value",
 							"enum": [
+								"AzureCLI@2"
+							]
+						},
+						{
+							"description": "Run Azure CLI commands against an Azure subscription in a Shell script when running on Linux agent or Batch script when running on Windows agent.",
+							"ignoreCase": "value",
+							"enum": [
 								"AzureCLI@1"
 							]
 						},
@@ -10623,6 +10630,103 @@
 					],
 					"required": [
 						"task"
+					]
+				},
+				{
+					"properties": {
+						"task": {
+							"description": "Azure CLI\n\nRun Azure CLI commands against an Azure subscription in a Shell script when running on Linux agent or Batch script when running on Windows agent.",
+							"ignoreCase": "value",
+							"pattern": "^AzureCLI@2$"
+						},
+						"inputs": {
+							"description": "Azure CLI inputs",
+							"properties": {
+								"azureSubscription": {
+									"type": "string",
+									"description": "Azure subscription",
+									"ignoreCase": "key",
+									"aliases": [
+										"connectedServiceNameARM"
+									]
+								},
+								"scriptType": {
+									"type": "string",
+									"description": "Type of script: PowerShell/PowerShell Core/Bat/Shell script.",
+									"ignoreCase": "all",
+									"enum": [
+										"ps",
+										"Powershell",
+										"pscore",
+										"Powershell Core",
+										"batch",
+										"Batch",
+										"bash",
+										"Shell"
+									]
+								},
+								"scriptLocation": {
+									"description": "Script Location",
+									"ignoreCase": "all",
+									"enum": [
+										"inlineScript",
+										"scriptPath"
+									]
+								},
+								"scriptPath": {
+									"type": "string",
+									"description": "Script Path",
+									"ignoreCase": "key"
+								},
+								"inlineScript": {
+									"type": "string",
+									"description": "Inline Script",
+									"ignoreCase": "key"
+								},
+								"arguments": {
+									"type": "string",
+									"description": "Arguments",
+									"ignoreCase": "key",
+									"aliases": [
+										"args"
+									]
+								},
+								"addSpnToEnvironment": {
+									"type": "boolean",
+									"description": "Access service principal details in script",
+									"ignoreCase": "key"
+								},
+								"useGlobalConfig": {
+									"type": "boolean",
+									"description": "Use global Azure CLI configuration",
+									"ignoreCase": "key"
+								},
+								"workingDirectory": {
+									"type": "string",
+									"description": "Working Directory",
+									"ignoreCase": "key",
+									"aliases": [
+										"cwd"
+									]
+								},
+								"failOnStandardError": {
+									"type": "boolean",
+									"description": "Fail on Standard Error",
+									"ignoreCase": "key"
+								}
+							},
+							"additionalProperties": false,
+							"required": [
+								"azureSubscription"
+							]
+						}
+					},
+					"firstProperty": [
+						"task"
+					],
+					"required": [
+						"task",
+						"inputs"
 					]
 				},
 				{
