@@ -19348,6 +19348,16 @@
 									"aliases": [
 										"CustomTargetAzurePs"
 									]
+								},
+								"pwsh": {
+									"type":"boolean",
+									"description": "use pwsh.exe from your PATH instead of powershell.exe",
+									"ignoreCase": "all"
+								},
+								"workingDirectory": {
+									"type": "string",
+									"description": "Working directory where the script is run",
+									"ignoreCase": "key"
 								}
 							},
 							"additionalProperties": false,
