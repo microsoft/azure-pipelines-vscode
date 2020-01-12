@@ -2889,6 +2889,13 @@
 							]
 						},
 						{
+							"description": "Authentication task for the pip client used for installing Python distributions",
+							"ignoreCase": "value",
+							"enum": [
+								"PipAuthenticate@1"
+							]
+						},
+						{
 							"description": "Run scripts and make changes to a MySQL Database",
 							"ignoreCase": "value",
 							"enum": [
@@ -7679,6 +7686,53 @@
 								"externalFeeds": {
 									"type": "string",
 									"description": "Feeds from external organizations",
+									"ignoreCase": "key",
+									"aliases": [
+										"externalSources"
+									]
+								}
+							},
+							"additionalProperties": false,
+							"required": []
+						}
+					},
+					"firstProperty": [
+						"task"
+					],
+					"required": [
+						"task"
+					]
+				},
+				{
+					"properties": {
+						"task": {
+							"description": "Python pip authenticate\n\nAuthentication task for the pip client used for installing Python distributions",
+							"ignoreCase": "value",
+							"pattern": "^PipAuthenticate@1$"
+						},
+						"inputs": {
+							"description": "Python pip authenticate inputs",
+							"properties": {
+								"artifactFeeds": {
+									"type": "string",
+									"description": "My feeds (select below)",
+									"ignoreCase": "key",
+									"aliases": [
+										"feedList"
+									]
+								},
+								"pythonDownloadServiceConnections": {
+									"type": "string",
+									"description": "Feeds from external organizations",
+									"ignoreCase": "key",
+									"aliases": [
+										"externalSources",
+										"externalFeeds"
+									]
+								},
+								"onlyAddExtraIndex": {
+									"type": "boolean",
+									"description": "Don't set primary index URL",
 									"ignoreCase": "key",
 									"aliases": [
 										"externalSources"
