@@ -3199,6 +3199,13 @@
 							"description": "Cache files between runs",
 							"ignoreCase": "value",
 							"enum": [
+								"CacheBeta@1"
+							]
+						},
+						{
+							"description": "Cache files between runs",
+							"ignoreCase": "value",
+							"enum": [
 								"Cache@2"
 							]
 						},
@@ -11908,6 +11915,52 @@
 								"cacheHitVar": {
 									"type": "string",
 									"description": "Cache hit variable",
+									"ignoreCase": "key"
+								}
+							},
+							"additionalProperties": false,
+							"required": [
+								"key",
+								"path"
+							]
+						}
+					},
+					"firstProperty": [
+						"task"
+					],
+					"required": [
+						"task",
+						"inputs"
+					]
+				},
+				{
+					"properties": {
+						"task": {
+							"description": "Cache (Beta)\n\nCache files between runs",
+							"ignoreCase": "value",
+							"pattern": "^CacheBeta@1$"
+						},
+						"inputs": {
+							"description": "Cache (Beta) inputs",
+							"properties": {
+								"key": {
+									"type": "string",
+									"description": "Key",
+									"ignoreCase": "key"
+								},
+								"path": {
+									"type": "string",
+									"description": "Path",
+									"ignoreCase": "key"
+								},
+								"cacheHitVar": {
+									"type": "string",
+									"description": "Cache hit variable",
+									"ignoreCase": "key"
+								},
+								"restoreKeys": {
+									"type": "string",
+									"description": "Additional restore key prefixes",
 									"ignoreCase": "key"
 								}
 							},
