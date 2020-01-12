@@ -15282,6 +15282,11 @@
 									"type": "integer",
 									"description": "Parallel count",
 									"ignoreCase": "key"
+								},
+								"FileCopyOptions": {
+									"type": "string",
+									"description": "Pass additional options to the Robocopy command",
+									"ignoreCase": "key"
 								}
 							},
 							"additionalProperties": false,
