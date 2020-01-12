@@ -3196,6 +3196,13 @@
 							]
 						},
 						{
+							"description": "Cache files between runs",
+							"ignoreCase": "value",
+							"enum": [
+								"Cache@2"
+							]
+						},
+						{
 							"description": "Run the Grunt JavaScript task runner",
 							"ignoreCase": "value",
 							"enum": [
@@ -11901,6 +11908,52 @@
 								"cacheHitVar": {
 									"type": "string",
 									"description": "Cache hit variable",
+									"ignoreCase": "key"
+								}
+							},
+							"additionalProperties": false,
+							"required": [
+								"key",
+								"path"
+							]
+						}
+					},
+					"firstProperty": [
+						"task"
+					],
+					"required": [
+						"task",
+						"inputs"
+					]
+				},
+				{
+					"properties": {
+						"task": {
+							"description": "Cache files between runs",
+							"ignoreCase": "value",
+							"pattern": "^Cache@2$"
+						},
+						"inputs": {
+							"description": "Cache inputs",
+							"properties": {
+								"key": {
+									"type": "string",
+									"description": "Key",
+									"ignoreCase": "key"
+								},
+								"path": {
+									"type": "string",
+									"description": "Path",
+									"ignoreCase": "key"
+								},
+								"cacheHitVar": {
+									"type": "string",
+									"description": "Cache hit variable",
+									"ignoreCase": "key"
+								},
+								"restoreKeys": {
+									"type": "string",
+									"description": "Additional restore key prefixes",
 									"ignoreCase": "key"
 								}
 							},
