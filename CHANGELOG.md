@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 
 ## 1.165.0
 ### Fixed
+- updated schema to M163
 - editor.autoIndent setting is updated from a bool to a string
 
 ## 1.157.5
