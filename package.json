@@ -2,7 +2,7 @@
     "name": "azure-pipelines",
     "displayName": "Azure Pipelines",
     "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines YAML",
-    "version": "1.165.0",
+    "version": "1.165.1",
     "publisher": "ms-azure-devops",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "repository": {
@@ -146,7 +146,7 @@
     "dependencies": {
         "azure-arm-resource": "7.3.0",
         "azure-arm-website": "5.7.0",
-        "azure-pipelines-language-server": "0.5.9",
+        "azure-pipelines-language-server": "0.5.10",
         "mustache": "3.0.1",
         "q": "1.5.1",
         "shelljs": "^0.3.0",
