@@ -148,7 +148,8 @@
 							"$ref": "#/definitions/trigger"
 						},
 						"parameters": {
-							"$ref": "#/definitions/mapping"
+							"description": "Stage parameters",
+							"$ref": "#/definitions/templateParameters"
 						},
 						"pr": {
 							"description": "Pull request triggers",
@@ -250,7 +251,8 @@
 							"$ref": "#/definitions/trigger"
 						},
 						"parameters": {
-							"$ref": "#/definitions/mapping"
+							"description": "Job parameters",
+							"$ref": "#/definitions/templateParameters"
 						},
 						"pr": {
 							"description": "Pull request triggers",
@@ -1545,8 +1547,30 @@
 					"firstProperty": [
 						"template"
 					]
+				},
+				{
+					"$ref": "#/definitions/variableExpression"
 				}
 			]
+		},
+		"variableExpression":{
+			"patternProperties": {
+				"\\${\\s*{\\s*if.*}\\s*}$":{
+					"description": "If expression",
+					"type":"array",
+					"items": {
+						"$ref": "#/definitions/variable"
+					}
+				},
+				"\\${\\s*{\\s*each.*}\\s*}$":{
+					"description": "Each expression",
+					"type":"array",
+					"items": {
+						"$ref": "#/definitions/variable"
+					}
+				}
+			},
+			"additionalProperties": false
 		},
 		"stagesTemplate": {
 			"type": "object",
@@ -2029,10 +2053,39 @@
 				{
 					"type": "array",
 					"items": {
-						"$ref": "#/definitions/nonEmptyString"
+						"$ref": "#/definitions/poolDemand"
 					}
 				}
 			]
+		},
+		"poolDemand":{
+			"anyOf": [
+				{
+					"$ref": "#/definitions/nonEmptyString"
+				},
+				{
+					"$ref": "#/definitions/poolDemandExpression"
+				}
+			]
+		},
+		"poolDemandExpression": {
+			"patternProperties": {
+				"\\${\\s*{\\s*if.*}\\s*}$":{
+					"description": "If expression",
+					"type":"array",
+					"items": {
+						"$ref": "#/definitions/poolDemands"
+					}
+				},
+				"\\${\\s*{\\s*each.*}\\s*}$":{
+					"description": "Each expression",
+					"type":"array",
+					"items": {
+						"$ref": "#/definitions/poolDemands"
+					}
+				}
+			},
+			"additionalProperties": false
 		},
 		"jobContainer": {
 			"anyOf": [
@@ -3348,8 +3401,37 @@
 					"firstProperty": [
 						"reviewApp"
 					]
+				},
+				{
+					"$ref": "#/definitions/stepExpression"
 				}
 			]
+		},
+		"stepExpression":{
+			"patternProperties": {
+				"\\${\\s*{\\s*if.*}\\s*}$":{
+					"description": "If expression",
+					"type":"array",
+					"items": {
+						"$ref": "#/definitions/step"
+					}
+				},
+				"\\${\\s*{\\s*each.*}\\s*}$":{
+					"description": "Each expression",
+					"type":"array",
+					"items": {
+						"anyOf": [
+							{
+								"$ref": "#/definitions/step"
+							},
+							{
+								"$ref": "#/definitions/mapping"
+							}
+						]
+					}
+				}
+			},
+			"additionalProperties": false
 		},
 		"stepTarget": {
 			"description": "Step target",

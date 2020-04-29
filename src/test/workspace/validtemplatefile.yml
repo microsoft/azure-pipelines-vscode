@@ -1,0 +1,57 @@
+parameters:
+- name: toolset
+  type: string
+  default: msbuild
+
+- name: poolName
+  type: string
+
+- name: poolDemands
+  type: object
+  default: []
+
+- name: setVariable2
+  type: boolean
+  default: false
+
+- name: additionalSteps
+  type: stepList
+  default: []
+
+variables:
+- group: Vars
+- name: VARIABLE_1
+  value: 1
+- ${{ if eq(parameters.setVariable2, true) }}:
+  - name: VARIABLE_2
+    value: 2
+
+jobs:
+- job: build
+
+  pool:
+    name: ${{ parameters.poolName }}
+    demands:
+    - ${{ if eq(parameters.toolset, 'dotnet') }}:
+      - DotNetCore
+    - ${{ each demand in parameters.poolDemands }}: 
+      - ${{ demand }}
+  
+  steps:
+  # msbuild
+  - ${{ if eq(parameters.toolset, 'msbuild') }}:
+    - task: MSBuild@1
+    - task: VSTest@2
+
+  # dotnet
+  - ${{ if eq(parameters.toolset, 'dotnet') }}:
+    - task: DotNetCoreCLI@1
+      inputs:
+        command: build
+    - task: DotNetCoreCLI@1
+      inputs:
+        command: test
+
+  - ${{ each step in parameters.additionalSteps }}:
+    - ${{ each pair in step }}:
+        ${{ pair.key }}: ${{ pair.value }}

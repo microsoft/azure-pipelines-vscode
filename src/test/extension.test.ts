@@ -66,6 +66,22 @@ suite('Validation Tests', function() {
         assert.equal(diagnostics.length, 0);
     });
 
+    test ('Given a valid template, there should be no validation errors', async () => {
+        // Arrange
+        const emptyFiles: vscode.Uri[] = await vscode.workspace.findFiles('validtemplatefile.yml');
+        const emptyFile: vscode.Uri = emptyFiles[0];
+
+        // Act
+        const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
+        await vscode.window.showTextDocument(emptyDocument);
+        await sleep(3000); // Give it time to show the validation errors, if any
+        const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
+
+        // Assert
+        assert.equal(emptyDocument.languageId, 'azure-pipelines');
+        assert.equal(diagnostics.length, 0);
+    });
+
     test ('Given an invalid document, there should be validation errors', async function() {
         // Arrange
         const invalidfiles: vscode.Uri[] = await vscode.workspace.findFiles('invalidfile.yml');
@@ -141,8 +157,8 @@ suite('Autocomplete Tests', function() {
         const documentTextArr: string[] = autoCompleteDoc.getText().split('\n');
 
         assert.equal(autoCompleteDoc.languageId, 'azure-pipelines');
-        assert.equal(diagnostics.length, 0);
-        assert.equal(documentTextArr[12], '- task: AndroidBuild@1');
+        assert.equal(diagnostics.length, 2);
+        assert.equal(documentTextArr[12], '- task: AndroidBuild@1\r');
     });
 })
 
