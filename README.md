@@ -20,11 +20,13 @@ Basic YAML validation is built in to VS Code, but now you can have syntax highli
 
 By default, the extension will highlight known Azure Pipelines files in the root of your workspace. You can change the language mode at the lower right to work with one file at a time. Click the language picker, then choose "Azure Pipelines". If you have files which should always use this extension, set your user or workspace settings to match those file paths with this extension. For example:
 
-"files.associations": {
-
-  "**/ci/*.yml": "azure-pipelines"
-
+```json
+{
+    "files.associations": {
+        "**/ci/*.yml": "azure-pipelines"
+    }
 }
+```
 
 ## Telemetry
 
