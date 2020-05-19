@@ -18,7 +18,9 @@ export class SchemaAssociationService implements ISchemaAssociationService {
     schemaFilePath: string;
 
     constructor(extensionPath: string) {
-        this.schemaFilePath = vscode.Uri.file(path.join(extensionPath, './service-schema.json')).toString();
+        const alternateSchema = vscode.workspace.getConfiguration('[azure-pipelines]', null).get<string>('customSchemaFile');
+        const schemaPath = alternateSchema || path.join(extensionPath, './service-schema.json');
+        this.schemaFilePath = vscode.Uri.file(schemaPath).toString();
     }
 
     public getSchemaAssociation(): ISchemaAssociations {
