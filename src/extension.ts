@@ -11,8 +11,8 @@ import * as languageclient from 'vscode-languageclient';
 import { activateConfigurePipeline } from './configure/activate';
 import { extensionVariables } from './configure/model/models';
 import * as logger from './logger';
-import * as schemaassociationservice from './schema-association-service';
-import * as schemacontributor from './schema-contributor';
+import { SchemaAssociationService, SchemaAssociationNotification } from './schema-association-service';
+import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from './schema-contributor';
 import { telemetryHelper } from './configure/helper/telemetryHelper';
 import { TelemetryKeys } from './configure/resources/telemetryKeys';
 
@@ -37,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     logger.log('Extension has been activated!', 'ExtensionActivated');
-    return schemacontributor.schemaContributor;
+    return schemaContributor;
 }
 
 function registerUiVariables(context: vscode.ExtensionContext) {
@@ -53,32 +53,33 @@ function registerUiVariables(context: vscode.ExtensionContext) {
 async function activateYmlContributor(context: vscode.ExtensionContext) {
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
-    const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Support', serverOptions, clientOptions);
+    const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Language', serverOptions, clientOptions);
 
-    const schemaAssociationService: schemaassociationservice.ISchemaAssociationService = new schemaassociationservice.SchemaAssociationService(context.extensionPath);
+    const schemaAssociationService = new SchemaAssociationService(context.extensionPath);
 
     const disposable = client.start();
     context.subscriptions.push(disposable);
 
-    const initialSchemaAssociations: schemaassociationservice.ISchemaAssociations = schemaAssociationService.getSchemaAssociation();
+    const initialSchemaAssociations = schemaAssociationService.getSchemaAssociation();
+    logger.log(JSON.stringify(initialSchemaAssociations), 'on-load');
 
     await client.onReady().then(() => {
         //logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
-        client.sendNotification(schemaassociationservice.SchemaAssociationNotification.type, initialSchemaAssociations);
+        client.sendNotification(SchemaAssociationNotification.type, initialSchemaAssociations);
 
         // TODO: Should we get rid of these events and handle other events like Ctrl + Space? See when this event gets fired and send updated schema on that event.
-        client.onRequest(schemacontributor.CUSTOM_SCHEMA_REQUEST, (resource: any) => {
+        client.onRequest(CUSTOM_SCHEMA_REQUEST, (resource: any) => {
             //logger.log('Custom schema request. Resource: ' + JSON.stringify(resource), 'CustomSchemaRequest');
 
             // TODO: Can this return the location of the new schema file?
-            return schemacontributor.schemaContributor.requestCustomSchema(resource); // TODO: Have a single instance for the extension but dont return a global from this namespace.
+            return schemaContributor.requestCustomSchema(resource); // TODO: Have a single instance for the extension but dont return a global from this namespace.
         });
 
         // TODO: Can we get rid of this? Never seems to happen.
-        client.onRequest(schemacontributor.CUSTOM_CONTENT_REQUEST, (uri: any) => {
+        client.onRequest(CUSTOM_CONTENT_REQUEST, (uri: any) => {
             //logger.log('Custom content request.', 'CustomContentRequest');
 
-            return schemacontributor.schemaContributor.requestCustomSchemaContent(uri);
+            return schemaContributor.requestCustomSchemaContent(uri);
         });
     })
         .catch((reason) => {
@@ -88,6 +89,15 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 
     // TODO: Can we get rid of this since it's set in package.json?
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
+
+    // when config changes, refresh the schema
+    vscode.workspace.onDidChangeConfiguration(e => {
+        logger.log("locating schema file again");
+        schemaAssociationService.locateSchemaFile();
+        const newSchema = schemaAssociationService.getSchemaAssociation();
+        logger.log(JSON.stringify(newSchema), 'config-changed');
+        client.sendNotification(SchemaAssociationNotification.type, newSchema);
+    });
 }
 
 function getServerOptions(context: vscode.ExtensionContext): languageclient.ServerOptions {
