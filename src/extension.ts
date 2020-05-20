@@ -61,7 +61,6 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     context.subscriptions.push(disposable);
 
     const initialSchemaAssociations = schemaAssociationService.getSchemaAssociation();
-    logger.log(JSON.stringify(initialSchemaAssociations), 'on-load');
 
     await client.onReady().then(() => {
         //logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
@@ -92,11 +91,15 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 
     // when config changes, refresh the schema
     vscode.workspace.onDidChangeConfiguration(e => {
-        logger.log("locating schema file again");
         schemaAssociationService.locateSchemaFile();
         const newSchema = schemaAssociationService.getSchemaAssociation();
-        logger.log(JSON.stringify(newSchema), 'config-changed');
-        client.sendNotification(SchemaAssociationNotification.type, newSchema);
+        if (newSchema != initialSchemaAssociations)
+        {
+            vscode.window.showInformationMessage("Azure Pipelines schema changed. Restart VS Code to see the changes.");
+            // this _should_ cause the language server to refresh its config
+            // but that doesn't seem to be happening
+            client.sendNotification(SchemaAssociationNotification.type, newSchema);
+        }
     });
 }
 
