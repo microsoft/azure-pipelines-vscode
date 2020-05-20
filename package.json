@@ -165,7 +165,7 @@
         "uuid": "^3.3.2",
         "vscode-azureextensionui": "0.26.3",
         "vscode-extension-telemetry": "0.0.18",
-        "vscode-languageclient": "5.0.1",
+        "vscode-languageclient": "5.2.1",
         "vscode-nls": "3.2.4",
         "vscode-uri": "1.0.6"
     },
