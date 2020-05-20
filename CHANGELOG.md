@@ -3,6 +3,12 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.170.0
+### Added
+- Added an option to use a custom schema file
+### Fixed
+- updated schema to M169
+
 ## 1.165.1
 ### Fixed
 - update a few dependencies

@@ -6,15 +6,7 @@
 
 This VS Code extension adds syntax highlighting and autocompletion for Azure Pipelines YAML to VS Code. It also helps you set up continuous build and deployment for Azure WebApps without leaving VS Code.
 
-![Configure Pipeline Demo](https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/master/resources/configure-pipeline.gif)
-
-To set up a pipeline, choose *Azure Pipelines: Configure Pipeline* from the command palette (Ctrl/Cmd + Shift + P) or right-click in the file explorer. The guided workflow will generate a starter YAML file defining the build and deploy process.
-
-You can customize the pipeline using all the features offered by [Azure Pipelines.](https://azure.microsoft.com/services/devops/pipelines/).
-
-Once the setup is completed, an automatic CI/CD trigger will fire for every code push. To set this up, the extension will ask for a GitHub PAT with *repo* and *admin:repo_hook* scope.
-
-![GitHub PAT scope](resources/gitHubPatScope.png)
+## Validation
 
 Basic YAML validation is built in to VS Code, but now you can have syntax highlighting that's aware of the Pipelines YAML schema. This means that you get red squigglies if you say tasks: where you meant task:. IntelliSense is also schema-aware. Wherever you are in the file, press Ctrl-Space to see what options you have at that point.
 
@@ -27,6 +19,35 @@ By default, the extension will highlight known Azure Pipelines files in the root
     }
 }
 ```
+
+### Specific schema
+
+Out of the box, the extension has a generic schema file that includes only in-box tasks.
+You probably have custom tasks installed in your organization.
+To teach the extension about those, grab a copy of your schema and tell the extension where to find it.
+
+1. Visit `https://dev.azure.com/YOU-ORG-HERE/_apis/distributedtask/yamlschema` and save the output as `my-schema.json`.
+2. Edit your workspace's `settings.json` to include this:
+```json
+{
+  "[azure-pipelines].customSchemaFile": "/full/path/to/my-schema.json"
+}
+```
+3. Restart VS Code.
+The extension will now validate against your schema.
+It'll give you autocompletes for your custom tasks.
+
+## Pipeline configuration
+
+![Configure Pipeline Demo](https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/master/resources/configure-pipeline.gif)
+
+To set up a pipeline, choose *Azure Pipelines: Configure Pipeline* from the command palette (Ctrl/Cmd + Shift + P) or right-click in the file explorer. The guided workflow will generate a starter YAML file defining the build and deploy process.
+
+You can customize the pipeline using all the features offered by [Azure Pipelines.](https://azure.microsoft.com/services/devops/pipelines/).
+
+Once the setup is completed, an automatic CI/CD trigger will fire for every code push. To set this up, the extension will ask for a GitHub PAT with *repo* and *admin:repo_hook* scope.
+
+![GitHub PAT scope](resources/gitHubPatScope.png)
 
 ## Telemetry
 
