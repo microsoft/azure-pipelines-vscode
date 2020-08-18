@@ -30,7 +30,7 @@ To teach the extension about those, grab a copy of your schema and tell the exte
 2. Edit your workspace's `settings.json` to include this:
 ```json
 {
-  "[azure-pipelines].customSchemaFile": "/full/path/to/my-schema.json"
+  "[azure-pipelines].customSchemaFile": "./path/to/my-schema.json"
 }
 ```
 3. Restart VS Code.
