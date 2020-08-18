@@ -3,6 +3,10 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.174.2
+### Fixed
+- stopped passing null to `path.isAbsolute()`
+
 ## 1.174.1
 ### Added
 - allow relative paths to custom schema
