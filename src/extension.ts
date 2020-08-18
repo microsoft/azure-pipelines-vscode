@@ -93,7 +93,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     vscode.workspace.onDidChangeConfiguration(e => {
         schemaAssociationService.locateSchemaFile();
         const newSchema = schemaAssociationService.getSchemaAssociation();
-        if (newSchema != initialSchemaAssociations)
+        if (newSchema['*'][0] != initialSchemaAssociations['*'][0])
         {
             vscode.window.showInformationMessage("Azure Pipelines schema changed. Restart VS Code to see the changes.");
             // this _should_ cause the language server to refresh its config
