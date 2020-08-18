@@ -2,7 +2,7 @@ resources:
   repositories:
   - repository: vso
     clean: true
-    ref: master
+    ref: main
     type: tfsgit
   - repository: vso.vc
     mappings:

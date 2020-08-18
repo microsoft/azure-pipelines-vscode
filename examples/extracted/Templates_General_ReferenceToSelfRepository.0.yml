@@ -2,7 +2,7 @@ resources:
   repositories:
   - repository: vso
     clean: true
-    ref: master
+    ref: main
     type: tfsgit
 steps:
 - task: Bash@3

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/Microsoft/azure-pipelines-vscode/blob/master/local-schema.json",
-  "$comment": "v1.169.0",
+  "$id": "https://github.com/Microsoft/azure-pipelines-vscode/blob/main/local-schema.json",
+  "$comment": "v1.174.0",
   "title": "Pipeline schema",
   "description": "A pipeline definition",
   "oneOf": [

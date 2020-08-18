@@ -39,7 +39,7 @@ It'll give you autocompletes for your custom tasks.
 
 ## Pipeline configuration
 
-![Configure Pipeline Demo](https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/master/resources/configure-pipeline.gif)
+![Configure Pipeline Demo](https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/main/resources/configure-pipeline.gif)
 
 To set up a pipeline, choose *Azure Pipelines: Configure Pipeline* from the command palette (Ctrl/Cmd + Shift + P) or right-click in the file explorer. The guided workflow will generate a starter YAML file defining the build and deploy process.
 
