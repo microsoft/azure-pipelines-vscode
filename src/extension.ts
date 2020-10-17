@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { createTelemetryReporter, callWithTelemetryAndErrorHandling, IActionContext, AzureUserInput, registerUIExtensionVariables } from 'vscode-azureextensionui';
 import * as languageclient from 'vscode-languageclient';
 
-import { activateConfigurePipeline } from './configure/activate';
 import { extensionVariables } from './configure/model/models';
 import * as logger from './logger';
 import { SchemaAssociationService, SchemaAssociationNotification } from './schema-association-service';
@@ -16,12 +15,11 @@ import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from
 import { telemetryHelper } from './configure/helper/telemetryHelper';
 import { TelemetryKeys } from './configure/resources/telemetryKeys';
 
-const configurePipelineEnabled: boolean = vscode.workspace.getConfiguration('[azure-pipelines]', null).get('configure') ? true : false;
-
 export async function activate(context: vscode.ExtensionContext) {
     extensionVariables.reporter = createTelemetryReporter(context);
     registerUiVariables(context);
 
+    const configurePipelineEnabled = vscode.workspace.getConfiguration('[azure-pipelines]').get<boolean>('configure', true);
     await callWithTelemetryAndErrorHandling('azurePipelines.activate', async (activateContext: IActionContext) => {
         activateContext.telemetry.properties.isActivationEvent = 'true';
         telemetryHelper.initialize(activateContext, 'activate');
@@ -30,6 +28,7 @@ export async function activate(context: vscode.ExtensionContext) {
             async () => {
                 await activateYmlContributor(context);
                 if (configurePipelineEnabled) {
+                    const { activateConfigurePipeline } = await import('./configure/activate');
                     await activateConfigurePipeline();
                 }
             },
