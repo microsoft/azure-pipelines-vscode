@@ -3,6 +3,12 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.177.0
+### Fixed
+- hopefully fixed some of the startup performance problems (hat tip to @50Wliu)
+### Updated
+- M176 YAML schema
+
 ## 1.174.2
 ### Fixed
 - stopped passing null to `path.isAbsolute()`
