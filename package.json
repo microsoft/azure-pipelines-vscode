@@ -37,7 +37,9 @@
         "CI/CD"
     ],
     "activationEvents": [
-        "*"
+        "onLanguage:azure-pipelines",
+        "onCommand:configure-pipeline",
+        "onCommand:browse-pipeline"
     ],
     "main": "./out/extension",
     "contributes": {
