@@ -106,11 +106,6 @@
                 "command": "configure-pipeline",
                 "title": "Configure Pipeline",
                 "category": "Azure Pipelines"
-            },
-            {
-                "command": "browse-pipeline",
-                "title": "Browse Pipeline",
-                "category": "Azure Pipelines"
             }
         ],
         "menus": {
@@ -119,12 +114,6 @@
                     "command": "configure-pipeline",
                     "group": "Azure Pipelines",
                     "when": "explorerResourceIsFolder == true"
-                }
-            ],
-            "commandPalette": [
-                {
-                    "command": "browse-pipeline",
-                    "when": "never"
                 }
             ]
         }

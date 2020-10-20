@@ -2,7 +2,7 @@ const uuid = require('uuid/v4');
 import { AppServiceClient } from './clients/azure/appServiceClient';
 import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
-import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
+import { UserCancelledError } from 'vscode-azureextensionui';
 import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { GraphHelper } from './helper/graphHelper';
@@ -25,7 +25,7 @@ import {Build} from './model/azureDevOps';
 
 const Layer: string = 'configure';
 
-export async function configurePipeline(node: AzureTreeItem) {
+export async function configurePipeline() {
     await telemetryHelper.executeFunctionWithTimeTelemetry(async () => {
         try {
             if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
@@ -47,7 +47,7 @@ export async function configurePipeline(node: AzureTreeItem) {
             }
 
             var configurer = new PipelineConfigurer();
-            await configurer.configure(node);
+            await configurer.configure();
         }
         catch (error) {
             if (!(error instanceof UserCancelledError)) {
@@ -79,9 +79,9 @@ class PipelineConfigurer {
         this.controlProvider = new ControlProvider();
     }
 
-    public async configure(node: any) {
+    public async configure() {
         telemetryHelper.setCurrentStep('GetAllRequiredInputs');
-        await this.getAllRequiredInputs(node);
+        await this.getAllRequiredInputs();
 
         telemetryHelper.setCurrentStep('CreatePreRequisites');
         await this.createPreRequisites();
@@ -116,8 +116,7 @@ class PipelineConfigurer {
             });
     }
 
-    private async getAllRequiredInputs(node: any) {
-        await this.analyzeNode(node);
+    private async getAllRequiredInputs() {
         await this.getSourceRepositoryDetails();
         await this.getSelectedPipeline();
 
@@ -168,16 +167,6 @@ class PipelineConfigurer {
 
         if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
             await this.createAzureRMServiceConnection();
-        }
-    }
-
-    private async analyzeNode(node: any): Promise<void> {
-        if (!!node && !!node.fullId) {
-            await this.extractAzureResourceFromNode(node);
-        }
-        else if (node && node.fsPath) {
-            this.workspacePath = node.fsPath;
-            telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.CurrentWorkspace);
         }
     }
 
@@ -323,37 +312,6 @@ class PipelineConfigurer {
             },
             TelemetryKeys.GitHubPatDuration);
         return githubPat;
-    }
-
-    private async extractAzureResourceFromNode(node: any): Promise<void> {
-        this.inputs.targetResource.subscriptionId = node.root.subscriptionId;
-        this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
-        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
-
-        try {
-            let azureResource: GenericResource = await this.appServiceClient.getAppServiceResource((<AzureTreeItem>node).fullId);
-
-            switch (azureResource.type ? azureResource.type.toLowerCase() : '') {
-                case 'Microsoft.Web/sites'.toLowerCase():
-                    switch (azureResource.kind ? azureResource.kind.toLowerCase() : '') {
-                        case WebAppKind.WindowsApp:
-                            this.inputs.targetResource.resource = azureResource;
-                            break;
-                        case WebAppKind.FunctionApp:
-                        case WebAppKind.LinuxApp:
-                        case WebAppKind.LinuxContainerApp:
-                        default:
-                            throw new Error(utils.format(Messages.appKindIsNotSupported, azureResource.kind));
-                    }
-                    break;
-                default:
-                    throw new Error(utils.format(Messages.resourceTypeIsNotSupported, azureResource.type));
-            }
-        }
-        catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.ExtractAzureResourceFromNodeFailed, error);
-            throw error;
-        }
     }
 
     private async getAzureDevOpsDetails(): Promise<void> {
