@@ -1,15 +1,13 @@
-import { InputBoxOptions, QuickPickItem, window } from 'vscode';
-import { IAzureQuickPickOptions, UserCancelledError } from 'vscode-azureextensionui';
+import { InputBoxOptions, QuickPickItem, QuickPickOptions, window } from 'vscode';
 import { telemetryHelper } from '../helper/telemetryHelper';
-import { extensionVariables } from '../model/models';
-import {Messages} from '../resources/messages';
 import { TelemetryKeys } from '../resources/telemetryKeys';
+import { UserCancelledError } from './userCancelledError';
 
 export class ControlProvider {
-    public async showQuickPick<T extends QuickPickItem>(listName: string, listItems: T[] | Thenable<T[]>, options: IAzureQuickPickOptions, itemCountTelemetryKey?: string): Promise<T> {
+    public async showQuickPick<T extends QuickPickItem>(listName: string, listItems: T[] | Thenable<T[]>, options: QuickPickOptions, itemCountTelemetryKey?: string): Promise<T> {
         try {
             telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, listName);
-            return await extensionVariables.ui.showQuickPick(listItems, options);
+            return window.showQuickPick(listItems, options);
         }
         finally {
             if (itemCountTelemetryKey) {
@@ -20,7 +18,7 @@ export class ControlProvider {
 
     public async showInputBox(inputName: string, options: InputBoxOptions): Promise<string> {
         telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, inputName);
-        return await extensionVariables.ui.showInputBox(options);
+        return window.showInputBox(options);
     }
 
     public async showInformationBox(informationIdentifier: string, informationMessage: string, ...actions: string[]): Promise<string> {
@@ -28,13 +26,13 @@ export class ControlProvider {
         if (!!actions && actions.length > 0) {
             let result = await window.showInformationMessage(informationMessage, ...actions);
             if (!result) {
-                throw new UserCancelledError(Messages.userCancelledExcecption);
+                throw new UserCancelledError();
             }
 
             return result;
         }
         else {
-            return await window.showInformationMessage(informationMessage, ...actions);
+            return window.showInformationMessage(informationMessage, ...actions);
         }
 
     }

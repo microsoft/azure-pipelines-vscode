@@ -19,6 +19,7 @@ export class Messages {
     public static discardPipeline: string = 'Discard pipeline';
     public static enterAzureDevOpsOrganizationName: string = 'Azure DevOps organization name where your pipeline will be hosted';
     public static enterGitHubPat: string = 'Enter GitHub personal access token (PAT)';
+    public static errorOccurred: string = 'Azure Pipelines: An error has occurred. Check the output window for more details.';
     public static failedToCreateAzureDevOpsProject: string = 'Couldn\'t create a project in the Azure DevOps organization. Error: %s.';
     public static failedToCreateAzurePipeline: string = 'Couldn\'t configure pipeline. Error: %s';
     public static failedToDetermineAzureRepoDetails: string = 'Failed to determine Azure Repo details from remote url. Please ensure that the remote points to a valid Azure Repos url.';
@@ -29,7 +30,6 @@ export class Messages {
     public static notAGitRepository: string = 'Selected workspace is not a [Git](https://git-scm.com/docs/git) repository. Please select a Git repository.';
     public static notAzureRepoUrl: string = 'The repo isn\'t hosted with Azure Repos.';
     public static noWorkSpaceSelectedError: string = 'Please select a workspace folder to configure pipeline.';
-    public static operationCancelled: string = 'Operation cancelled.';
     public static operationTimedOut: string = 'Operation timed out.';
     public static organizationNameReservedMessage: string = 'The organization name %s isn\'t available. Please try another organization name.';
     public static organizationNameStaticValidationMessage: string = 'Organization names must start and end with a letter or number and can contain only letters, numbers, and hyphens.';
@@ -52,8 +52,7 @@ export class Messages {
     public static retryFailedMessage: string =`Failed after retrying: %s times. Internal Error: %s`;
     public static azureServicePrincipalFailedMessage: string =`Failed while creating Azure service principal.`;
     public static roleAssignmentFailedMessage: string =`Failed while role assignement.`;
-    public static waitForAzureSignIn: string =`Waiting for Azure sign-in...`;
-    public static userCancelledExcecption = 'User cancelled the action';
+    public static waitForAzureSignIn: string = `Waiting for Azure sign-in...`;
     public static cannotFindPipelineUrlInMetaDataException = 'We were unable to find pipeline associated with the Azure Web App. Please click on "Browse Pipeline" to explore.';
     public static cannotFindOrganizationWithName = 'Unable to find organization with name: %s';
 

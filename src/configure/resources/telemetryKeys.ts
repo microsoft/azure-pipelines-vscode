@@ -3,6 +3,7 @@ export class TelemetryKeys {
     public static RepoProvider: string = 'repoProvider';
     public static AzureLoginRequired: string = 'azureLoginRequired';
     public static JourneyId: string = 'journeyId';
+    public static Result: string = 'result';
     public static SourceRepoLocation: string = 'sourceRepoLocation';
     public static NewOrganization: string = 'newOrganization';
     public static ChosenTemplate: string = 'chosenTemplate';

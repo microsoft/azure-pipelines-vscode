@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import { registerCommand, IActionContext } from 'vscode-azureextensionui';
 
 import { configurePipeline } from './configure';
 import { Messages } from './resources/messages';
@@ -18,8 +17,10 @@ export async function activateConfigurePipeline(): Promise<void> {
 
     extensionVariables.azureAccountExtensionApi = <AzureAccountExtensionExports>azureAccountExtension.exports;
 
-    registerCommand('configure-pipeline', async (actionContext: IActionContext) => {
-        telemetryHelper.initialize(actionContext, 'configure-pipeline');
-        await configurePipeline();
+    vscode.commands.registerCommand('configure-pipeline', async () => {
+        telemetryHelper.initialize('configure-pipeline');
+        await telemetryHelper.callWithTelemetryAndErrorHandling(async () => {
+            await configurePipeline();
+        });
     });
 }

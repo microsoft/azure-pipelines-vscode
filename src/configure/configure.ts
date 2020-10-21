@@ -2,7 +2,6 @@ const uuid = require('uuid/v4');
 import { AppServiceClient } from './clients/azure/appServiceClient';
 import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
-import { UserCancelledError } from 'vscode-azureextensionui';
 import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { GraphHelper } from './helper/graphHelper';
@@ -17,48 +16,35 @@ import * as path from 'path';
 import * as templateHelper from './helper/templateHelper';
 import * as utils from 'util';
 import * as vscode from 'vscode';
-import { Result, telemetryHelper } from './helper/telemetryHelper';
+import { telemetryHelper } from './helper/telemetryHelper';
 import { ControlProvider } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
-import {Build} from './model/azureDevOps';
+import { Build } from './model/azureDevOps';
+import { UserCancelledError } from './helper/userCancelledError';
 
 const Layer: string = 'configure';
 
 export async function configurePipeline() {
-    await telemetryHelper.executeFunctionWithTimeTelemetry(async () => {
-        try {
-            if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
-                // set telemetry
-                telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
+    await telemetryHelper.callWithTelemetryAndErrorHandling(async () => {
+        if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
+            // set telemetry
+            telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
 
-                let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
-                if (signIn && signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
-                    await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.waitForAzureSignIn },
-                        async () => {
-                            await vscode.commands.executeCommand("azure-account.login");
-                        });
-                }
-                else {
-                    let error = new Error(Messages.azureLoginRequired);
-                    telemetryHelper.setResult(Result.Failed, error);
-                    throw error;
-                }
-            }
-
-            var configurer = new PipelineConfigurer();
-            await configurer.configure();
-        }
-        catch (error) {
-            if (!(error instanceof UserCancelledError)) {
-                extensionVariables.outputChannel.appendLine(error.message);
-                vscode.window.showErrorMessage(error.message);
-                telemetryHelper.setResult(Result.Failed, error);
+            let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
+            if (signIn && signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
+                await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.waitForAzureSignIn },
+                    async () => {
+                        await vscode.commands.executeCommand("azure-account.login");
+                    });
             }
             else {
-                telemetryHelper.setResult(Result.Canceled, error);
+                throw new Error(Messages.azureLoginRequired);
             }
         }
+
+        const configurer = new PipelineConfigurer();
+        await configurer.configure();
     }, TelemetryKeys.CommandExecutionDuration);
 }
 
@@ -298,7 +284,7 @@ class PipelineConfigurer {
 
     private async getGitHubPATToken(): Promise<string> {
         let githubPat = null;
-        await telemetryHelper.executeFunctionWithTimeTelemetry(
+        await telemetryHelper.callWithTelemetryAndErrorHandling(
             async () => {
                 githubPat = await this.controlProvider.showInputBox(
                     constants.GitHubPat,
@@ -581,7 +567,7 @@ class PipelineConfigurer {
                 }
                 else {
                     telemetryHelper.setTelemetry(TelemetryKeys.PipelineDiscarded, 'true');
-                    throw new UserCancelledError(Messages.operationCancelled);
+                    throw new UserCancelledError();
                 }
             }
         }
