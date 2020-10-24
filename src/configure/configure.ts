@@ -26,26 +26,23 @@ import { UserCancelledError } from './helper/userCancelledError';
 const Layer: string = 'configure';
 
 export async function configurePipeline() {
-    await telemetryHelper.callWithTelemetryAndErrorHandling(async () => {
-        if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
-            // set telemetry
-            telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
+    if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
+        telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
 
-            let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
-            if (signIn && signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
-                await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.waitForAzureSignIn },
-                    async () => {
-                        await vscode.commands.executeCommand("azure-account.login");
-                    });
-            }
-            else {
-                throw new Error(Messages.azureLoginRequired);
-            }
+        let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
+        if (signIn && signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
+            await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.waitForAzureSignIn },
+                async () => {
+                    await vscode.commands.executeCommand("azure-account.login");
+                });
         }
+        else {
+            throw new Error(Messages.azureLoginRequired);
+        }
+    }
 
-        const configurer = new PipelineConfigurer();
-        await configurer.configure();
-    }, TelemetryKeys.CommandExecutionDuration);
+    const configurer = new PipelineConfigurer();
+    await configurer.configure();
 }
 
 class PipelineConfigurer {
@@ -284,7 +281,7 @@ class PipelineConfigurer {
 
     private async getGitHubPATToken(): Promise<string> {
         let githubPat = null;
-        await telemetryHelper.callWithTelemetryAndErrorHandling(
+        await telemetryHelper.executeFunctionWithTimeTelemetry(
             async () => {
                 githubPat = await this.controlProvider.showInputBox(
                     constants.GitHubPat,

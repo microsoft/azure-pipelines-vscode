@@ -11,7 +11,6 @@ import * as logger from './logger';
 import { SchemaAssociationService, SchemaAssociationNotification } from './schema-association-service';
 import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from './schema-contributor';
 import { telemetryHelper } from './configure/helper/telemetryHelper';
-import { TelemetryKeys } from './configure/resources/telemetryKeys';
 
 export async function activate(context: vscode.ExtensionContext) {
     const configurePipelineEnabled = vscode.workspace.getConfiguration('[azure-pipelines]').get<boolean>('configure', true);
@@ -25,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
             const { activateConfigurePipeline } = await import('./configure/activate');
             await activateConfigurePipeline();
         }
-    }, TelemetryKeys.ExtensionActivationDuration);
+    });
 
     logger.log('Extension has been activated!', 'ExtensionActivated');
     return schemaContributor;
@@ -43,9 +42,13 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 
     const initialSchemaAssociations = schemaAssociationService.getSchemaAssociation();
 
-    telemetryHelper.initialize('extension.languageserver.onReady');
-    telemetryHelper.setOptions({ suppressIfSuccessful: true });
-    await telemetryHelper.callWithTelemetryAndErrorHandling(async () => await client.onReady());
+    try {
+        await client.onReady();
+    } catch (error) {
+        logger.log(JSON.stringify(error), 'ClientOnReadyError');
+        telemetryHelper.logError('extension.languageserver.onReadyError', 'activateYmlContributor', error);
+        return;
+    }
 
     //logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
     client.sendNotification(SchemaAssociationNotification.type, initialSchemaAssociations);

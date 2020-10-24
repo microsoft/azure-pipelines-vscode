@@ -84,11 +84,29 @@ class TelemetryHelper {
             });
     }
 
-    // https://github.com/microsoft/vscode-azuretools/blob/5999c2ad4423e86f22d2c648027242d8816a50e4/ui/src/callWithTelemetryAndErrorHandling.ts
-    public async callWithTelemetryAndErrorHandling<T>(callback: (properties: TelemetryProperties) => Promise<T>, durationKey: string = 'duration'): Promise<T | void> {
+    // Executes the given function, timing how long it takes.
+    // This *does NOT* send any telemetry and must be called within the context
+    // of an ongoing `callWithTelemetryAndErrorHandling` session to do anything useful.
+    // Helpful for reporting fine-grained timing of individual functions.
+    // TODO: Rename to something with less potential for confusion, like 'time' or 'timeFunction'?
+    public async executeFunctionWithTimeTelemetry<T>(callback: () => Promise<T>, telemetryKey: string): Promise<T> {
         const startTime = Date.now();
         try {
-            return callback(this.properties);
+            return callback();
+        }
+        finally {
+            this.setTelemetry(telemetryKey, ((Date.now() - startTime) / 1000).toString());
+        }
+    }
+
+    // Wraps the given function in a telemetry event.
+    // The telemetry event sent ater function execution will contain how long the function took as well as any custom properties
+    // supplied through initialize() or setTelemetry().
+    // If the function errors, the telemetry event will additionally contain metadata about the error that occurred.
+    // https://github.com/microsoft/vscode-azuretools/blob/5999c2ad4423e86f22d2c648027242d8816a50e4/ui/src/callWithTelemetryAndErrorHandling.ts
+    public async callWithTelemetryAndErrorHandling<T>(callback: () => Promise<T>): Promise<T | void> {
+        try {
+            return this.executeFunctionWithTimeTelemetry(callback, 'duration');
         } catch (error) {
             const parsedError = parseError(error);
             if (parsedError.isUserCancelledError) {
@@ -106,7 +124,6 @@ class TelemetryHelper {
                 vscode.window.showErrorMessage(Messages.errorOccurred);
             }
         } finally {
-            this.setTelemetry(durationKey, ((Date.now() - startTime) / 1000).toString());
             if (!(this.options.suppressIfSuccessful && this.properties.result === Result.Succeeded)) {
                 TelemetryHelper.reporter.sendTelemetryEvent(
                     this.command,
