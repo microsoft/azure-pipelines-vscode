@@ -3,8 +3,8 @@
 *  Licensed under the MIT License.
 *--------------------------------------------------------------------------------------------*/
 
+import { URL } from 'url';
 import * as logger from './logger';
-import Uri from 'vscode-uri'
 
 interface SchemaContributorProvider {
     readonly requestSchema: (resource: string) => string;
@@ -80,10 +80,10 @@ class SchemaContributor {
         console.log('requestCustomSchemaContent');
 
         if (uri) {
-            let _uri = Uri.parse(uri);
-            if (_uri.scheme && this._customSchemaContributors[_uri.scheme] &&
-                this._customSchemaContributors[_uri.scheme].requestSchemaContent) {
-                return this._customSchemaContributors[_uri.scheme].requestSchemaContent(uri);
+            const protocol = new URL(uri).protocol.slice(0, -1); // trim the :
+            if (protocol && this._customSchemaContributors[protocol] &&
+                this._customSchemaContributors[protocol].requestSchemaContent) {
+                return this._customSchemaContributors[protocol].requestSchemaContent(uri);
             }
         }
 
