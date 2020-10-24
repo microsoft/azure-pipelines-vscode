@@ -60,23 +60,22 @@ class TelemetryHelper {
     }
 
     public logError(layer: string, tracePoint: string, error: Error): void {
-        const parsedError = parseError(error);
+        this.handleError(error);
         TelemetryHelper.reporter.sendTelemetryEvent(
             tracePoint,
             {
+                ...this.properties,
                 'journeyId': this.journeyId,
                 'command': this.command,
-                'layer': layer,
-                'error': JSON.stringify(parsedError)
+                'layer': layer
             });
-
-        logger.log(JSON.stringify(parsedError));
     }
 
     public logInfo(layer: string, tracePoint: string, info: string): void {
         TelemetryHelper.reporter.sendTelemetryEvent(
             tracePoint,
             {
+                ...this.properties,
                 'journeyId': this.journeyId,
                 'command': this.command,
                 'layer': layer,
@@ -108,21 +107,7 @@ class TelemetryHelper {
         try {
             return this.executeFunctionWithTimeTelemetry(callback, 'duration');
         } catch (error) {
-            const parsedError = parseError(error);
-            if (parsedError.isUserCancelledError) {
-                this.setTelemetry(TelemetryKeys.Result, Result.Canceled);
-            } else {
-                this.setTelemetry(TelemetryKeys.Result, Result.Failed);
-                this.setTelemetry('error', parsedError.errorType);
-                this.setTelemetry('errorMessage', parsedError.message);
-                this.setTelemetry('stack', parsedError.stack ?? '');
-                if (this.options.suppressIfSuccessful) {
-                    this.setTelemetry('suppressTelemetry', 'true');
-                }
-
-                logger.log(parsedError.message);
-                vscode.window.showErrorMessage(Messages.errorOccurred);
-            }
+            this.handleError(error);
         } finally {
             if (!(this.options.suppressIfSuccessful && this.properties.result === Result.Succeeded)) {
                 TelemetryHelper.reporter.sendTelemetryEvent(
@@ -133,6 +118,24 @@ class TelemetryHelper {
                     }
                 )
             }
+        }
+    }
+
+    private handleError(error: any): void {
+        const parsedError = parseError(error);
+        if (parsedError.isUserCancelledError) {
+            this.setTelemetry(TelemetryKeys.Result, Result.Canceled);
+        } else {
+            this.setTelemetry(TelemetryKeys.Result, Result.Failed);
+            this.setTelemetry('error', parsedError.errorType);
+            this.setTelemetry('errorMessage', parsedError.message);
+            this.setTelemetry('stack', parsedError.stack ?? '');
+            if (this.options.suppressIfSuccessful) {
+                this.setTelemetry('suppressTelemetry', 'true');
+            }
+
+            logger.log(parsedError.message);
+            vscode.window.showErrorMessage(Messages.errorOccurred);
         }
     }
 }

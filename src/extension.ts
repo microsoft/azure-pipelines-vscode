@@ -42,13 +42,8 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 
     const initialSchemaAssociations = schemaAssociationService.getSchemaAssociation();
 
-    try {
-        await client.onReady();
-    } catch (error) {
-        logger.log(JSON.stringify(error), 'ClientOnReadyError');
-        telemetryHelper.logError('extension.languageserver.onReadyError', 'activateYmlContributor', error);
-        return;
-    }
+    // If this throws, the telemetry event in activate() will catch & log it
+    await client.onReady();
 
     //logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
     client.sendNotification(SchemaAssociationNotification.type, initialSchemaAssociations);
