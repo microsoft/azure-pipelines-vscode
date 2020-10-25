@@ -94,7 +94,7 @@ class TelemetryHelper {
     public async executeFunctionWithTimeTelemetry<T>(callback: () => Promise<T>, telemetryKey: string): Promise<T> {
         const startTime = Date.now();
         try {
-            return callback();
+            return await callback();
         }
         finally {
             this.setTelemetry(telemetryKey, ((Date.now() - startTime) / 1000).toString());
@@ -108,7 +108,7 @@ class TelemetryHelper {
     // https://github.com/microsoft/vscode-azuretools/blob/5999c2ad4423e86f22d2c648027242d8816a50e4/ui/src/callWithTelemetryAndErrorHandling.ts
     public async callWithTelemetryAndErrorHandling<T>(callback: () => Promise<T>): Promise<T | void> {
         try {
-            return this.executeFunctionWithTimeTelemetry(callback, 'duration');
+            return await this.executeFunctionWithTimeTelemetry(callback, 'duration');
         } catch (error) {
             const parsedError = parseError(error);
             if (parsedError.isUserCancelledError) {
