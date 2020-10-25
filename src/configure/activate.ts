@@ -11,13 +11,13 @@ export async function activateConfigurePipeline(): Promise<void> {
         throw new Error(Messages.azureAccountExntesionUnavailable);
     }
 
-    if (!azureAccountExtension.isActive) {
-        await azureAccountExtension.activate();
-    }
-
     extensionVariables.azureAccountExtensionApi = <AzureAccountExtensionExports>azureAccountExtension.exports;
 
     vscode.commands.registerCommand('configure-pipeline', async () => {
+        if (!azureAccountExtension.isActive) {
+            await azureAccountExtension.activate();
+        }
+
         telemetryHelper.initialize('configure-pipeline');
         await telemetryHelper.callWithTelemetryAndErrorHandling(async () => {
             await configurePipeline();
