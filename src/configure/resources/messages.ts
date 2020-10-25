@@ -19,7 +19,7 @@ export class Messages {
     public static discardPipeline: string = 'Discard pipeline';
     public static enterAzureDevOpsOrganizationName: string = 'Azure DevOps organization name where your pipeline will be hosted';
     public static enterGitHubPat: string = 'Enter GitHub personal access token (PAT)';
-    public static errorOccurred: string = 'Azure Pipelines: An error has occurred. Check the output window for more details.';
+    public static errorOccurred: string = 'An error has occurred. Check the output window for more details.';
     public static failedToCreateAzureDevOpsProject: string = 'Couldn\'t create a project in the Azure DevOps organization. Error: %s.';
     public static failedToCreateAzurePipeline: string = 'Couldn\'t configure pipeline. Error: %s';
     public static failedToDetermineAzureRepoDetails: string = 'Failed to determine Azure Repo details from remote url. Please ensure that the remote points to a valid Azure Repos url.';

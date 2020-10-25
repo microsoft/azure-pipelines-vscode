@@ -123,7 +123,11 @@ class TelemetryHelper {
                 }
 
                 logger.log(parsedError.message);
-                vscode.window.showErrorMessage(Messages.errorOccurred);
+                if (parsedError.message.includes('\n')) {
+                    vscode.window.showErrorMessage(Messages.errorOccurred);
+                } else {
+                    vscode.window.showErrorMessage(parsedError.message);
+                }
             }
         } finally {
             if (!(this.options.suppressIfSuccessful && this.properties.result === Result.Succeeded)) {
