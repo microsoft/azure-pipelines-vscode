@@ -59,23 +59,26 @@ class TelemetryHelper {
         this.properties.cancelStep = stepName;
     }
 
+    // Log an error.
+    // No custom properties are logged alongside the error.
     public logError(layer: string, tracePoint: string, error: Error): void {
-        this.handleError(error);
         TelemetryHelper.reporter.sendTelemetryEvent(
             tracePoint,
             {
-                ...this.properties,
                 'journeyId': this.journeyId,
                 'command': this.command,
-                'layer': layer
+                'layer': layer,
+                'errorMessage': error.message,
+                'stack': error.stack ?? '',
             });
     }
 
+    // Log an informational message.
+    // No custom properties are logged alongside the message.
     public logInfo(layer: string, tracePoint: string, info: string): void {
         TelemetryHelper.reporter.sendTelemetryEvent(
             tracePoint,
             {
-                ...this.properties,
                 'journeyId': this.journeyId,
                 'command': this.command,
                 'layer': layer,
@@ -107,7 +110,21 @@ class TelemetryHelper {
         try {
             return this.executeFunctionWithTimeTelemetry(callback, 'duration');
         } catch (error) {
-            this.handleError(error);
+            const parsedError = parseError(error);
+            if (parsedError.isUserCancelledError) {
+                this.setTelemetry(TelemetryKeys.Result, Result.Canceled);
+            } else {
+                this.setTelemetry(TelemetryKeys.Result, Result.Failed);
+                this.setTelemetry('error', parsedError.errorType);
+                this.setTelemetry('errorMessage', parsedError.message);
+                this.setTelemetry('stack', parsedError.stack ?? '');
+                if (this.options.suppressIfSuccessful) {
+                    this.setTelemetry('suppressTelemetry', 'true');
+                }
+
+                logger.log(parsedError.message);
+                vscode.window.showErrorMessage(Messages.errorOccurred);
+            }
         } finally {
             if (!(this.options.suppressIfSuccessful && this.properties.result === Result.Succeeded)) {
                 TelemetryHelper.reporter.sendTelemetryEvent(
@@ -118,24 +135,6 @@ class TelemetryHelper {
                     }
                 )
             }
-        }
-    }
-
-    private handleError(error: any): void {
-        const parsedError = parseError(error);
-        if (parsedError.isUserCancelledError) {
-            this.setTelemetry(TelemetryKeys.Result, Result.Canceled);
-        } else {
-            this.setTelemetry(TelemetryKeys.Result, Result.Failed);
-            this.setTelemetry('error', parsedError.errorType);
-            this.setTelemetry('errorMessage', parsedError.message);
-            this.setTelemetry('stack', parsedError.stack ?? '');
-            if (this.options.suppressIfSuccessful) {
-                this.setTelemetry('suppressTelemetry', 'true');
-            }
-
-            logger.log(parsedError.message);
-            vscode.window.showErrorMessage(Messages.errorOccurred);
         }
     }
 }
