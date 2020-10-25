@@ -1,14 +1,12 @@
 import { AzureEnvironment } from 'ms-rest-azure';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
-import { ExtensionContext, OutputChannel, QuickPickItem, window } from 'vscode';
+import { OutputChannel, QuickPickItem, window } from 'vscode';
 import { ServiceClientCredentials } from 'ms-rest';
 import { SubscriptionModels } from 'azure-arm-resource';
 import { Messages } from '../resources/messages';
 
 class ExtensionVariables {
     public azureAccountExtensionApi: AzureAccountExtensionExports;
-
-    public context: ExtensionContext;
     public outputChannel: OutputChannel = window.createOutputChannel('Azure Pipelines');
 }
 
