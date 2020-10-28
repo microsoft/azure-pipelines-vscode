@@ -39,11 +39,11 @@ It'll give you autocompletes for your custom tasks.
 
 ## Document formatting
 
-Since this extension defines a new file type ("`azure-pipelines`"), the native YAML formatting provided by VS Code no longer applies to pipelines documents.
-Hat tip to @mgexm and @dotnetcanuck for [sharing how they restored this functionality](https://github.com/microsoft/azure-pipelines-vscode/issues/209#issuecomment-718168926):
+Since this extension defines a new file type ("`azure-pipelines`"), any YAML formatter you've installed no longer applies to pipelines documents.
+Hat tip to @mgexm and @dotnetcanuck for [sharing how they restored this functionality](https://github.com/microsoft/azure-pipelines-vscode/issues/209#issuecomment-718168926).
+We'll demonstrate with the [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) VS Code extension:
 
-1. Install the [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) VS Code extension
-2. Add this to your `settings.json`:
+Add this to your `settings.json`:
 ```json
 "[azure-pipelines]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
