@@ -1621,7 +1621,7 @@
         },
         "persistCredentials": {
           "description": "Keep credentials available for later use?",
-          "$ref": "#/definitions/string"
+          "$ref": "#/definitions/boolean"
         }
       },
       "additionalProperties": false
@@ -3252,7 +3252,7 @@
             },
             "persistCredentials": {
               "description": "Keep credentials available for later use?",
-              "$ref": "#/definitions/string"
+              "$ref": "#/definitions/boolean"
             },
             "submodules": {
               "description": "Check out Git submodules?",
