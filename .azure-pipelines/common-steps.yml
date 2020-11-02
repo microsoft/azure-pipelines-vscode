@@ -19,7 +19,7 @@ steps:
 # Acquire the `vsce` tool and use it to package
 - script: |
     sudo npm install -g vsce
-    vsce package
+    vsce package --githubBranch main
   displayName: Create VSIX
 
 - script: |
