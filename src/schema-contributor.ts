@@ -15,15 +15,15 @@ interface SchemaContributorProvider {
 class SchemaContributor {
     private _customSchemaContributors: { [index: string]: SchemaContributorProvider } = {};
 
-	/**
-	 * Register a custom schema provider.
+    /**
+     * Register a custom schema provider.
      * TODO: We might be able to use this to intelligently grab the schema for projects using Azure Repos.
-	 *
-	 * @param {string} schema the provider's name
-	 * @param requestSchema the requestSchema function
-	 * @param requestSchemaContent the requestSchemaContent function
-	 * @returns {boolean}
-	 */
+     *
+     * @param {string} schema the provider's name
+     * @param requestSchema the requestSchema function
+     * @param requestSchemaContent the requestSchemaContent function
+     * @returns {boolean}
+     */
     public registerContributor(schema: string,
                                requestSchema: (resource: string) => string,
                                requestSchemaContent: (uri: string) => string): boolean {
@@ -43,14 +43,14 @@ class SchemaContributor {
         return true;
     }
 
-	/**
-	 * Asks each schema provider whether it has a schema for the given resource,
+    /**
+     * Asks each schema provider whether it has a schema for the given resource,
      * and returns the URI to the schema if it does.
-	 *
-	 * @param {string} resource the file to be validated
-	 * @returns {string} the schema uri
-	 */
-	public requestCustomSchema(resource: string): string {
+     *
+     * @param {string} resource the file to be validated
+     * @returns {string} the schema uri
+     */
+    public requestCustomSchema(resource: string): string {
         for (let customKey of Object.keys(this._customSchemaContributors)) {
             const contributor = this._customSchemaContributors[customKey];
             const uri = contributor.requestSchema(resource);
@@ -65,14 +65,14 @@ class SchemaContributor {
         throw `Unable to find custom schema for resource: '${resource}'`;
     }
 
-	/**
-	 * If there is a schema provider that can handle the given URI,
+    /**
+     * If there is a schema provider that can handle the given URI,
      * returns the schema content corresponding to the URI.
      * TODO: If we stick to just local files and http(s), I doubt we need this.
-	 *
-	 * @param {string} uri the schema uri returned from requestSchema.
-	 * @returns {string} the schema content
-	 */
+     *
+     * @param {string} uri the schema uri returned from requestSchema.
+     * @returns {string} the schema content
+     */
     public requestCustomSchemaContent(uri: string): string {
         if (uri) {
             let _uri = Uri.parse(uri);
