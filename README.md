@@ -69,6 +69,22 @@ VS Code collects usage data and sends it to Microsoft to help improve our produc
 
 - **Failed to determine Azure Repo details from remote url**: If you're configuring a pipeline for a Git repository backed by Azure Repos, ensure that it has a remote pointing to a valid Azure Repos Git repo URL.
 
+## Extension Development
+
+If you are only working on the extension (i.e. syntax highlighting, configure pipeline, and the language client):
+- Run `npm install` to install all necessary dependencies
+- Run `npm run watch` to automatically rebuild the extension whenever you make changes
+- Run the "Extension" debug configuration to launch a VS Code window using your modified version of the extension
+
+If you are also working on the language server:
+- Follow the first two steps above
+- Clone the [azure-pipelines-language-server](https://github.com/microsoft/azure-pipelines-language-server) repository alongside this repository
+- Follow the instructions in the README to link the language service to the language server
+- In this repository, run `npm link ../azure-pipelines-language-server/language-server`
+- Add the `azure-pipelines-language-server` folder to your VS Code workspace
+- Run the "Launch Extension & Attach to Server" debug configuration
+    - Note: In order to attach correctly, the extension must be activated (in other words, make sure you are editing an Azure Pipelines file)
+
 # Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) if you want to jump in!
