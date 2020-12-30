@@ -103,7 +103,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 }
 
 function getServerOptions(context: vscode.ExtensionContext): languageclient.ServerOptions {
-    const languageServerPath = context.asAbsolutePath(path.join('node_modules', 'azure-pipelines-language-server', 'server.js'));
+    const languageServerPath = context.asAbsolutePath(path.join('node_modules', 'azure-pipelines-language-server', 'out', 'server.js'));
 
     return {
         run: { module: languageServerPath, transport: languageclient.TransportKind.ipc },
