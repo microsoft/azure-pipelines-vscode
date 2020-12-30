@@ -56,5 +56,14 @@
                 "${workspaceFolder}/../azure-pipelines-language-server/language-service/lib/**/*.js"
             ]
         }
+    ],
+    "compounds": [
+        {
+            "name": "Launch Extension & Attach to Server",
+            "configurations": [
+                "Extension",
+                "Attach to Server"
+            ]
+        }
     ]
 }
