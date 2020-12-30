@@ -79,11 +79,12 @@ If you are only working on the extension (i.e. syntax highlighting, configure pi
 If you are also working on the language server:
 - Follow the first two steps above
 - Clone the [azure-pipelines-language-server](https://github.com/microsoft/azure-pipelines-language-server) repository alongside this repository
-- Follow the instructions in the README to link the language service to the language server
-- In this repository, run `npm link ../azure-pipelines-language-server/language-server`
+- Run `npm link ../azure-pipelines-language-server/language-server`
+- Follow the instructions in the language server README to link the language service to the language server
 - Add the `azure-pipelines-language-server` folder to your VS Code workspace
 - Run the "Launch Extension & Attach to Server" debug configuration
-    - Note: In order to attach correctly, the extension must be activated (in other words, make sure you are editing an Azure Pipelines file)
+    - Note: In order to attach to the server, the extension must be activated (in other words, make sure you are editing an Azure Pipelines file)
+    - In case the attach request timeouts before the server can start, wait for it to start and then run the "Attach to Server" debug configuration
 
 # Contributing
 
