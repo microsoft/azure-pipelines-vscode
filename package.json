@@ -157,7 +157,7 @@
     "dependencies": {
         "azure-arm-resource": "7.3.0",
         "azure-arm-website": "5.7.0",
-        "azure-pipelines-language-server": "0.5.10",
+        "azure-pipelines-language-server": "0.6.0",
         "mustache": "3.0.1",
         "q": "1.5.1",
         "shelljs": "^0.3.0",
