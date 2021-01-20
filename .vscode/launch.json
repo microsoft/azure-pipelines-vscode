@@ -23,7 +23,7 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
-                "${workspaceRoot}/src/test/workspace/",
+                "${workspaceFolder}/src/test/workspace/",
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--extensionTestsPath=${workspaceFolder}/out/test"
             ],
@@ -37,7 +37,7 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
-                "${workspaceRoot}/examples/",
+                "${workspaceFolder}/examples/",
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--extensionTestsPath=${workspaceFolder}/out/testfromserver"
             ],
@@ -52,7 +52,17 @@
             "port": 6009,
             "restart": true,
             "outFiles": [
-                "${workspaceRoot}/node_modules/azure-pipelines-language-server/**/*.js"
+                "${workspaceFolder}/../azure-pipelines-language-server/language-server/out/**/*.js",
+                "${workspaceFolder}/../azure-pipelines-language-server/language-service/lib/**/*.js"
+            ]
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Launch Extension & Attach to Server",
+            "configurations": [
+                "Extension",
+                "Attach to Server"
             ]
         }
     ]

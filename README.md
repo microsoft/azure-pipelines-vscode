@@ -37,6 +37,21 @@ To teach the extension about those, grab a copy of your schema and tell the exte
 The extension will now validate against your schema.
 It'll give you autocompletes for your custom tasks.
 
+## Document formatting
+
+Since this extension defines a new file type ("`azure-pipelines`"), any YAML formatter you've installed no longer applies to pipelines documents.
+Hat tip to @mgexm and @dotnetcanuck for [sharing how they restored this functionality](https://github.com/microsoft/azure-pipelines-vscode/issues/209#issuecomment-718168926).
+We'll demonstrate with the [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) VS Code extension:
+
+Add this to your `settings.json`:
+```json
+"[azure-pipelines]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+},
+```
+
+Both format on save and the `Format document` command should now work!
+
 ## Pipeline configuration
 
 ![Configure Pipeline Demo](https://raw.githubusercontent.com/microsoft/azure-pipelines-vscode/main/resources/configure-pipeline.gif)
@@ -68,6 +83,23 @@ VS Code collects usage data and sends it to Microsoft to help improve our produc
 - **The current branch doesn't have a tracking branch, and the selected repository has no remotes**: You can configure a pipeline for a Git repository backed by GitHub or Azure Repos. To add a new remote Git repository, run `git remote add <remote-name> <remote-url>`
 
 - **Failed to determine Azure Repo details from remote url**: If you're configuring a pipeline for a Git repository backed by Azure Repos, ensure that it has a remote pointing to a valid Azure Repos Git repo URL.
+
+## Extension Development
+
+If you are only working on the extension (i.e. syntax highlighting, configure pipeline, and the language client):
+- Run `npm install` to install all necessary dependencies
+- Run `npm run watch` to automatically rebuild the extension whenever you make changes
+- Run the "Extension" debug configuration to launch a VS Code window using your modified version of the extension
+
+If you are also working on the language server:
+- Follow the first two steps above
+- Clone the [azure-pipelines-language-server](https://github.com/microsoft/azure-pipelines-language-server) repository alongside this repository
+- Run `npm link ../azure-pipelines-language-server/language-server`
+- Follow the instructions in the language server README to link the language service to the language server
+- Add the `azure-pipelines-language-server` folder to your VS Code workspace
+- Run the "Launch Extension & Attach to Server" debug configuration
+    - Note: In order to attach to the server, the extension must be activated (in other words, make sure you are editing an Azure Pipelines file)
+    - In case the attach request timeouts before the server can start, wait for it to start and then run the "Attach to Server" debug configuration
 
 # Contributing
 
