@@ -5,7 +5,7 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-import * as languageclient from 'vscode-languageclient';
+import * as languageclient from 'vscode-languageclient/node';
 
 export interface ISchemaAssociationService {
     getSchemaAssociation(): ISchemaAssociations;
@@ -22,26 +22,35 @@ export class SchemaAssociationService implements ISchemaAssociationService {
         this.locateSchemaFile();
     }
 
+    // TODO: Should this inlined into getSchemaAssocations?
     public locateSchemaFile() {
-        let alternateSchema = vscode.workspace.getConfiguration('[azure-pipelines]', null).get<string>('customSchemaFile');
+        let alternateSchema = vscode.workspace.getConfiguration('[azure-pipelines]').get<string>('customSchemaFile');
         if (alternateSchema && !path.isAbsolute(alternateSchema)) {
-            alternateSchema = path.resolve(vscode.workspace.rootPath, alternateSchema);
+            alternateSchema = path.resolve(vscode.workspace.workspaceFolders[0].uri.fsPath, alternateSchema);
         }
         const schemaPath = alternateSchema || path.join(this.extensionPath, './service-schema.json');
         this.schemaFilePath = vscode.Uri.file(schemaPath).toString();
     }
 
+    // Looking at how the vscode-yaml extension does it, it looks like this is meant as a
+    // way for other extensions to hook into the validation process, not as something
+    // user-configurable.
+    // For our purposes, since we're only concerned with validating Azure Pipelines files,
+    // we don't need to worry about other extensions.
+    // TODO: We *could* make this configurable, but it'd probably make more sense to co-opt
+    // the existing yaml.schemas setting (and rename it to [azure-pipelines].schemas) that
+    // the server already looks for.
+    // That one is schema -> patterns, rather than pattern -> schemas.
     public getSchemaAssociation(): ISchemaAssociations {
         return { '*': [this.schemaFilePath] };
     }
 }
 
-// TODO: Do we need this?
+// Mapping of glob pattern -> schemas
 export interface ISchemaAssociations {
 	[pattern: string]: string[];
 }
 
-// TODO: Do we need this?
 export namespace SchemaAssociationNotification {
-	export const type: languageclient.NotificationType<ISchemaAssociations, any> = new languageclient.NotificationType('json/schemaAssociations');
+	export const type: languageclient.NotificationType<ISchemaAssociations> = new languageclient.NotificationType('json/schemaAssociations');
 }

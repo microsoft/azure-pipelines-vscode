@@ -78,7 +78,7 @@ export class ServiceConnectionHelper {
     }
 
     private async sleepForMilliSeconds(timeInMs: number) {
-        return new Promise((resolve) => {
+        return new Promise<void>((resolve) => {
             setTimeout(() => {
                 resolve();
             }, timeInMs);

@@ -3,7 +3,6 @@
 *  Licensed under the MIT License.
 *--------------------------------------------------------------------------------------------*/
 
-import * as logger from './logger';
 import Uri from 'vscode-uri'
 
 interface SchemaContributorProvider {
@@ -16,14 +15,15 @@ interface SchemaContributorProvider {
 class SchemaContributor {
     private _customSchemaContributors: { [index: string]: SchemaContributorProvider } = {};
 
-	/**
-	 * Register a custom schema provider
-	 *
-	 * @param {string} the provider's name
-	 * @param requestSchema the requestSchema function
-	 * @param requestSchemaContent the requestSchemaContent function
-	 * @returns {boolean}
-	 */
+    /**
+     * Register a custom schema provider.
+     * TODO: We might be able to use this to intelligently grab the schema for projects using Azure Repos.
+     *
+     * @param {string} schema the provider's name
+     * @param requestSchema the requestSchema function
+     * @param requestSchemaContent the requestSchemaContent function
+     * @returns {boolean}
+     */
     public registerContributor(schema: string,
                                requestSchema: (resource: string) => string,
                                requestSchemaContent: (uri: string) => string): boolean {
@@ -43,42 +43,37 @@ class SchemaContributor {
         return true;
     }
 
-    // TODO: Rewrite comments.
-	/**
-	 * Call requestSchema for each provider and find the first one who reports he can provide the schema.
-	 *
-	 * @param {string} resource
-	 * @returns {string} the schema uri
-	 */
-	public requestCustomSchema(resource: string): string {
-        // TODO: This is what gets called on every request(I think), it's looking at the cached schema files. I think here is where we want to periodically
-        //       check what's on the server. The code in schema-association-service.getSchemaAssociation()
-
-        // Check relationship with result of getSchemaAssociationFromYamlValidationNode. Does this load the files specified there? Make sure this code is needed.
-
+    /**
+     * Asks each schema provider whether it has a schema for the given resource,
+     * and returns the URI to the schema if it does.
+     *
+     * @param {string} resource the file to be validated
+     * @returns {string} the schema uri
+     */
+    public requestCustomSchema(resource: string): string {
         for (let customKey of Object.keys(this._customSchemaContributors)) {
             const contributor = this._customSchemaContributors[customKey];
             const uri = contributor.requestSchema(resource);
             if (uri) {
                 return uri;
-            } else {
-                logger.log(`Uri NOT found for resource (${resource})`);
             }
         }
 
+        // TODO: This is currently the only way to fallback to the default schema provider.
+        // The upstream Red Hat server also falls back when receiving a falsy value,
+        // so sync with their changes and change this to return false or something.
         throw `Unable to find custom schema for resource: '${resource}'`;
     }
 
-    // TODO: Rewrite comments.
-	/**
-	 * Call requestCustomSchemaContent for named provider and get the schema content.
-	 *
-	 * @param {string} uri the schema uri returned from requestSchema.
-	 * @returns {string} the schema content
-	 */
+    /**
+     * If there is a schema provider that can handle the given URI,
+     * returns the schema content corresponding to the URI.
+     * TODO: If we stick to just local files and http(s), I doubt we need this.
+     *
+     * @param {string} uri the schema uri returned from requestSchema.
+     * @returns {string} the schema content
+     */
     public requestCustomSchemaContent(uri: string): string {
-        console.log('requestCustomSchemaContent');
-
         if (uri) {
             let _uri = Uri.parse(uri);
             if (_uri.scheme && this._customSchemaContributors[_uri.scheme] &&
@@ -94,7 +89,6 @@ class SchemaContributor {
 // global instance
 // TODO: Do this differently... why not instantiate? Static? Something else.
 const schemaContributor = new SchemaContributor();
-//schemaContributor.registerContributor("", "", "");
 
 export const CUSTOM_SCHEMA_REQUEST = 'custom/schema/request';
 export const CUSTOM_CONTENT_REQUEST = 'custom/schema/content';
