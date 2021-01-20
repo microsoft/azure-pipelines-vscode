@@ -3,6 +3,17 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.182.0
+
+All of the material changes in this version were courtesy of @50Wliu. Thanks!
+### Fixed
+- Improve debuggability when working on extension + language server packages
+- Removed need to prompt for extension restart on schema change
+- Document the language client implementation
+
+### Updated
+- M181 YAML schema
+
 ## 1.177.0
 ### Fixed
 - hopefully fixed some of the startup performance problems (hat tip to @50Wliu)
