@@ -80,11 +80,7 @@
                     "description": "Enable 'Configure Pipeline' feature"
                 },
                 "azure-pipelines.customSchemaFile": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "default": null,
+                    "type": "string",
                     "description": "Use a different schema file",
                     "scope": "machine-overridable"
                 }
