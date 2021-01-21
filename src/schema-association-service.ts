@@ -24,7 +24,7 @@ export class SchemaAssociationService implements ISchemaAssociationService {
 
     // TODO: Should this inlined into getSchemaAssocations?
     public locateSchemaFile() {
-        let alternateSchema = vscode.workspace.getConfiguration('[azure-pipelines]').get<string>('customSchemaFile');
+        let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile');
         if (alternateSchema && !path.isAbsolute(alternateSchema)) {
             alternateSchema = path.resolve(vscode.workspace.workspaceFolders[0].uri.fsPath, alternateSchema);
         }
@@ -38,7 +38,7 @@ export class SchemaAssociationService implements ISchemaAssociationService {
     // For our purposes, since we're only concerned with validating Azure Pipelines files,
     // we don't need to worry about other extensions.
     // TODO: We *could* make this configurable, but it'd probably make more sense to co-opt
-    // the existing yaml.schemas setting (and rename it to [azure-pipelines].schemas) that
+    // the existing yaml.schemas setting (and rename it to azure-pipelines.schemas) that
     // the server already looks for.
     // That one is schema -> patterns, rather than pattern -> schemas.
     public getSchemaAssociation(): ISchemaAssociations {

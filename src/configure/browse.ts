@@ -33,7 +33,7 @@ export async function browsePipeline(node: AzureTreeItem): Promise<void> {
                         'Configure Pipeline');
 
                     if (result === 'Configure Pipeline') {
-                        vscode.commands.executeCommand('configure-pipeline', node);
+                        vscode.commands.executeCommand('azure-pipelines.configure-pipeline', node);
                         telemetryHelper.setTelemetry(TelemetryKeys.ClickedConfigurePipeline, 'true');
                     }
                 }
