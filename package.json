@@ -85,7 +85,8 @@
                         "null"
                     ],
                     "default": null,
-                    "description": "Use a different schema file"
+                    "description": "Use a different schema file",
+                    "scope": "machine-overridable"
                 }
             }
         },
