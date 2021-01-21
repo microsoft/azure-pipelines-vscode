@@ -38,8 +38,8 @@
     ],
     "activationEvents": [
         "onLanguage:azure-pipelines",
-        "onCommand:configure-pipeline",
-        "onCommand:browse-pipeline"
+        "onCommand:azure-pipelines.configure-pipeline",
+        "onCommand:azure-pipelines.browse-pipeline"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -103,12 +103,12 @@
         },
         "commands": [
             {
-                "command": "configure-pipeline",
+                "command": "azure-pipelines.configure-pipeline",
                 "title": "Configure Pipeline",
                 "category": "Azure Pipelines"
             },
             {
-                "command": "browse-pipeline",
+                "command": "azure-pipelines.browse-pipeline",
                 "title": "Browse Pipeline",
                 "category": "Azure Pipelines"
             }
@@ -116,14 +116,14 @@
         "menus": {
             "explorer/context": [
                 {
-                    "command": "configure-pipeline",
+                    "command": "azure-pipelines.configure-pipeline",
                     "group": "Azure Pipelines",
                     "when": "explorerResourceIsFolder == true"
                 }
             ],
             "commandPalette": [
                 {
-                    "command": "browse-pipeline",
+                    "command": "azure-pipelines.browse-pipeline",
                     "when": "never"
                 }
             ]
