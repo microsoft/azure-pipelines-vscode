@@ -74,12 +74,12 @@
         "configuration": {
             "title": "Azure Pipelines",
             "properties": {
-                "[azure-pipelines].configure": {
+                "azure-pipelines.configure": {
                     "type": "boolean",
                     "default": true,
                     "description": "Enable 'Configure Pipeline' feature"
                 },
-                "[azure-pipelines].customSchemaFile": {
+                "azure-pipelines.customSchemaFile": {
                     "type": [
                         "string",
                         "null"
