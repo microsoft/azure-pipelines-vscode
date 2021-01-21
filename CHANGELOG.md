@@ -3,6 +3,14 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.183.0
+### Breaking change
+- Configuration namespace has moved. If you added `customSchemaFile` or had keybindings to commands, you'll need to update your config. Wherever it says `[azure-pipelines].thing`, it should now read `azure-pipelines.thing`. Sorry for the inconvenience, but this fixes several bugs and yields a better config experience. (Thanks @50Wliu!)
+
+### Fixed
+- Extension readme points to correct branch (thanks @AtOMiCNebula!)
+- Several dependabot alerts
+
 ## 1.182.0
 
 All of the material changes in this version were courtesy of @50Wliu. Thanks!
