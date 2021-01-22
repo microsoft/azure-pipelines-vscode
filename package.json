@@ -157,7 +157,8 @@
         "underscore": "1.9.1",
         "uuid": "^3.3.2",
         "vscode-extension-telemetry": "^0.1.6",
-        "vscode-languageclient": "^7.0.0"
+        "vscode-languageclient": "^7.0.0",
+        "vscode-uri": "^3.0.2"
     },
     "extensionDependencies": [
         "ms-vscode.azure-account"
