@@ -5,7 +5,7 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-import * as languageclient from 'vscode-languageclient';
+import * as languageclient from 'vscode-languageclient/node';
 
 import * as logger from './logger';
 import { SchemaAssociationService, SchemaAssociationNotification } from './schema-association-service';
@@ -45,43 +45,38 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     // If this throws, the telemetry event in activate() will catch & log it
     await client.onReady();
 
-    //logger.log(`${JSON.stringify(initialSchemaAssociations)}`, 'SendInitialSchemaAssociation');
+    // Notify the server which schemas to use.
     client.sendNotification(SchemaAssociationNotification.type, initialSchemaAssociations);
 
-    // TODO: Should we get rid of these events and handle other events like Ctrl + Space? See when this event gets fired and send updated schema on that event.
-    client.onRequest(CUSTOM_SCHEMA_REQUEST, (resource: any) => {
-        //logger.log('Custom schema request. Resource: ' + JSON.stringify(resource), 'CustomSchemaRequest');
-
-        // TODO: Can this return the location of the new schema file?
-        return schemaContributor.requestCustomSchema(resource); // TODO: Have a single instance for the extension but dont return a global from this namespace.
+    // Fired whenever the server is about to validate a YAML file (e.g. on content change),
+    // and allows us to return a custom schema to use for validation.
+    client.onRequest(CUSTOM_SCHEMA_REQUEST, (resource: string) => {
+        // TODO: Have a single instance for the extension but dont return a global from this namespace
+        return schemaContributor.requestCustomSchema(resource);
     });
 
-    // TODO: Can we get rid of this? Never seems to happen.
-    client.onRequest(CUSTOM_CONTENT_REQUEST, (uri: any) => {
-        //logger.log('Custom content request.', 'CustomContentRequest');
-
+    // Fired whenever the server encounters a URI scheme that it doesn't recognize,
+    // and allows us to use the URI to determine the schema's content.
+    client.onRequest(CUSTOM_CONTENT_REQUEST, (uri: string) => {
         return schemaContributor.requestCustomSchemaContent(uri);
     });
 
     // TODO: Can we get rid of this since it's set in package.json?
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
 
-    // when config changes, refresh the schema
-    vscode.workspace.onDidChangeConfiguration(e => {
-        schemaAssociationService.locateSchemaFile();
-        const newSchema = schemaAssociationService.getSchemaAssociation();
-        if (newSchema['*'][0] != initialSchemaAssociations['*'][0])
-        {
-            vscode.window.showInformationMessage("Azure Pipelines schema changed. Restart VS Code to see the changes.");
-            // this _should_ cause the language server to refresh its config
-            // but that doesn't seem to be happening
+    // Let the server know of any schema changes.
+    // TODO: move to schema-association-service?
+    vscode.workspace.onDidChangeConfiguration(event => {
+        if (event.affectsConfiguration('[azure-pipelines].customSchemaFile')) {
+            schemaAssociationService.locateSchemaFile();
+            const newSchema = schemaAssociationService.getSchemaAssociation();
             client.sendNotification(SchemaAssociationNotification.type, newSchema);
         }
     });
 }
 
 function getServerOptions(context: vscode.ExtensionContext): languageclient.ServerOptions {
-    const languageServerPath = context.asAbsolutePath(path.join('node_modules', 'azure-pipelines-language-server', 'server.js'));
+    const languageServerPath = context.asAbsolutePath(path.join('node_modules', 'azure-pipelines-language-server', 'out', 'server.js'));
 
     return {
         run: { module: languageServerPath, transport: languageclient.TransportKind.ipc },
@@ -91,19 +86,17 @@ function getServerOptions(context: vscode.ExtensionContext): languageclient.Serv
 
 function getClientOptions(): languageclient.LanguageClientOptions {
     return {
-        // Register the server for plain text documents
+        // Register the server for Azure Pipelines documents
         documentSelector: [
             { language: 'azure-pipelines', scheme: 'file' },
             { language: 'azure-pipelines', scheme: 'untitled' }
         ],
         synchronize: {
-            // Synchronize the setting section 'languageServerExample' to the server
-            // TODO: Are these what settings we want to pass through to the server? Would be good to see this happening... And see initializeOptions. Maybe remove them?
+            // TODO: Switch to handling the workspace/configuration request
             configurationSection: ['yaml', 'http.proxy', 'http.proxyStrictSSL'],
-            // Notify the server about file changes to '.clientrc files contain in the workspace
+            // Notify the server about file changes to YAML files in the workspace
             fileEvents: [
-                vscode.workspace.createFileSystemWatcher('**/*.?(e)y?(a)ml'),
-                vscode.workspace.createFileSystemWatcher('**/*.json')
+                vscode.workspace.createFileSystemWatcher('**/*.?(e)y?(a)ml')
             ]
         },
     };
