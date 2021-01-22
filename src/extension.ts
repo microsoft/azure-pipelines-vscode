@@ -13,7 +13,7 @@ import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from
 import { telemetryHelper } from './configure/helper/telemetryHelper';
 
 export async function activate(context: vscode.ExtensionContext) {
-    const configurePipelineEnabled = vscode.workspace.getConfiguration('[azure-pipelines]').get<boolean>('configure', true);
+    const configurePipelineEnabled = vscode.workspace.getConfiguration('azure-pipelines').get<boolean>('configure', true);
     telemetryHelper.initialize('azurePipelines.activate', {
         isActivationEvent: 'true',
         configurePipelineEnabled: `${configurePipelineEnabled}`,
@@ -67,7 +67,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     // Let the server know of any schema changes.
     // TODO: move to schema-association-service?
     vscode.workspace.onDidChangeConfiguration(event => {
-        if (event.affectsConfiguration('[azure-pipelines].customSchemaFile')) {
+        if (event.affectsConfiguration('azure-pipelines.customSchemaFile')) {
             schemaAssociationService.locateSchemaFile();
             const newSchema = schemaAssociationService.getSchemaAssociation();
             client.sendNotification(SchemaAssociationNotification.type, newSchema);

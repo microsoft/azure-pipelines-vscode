@@ -2,7 +2,7 @@
     "name": "azure-pipelines",
     "displayName": "Azure Pipelines",
     "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines YAML",
-    "version": "1.182.0",
+    "version": "1.183.0",
     "publisher": "ms-azure-devops",
     "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
     "repository": {
@@ -38,8 +38,7 @@
     ],
     "activationEvents": [
         "onLanguage:azure-pipelines",
-        "onCommand:configure-pipeline",
-        "onCommand:browse-pipeline"
+        "onCommand:azure-pipelines.configure-pipeline"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -74,18 +73,15 @@
         "configuration": {
             "title": "Azure Pipelines",
             "properties": {
-                "[azure-pipelines].configure": {
+                "azure-pipelines.configure": {
                     "type": "boolean",
                     "default": true,
                     "description": "Enable 'Configure Pipeline' feature"
                 },
-                "[azure-pipelines].customSchemaFile": {
-                    "type": [
-                        "string",
-                        "null"
-                    ],
-                    "default": null,
-                    "description": "Use a different schema file"
+                "azure-pipelines.customSchemaFile": {
+                    "type": "string",
+                    "description": "Use a different schema file",
+                    "scope": "machine-overridable"
                 }
             }
         },
@@ -103,7 +99,7 @@
         },
         "commands": [
             {
-                "command": "configure-pipeline",
+                "command": "azure-pipelines.configure-pipeline",
                 "title": "Configure Pipeline",
                 "category": "Azure Pipelines"
             }
@@ -111,7 +107,7 @@
         "menus": {
             "explorer/context": [
                 {
-                    "command": "configure-pipeline",
+                    "command": "azure-pipelines.configure-pipeline",
                     "group": "Azure Pipelines",
                     "when": "explorerResourceIsFolder == true"
                 }

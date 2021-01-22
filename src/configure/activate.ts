@@ -13,7 +13,7 @@ export async function activateConfigurePipeline(): Promise<void> {
 
     extensionVariables.azureAccountExtensionApi = <AzureAccountExtensionExports>azureAccountExtension.exports;
 
-    vscode.commands.registerCommand('configure-pipeline', async () => {
+    vscode.commands.registerCommand('azure-pipelines.configure-pipeline', async () => {
         if (!azureAccountExtension.isActive) {
             await azureAccountExtension.activate();
         }
