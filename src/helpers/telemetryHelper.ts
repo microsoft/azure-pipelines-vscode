@@ -60,24 +60,25 @@ class TelemetryHelper {
 
     // Log an error.
     // No custom properties are logged alongside the error.
+    // FIXME: This should really be sendTelemetryException but I'm maintaining
+    // backwards-compatibility with how it used to be sent, especially because
+    // I don't have access to the Application Insights logs :D (winstonliu).
     public logError(layer: string, tracePoint: string, error: Error): void {
-        TelemetryHelper.reporter.sendTelemetryEvent(
-            tracePoint,
-            {
+        TelemetryHelper.reporter.sendTelemetryErrorEvent(
+            tracePoint, {
                 'journeyId': this.journeyId,
                 'command': this.command,
                 'layer': layer,
                 'errorMessage': error.message,
                 'stack': error.stack ?? '',
-            });
+            }, undefined, ['errorMesage', 'stack']);
     }
 
     // Log an informational message.
     // No custom properties are logged alongside the message.
     public logInfo(layer: string, tracePoint: string, info: string): void {
         TelemetryHelper.reporter.sendTelemetryEvent(
-            tracePoint,
-            {
+            tracePoint, {
                 'journeyId': this.journeyId,
                 'command': this.command,
                 'layer': layer,
@@ -129,14 +130,18 @@ class TelemetryHelper {
                 }
             }
         } finally {
-            if (!(this.options.suppressIfSuccessful && this.properties.result === Result.Succeeded)) {
-                TelemetryHelper.reporter.sendTelemetryEvent(
-                    this.command,
-                    {
+            if (this.properties.result === Result.Failed) {
+                TelemetryHelper.reporter.sendTelemetryErrorEvent(
+                    this.command, {
                         ...this.properties,
                         journeyId: this.journeyId,
-                    }
-                )
+                    }, undefined, ['errorMesage', 'stack']);
+            } else if (!(this.options.suppressIfSuccessful && this.properties.result === Result.Succeeded)) {
+                TelemetryHelper.reporter.sendTelemetryEvent(
+                    this.command, {
+                        ...this.properties,
+                        journeyId: this.journeyId,
+                    });
             }
         }
     }
