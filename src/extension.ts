@@ -10,7 +10,7 @@ import * as languageclient from 'vscode-languageclient/node';
 import * as logger from './logger';
 import { SchemaAssociationService, SchemaAssociationNotification } from './schema-association-service';
 import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from './schema-contributor';
-import { telemetryHelper } from './configure/helper/telemetryHelper';
+import { telemetryHelper } from './helpers/telemetryHelper';
 
 export async function activate(context: vscode.ExtensionContext) {
     const configurePipelineEnabled = vscode.workspace.getConfiguration('azure-pipelines').get<boolean>('configure', true);
