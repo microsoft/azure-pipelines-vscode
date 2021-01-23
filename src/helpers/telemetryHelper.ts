@@ -1,10 +1,9 @@
 import * as vscode from 'vscode';
 import TelemetryReporter from 'vscode-extension-telemetry';
 
-import { TelemetryKeys } from '../resources/telemetryKeys';
-import * as logger from '../../logger';
+import { TelemetryKeys } from './telemetryKeys';
+import * as logger from '../logger';
 import { parseError } from './parseError';
-import { Messages } from '../resources/messages';
 
 const uuid = require('uuid/v4');
 
@@ -124,7 +123,7 @@ class TelemetryHelper {
 
                 logger.log(parsedError.message);
                 if (parsedError.message.includes('\n')) {
-                    vscode.window.showErrorMessage(Messages.errorOccurred);
+                    vscode.window.showErrorMessage('An error has occurred. Check the output window for more details.');
                 } else {
                     vscode.window.showErrorMessage(parsedError.message);
                 }

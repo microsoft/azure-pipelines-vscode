@@ -5,7 +5,7 @@ import { AzureDevOpsBaseUrl, ReservedHostNames } from '../../resources/constants
 import { RestClient } from '../restClient';
 import { ServiceClientCredentials, UrlBasedRequestPrepareOptions } from 'ms-rest';
 import { sleepForMilliSeconds, stringCompareFunction } from "../../helper/commonHelper";
-import { telemetryHelper } from '../../helper/telemetryHelper';
+import { telemetryHelper } from '../../../helpers/telemetryHelper';
 import * as Q from 'q';
 import * as util from 'util';
 

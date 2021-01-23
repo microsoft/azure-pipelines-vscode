@@ -1,6 +1,6 @@
 import { InputBoxOptions, QuickPickItem, QuickPickOptions, window } from 'vscode';
-import { telemetryHelper } from '../helper/telemetryHelper';
-import { TelemetryKeys } from '../resources/telemetryKeys';
+import { telemetryHelper } from '../../helpers/telemetryHelper';
+import { TelemetryKeys } from '../../helpers/telemetryKeys';
 import { UserCancelledError } from './userCancelledError';
 
 export class ControlProvider {

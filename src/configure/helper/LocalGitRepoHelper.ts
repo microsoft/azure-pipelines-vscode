@@ -8,8 +8,8 @@ import * as vscode from 'vscode';
 import { RemoteWithoutRefs } from 'simple-git/typings/response';
 import {AzureDevOpsHelper} from './devOps/azureDevOpsHelper';
 import {GitHubProvider} from './gitHubHelper';
-import { telemetryHelper } from "./telemetryHelper";
-import { TelemetryKeys } from "../resources/telemetryKeys";
+import { telemetryHelper } from "../../helpers/telemetryHelper";
+import { TelemetryKeys } from "../../helpers/telemetryKeys";
 
 export class LocalGitRepoHelper {
     private gitReference: git.SimpleGit;
