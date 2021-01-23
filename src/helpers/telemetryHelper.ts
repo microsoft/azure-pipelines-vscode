@@ -70,7 +70,7 @@ class TelemetryHelper {
     public logError(layer: string, tracePoint: string, error: Error): void {
         TelemetryHelper.reporter.sendTelemetryErrorEvent(
             tracePoint, {
-                'journeyId': this.journeyId,
+                [TelemetryKeys.JourneyId]: this.journeyId,
                 'command': this.command,
                 'layer': layer,
                 'errorMessage': error.message,
@@ -83,7 +83,7 @@ class TelemetryHelper {
     public logInfo(layer: string, tracePoint: string, info: string): void {
         TelemetryHelper.reporter.sendTelemetryEvent(
             tracePoint, {
-                'journeyId': this.journeyId,
+                [TelemetryKeys.JourneyId]: this.journeyId,
                 'command': this.command,
                 'layer': layer,
                 'info': info
@@ -138,13 +138,13 @@ class TelemetryHelper {
                 TelemetryHelper.reporter.sendTelemetryErrorEvent(
                     this.command, {
                         ...this.properties,
-                        journeyId: this.journeyId,
+                        [TelemetryKeys.JourneyId]: this.journeyId,
                     }, undefined, ['error', 'errorMesage', 'stack']);
             } else if (!(this.options.suppressIfSuccessful && this.properties.result === Result.Succeeded)) {
                 TelemetryHelper.reporter.sendTelemetryEvent(
                     this.command, {
                         ...this.properties,
-                        journeyId: this.journeyId,
+                        [TelemetryKeys.JourneyId]: this.journeyId,
                     });
             }
         }
