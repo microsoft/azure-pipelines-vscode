@@ -39,6 +39,10 @@ class TelemetryHelper {
         this.setTelemetry(TelemetryKeys.Result, Result.Succeeded);
     }
 
+    public dispose() {
+        TelemetryHelper.reporter.dispose();
+    }
+
     public getJourneyId(): string {
         return this.journeyId;
     }
@@ -135,7 +139,7 @@ class TelemetryHelper {
                     this.command, {
                         ...this.properties,
                         journeyId: this.journeyId,
-                    }, undefined, ['errorMesage', 'stack']);
+                    }, undefined, ['error', 'errorMesage', 'stack']);
             } else if (!(this.options.suppressIfSuccessful && this.properties.result === Result.Succeeded)) {
                 TelemetryHelper.reporter.sendTelemetryEvent(
                     this.command, {
