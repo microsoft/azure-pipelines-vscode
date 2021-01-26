@@ -1,18 +1,13 @@
 import { AzureEnvironment } from 'ms-rest-azure';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
-import { OutputChannel, ExtensionContext, QuickPickItem } from 'vscode';
+import { OutputChannel, QuickPickItem, window } from 'vscode';
 import { ServiceClientCredentials } from 'ms-rest';
 import { SubscriptionModels } from 'azure-arm-resource';
-import { UIExtensionVariables, IAzureUserInput, ITelemetryReporter } from 'vscode-azureextensionui';
 import { Messages } from '../resources/messages';
 
-class ExtensionVariables implements UIExtensionVariables {
+class ExtensionVariables {
     public azureAccountExtensionApi: AzureAccountExtensionExports;
-
-    public context: ExtensionContext;
-    public outputChannel: OutputChannel;
-    public reporter: ITelemetryReporter;
-    public ui: IAzureUserInput;
+    public outputChannel: OutputChannel = window.createOutputChannel('Azure Pipelines');
 }
 
 let extensionVariables = new ExtensionVariables();

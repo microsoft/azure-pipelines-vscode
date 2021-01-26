@@ -2,7 +2,7 @@ import { AzureDevOpsClient } from '../../clients/devOps/azureDevOpsClient';
 import { BuildDefinition, BuildDefinitionRepositoryProperties, Build } from '../../model/azureDevOps';
 import { HostedVS2017QueueName } from '../../resources/constants';
 import { Messages } from '../../resources/messages';
-import { telemetryHelper } from '../telemetryHelper';
+import { telemetryHelper } from '../../../helpers/telemetryHelper';
 import { TracePoints } from '../../resources/tracePoints';
 import { WizardInputs, RepositoryProvider } from '../../model/models';
 import * as util from 'util';

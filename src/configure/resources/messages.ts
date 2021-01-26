@@ -29,7 +29,6 @@ export class Messages {
     public static notAGitRepository: string = 'Selected workspace is not a [Git](https://git-scm.com/docs/git) repository. Please select a Git repository.';
     public static notAzureRepoUrl: string = 'The repo isn\'t hosted with Azure Repos.';
     public static noWorkSpaceSelectedError: string = 'Please select a workspace folder to configure pipeline.';
-    public static operationCancelled: string = 'Operation cancelled.';
     public static operationTimedOut: string = 'Operation timed out.';
     public static organizationNameReservedMessage: string = 'The organization name %s isn\'t available. Please try another organization name.';
     public static organizationNameStaticValidationMessage: string = 'Organization names must start and end with a letter or number and can contain only letters, numbers, and hyphens.';
@@ -52,11 +51,8 @@ export class Messages {
     public static retryFailedMessage: string =`Failed after retrying: %s times. Internal Error: %s`;
     public static azureServicePrincipalFailedMessage: string =`Failed while creating Azure service principal.`;
     public static roleAssignmentFailedMessage: string =`Failed while role assignement.`;
-    public static waitForAzureSignIn: string =`Waiting for Azure sign-in...`;
-    public static userCancelledExcecption = 'User cancelled the action';
+    public static waitForAzureSignIn: string = `Waiting for Azure sign-in...`;
     public static cannotFindPipelineUrlInMetaDataException = 'We were unable to find pipeline associated with the Azure Web App. Please click on "Browse Pipeline" to explore.';
     public static cannotFindOrganizationWithName = 'Unable to find organization with name: %s';
-    public static browseNotAvailableConfigurePipeline = 'Unable to find a pipeline for this Azure Web App. Please click on "Configure Pipeline" to setup.';
-    public static didNotRecieveAzureResourceNodeToProcess = 'Unable to browse the pipeline for you. Please raise an issue in the [repo](https://github.com/Microsoft/azure-pipelines-vscode/issues).';
 
 }

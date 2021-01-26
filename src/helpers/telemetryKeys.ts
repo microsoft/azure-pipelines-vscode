@@ -3,6 +3,7 @@ export class TelemetryKeys {
     public static RepoProvider: string = 'repoProvider';
     public static AzureLoginRequired: string = 'azureLoginRequired';
     public static JourneyId: string = 'journeyId';
+    public static Result: string = 'result';
     public static SourceRepoLocation: string = 'sourceRepoLocation';
     public static NewOrganization: string = 'newOrganization';
     public static ChosenTemplate: string = 'chosenTemplate';
@@ -14,10 +15,6 @@ export class TelemetryKeys {
     public static BrowsedDeploymentCenter = 'openedDeploymentCenter';
     public static BrowsedExistingPipeline = 'browsedExistingPipeline';
     public static ClickedConfigurePipeline = 'clickedConfigurePipeline';
-
-    // Durations
-    public static ExtensionActivationDuration = 'extensionActivationDuration';
-    public static CommandExecutionDuration = 'commandExecutionDuration';
     public static GitHubPatDuration = 'gitHubPatDuration';
 
     // Count of drop down items

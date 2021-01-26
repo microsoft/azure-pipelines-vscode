@@ -4,7 +4,7 @@
         "alwaysStrict": true,
 
         /* List of library files to be included in the compilation. */
-        "lib": [ "es6" ],
+        "lib": [ "es2019" ],
 
         /* Specify module code generation. */
         "module": "commonjs",
@@ -45,10 +45,10 @@
         //"strict": true,
 
         /* Specify ECMAScript target version. */
-        "target": "es6",
+        "target": "es2019",
 
         /*  */
-        "allowJs": true,
+        "allowJs": true
     },
     "include": [
         "src/**/*",

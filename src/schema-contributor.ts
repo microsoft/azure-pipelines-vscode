@@ -3,7 +3,7 @@
 *  Licensed under the MIT License.
 *--------------------------------------------------------------------------------------------*/
 
-import Uri from 'vscode-uri'
+import { URI } from 'vscode-uri';
 
 interface SchemaContributorProvider {
     readonly requestSchema: (resource: string) => string;
@@ -75,10 +75,10 @@ class SchemaContributor {
      */
     public requestCustomSchemaContent(uri: string): string {
         if (uri) {
-            let _uri = Uri.parse(uri);
-            if (_uri.scheme && this._customSchemaContributors[_uri.scheme] &&
-                this._customSchemaContributors[_uri.scheme].requestSchemaContent) {
-                return this._customSchemaContributors[_uri.scheme].requestSchemaContent(uri);
+            const { scheme } = URI.parse(uri);
+            if (scheme && this._customSchemaContributors[scheme] &&
+                this._customSchemaContributors[scheme].requestSchemaContent) {
+                return this._customSchemaContributors[scheme].requestSchemaContent(uri);
             }
         }
 

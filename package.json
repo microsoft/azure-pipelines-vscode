@@ -38,8 +38,7 @@
     ],
     "activationEvents": [
         "onLanguage:azure-pipelines",
-        "onCommand:azure-pipelines.configure-pipeline",
-        "onCommand:azure-pipelines.browse-pipeline"
+        "onCommand:azure-pipelines.configure-pipeline"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -103,11 +102,6 @@
                 "command": "azure-pipelines.configure-pipeline",
                 "title": "Configure Pipeline",
                 "category": "Azure Pipelines"
-            },
-            {
-                "command": "azure-pipelines.browse-pipeline",
-                "title": "Browse Pipeline",
-                "category": "Azure Pipelines"
             }
         ],
         "menus": {
@@ -116,12 +110,6 @@
                     "command": "azure-pipelines.configure-pipeline",
                     "group": "Azure Pipelines",
                     "when": "explorerResourceIsFolder == true"
-                }
-            ],
-            "commandPalette": [
-                {
-                    "command": "azure-pipelines.browse-pipeline",
-                    "when": "never"
                 }
             ]
         }
@@ -135,9 +123,10 @@
     },
     "devDependencies": {
         "@types/fs-extra": "4.0.5",
+        "@types/html-to-text": "^5.1.2",
         "@types/mocha": "5.2.5",
         "@types/mustache": "0.8.32",
-        "@types/node": "^12.0.0",
+        "@types/node": "^12.12.2",
         "@types/q": "1.5.0",
         "@types/underscore": "1.8.9",
         "@types/vscode": "^1.45.1",
@@ -155,6 +144,7 @@
         "azure-arm-resource": "7.3.0",
         "azure-arm-website": "5.7.0",
         "azure-pipelines-language-server": "0.6.0",
+        "html-to-text": "^5.1.1",
         "mustache": "3.0.1",
         "q": "1.5.1",
         "shelljs": "^0.3.0",
@@ -162,11 +152,9 @@
         "typed-rest-client": "1.0.7",
         "underscore": "1.9.1",
         "uuid": "^3.3.2",
-        "vscode-azureextensionui": "0.26.3",
-        "vscode-extension-telemetry": "0.0.18",
+        "vscode-extension-telemetry": "^0.1.6",
         "vscode-languageclient": "^7.0.0",
-        "vscode-nls": "3.2.4",
-        "vscode-uri": "1.0.6"
+        "vscode-uri": "^3.0.2"
     },
     "extensionDependencies": [
         "ms-vscode.azure-account"

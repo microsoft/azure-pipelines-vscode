@@ -2,7 +2,6 @@ const uuid = require('uuid/v4');
 import { AppServiceClient } from './clients/azure/appServiceClient';
 import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
-import { AzureTreeItem, UserCancelledError } from 'vscode-azureextensionui';
 import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
 import { GenericResource } from 'azure-arm-resource/lib/resource/models';
 import { GraphHelper } from './helper/graphHelper';
@@ -11,55 +10,39 @@ import { Messages } from './resources/messages';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
 import { SourceOptions, RepositoryProvider, extensionVariables, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails, TargetResourceType } from './model/models';
 import { TracePoints } from './resources/tracePoints';
-import { TelemetryKeys } from './resources/telemetryKeys';
+import { TelemetryKeys } from '../helpers/telemetryKeys';
 import * as constants from './resources/constants';
 import * as path from 'path';
 import * as templateHelper from './helper/templateHelper';
 import * as utils from 'util';
 import * as vscode from 'vscode';
-import { Result, telemetryHelper } from './helper/telemetryHelper';
+import { telemetryHelper } from '../helpers/telemetryHelper';
 import { ControlProvider } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
-import {Build} from './model/azureDevOps';
+import { Build } from './model/azureDevOps';
+import { UserCancelledError } from './helper/userCancelledError';
 
 const Layer: string = 'configure';
 
-export async function configurePipeline(node: AzureTreeItem) {
-    await telemetryHelper.executeFunctionWithTimeTelemetry(async () => {
-        try {
-            if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
-                // set telemetry
-                telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
+export async function configurePipeline() {
+    if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
+        telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
 
-                let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
-                if (signIn && signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
-                    await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.waitForAzureSignIn },
-                        async () => {
-                            await vscode.commands.executeCommand("azure-account.login");
-                        });
-                }
-                else {
-                    let error = new Error(Messages.azureLoginRequired);
-                    telemetryHelper.setResult(Result.Failed, error);
-                    throw error;
-                }
-            }
+        let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
+        if (signIn && signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
+            await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.waitForAzureSignIn },
+                async () => {
+                    await vscode.commands.executeCommand("azure-account.login");
+                });
+        }
+        else {
+            throw new Error(Messages.azureLoginRequired);
+        }
+    }
 
-            var configurer = new PipelineConfigurer();
-            await configurer.configure(node);
-        }
-        catch (error) {
-            if (!(error instanceof UserCancelledError)) {
-                extensionVariables.outputChannel.appendLine(error.message);
-                vscode.window.showErrorMessage(error.message);
-                telemetryHelper.setResult(Result.Failed, error);
-            }
-            else {
-                telemetryHelper.setResult(Result.Canceled, error);
-            }
-        }
-    }, TelemetryKeys.CommandExecutionDuration);
+    const configurer = new PipelineConfigurer();
+    await configurer.configure();
 }
 
 class PipelineConfigurer {
@@ -79,9 +62,9 @@ class PipelineConfigurer {
         this.controlProvider = new ControlProvider();
     }
 
-    public async configure(node: any) {
+    public async configure() {
         telemetryHelper.setCurrentStep('GetAllRequiredInputs');
-        await this.getAllRequiredInputs(node);
+        await this.getAllRequiredInputs();
 
         telemetryHelper.setCurrentStep('CreatePreRequisites');
         await this.createPreRequisites();
@@ -116,8 +99,7 @@ class PipelineConfigurer {
             });
     }
 
-    private async getAllRequiredInputs(node: any) {
-        await this.analyzeNode(node);
+    private async getAllRequiredInputs() {
         await this.getSourceRepositoryDetails();
         await this.getSelectedPipeline();
 
@@ -168,16 +150,6 @@ class PipelineConfigurer {
 
         if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
             await this.createAzureRMServiceConnection();
-        }
-    }
-
-    private async analyzeNode(node: any): Promise<void> {
-        if (!!node && !!node.fullId) {
-            await this.extractAzureResourceFromNode(node);
-        }
-        else if (node && node.fsPath) {
-            this.workspacePath = node.fsPath;
-            telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.CurrentWorkspace);
         }
     }
 
@@ -325,37 +297,6 @@ class PipelineConfigurer {
         return githubPat;
     }
 
-    private async extractAzureResourceFromNode(node: any): Promise<void> {
-        this.inputs.targetResource.subscriptionId = node.root.subscriptionId;
-        this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
-        this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
-
-        try {
-            let azureResource: GenericResource = await this.appServiceClient.getAppServiceResource((<AzureTreeItem>node).fullId);
-
-            switch (azureResource.type ? azureResource.type.toLowerCase() : '') {
-                case 'Microsoft.Web/sites'.toLowerCase():
-                    switch (azureResource.kind ? azureResource.kind.toLowerCase() : '') {
-                        case WebAppKind.WindowsApp:
-                            this.inputs.targetResource.resource = azureResource;
-                            break;
-                        case WebAppKind.FunctionApp:
-                        case WebAppKind.LinuxApp:
-                        case WebAppKind.LinuxContainerApp:
-                        default:
-                            throw new Error(utils.format(Messages.appKindIsNotSupported, azureResource.kind));
-                    }
-                    break;
-                default:
-                    throw new Error(utils.format(Messages.resourceTypeIsNotSupported, azureResource.type));
-            }
-        }
-        catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.ExtractAzureResourceFromNodeFailed, error);
-            throw error;
-        }
-    }
-
     private async getAzureDevOpsDetails(): Promise<void> {
         try {
             this.createAzureDevOpsClient();
@@ -451,10 +392,10 @@ class PipelineConfigurer {
             let selectedSubscription: QuickPickItemWithData = await this.controlProvider.showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
             this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
             this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
-            
+
             // show available resources and get the chosen one
             this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
-            
+
             let resourceArray: Promise<Array<{label: string, data: GenericResource}>> = null;
             let selectAppText: string = "";
             let placeHolderText: string = "";
@@ -474,7 +415,7 @@ class PipelineConfigurer {
                 resourceArray,
                 { placeHolder:  placeHolderText },
                 TelemetryKeys.WebAppListCount);
-    
+
             this.inputs.targetResource.resource = selectedResource.data;
         } else if(subscriptionList.length > 0 ) {
             this.inputs.targetResource.subscriptionId = subscriptionList[0].data.subscription.subscriptionId;
@@ -623,7 +564,7 @@ class PipelineConfigurer {
                 }
                 else {
                     telemetryHelper.setTelemetry(TelemetryKeys.PipelineDiscarded, 'true');
-                    throw new UserCancelledError(Messages.operationCancelled);
+                    throw new UserCancelledError();
                 }
             }
         }
