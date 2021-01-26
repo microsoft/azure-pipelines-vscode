@@ -1,8 +1,8 @@
-import { AzureEnvironment } from 'ms-rest-azure';
-import { GenericResource } from 'azure-arm-resource/lib/resource/models';
+import { Environment } from '@azure/ms-rest-azure-env';
+import { ResourceManagementModels } from '@azure/arm-resources';
+import { SubscriptionModels } from '@azure/arm-subscriptions';
+import { ServiceClientCredentials } from '@azure/ms-rest-js';
 import { OutputChannel, QuickPickItem, window } from 'vscode';
-import { ServiceClientCredentials } from 'ms-rest';
-import { SubscriptionModels } from 'azure-arm-resource';
 import { Messages } from '../resources/messages';
 
 class ExtensionVariables {
@@ -45,7 +45,7 @@ export class Organization {
 }
 
 export class AzureSession {
-    environment: AzureEnvironment;
+    environment: Environment;
     userId: string;
     tenantId: string;
     credentials: ServiceClientCredentials;
@@ -53,7 +53,7 @@ export class AzureSession {
 
 export class AzureParameters {
     subscriptionId: string;
-    resource: GenericResource;
+    resource: ResourceManagementModels.GenericResource;
     serviceConnectionId: string;
 }
 

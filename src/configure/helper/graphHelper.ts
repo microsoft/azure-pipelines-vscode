@@ -1,10 +1,10 @@
 const uuid = require('uuid/v1');
-import { AzureEnvironment } from 'ms-rest-azure';
+import { Environment } from '@azure/ms-rest-azure-env';
 import { AzureSession, Token, AadApplication } from '../model/models';
 import { generateRandomPassword, executeFunctionWithRetry } from './commonHelper';
 import { Messages } from '../resources/messages';
 import { RestClient } from '../clients/restClient';
-import { TokenCredentials, UrlBasedRequestPrepareOptions, ServiceClientCredentials } from 'ms-rest';
+import { TokenCredentials, RequestPrepareOptions, ServiceClientCredentials } from '@azure/ms-rest-js';
 import { TokenResponse, MemoryCache, AuthenticationContext } from 'adal-node';
 import * as util from 'util';
 
@@ -94,7 +94,7 @@ export class GraphHelper {
         });
     }
 
-    private static async getResourceTokenFromRefreshToken(environment: AzureEnvironment, refreshToken: string, tenantId: string, clientId: string, resource: string): Promise<TokenResponse> {
+    private static async getResourceTokenFromRefreshToken(environment: Environment, refreshToken: string, tenantId: string, clientId: string, resource: string): Promise<TokenResponse> {
         return new Promise<TokenResponse>((resolve, reject) => {
             const tokenCache = new MemoryCache();
             const context = new AuthenticationContext(`${environment.activeDirectoryEndpointUrl}${tenantId}`, true, tokenCache);
@@ -114,7 +114,7 @@ export class GraphHelper {
         let secret = generateRandomPassword(20);
         let startDate = new Date(Date.now());
 
-        return graphClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
+        return graphClient.sendRequest<any>(<RequestPrepareOptions>{
             url: `https://graph.windows.net/${tenantId}/applications`,
             queryParameters: {
                 "api-version": "1.6"
@@ -151,7 +151,7 @@ export class GraphHelper {
 
     private static async createSpn(graphClient: RestClient, appId: string, tenantId: string): Promise<any> {
         let createSpnPromise = () => {
-            return graphClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
+            return graphClient.sendRequest<any>(<RequestPrepareOptions>{
                 url: `https://graph.windows.net/${tenantId}/servicePrincipals`,
                 queryParameters: {
                     "api-version": "1.6"
@@ -181,7 +181,7 @@ export class GraphHelper {
         let roleDefinitionId = `${scope}/providers/Microsoft.Authorization/roleDefinitions/${this.contributorRoleId}`;
         let guid = uuid();
         let roleAssignementFunction = () => {
-            return restClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
+            return restClient.sendRequest<any>(<RequestPrepareOptions>{
                 url: `https://management.azure.com/${scope}/providers/Microsoft.Authorization/roleAssignments/${guid}`,
                 queryParameters: {
                     "api-version": "2015-07-01"

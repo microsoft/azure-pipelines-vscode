@@ -1,17 +1,16 @@
-import { ResourceListResult, GenericResource } from 'azure-arm-resource/lib/resource/models';
-import { ServiceClientCredentials } from 'ms-rest';
-import * as ResourceManagementClient from 'azure-arm-resource/lib/resource/resourceManagementClient';
+import { ResourceManagementClient, ResourceManagementModels } from '@azure/arm-resources';
+import { ServiceClientCredentials } from '@azure/ms-rest-js';
 
 export class AzureResourceClient {
 
-    private azureRmClient: ResourceManagementClient.ResourceManagementClient;
+    private azureRmClient: ResourceManagementClient;
 
     constructor(credentials: ServiceClientCredentials, subscriptionId: string) {
-        this.azureRmClient = new ResourceManagementClient.ResourceManagementClient(credentials, subscriptionId);
+        this.azureRmClient = new ResourceManagementClient(credentials, subscriptionId);
     }
 
-    public async getResourceList(resourceType: string, followNextLink: boolean = true): Promise<ResourceListResult> {
-        let resourceListResult: ResourceListResult = await this.azureRmClient.resources.list({ filter: `resourceType eq '${resourceType}'` });
+    public async getResourceList(resourceType: string, followNextLink: boolean = true): Promise<ResourceManagementModels.ResourceListResult> {
+        let resourceListResult: ResourceManagementModels.ResourceListResult = await this.azureRmClient.resources.list({ filter: `resourceType eq '${resourceType}'` });
 
         if (followNextLink) {
             let nextLink: string = resourceListResult.nextLink;
@@ -25,8 +24,8 @@ export class AzureResourceClient {
         return resourceListResult;
     }
 
-    public async getResource(resourceId: string, apiVersion: string): Promise<GenericResource> {
-        let resource: GenericResource = await this.azureRmClient.resources.getById(resourceId, apiVersion);
+    public async getResource(resourceId: string, apiVersion: string): Promise<ResourceManagementModels.GenericResource> {
+        let resource: ResourceManagementModels.GenericResource = await this.azureRmClient.resources.getById(resourceId, apiVersion);
         return resource;
     }
 }
