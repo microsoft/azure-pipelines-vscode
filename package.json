@@ -40,7 +40,7 @@
         "onLanguage:azure-pipelines",
         "onCommand:azure-pipelines.configure-pipeline"
     ],
-    "main": "./out/extension",
+    "main": "./dist/extension",
     "contributes": {
         "languages": [
             {
@@ -116,11 +116,11 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./ && node copyStaticFiles.js",
-        "webpack:dev": "webpack --mode development --progress --color && node copyStaticFiles.js",
-        "watch": "node copyStaticFiles.js && tsc -watch -p ./",
-        "test": "node ./out/test/runTest.js",
-        "unittest": "node_modules/.bin/mocha -u tdd out/unittest/*.js"
+        "compile": "webpack --mode production --progress --color && node copyStaticFiles.js",
+        "compile:dev": "webpack --mode development --progress --color && node copyStaticFiles.js",
+        "watch": "node copyStaticFiles.js && webpack --mode development --progress --color --watch",
+        "test": "tsc -p ./ && node ./out/test/runTest.js",
+        "unittest": "tsc -p ./ && npx mocha -u tdd out/unittest/*.js"
     },
     "devDependencies": {
         "@types/fs-extra": "4.0.5",
