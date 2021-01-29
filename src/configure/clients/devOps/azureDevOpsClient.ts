@@ -3,7 +3,8 @@ import { Messages } from '../../resources/messages';
 import { DevOpsProject, Organization } from '../../model/models';
 import { AzureDevOpsBaseUrl, ReservedHostNames } from '../../resources/constants';
 import { RestClient } from '../restClient';
-import { ServiceClientCredentials, RequestPrepareOptions } from '@azure/ms-rest-js';
+import { RequestPrepareOptions } from '@azure/ms-rest-js';
+import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import { sleepForMilliSeconds, stringCompareFunction } from "../../helper/commonHelper";
 import { telemetryHelper } from '../../../helpers/telemetryHelper';
 import * as Q from 'q';
@@ -13,7 +14,7 @@ export class AzureDevOpsClient {
     private restClient: RestClient;
     private listOrgPromise: Promise<Organization[]>;
 
-    constructor(credentials: ServiceClientCredentials) {
+    constructor(credentials: TokenCredentialsBase) {
         this.restClient = new RestClient(credentials);
         this.listOrgPromise = this.listOrganizations();
     }

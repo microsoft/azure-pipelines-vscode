@@ -1,11 +1,11 @@
 import { ResourceManagementClient, ResourceManagementModels } from '@azure/arm-resources';
-import { ServiceClientCredentials } from '@azure/ms-rest-js';
+import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 
 export class AzureResourceClient {
 
     private azureRmClient: ResourceManagementClient;
 
-    constructor(credentials: ServiceClientCredentials, subscriptionId: string) {
+    constructor(credentials: TokenCredentialsBase, subscriptionId: string) {
         this.azureRmClient = new ResourceManagementClient(credentials, subscriptionId);
     }
 

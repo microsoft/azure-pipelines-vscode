@@ -394,7 +394,7 @@ class PipelineConfigurer {
             this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
 
             // show available resources and get the chosen one
-            this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
+            this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials2, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
 
             let resourceArray: Promise<Array<{label: string, data: ResourceManagementModels.GenericResource}>> = null;
             let selectAppText: string = "";
@@ -575,7 +575,7 @@ class PipelineConfigurer {
     }
 
     private createAzureDevOpsClient(): void {
-        this.azureDevOpsClient = new AzureDevOpsClient(this.inputs.azureSession.credentials);
+        this.azureDevOpsClient = new AzureDevOpsClient(this.inputs.azureSession.credentials2);
         this.azureDevOpsHelper = new AzureDevOpsHelper(this.azureDevOpsClient);
     }
 }

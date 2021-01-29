@@ -1,7 +1,7 @@
 const uuid = require('uuid/v4');
 import { ResourceManagementModels } from '@azure/arm-resources';
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
-import { ServiceClientCredentials } from '@azure/ms-rest-js';
+import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 
 import { AzureResourceClient } from './azureResourceClient';
 import { WebAppKind, ParsedAzureResourceId } from '../../model/models';
@@ -14,7 +14,7 @@ export class AppServiceClient extends AzureResourceClient {
     private tenantId: string;
     private portalUrl: string;
 
-    constructor(credentials: ServiceClientCredentials, tenantId: string, portalUrl: string, subscriptionId: string) {
+    constructor(credentials: TokenCredentialsBase, tenantId: string, portalUrl: string, subscriptionId: string) {
         super(credentials, subscriptionId);
         this.webSiteManagementClient = new WebSiteManagementClient(credentials, subscriptionId);
         this.tenantId = tenantId;

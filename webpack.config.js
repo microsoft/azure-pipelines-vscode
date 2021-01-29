@@ -20,7 +20,7 @@ const config = {
     'applicationinsights-native-metrics': 'commonjs applicationinsights-native-metrics', // we're not native
     '@opentelemetry/tracing': 'commonjs @opentelemetry/tracing', // optional
   },
-  mode: 'production', // TODO: Figure out how to dynamically change this
+  mode: 'production',
   resolve: {
     extensions: ['.ts', '.js']
   },

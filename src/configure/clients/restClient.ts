@@ -1,7 +1,8 @@
-import { ServiceClient, ServiceClientCredentials, ServiceClientOptions, RequestPrepareOptions } from "@azure/ms-rest-js";
+import { ServiceClient, ServiceClientOptions, RequestPrepareOptions } from "@azure/ms-rest-js";
+import { TokenCredentialsBase } from "@azure/ms-rest-nodeauth";
 
 export class RestClient extends ServiceClient {
-    constructor(credentials?: ServiceClientCredentials, options?: ServiceClientOptions) {
+    constructor(credentials?: TokenCredentialsBase, options?: ServiceClientOptions) {
         super(credentials, options);
     }
 

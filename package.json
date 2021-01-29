@@ -117,7 +117,7 @@
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./ && node copyStaticFiles.js",
-        "webpack": "webpack --progress --color && node copyStaticFiles.js",
+        "webpack:dev": "webpack --mode development --progress --color && node copyStaticFiles.js",
         "watch": "node copyStaticFiles.js && tsc -watch -p ./",
         "test": "node ./out/test/runTest.js",
         "unittest": "node_modules/.bin/mocha -u tdd out/unittest/*.js"
@@ -148,6 +148,9 @@
         "@azure/arm-resources": "^4.0.0",
         "@azure/arm-subscriptions": "^3.0.0",
         "@azure/ms-rest-azure-env": "^2.0.0",
+        "@azure/ms-rest-nodeauth": "^3.0.6",
+        "@azure/msal-node": "^1.0.0-beta.4",
+        "adal-node": "^0.2.1",
         "azure-pipelines-language-server": "0.6.0",
         "html-to-text": "^5.1.1",
         "mustache": "3.0.1",
