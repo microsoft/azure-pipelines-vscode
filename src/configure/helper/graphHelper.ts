@@ -4,8 +4,9 @@ import { AzureSession, Token, AadApplication } from '../model/models';
 import { generateRandomPassword, executeFunctionWithRetry } from './commonHelper';
 import { Messages } from '../resources/messages';
 import { RestClient } from '../clients/restClient';
-import { TokenCredentials, RequestPrepareOptions, ServiceClientCredentials } from '@azure/ms-rest-js';
-import { TokenResponse, MemoryCache, AuthenticationContext } from 'adal-node';
+import { TokenCredentials, RequestPrepareOptions } from '@azure/ms-rest-js';
+import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
+import { TokenResponse, MemoryCache, AuthenticationContext } from 'adal-node'; // replace with @azure/msal-node
 import * as util from 'util';
 
 export class GraphHelper {
@@ -28,7 +29,7 @@ export class GraphHelper {
         })
         .then((spn) => {
             aadApp.objectId = spn.objectId;
-            return this.createRoleAssignment(session.credentials, scope, aadApp.objectId);
+            return this.createRoleAssignment(session.credentials2, scope, aadApp.objectId);
         })
         .then(() => {
             return aadApp;
@@ -73,14 +74,14 @@ export class GraphHelper {
 
     private static async getGraphToken(session: AzureSession): Promise<TokenResponse> {
         let refreshTokenResponse = await this.getRefreshToken(session);
-        return this.getResourceTokenFromRefreshToken(session.environment, refreshTokenResponse.refreshToken, session.tenantId, (<any>session.credentials).clientId, session.environment.activeDirectoryGraphResourceId);
+        return this.getResourceTokenFromRefreshToken(session.environment, refreshTokenResponse.refreshToken, session.tenantId, session.credentials2.clientId, session.environment.activeDirectoryGraphResourceId);
     }
 
     private static async getRefreshToken(session: AzureSession): Promise<Token> {
         return new Promise<Token>((resolve, reject) => {
-            const credentials: any = session.credentials;
+            const credentials = session.credentials2;
             const environment = session.environment;
-            credentials.context.acquireToken(environment.activeDirectoryResourceId, credentials.username, credentials.clientId, function (err: any, result: any) {
+            credentials.authContext.acquireToken(environment.activeDirectoryResourceId, session.userId, credentials.clientId, function (err: Error, result: any) {
                 if (err) {
                     reject(err);
                 } else {
@@ -176,7 +177,7 @@ export class GraphHelper {
             Messages.azureServicePrincipalFailedMessage);
     }
 
-    private static async createRoleAssignment(credentials: ServiceClientCredentials, scope: string, objectId: string): Promise<any> {
+    private static async createRoleAssignment(credentials: TokenCredentialsBase, scope: string, objectId: string): Promise<any> {
         let restClient = new RestClient(credentials);
         let roleDefinitionId = `${scope}/providers/Microsoft.Authorization/roleDefinitions/${this.contributorRoleId}`;
         let guid = uuid();
