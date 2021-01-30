@@ -198,12 +198,6 @@ export class ParsedAzureResourceId {
     }
 }
 
-export interface Token {
-    session: AzureSession;
-    accessToken: string;
-    refreshToken: string;
-}
-
 export interface AadApplication {
     appId: string;
     secret: string;

@@ -1,12 +1,10 @@
 const uuid = require('uuid/v1');
-import { Environment } from '@azure/ms-rest-azure-env';
-import { AzureSession, Token, AadApplication } from '../model/models';
+import { AzureSession, AadApplication } from '../model/models';
 import { generateRandomPassword, executeFunctionWithRetry } from './commonHelper';
 import { Messages } from '../resources/messages';
 import { RestClient } from '../clients/restClient';
 import { TokenCredentials, RequestPrepareOptions } from '@azure/ms-rest-js';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
-import { TokenResponse, MemoryCache, AuthenticationContext } from 'adal-node'; // replace with @azure/msal-node
 import * as util from 'util';
 
 export class GraphHelper {
@@ -16,8 +14,8 @@ export class GraphHelper {
     private static retryCount = 20;
 
     public static async createSpnAndAssignRole(session: AzureSession, aadAppName: string, scope: string): Promise<AadApplication> {
-        let graphCredentials = await this.getGraphToken(session);
-        let tokenCredentials = new TokenCredentials(graphCredentials.accessToken);
+        let accessToken = await this.getGraphToken(session);
+        let tokenCredentials = new TokenCredentials(accessToken);
         let graphClient = new RestClient(tokenCredentials);
         let tenantId = session.tenantId;
         var aadApp: AadApplication;
@@ -72,40 +70,21 @@ export class GraphHelper {
         return accountName + "-" + projectName + "-" + guid;
     }
 
-    private static async getGraphToken(session: AzureSession): Promise<TokenResponse> {
-        let refreshTokenResponse = await this.getRefreshToken(session);
-        return this.getResourceTokenFromRefreshToken(session.environment, refreshTokenResponse.refreshToken, session.tenantId, session.credentials2.clientId, session.environment.activeDirectoryGraphResourceId);
-    }
-
-    private static async getRefreshToken(session: AzureSession): Promise<Token> {
-        return new Promise<Token>((resolve, reject) => {
+    private static async getGraphToken(session: AzureSession): Promise<string> {
+        return new Promise((resolve, reject) => {
             const credentials = session.credentials2;
             const environment = session.environment;
-            credentials.authContext.acquireToken(environment.activeDirectoryResourceId, session.userId, credentials.clientId, function (err: Error, result: any) {
+            credentials.authContext.acquireToken(environment.activeDirectoryResourceId, session.userId, credentials.clientId, function (err, tokenResponse) {
                 if (err) {
-                    reject(err);
-                } else {
-                    resolve({
-                        session,
-                        accessToken: result.accessToken,
-                        refreshToken: result.refreshToken
-                    });
-                }
-            });
-        });
-    }
-
-    private static async getResourceTokenFromRefreshToken(environment: Environment, refreshToken: string, tenantId: string, clientId: string, resource: string): Promise<TokenResponse> {
-        return new Promise<TokenResponse>((resolve, reject) => {
-            const tokenCache = new MemoryCache();
-            const context = new AuthenticationContext(`${environment.activeDirectoryEndpointUrl}${tenantId}`, true, tokenCache);
-            context.acquireTokenWithRefreshToken(refreshToken, clientId, resource, (err, tokenResponse) => {
-                if (err) {
-                    reject(new Error(util.format(Messages.acquireTokenFromRefreshTokenFailed, err.message)));
+                    reject(new Error(util.format(Messages.acquireAccessTokenFailed, err.message)));
                 } else if (tokenResponse.error) {
-                    reject(new Error(util.format(Messages.acquireTokenFromRefreshTokenFailed, tokenResponse.error)));
+                    reject(new Error(util.format(Messages.acquireAccessTokenFailed, tokenResponse.error)));
                 } else {
-                    resolve(<TokenResponse>tokenResponse);
+                    // This little casting workaround here allows us to not have to import adal-node
+                    // just for the typings. Really it's on adal-node for making the type
+                    // TokenResponse | ErrorResponse, even though TokenResponse has the same
+                    // error properties as ErrorResponse.
+                    resolve((tokenResponse as any).accessToken);
                 }
             });
         });

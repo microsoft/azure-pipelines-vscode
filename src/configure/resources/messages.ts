@@ -1,5 +1,5 @@
 export class Messages {
-    public static acquireTokenFromRefreshTokenFailed: string = 'Acquiring token with refresh token failed. Error: %s.';
+    public static acquireAccessTokenFailed: string = 'Acquiring access token failed. Error: %s.';
     public static addYmlFile: string = 'Add Azure Pipelines YAML definition.';
     public static analyzingRepo: string = 'Analyzing your repo';
     public static appKindIsNotSupported: string = 'App type "%s" is not yet supported.';
