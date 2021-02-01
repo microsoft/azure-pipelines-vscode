@@ -3,7 +3,7 @@ import { AzureSession, AadApplication } from '../model/models';
 import { generateRandomPassword, executeFunctionWithRetry } from './commonHelper';
 import { Messages } from '../resources/messages';
 import { RestClient } from '../clients/restClient';
-import { TokenCredentials, RequestPrepareOptions } from '@azure/ms-rest-js';
+import { TokenCredentials } from '@azure/ms-rest-js';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import * as util from 'util';
 
@@ -73,8 +73,7 @@ export class GraphHelper {
     private static async getGraphToken(session: AzureSession): Promise<string> {
         return new Promise((resolve, reject) => {
             const credentials = session.credentials2;
-            const environment = session.environment;
-            credentials.authContext.acquireToken(environment.activeDirectoryResourceId, session.userId, credentials.clientId, function (err, tokenResponse) {
+            credentials.authContext.acquireToken(session.environment.activeDirectoryGraphResourceId, session.userId, credentials.clientId, function (err, tokenResponse) {
                 if (err) {
                     reject(new Error(util.format(Messages.acquireAccessTokenFailed, err.message)));
                 } else if (tokenResponse.error) {
@@ -94,13 +93,10 @@ export class GraphHelper {
         let secret = generateRandomPassword(20);
         let startDate = new Date(Date.now());
 
-        return graphClient.sendRequest<any>(<RequestPrepareOptions>{
+        return graphClient.sendRequest<any>({
             url: `https://graph.windows.net/${tenantId}/applications`,
             queryParameters: {
                 "api-version": "1.6"
-            },
-            headers: {
-                "Content-Type": "application/json",
             },
             method: "POST",
             body: {
@@ -117,9 +113,7 @@ export class GraphHelper {
                         "value": secret
                     }
                 ]
-            },
-            deserializationMapper: null,
-            serializationMapper: null
+            }
         })
         .then((data) => {
             return <AadApplication>{
@@ -131,21 +125,16 @@ export class GraphHelper {
 
     private static async createSpn(graphClient: RestClient, appId: string, tenantId: string): Promise<any> {
         let createSpnPromise = () => {
-            return graphClient.sendRequest<any>(<RequestPrepareOptions>{
+            return graphClient.sendRequest<any>({
                 url: `https://graph.windows.net/${tenantId}/servicePrincipals`,
                 queryParameters: {
                     "api-version": "1.6"
-                },
-                headers: {
-                    "Content-Type": "application/json",
                 },
                 method: "POST",
                 body: {
                     "appId": appId,
                     "accountEnabled": "true"
-                },
-                deserializationMapper: null,
-                serializationMapper: null
+                }
             });
         };
 
@@ -161,13 +150,10 @@ export class GraphHelper {
         let roleDefinitionId = `${scope}/providers/Microsoft.Authorization/roleDefinitions/${this.contributorRoleId}`;
         let guid = uuid();
         let roleAssignementFunction = () => {
-            return restClient.sendRequest<any>(<RequestPrepareOptions>{
+            return restClient.sendRequest<any>({
                 url: `https://management.azure.com/${scope}/providers/Microsoft.Authorization/roleAssignments/${guid}`,
                 queryParameters: {
                     "api-version": "2015-07-01"
-                },
-                headers: {
-                    "Content-Type": "application/json",
                 },
                 method: "PUT",
                 body: {
@@ -175,9 +161,7 @@ export class GraphHelper {
                         "roleDefinitionId": roleDefinitionId,
                         "principalId": objectId
                     }
-                },
-                deserializationMapper: null,
-                serializationMapper: null
+                }
             });
         };
 
