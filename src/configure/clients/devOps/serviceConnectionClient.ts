@@ -1,7 +1,6 @@
 import { AadApplication } from '../../model/models';
 import { AzureDevOpsBaseUrl } from "../../resources/constants";
 import { AzureDevOpsClient } from './azureDevOpsClient';
-import { RequestPrepareOptions } from '@azure/ms-rest-js';
 
 export class ServiceConnectionClient {
     private azureDevOpsClient: AzureDevOpsClient;
@@ -17,8 +16,7 @@ export class ServiceConnectionClient {
     public async createGitHubServiceConnection(endpointName: string, gitHubPat: string): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/serviceendpoint/endpoints`;
 
-        return this.azureDevOpsClient.sendRequest(<RequestPrepareOptions>
-            {
+        return this.azureDevOpsClient.sendRequest({
                 url: url,
                 headers: {
                     "Content-Type": "application/json",
@@ -49,7 +47,7 @@ export class ServiceConnectionClient {
     public async createAzureServiceConnection(endpointName: string, tenantId: string, subscriptionId: string, scope: string, aadApp: AadApplication): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/serviceendpoint/endpoints`;
 
-        return this.azureDevOpsClient.sendRequest(<RequestPrepareOptions>{
+        return this.azureDevOpsClient.sendRequest({
             url: url,
             headers: {
                 "Content-Type": "application/json",
@@ -89,7 +87,7 @@ export class ServiceConnectionClient {
     public async getEndpointStatus(endpointId: string): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/serviceendpoint/endpoints/${endpointId}`;
 
-        return this.azureDevOpsClient.sendRequest(<RequestPrepareOptions>{
+        return this.azureDevOpsClient.sendRequest({
             url: url,
             headers: {
                 "Content-Type": "application/json",
@@ -104,7 +102,7 @@ export class ServiceConnectionClient {
     public async authorizeEndpointForAllPipelines(endpointId: string): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/pipelines/pipelinePermissions/endpoint/${endpointId}`;
 
-        return this.azureDevOpsClient.sendRequest(<RequestPrepareOptions>{
+        return this.azureDevOpsClient.sendRequest({
             url: url,
             headers: {
                 "Content-Type": "application/json",
