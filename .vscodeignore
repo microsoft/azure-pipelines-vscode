@@ -1,14 +1,13 @@
 
 .gitattributes
 .gitignore
-*.sh
-.vsts-ci.yml
 tsconfig.json
 tslint.json
 webpack.config.js
 .azure-pipelines/
 .vscode/
 .vscode-test/
+dist/**/*.map
 examples/
 node_modules/
 out/
