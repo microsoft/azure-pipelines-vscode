@@ -33,14 +33,14 @@
         /* Generates corresponding .map file. */
         "sourceMap": true,
 
-        /* Enable all strict type checking options. 
-           Enabling --strict enables 
-                --noImplicitAny, 
-                --noImplicitThis, 
-                --alwaysStrict, 
-                --strictNullChecks, 
+        /* Enable all strict type checking options.
+           Enabling --strict enables
+                --noImplicitAny,
+                --noImplicitThis,
+                --alwaysStrict,
+                --strictNullChecks,
                 --strictFunctionTypes
-                --strictPropertyInitialization. 
+                --strictPropertyInitialization.
         */
         //"strict": true,
 
@@ -48,15 +48,11 @@
         "target": "es2019",
 
         /*  */
-        "allowJs": true
+        "allowJs": true,
+
+        "skipLibCheck": true // https://github.com/Azure/ms-rest-js/issues/367
     },
     "include": [
-        "src/**/*",
-        "src/credentialstore/bin/win32/creds.exe"
-    ],
-    "exclude": [
-        "node_modules",
-        ".vscode-test",
-        "tools/**"
+        "src"
     ]
 }

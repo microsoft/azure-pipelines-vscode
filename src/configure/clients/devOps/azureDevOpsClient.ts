@@ -3,7 +3,8 @@ import { Messages } from '../../resources/messages';
 import { DevOpsProject, Organization } from '../../model/models';
 import { AzureDevOpsBaseUrl, ReservedHostNames } from '../../resources/constants';
 import { RestClient } from '../restClient';
-import { ServiceClientCredentials, UrlBasedRequestPrepareOptions } from 'ms-rest';
+import { RequestPrepareOptions } from '@azure/ms-rest-js';
+import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import { sleepForMilliSeconds, stringCompareFunction } from "../../helper/commonHelper";
 import { telemetryHelper } from '../../../helpers/telemetryHelper';
 import * as Q from 'q';
@@ -13,24 +14,24 @@ export class AzureDevOpsClient {
     private restClient: RestClient;
     private listOrgPromise: Promise<Organization[]>;
 
-    constructor(credentials: ServiceClientCredentials) {
+    constructor(credentials: TokenCredentialsBase) {
         this.restClient = new RestClient(credentials);
         this.listOrgPromise = this.listOrganizations();
     }
 
-    public async sendRequest(urlBasedRequestPrepareOptions: UrlBasedRequestPrepareOptions): Promise<any> {
-        if (urlBasedRequestPrepareOptions.headers) {
-            urlBasedRequestPrepareOptions.headers['X-TFS-Session'] = telemetryHelper.getJourneyId();
+    public async sendRequest(requestPrepareOptions: RequestPrepareOptions): Promise<any> {
+        if (requestPrepareOptions.headers) {
+            requestPrepareOptions.headers['X-TFS-Session'] = telemetryHelper.getJourneyId();
         }
         else {
-            urlBasedRequestPrepareOptions.headers = { 'X-TFS-Session': telemetryHelper.getJourneyId() };
+            requestPrepareOptions.headers = { 'X-TFS-Session': telemetryHelper.getJourneyId() };
         }
 
-        return this.restClient.sendRequest(urlBasedRequestPrepareOptions);
+        return this.restClient.sendRequest(requestPrepareOptions);
     }
 
     public async createOrganization(organizationName: string): Promise<any> {
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequest({
             url: "https://app.vsaex.visualstudio.com/_apis/HostAcquisition/collections",
             headers: {
                 "Content-Type": "application/json"
@@ -49,7 +50,7 @@ export class AzureDevOpsClient {
     public async createProject(organizationName: string, projectName: string): Promise<any> {
         let collectionUrl = `https://dev.azure.com/${organizationName}`;
 
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequest({
             url: `${collectionUrl}/_apis/projects`,
             headers: {
                 "Content-Type": "application/json"
@@ -83,7 +84,7 @@ export class AzureDevOpsClient {
         if (!this.listOrgPromise || forceRefresh) {
             this.listOrgPromise = this.getUserData()
                 .then((connectionData) => {
-                    return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+                    return this.sendRequest({
                         url: "https://app.vssps.visualstudio.com/_apis/accounts",
                         headers: {
                             "Content-Type": "application/json"
@@ -110,7 +111,7 @@ export class AzureDevOpsClient {
 
     public async listProjects(organizationName: string): Promise<Array<DevOpsProject>> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/_apis/projects`;
-        let response = await this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        let response = await this.sendRequest({
             url: url,
             headers: {
                 "Content-Type": "application/json"
@@ -136,7 +137,7 @@ export class AzureDevOpsClient {
     public async getRepository(organizationName: string, projectName: string, repositoryName: string): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/${projectName}/_apis/git/repositories/${repositoryName}`;
 
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequest({
             url: url,
             headers: {
                 "Content-Type": "application/json",
@@ -153,7 +154,7 @@ export class AzureDevOpsClient {
     public async createBuildDefinition(organizationName: string, buildDefinition: BuildDefinition): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/${buildDefinition.project.id}/_apis/build/definitions`;
 
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequest({
             url: url,
             method: "POST",
             headers: {
@@ -168,7 +169,7 @@ export class AzureDevOpsClient {
     public async queueBuild(organizationName: string, build: Build): Promise<any> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/${build.project.id}/_apis/build/builds`;
 
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequest({
             url: url,
             method: "POST",
             headers: {
@@ -193,7 +194,7 @@ export class AzureDevOpsClient {
         else {
             let url = `https://app.vsaex.visualstudio.com/_apis/HostAcquisition/NameAvailability/${organizationName}`;
 
-            this.sendRequest(<UrlBasedRequestPrepareOptions>{
+            this.sendRequest({
                 url: url,
                 headers: {
                     "Content-Type": "application/json",
@@ -219,7 +220,7 @@ export class AzureDevOpsClient {
     public async getProjectIdFromName(organizationName: string, projectName: string): Promise<string> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/_apis/projects/${projectName}`;
 
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequest({
             url: url,
             method: "GET",
             headers: {
@@ -274,7 +275,7 @@ export class AzureDevOpsClient {
     }
 
     private getConnectionData(): Promise<any> {
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequest({
             url: "https://app.vssps.visualstudio.com/_apis/connectiondata",
             headers: {
                 "Content-Type": "application/json"
@@ -286,7 +287,7 @@ export class AzureDevOpsClient {
     }
 
     private createUserProfile(): Promise<any> {
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequest({
             url: "https://app.vssps.visualstudio.com/_apis/_AzureProfile/CreateProfile",
             headers: {
                 "Content-Type": "application/json"
@@ -320,7 +321,7 @@ export class AzureDevOpsClient {
     }
 
     private async getOperationResult(operationUrl: string): Promise<any> {
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequest({
             url: operationUrl,
             queryParameters: {
                 "api-version": "5.0"
@@ -334,7 +335,7 @@ export class AzureDevOpsClient {
     public getAgentQueues(organizationName: string, projectName: string): Promise<Array<any>> {
         let url = `${AzureDevOpsBaseUrl}/${organizationName}/${projectName}/_apis/distributedtask/queues`;
 
-        return this.sendRequest(<UrlBasedRequestPrepareOptions>{
+        return this.sendRequest({
             url: url,
             method: "GET",
             headers: {

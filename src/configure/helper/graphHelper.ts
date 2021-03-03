@@ -1,11 +1,10 @@
 const uuid = require('uuid/v1');
-import { AzureEnvironment } from 'ms-rest-azure';
-import { AzureSession, Token, AadApplication } from '../model/models';
+import { AzureSession, AadApplication } from '../model/models';
 import { generateRandomPassword, executeFunctionWithRetry } from './commonHelper';
 import { Messages } from '../resources/messages';
 import { RestClient } from '../clients/restClient';
-import { TokenCredentials, UrlBasedRequestPrepareOptions, ServiceClientCredentials } from 'ms-rest';
-import { TokenResponse, MemoryCache, AuthenticationContext } from 'adal-node';
+import { TokenCredentials } from '@azure/ms-rest-js';
+import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import * as util from 'util';
 
 export class GraphHelper {
@@ -15,8 +14,8 @@ export class GraphHelper {
     private static retryCount = 20;
 
     public static async createSpnAndAssignRole(session: AzureSession, aadAppName: string, scope: string): Promise<AadApplication> {
-        let graphCredentials = await this.getGraphToken(session);
-        let tokenCredentials = new TokenCredentials(graphCredentials.accessToken);
+        let accessToken = await this.getGraphToken(session);
+        let tokenCredentials = new TokenCredentials(accessToken);
         let graphClient = new RestClient(tokenCredentials);
         let tenantId = session.tenantId;
         var aadApp: AadApplication;
@@ -28,7 +27,7 @@ export class GraphHelper {
         })
         .then((spn) => {
             aadApp.objectId = spn.objectId;
-            return this.createRoleAssignment(session.credentials, scope, aadApp.objectId);
+            return this.createRoleAssignment(session.credentials2, scope, aadApp.objectId);
         })
         .then(() => {
             return aadApp;
@@ -71,40 +70,20 @@ export class GraphHelper {
         return accountName + "-" + projectName + "-" + guid;
     }
 
-    private static async getGraphToken(session: AzureSession): Promise<TokenResponse> {
-        let refreshTokenResponse = await this.getRefreshToken(session);
-        return this.getResourceTokenFromRefreshToken(session.environment, refreshTokenResponse.refreshToken, session.tenantId, (<any>session.credentials).clientId, session.environment.activeDirectoryGraphResourceId);
-    }
-
-    private static async getRefreshToken(session: AzureSession): Promise<Token> {
-        return new Promise<Token>((resolve, reject) => {
-            const credentials: any = session.credentials;
-            const environment = session.environment;
-            credentials.context.acquireToken(environment.activeDirectoryResourceId, credentials.username, credentials.clientId, function (err: any, result: any) {
+    private static async getGraphToken(session: AzureSession): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const credentials = session.credentials2;
+            credentials.authContext.acquireToken(session.environment.activeDirectoryGraphResourceId, session.userId, credentials.clientId, function (err, tokenResponse) {
                 if (err) {
-                    reject(err);
-                } else {
-                    resolve({
-                        session,
-                        accessToken: result.accessToken,
-                        refreshToken: result.refreshToken
-                    });
-                }
-            });
-        });
-    }
-
-    private static async getResourceTokenFromRefreshToken(environment: AzureEnvironment, refreshToken: string, tenantId: string, clientId: string, resource: string): Promise<TokenResponse> {
-        return new Promise<TokenResponse>((resolve, reject) => {
-            const tokenCache = new MemoryCache();
-            const context = new AuthenticationContext(`${environment.activeDirectoryEndpointUrl}${tenantId}`, true, tokenCache);
-            context.acquireTokenWithRefreshToken(refreshToken, clientId, resource, (err, tokenResponse) => {
-                if (err) {
-                    reject(new Error(util.format(Messages.acquireTokenFromRefreshTokenFailed, err.message)));
+                    reject(new Error(util.format(Messages.acquireAccessTokenFailed, err.message)));
                 } else if (tokenResponse.error) {
-                    reject(new Error(util.format(Messages.acquireTokenFromRefreshTokenFailed, tokenResponse.error)));
+                    reject(new Error(util.format(Messages.acquireAccessTokenFailed, tokenResponse.error)));
                 } else {
-                    resolve(<TokenResponse>tokenResponse);
+                    // This little casting workaround here allows us to not have to import adal-node
+                    // just for the typings. Really it's on adal-node for making the type
+                    // TokenResponse | ErrorResponse, even though TokenResponse has the same
+                    // error properties as ErrorResponse.
+                    resolve((tokenResponse as any).accessToken);
                 }
             });
         });
@@ -114,13 +93,10 @@ export class GraphHelper {
         let secret = generateRandomPassword(20);
         let startDate = new Date(Date.now());
 
-        return graphClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
+        return graphClient.sendRequest<any>({
             url: `https://graph.windows.net/${tenantId}/applications`,
             queryParameters: {
                 "api-version": "1.6"
-            },
-            headers: {
-                "Content-Type": "application/json",
             },
             method: "POST",
             body: {
@@ -137,9 +113,7 @@ export class GraphHelper {
                         "value": secret
                     }
                 ]
-            },
-            deserializationMapper: null,
-            serializationMapper: null
+            }
         })
         .then((data) => {
             return <AadApplication>{
@@ -151,21 +125,16 @@ export class GraphHelper {
 
     private static async createSpn(graphClient: RestClient, appId: string, tenantId: string): Promise<any> {
         let createSpnPromise = () => {
-            return graphClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
+            return graphClient.sendRequest<any>({
                 url: `https://graph.windows.net/${tenantId}/servicePrincipals`,
                 queryParameters: {
                     "api-version": "1.6"
-                },
-                headers: {
-                    "Content-Type": "application/json",
                 },
                 method: "POST",
                 body: {
                     "appId": appId,
                     "accountEnabled": "true"
-                },
-                deserializationMapper: null,
-                serializationMapper: null
+                }
             });
         };
 
@@ -176,18 +145,15 @@ export class GraphHelper {
             Messages.azureServicePrincipalFailedMessage);
     }
 
-    private static async createRoleAssignment(credentials: ServiceClientCredentials, scope: string, objectId: string): Promise<any> {
+    private static async createRoleAssignment(credentials: TokenCredentialsBase, scope: string, objectId: string): Promise<any> {
         let restClient = new RestClient(credentials);
         let roleDefinitionId = `${scope}/providers/Microsoft.Authorization/roleDefinitions/${this.contributorRoleId}`;
         let guid = uuid();
         let roleAssignementFunction = () => {
-            return restClient.sendRequest<any>(<UrlBasedRequestPrepareOptions>{
+            return restClient.sendRequest<any>({
                 url: `https://management.azure.com/${scope}/providers/Microsoft.Authorization/roleAssignments/${guid}`,
                 queryParameters: {
                     "api-version": "2015-07-01"
-                },
-                headers: {
-                    "Content-Type": "application/json",
                 },
                 method: "PUT",
                 body: {
@@ -195,9 +161,7 @@ export class GraphHelper {
                         "roleDefinitionId": roleDefinitionId,
                         "principalId": objectId
                     }
-                },
-                deserializationMapper: null,
-                serializationMapper: null
+                }
             });
         };
 

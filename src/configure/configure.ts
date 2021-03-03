@@ -3,7 +3,7 @@ import { AppServiceClient } from './clients/azure/appServiceClient';
 import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
 import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
-import { GenericResource } from 'azure-arm-resource/lib/resource/models';
+import { ResourceManagementModels } from '@azure/arm-resources';
 import { GraphHelper } from './helper/graphHelper';
 import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
 import { Messages } from './resources/messages';
@@ -394,9 +394,9 @@ class PipelineConfigurer {
             this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
 
             // show available resources and get the chosen one
-            this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
+            this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials2, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
 
-            let resourceArray: Promise<Array<{label: string, data: GenericResource}>> = null;
+            let resourceArray: Promise<Array<{label: string, data: ResourceManagementModels.GenericResource}>> = null;
             let selectAppText: string = "";
             let placeHolderText: string = "";
 
@@ -575,7 +575,7 @@ class PipelineConfigurer {
     }
 
     private createAzureDevOpsClient(): void {
-        this.azureDevOpsClient = new AzureDevOpsClient(this.inputs.azureSession.credentials);
+        this.azureDevOpsClient = new AzureDevOpsClient(this.inputs.azureSession.credentials2);
         this.azureDevOpsHelper = new AzureDevOpsHelper(this.azureDevOpsClient);
     }
 }

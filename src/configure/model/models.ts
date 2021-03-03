@@ -1,25 +1,59 @@
-import { AzureEnvironment } from 'ms-rest-azure';
-import { GenericResource } from 'azure-arm-resource/lib/resource/models';
+import { Environment } from '@azure/ms-rest-azure-env';
+import { ResourceManagementModels } from '@azure/arm-resources';
+import { SubscriptionModels } from '@azure/arm-subscriptions';
+import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import { OutputChannel, QuickPickItem, window } from 'vscode';
-import { ServiceClientCredentials } from 'ms-rest';
-import { SubscriptionModels } from 'azure-arm-resource';
 import { Messages } from '../resources/messages';
 
 class ExtensionVariables {
-    public azureAccountExtensionApi: AzureAccountExtensionExports;
+    public azureAccountExtensionApi: AzureAccount;
     public outputChannel: OutputChannel = window.createOutputChannel('Azure Pipelines');
 }
 
 let extensionVariables = new ExtensionVariables();
 export { extensionVariables };
 
-export interface AzureAccountExtensionExports {
-    sessions: AzureSession[];
-    subscriptions: { session: AzureSession, subscription: SubscriptionModels.Subscription }[];
-    filters: { session: AzureSession, subscription: SubscriptionModels.Subscription }[];
-    waitForLogin: () => Promise<boolean>;
+// https://github.com/microsoft/vscode-azure-account/blob/master/src/azure-account.api.d.ts
+// with just the properties we need
+export interface AzureAccount {
+	// readonly status: AzureLoginStatus;
+	// readonly onStatusChanged: Event<AzureLoginStatus>;
+	readonly waitForLogin: () => Promise<boolean>;
+	readonly sessions: AzureSession[];
+	// readonly onSessionsChanged: Event<void>;
+	readonly subscriptions: AzureSubscription[];
+	// readonly onSubscriptionsChanged: Event<void>;
+	readonly waitForSubscriptions: () => Promise<boolean>;
+	readonly filters: AzureResourceFilter[];
+	// readonly onFiltersChanged: Event<void>;
+	readonly waitForFilters: () => Promise<boolean>;
+	// createCloudShell(os: 'Linux' | 'Windows'): CloudShell;
 }
 
+export interface AzureSession {
+	readonly environment: Environment;
+	readonly userId: string;
+	readonly tenantId: string;
+
+	/**
+	 * The credentials object for azure-sdk-for-node modules https://github.com/azure/azure-sdk-for-node
+	 */
+	// readonly credentials: ServiceClientCredentials;
+
+	/**
+	 * The credentials object for azure-sdk-for-js modules https://github.com/azure/azure-sdk-for-js
+	 */
+	readonly credentials2: TokenCredentialsBase;
+}
+
+export interface AzureSubscription {
+	readonly session: AzureSession;
+	readonly subscription: SubscriptionModels.Subscription;
+}
+
+export type AzureResourceFilter = AzureSubscription;
+
+// Other models
 export class WizardInputs {
     organizationName: string;
     isNewOrganization: boolean;
@@ -44,16 +78,9 @@ export class Organization {
     isMSAOrg: boolean;
 }
 
-export class AzureSession {
-    environment: AzureEnvironment;
-    userId: string;
-    tenantId: string;
-    credentials: ServiceClientCredentials;
-}
-
 export class AzureParameters {
     subscriptionId: string;
-    resource: GenericResource;
+    resource: ResourceManagementModels.GenericResource;
     serviceConnectionId: string;
 }
 
@@ -169,12 +196,6 @@ export class ParsedAzureResourceId {
             }
         }
     }
-}
-
-export interface Token {
-    session: AzureSession;
-    accessToken: string;
-    refreshToken: string;
 }
 
 export interface AadApplication {

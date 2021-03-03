@@ -1,8 +1,7 @@
 const uuid = require('uuid/v4');
-import { ResourceListResult, GenericResource } from 'azure-arm-resource/lib/resource/models';
-import { WebSiteManagementClient } from 'azure-arm-website';
-import { SiteConfigResource, StringDictionary, Deployment } from 'azure-arm-website/lib/models';
-import { ServiceClientCredentials } from 'ms-rest';
+import { ResourceManagementModels } from '@azure/arm-resources';
+import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
+import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 
 import { AzureResourceClient } from './azureResourceClient';
 import { WebAppKind, ParsedAzureResourceId } from '../../model/models';
@@ -15,29 +14,22 @@ export class AppServiceClient extends AzureResourceClient {
     private tenantId: string;
     private portalUrl: string;
 
-    constructor(credentials: ServiceClientCredentials, tenantId: string, portalUrl: string, subscriptionId: string) {
+    constructor(credentials: TokenCredentialsBase, tenantId: string, portalUrl: string, subscriptionId: string) {
         super(credentials, subscriptionId);
         this.webSiteManagementClient = new WebSiteManagementClient(credentials, subscriptionId);
         this.tenantId = tenantId;
         this.portalUrl = portalUrl;
     }
 
-    public async getAppServiceResource(resourceId: string): Promise<GenericResource> {
+    public async getAppServiceResource(resourceId: string): Promise<ResourceManagementModels.GenericResource> {
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
         return await this.webSiteManagementClient.webApps.get(parsedResourceId.resourceGroup, parsedResourceId.resourceName);
     }
 
-    public async GetAppServices(filterForResourceKind: WebAppKind): Promise<ResourceListResult> {
-        let resourceList: ResourceListResult = await this.getResourceList(AppServiceClient.resourceType);
+    public async GetAppServices(filterForResourceKind: WebAppKind): Promise<ResourceManagementModels.ResourceListResult> {
+        let resourceList = await this.getResourceList(AppServiceClient.resourceType);
         if (!!filterForResourceKind) {
-            let filteredResourceList: ResourceListResult = [];
-            resourceList.forEach((resource) => {
-                if (resource.kind === filterForResourceKind) {
-                    filteredResourceList.push(resource);
-                }
-            });
-
-            resourceList = filteredResourceList;
+            resourceList = resourceList.filter(resource => resource.kind === filterForResourceKind);
         }
 
         return resourceList;
@@ -56,29 +48,29 @@ export class AppServiceClient extends AzureResourceClient {
         throw new Error(Messages.cannotFindPipelineUrlInMetaDataException);
     }
 
-    public async getAppServiceConfig(resourceId: string): Promise<SiteConfigResource> {
+    public async getAppServiceConfig(resourceId: string): Promise<WebSiteManagementModels.SiteConfigResource> {
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
         return this.webSiteManagementClient.webApps.getConfiguration(parsedResourceId.resourceGroup, parsedResourceId.resourceName);
     }
 
-    public async updateScmType(resourceId: string): Promise<SiteConfigResource> {
+    public async updateScmType(resourceId: string): Promise<WebSiteManagementModels.SiteConfigResource> {
         let siteConfig = await this.getAppServiceConfig(resourceId);
         siteConfig.scmType = ScmType.VSTSRM;
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
         return this.webSiteManagementClient.webApps.updateConfiguration(parsedResourceId.resourceGroup, parsedResourceId.resourceName, siteConfig);
     }
 
-    public async getAppServiceMetadata(resourceId: string): Promise<StringDictionary> {
+    public async getAppServiceMetadata(resourceId: string): Promise<WebSiteManagementModels.StringDictionary> {
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
         return this.webSiteManagementClient.webApps.listMetadata(parsedResourceId.resourceGroup, parsedResourceId.resourceName);
     }
 
-    public async updateAppServiceMetadata(resourceId: string, metadata: StringDictionary): Promise<StringDictionary> {
+    public async updateAppServiceMetadata(resourceId: string, metadata: WebSiteManagementModels.StringDictionary): Promise<WebSiteManagementModels.StringDictionary> {
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
         return this.webSiteManagementClient.webApps.updateMetadata(parsedResourceId.resourceGroup, parsedResourceId.resourceName, metadata);
     }
 
-    public async publishDeploymentToAppService(resourceId: string, buildDefinitionUrl: string, releaseDefinitionUrl: string, triggeredBuildUrl: string): Promise<Deployment> {
+    public async publishDeploymentToAppService(resourceId: string, buildDefinitionUrl: string, releaseDefinitionUrl: string, triggeredBuildUrl: string): Promise<WebSiteManagementModels.Deployment> {
         let parsedResourceId: ParsedAzureResourceId = new ParsedAzureResourceId(resourceId);
 
         // create deployment object
@@ -87,8 +79,8 @@ export class AppServiceClient extends AzureResourceClient {
         return this.webSiteManagementClient.webApps.createDeployment(parsedResourceId.resourceGroup, parsedResourceId.resourceName, deploymentId, deployment);
     }
 
-    private createDeploymentObject(deploymentId: string, buildDefinitionUrl: string, releaseDefinitionUrl: string, triggeredBuildUrl: string): Deployment {
-        let deployment: Deployment = {
+    private createDeploymentObject(deploymentId: string, buildDefinitionUrl: string, releaseDefinitionUrl: string, triggeredBuildUrl: string): WebSiteManagementModels.Deployment {
+        let deployment: WebSiteManagementModels.Deployment = {
             id: deploymentId,
             status: 4,
             author: 'VSTS',
