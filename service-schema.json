@@ -1813,8 +1813,28 @@
         "$ref": "#/definitions/stage"
       }
     },
+    "stageExpression": {
+      "type": "object",
+      "patternProperties": {
+        "^\\${{ .* }}$": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/stage"
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "stage": {
       "anyOf": [
+        {
+          "type": "object",
+          "$ref": "#/definitions/stageExpression"
+        },
         {
           "type": "object",
           "properties": {
@@ -2099,8 +2119,28 @@
         "$ref": "#/definitions/job"
       }
     },
+    "jobExpression": {
+      "type": "object",
+      "patternProperties": {
+        "^\\${{ .* }}$": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/step"
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
     "job": {
       "anyOf": [
+        {
+          "type": "object",
+          "$ref": "#/definitions/jobExpression"
+        },
         {
           "type": "object",
           "properties": {
@@ -3005,8 +3045,36 @@
         "$ref": "#/definitions/step"
       }
     },
+    "stepExpression": {
+      "anyOf": [
+        {
+          "type": "object",
+          "patternProperties": {
+            "^\\${{ .* }}$": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/step"
+                  }
+                }
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "string",
+          "pattern": "^\\${{ .* }}$"
+        }
+      ]
+    },
     "step": {
       "anyOf": [
+        {
+          "type": "object",
+          "$ref": "#/definitions/stepExpression"
+        },
         {
           "type": "object",
           "$ref": "#/definitions/task"
