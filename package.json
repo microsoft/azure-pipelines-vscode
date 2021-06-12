@@ -43,7 +43,10 @@
     "main": "./dist/extension",
     "capabilities": {
         "untrustedWorkspaces": {
-            "supported": true
+            "supported": "limited",
+            "restrictedConfigurations": [
+                "azure-pipelines.customSchemaFile"
+            ]
         }
     },
     "contributes": {
