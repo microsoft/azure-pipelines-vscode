@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 - Improved startup performance by 80%
 - Reduced extension size by 90%
 - Resolved several Dependabot alerts
+### Updated
+- M187 schema
 
 ## 1.183.0
 ### Breaking change
