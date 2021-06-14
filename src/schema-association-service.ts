@@ -25,9 +25,9 @@ export class SchemaAssociationService implements ISchemaAssociationService {
     // TODO: Should this inlined into getSchemaAssocations?
     public locateSchemaFile() {
         // TODO: Why doesn't setting a default here work?
-        const alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile');
+        let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile');
         if (alternateSchema == null) {
-	        alternateSchema = path.join(this.extensionPath, 'service-schema.json');
+            alternateSchema = path.join(this.extensionPath, 'service-schema.json');
         }
 
         // A somewhat hacky way to support both files and URLs without requiring use of the file:// URI scheme
