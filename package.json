@@ -41,6 +41,14 @@
         "onCommand:azure-pipelines.configure-pipeline"
     ],
     "main": "./dist/extension",
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": "limited",
+            "restrictedConfigurations": [
+                "azure-pipelines.customSchemaFile"
+            ]
+        }
+    },
     "contributes": {
         "languages": [
             {
