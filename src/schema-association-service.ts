@@ -24,9 +24,9 @@ export class SchemaAssociationService implements ISchemaAssociationService {
 
     // TODO: Should this inlined into getSchemaAssocations?
     public locateSchemaFile() {
-        // TODO: Why doesn't setting a default here work?
         let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile');
-        if (alternateSchema == null) {
+        console.log("Alternate schema: ", alternateSchema);
+        if (alternateSchema?.trim().length ?? 0 === 0) {
             alternateSchema = path.join(this.extensionPath, 'service-schema.json');
         }
 
