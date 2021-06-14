@@ -26,7 +26,7 @@ export class SchemaAssociationService implements ISchemaAssociationService {
     public locateSchemaFile() {
         let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile');
         console.log("Alternate schema: ", alternateSchema);
-        if (alternateSchema?.trim().length ?? 0 === 0) {
+        if ((alternateSchema?.trim().length ?? 0) === 0) {
             alternateSchema = path.join(this.extensionPath, 'service-schema.json');
         }
 
