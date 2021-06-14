@@ -24,12 +24,20 @@ export class SchemaAssociationService implements ISchemaAssociationService {
 
     // TODO: Should this inlined into getSchemaAssocations?
     public locateSchemaFile() {
-        let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile');
-        if (alternateSchema && !path.isAbsolute(alternateSchema)) {
-            alternateSchema = path.resolve(vscode.workspace.workspaceFolders[0].uri.fsPath, alternateSchema);
+        const defaultSchemaPath = path.join(this.extensionPath, 'service-schema.json');
+        const alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile', defaultSchemaPath);
+
+        // A somewhat hacky way to support both files and URLs without requiring use of the file:// URI scheme
+        let uri: vscode.Uri;
+        if (alternateSchema.toLowerCase().startsWith("http://") || alternateSchema.toLowerCase().startsWith("https://")) {
+            uri = vscode.Uri.parse(alternateSchema, true);
+        } else if (path.isAbsolute(alternateSchema)) {
+            uri = vscode.Uri.file(alternateSchema);
+        } else {
+            uri = vscode.Uri.file(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, alternateSchema));
         }
-        const schemaPath = alternateSchema || path.join(this.extensionPath, './service-schema.json');
-        this.schemaFilePath = vscode.Uri.file(schemaPath).toString();
+
+        this.schemaFilePath = uri.toString();
     }
 
     // Looking at how the vscode-yaml extension does it, it looks like this is meant as a
