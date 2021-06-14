@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 - Resolved several Dependabot alerts
 ### Updated
 - M187 schema
+- `azure-pipelines.customSchemaFile` can now point to a remote URL, as long as it does not require authentication
+- Declared "limited" support for untrusted workspaces (all features will work except for `azure-pipelines.customSchemaFile`)
 
 ## 1.183.0
 ### Breaking change
