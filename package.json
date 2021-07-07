@@ -156,7 +156,7 @@
         "@azure/arm-subscriptions": "^3.0.0",
         "@azure/ms-rest-azure-env": "^2.0.0",
         "@azure/ms-rest-nodeauth": "^3.0.6",
-        "azure-pipelines-language-server": "0.6.2",
+        "azure-pipelines-language-server": "0.6.3",
         "html-to-text": "^5.1.1",
         "mustache": "3.0.1",
         "q": "1.5.1",
