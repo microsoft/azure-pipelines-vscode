@@ -1617,7 +1617,7 @@
               "$ref": "#/definitions/string"
             },
             {
-              "$ref": "#/definitions/number"
+              "type": "integer"
             }
           ]
         },
@@ -1657,7 +1657,7 @@
               "$ref": "#/definitions/string"
             },
             {
-              "$ref": "#/definitions/number"
+              "type": "integer"
             }
           ]
         },
@@ -2481,7 +2481,14 @@
             },
             "maxParallel": {
               "description": "Maximum number of jobs running in parallel",
-              "$ref": "#/definitions/nonEmptyString"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/nonEmptyString"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
             }
           },
           "additionalProperties": false
@@ -2717,7 +2724,14 @@
       "properties": {
         "maxParallel": {
           "description": "Maximum number of jobs running in parallel",
-          "$ref": "#/definitions/nonEmptyString"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/nonEmptyString"
+            },
+            {
+              "type": "integer"
+            }
+          ]
         },
         "preDeploy": {
           "description": "Pre deploy hook for rolling deployment strategy",
@@ -2924,7 +2938,14 @@
             },
             "parallel": {
               "description": "Maximum number of parallel agent executions",
-              "$ref": "#/definitions/nonEmptyString"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/nonEmptyString"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
             },
             "timeoutInMinutes": {
               "description": "Time to wait before cancelling the phase",
@@ -2955,7 +2976,14 @@
             },
             "parallel": {
               "description": "Maximum number of parallel agent executions",
-              "$ref": "#/definitions/nonEmptyString"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/nonEmptyString"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
             },
             "timeoutInMinutes": {
               "description": "Time to wait before cancelling the job",
@@ -3298,7 +3326,7 @@
                   "$ref": "#/definitions/string"
                 },
                 {
-                  "$ref": "#/definitions/number"
+                  "type": "integer"
                 }
               ]
             },
@@ -11994,9 +12022,16 @@
                   ]
                 },
                 "buildNumber": {
-                  "type": "string",
                   "description": "Build Number",
-                  "ignoreCase": "key"
+                  "ignoreCase": "key",
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/string"
+                    },
+                    {
+                      "$ref": "#/definitions/number"
+                    }
+                  ]
                 }
               },
               "additionalProperties": false,
@@ -12074,9 +12109,16 @@
                   ]
                 },
                 "buildNumber": {
-                  "type": "string",
                   "description": "Build Number",
-                  "ignoreCase": "key"
+                  "ignoreCase": "key",
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/string"
+                    },
+                    {
+                      "$ref": "#/definitions/number"
+                    }
+                  ]
                 },
                 "overwriteExistingPkgArtifact": {
                   "type": "boolean",
@@ -15579,9 +15621,16 @@
                   "ignoreCase": "key"
                 },
                 "ThresholdLimit": {
-                  "type": "string",
                   "description": "Number of permissible threshold violations",
-                  "ignoreCase": "key"
+                  "ignoreCase": "key",
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
                 },
                 "MachineType": {
                   "description": "Run load test using",
@@ -21256,9 +21305,16 @@
                   "ignoreCase": "key"
                 },
                 "runAllTestsAfterXBuilds": {
-                  "type": "string",
                   "description": "Number of builds after which all tests should be run",
-                  "ignoreCase": "key"
+                  "ignoreCase": "key",
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ]
                 },
                 "uiTests": {
                   "type": "boolean",
@@ -21342,9 +21398,16 @@
                   ]
                 },
                 "customBatchSizeValue": {
-                  "type": "string",
                   "description": "Number of tests per batch",
-                  "ignoreCase": "key"
+                  "ignoreCase": "key",
+                  "anyOf": [
+                    {
+                      "$ref": "#/definitions/string"
+                    },
+                    {
+                      "type": "integer"
+                    }
+                  ]
                 },
                 "batchingBasedOnExecutionTimeOption": {
                   "description": "Batch options",
