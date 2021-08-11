@@ -1604,11 +1604,18 @@
       "properties": {
         "clean": {
           "description": "Scorch the repo before fetching?",
-          "enum": [
-            "true",
-            "false"
-          ],
-          "$ref": "#/definitions/string"
+          "anyOf": [
+            {
+              "enum": [
+               "true",
+               "false"
+             ],
+             "$ref": "#/definitions/string"
+            },
+            {
+              "$ref": "#/definitions/boolean"
+            }
+          ]
         },
         "fetchDepth": {
           "description": "Depth of Git graph to fetch",
@@ -1644,11 +1651,18 @@
         },
         "clean": {
           "description": "Scorch the repo before fetching?",
-          "enum": [
-            "true",
-            "false"
-          ],
-          "$ref": "#/definitions/string"
+          "anyOf": [
+            {
+              "enum": [
+                "true",
+                "false"
+              ],
+              "$ref": "#/definitions/string"
+            },
+            {
+              "$ref": "#/definitions/boolean"
+            }
+          ]
         },
         "fetchDepth": {
           "description": "Depth of Git graph to fetch",
@@ -3313,11 +3327,18 @@
             },
             "clean": {
               "description": "Scorch the repo before fetching?",
-              "enum": [
-                "true",
-                "false"
-              ],
-              "$ref": "#/definitions/string"
+              "anyOf": [
+                {
+                  "enum": [
+                    "true",
+                    "false"
+                  ],
+                  "$ref": "#/definitions/string"
+                },
+                {
+                  "$ref": "#/definitions/boolean"
+                }
+              ]
             },
             "fetchDepth": {
               "description": "Depth of Git graph to fetch",
