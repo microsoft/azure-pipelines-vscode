@@ -5921,8 +5921,15 @@
           "description": "Continue running the parent job even on failure?"
         },
         "enabled": {
-          "type": "string",
-          "description": "Run this task when the job runs?"
+          "description": "Run this task when the job runs?",
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/boolean"
+            }
+          ]
         },
         "timeoutInMinutes": {
           "type": "integer",
