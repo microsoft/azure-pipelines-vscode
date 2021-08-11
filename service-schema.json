@@ -41,6 +41,9 @@
         {
           "type": "object",
           "additionalProperties": true
+        },
+        {
+          "$ref": "#/definitions/number"
         }
       ]
     },
@@ -1769,7 +1772,17 @@
               "$ref": "#/definitions/nonEmptyString"
             },
             "value": {
-              "$ref": "#/definitions/string"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/string"
+                },
+                {
+                  "$ref": "#/definitions/boolean"
+                },
+                {
+                  "$ref": "#/definitions/number"
+                }
+              ]
             },
             "readonly": {
               "$ref": "#/definitions/boolean"
