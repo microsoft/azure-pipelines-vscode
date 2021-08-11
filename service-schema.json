@@ -1609,7 +1609,14 @@
         },
         "fetchDepth": {
           "description": "Depth of Git graph to fetch",
-          "$ref": "#/definitions/string"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/string"
+            },
+            {
+              "$ref": "#/definitions/number"
+            }
+          ]
         },
         "lfs": {
           "description": "Fetch and checkout Git LFS objects?",
@@ -1642,7 +1649,14 @@
         },
         "fetchDepth": {
           "description": "Depth of Git graph to fetch",
-          "$ref": "#/definitions/string"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/string"
+            },
+            {
+              "$ref": "#/definitions/number"
+            }
+          ]
         },
         "lfs": {
           "description": "Fetch and checkout Git LFS objects?",
@@ -3266,7 +3280,14 @@
             },
             "fetchDepth": {
               "description": "Depth of Git graph to fetch",
-              "$ref": "#/definitions/string"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/string"
+                },
+                {
+                  "$ref": "#/definitions/number"
+                }
+              ]
             },
             "lfs": {
               "description": "Fetch Git-LFS objects?",
@@ -27789,6 +27810,9 @@
           ]
         }
       ]
+    },
+    "number": {
+      "type": "number"
     }
   }
 }
