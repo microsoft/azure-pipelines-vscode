@@ -3,6 +3,14 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.191.0
+### Added
+- Supports [template expressions](https://docs.microsoft.com/en-us/azure/devops/pipelines/process/expressions?view=azure-devops)!
+  - Note: while expressions will no longer be marked as errors, there may still be some incorrect warnings.
+  - Many thanks to @50Wliu for this long-awaited feature.
+### Updated
+- M190 schema
+
 ## 1.188.1
 ### Fixed
 - Fixed regression finding default schema

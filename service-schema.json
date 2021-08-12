@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/microsoft/azure-pipelines-vscode/blob/main/service-schema.json",
-  "$comment": "v1.187.0",
+  "$id": "https://github.com/Microsoft/azure-pipelines-vscode/blob/main/service-schema.json",
+  "$comment": "v1.190.0",
   "title": "Pipeline schema",
   "description": "A pipeline definition",
   "oneOf": [
@@ -83,6 +83,10 @@
             "variables": {
               "description": "Variables for this pipeline",
               "$ref": "#/definitions/variables"
+            },
+            "lockBehavior": {
+              "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+              "$ref": "#/definitions/lockBehavior"
             }
           },
           "additionalProperties": false,
@@ -127,6 +131,10 @@
             "variables": {
               "description": "Variables for this pipeline",
               "$ref": "#/definitions/variables"
+            },
+            "lockBehavior": {
+              "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+              "$ref": "#/definitions/lockBehavior"
             }
           },
           "additionalProperties": false,
@@ -171,6 +179,10 @@
             "variables": {
               "description": "Variables for this pipeline",
               "$ref": "#/definitions/variables"
+            },
+            "lockBehavior": {
+              "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+              "$ref": "#/definitions/lockBehavior"
             }
           },
           "additionalProperties": false,
@@ -213,6 +225,10 @@
             "variables": {
               "description": "Variables for this pipeline",
               "$ref": "#/definitions/variables"
+            },
+            "lockBehavior": {
+              "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+              "$ref": "#/definitions/lockBehavior"
             }
           },
           "additionalProperties": false,
@@ -275,6 +291,10 @@
             "variables": {
               "description": "Variables for this pipeline",
               "$ref": "#/definitions/variables"
+            },
+            "lockBehavior": {
+              "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+              "$ref": "#/definitions/lockBehavior"
             }
           },
           "additionalProperties": false,
@@ -325,6 +345,10 @@
             "variables": {
               "description": "Variables for this pipeline",
               "$ref": "#/definitions/variables"
+            },
+            "lockBehavior": {
+              "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+              "$ref": "#/definitions/lockBehavior"
             }
           },
           "additionalProperties": false,
@@ -376,6 +400,10 @@
             "variables": {
               "description": "Variables for this pipeline",
               "$ref": "#/definitions/variables"
+            },
+            "lockBehavior": {
+              "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+              "$ref": "#/definitions/lockBehavior"
             }
           },
           "additionalProperties": false,
@@ -415,6 +443,10 @@
         "variables": {
           "description": "Variables for this pipeline",
           "$ref": "#/definitions/variables"
+        },
+        "lockBehavior": {
+          "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+          "$ref": "#/definitions/lockBehavior"
         }
       },
       "additionalProperties": false
@@ -503,6 +535,10 @@
           "deprecationMessage": "This option is deprecated, use pool:server instead",
           "doNotSuggest": true,
           "$ref": "#/definitions/any_allowExpressions"
+        },
+        "lockBehavior": {
+          "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+          "$ref": "#/definitions/lockBehavior"
         }
       },
       "additionalProperties": false
@@ -591,6 +627,10 @@
           "deprecationMessage": "This option is deprecated, use pool:server instead",
           "doNotSuggest": true,
           "$ref": "#/definitions/any_allowExpressions"
+        },
+        "lockBehavior": {
+          "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+          "$ref": "#/definitions/lockBehavior"
         }
       },
       "additionalProperties": false
@@ -679,6 +719,10 @@
           "deprecationMessage": "This option is deprecated, use pool:server instead",
           "doNotSuggest": true,
           "$ref": "#/definitions/any_allowExpressions"
+        },
+        "lockBehavior": {
+          "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+          "$ref": "#/definitions/lockBehavior"
         }
       },
       "additionalProperties": false
@@ -767,6 +811,10 @@
           "deprecationMessage": "This option is deprecated, use pool:server instead",
           "doNotSuggest": true,
           "$ref": "#/definitions/any_allowExpressions"
+        },
+        "lockBehavior": {
+          "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+          "$ref": "#/definitions/lockBehavior"
         }
       },
       "additionalProperties": false
@@ -855,6 +903,10 @@
           "deprecationMessage": "This option is deprecated, use pool:server instead",
           "doNotSuggest": true,
           "$ref": "#/definitions/any_allowExpressions"
+        },
+        "lockBehavior": {
+          "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+          "$ref": "#/definitions/lockBehavior"
         }
       },
       "additionalProperties": false
@@ -1845,6 +1897,10 @@
             "jobs": {
               "description": "Jobs which make up the stage",
               "$ref": "#/definitions/jobs"
+            },
+            "lockBehavior": {
+              "description": "Behavior lock requests from this stage should exibhit in relation to other exclusive lock requests",
+              "$ref": "#/definitions/lockBehavior"
             }
           },
           "additionalProperties": false,
@@ -1868,6 +1924,18 @@
           "firstProperty": [
             "template"
           ]
+        }
+      ]
+    },
+    "lockBehavior": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^sequential$"
+        },
+        {
+          "type": "string",
+          "pattern": "^runLatest$"
         }
       ]
     },
@@ -4170,19 +4238,19 @@
               ]
             },
             {
-              "description": "Install an Apple provisioning profile required to build on a macOS agent",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "InstallAppleProvisioningProfile@0"
-              ]
-            },
-            {
               "description": "Install an Apple provisioning profile required to build on a macOS agent machine",
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
                 "InstallAppleProvisioningProfile@1"
+              ]
+            },
+            {
+              "description": "Install an Apple provisioning profile required to build on a macOS agent",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "InstallAppleProvisioningProfile@0"
               ]
             },
             {
@@ -4245,14 +4313,6 @@
               ]
             },
             {
-              "description": "Build or push Docker images, login or logout, start or stop containers, or run a Docker command",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "Docker@2"
-              ]
-            },
-            {
               "description": "Build, tag, push, or run Docker images, or run a Docker command",
               "doNotSuggest": false,
               "ignoreCase": "value",
@@ -4266,6 +4326,14 @@
               "ignoreCase": "value",
               "enum": [
                 "Docker@1"
+              ]
+            },
+            {
+              "description": "Build or push Docker images, login or logout, start or stop containers, or run a Docker command",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "Docker@2"
               ]
             },
             {
@@ -4827,7 +4895,7 @@
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
-                "XamariniOS@2"
+                "XamariniOS@1"
               ]
             },
             {
@@ -4835,7 +4903,7 @@
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
-                "XamariniOS@1"
+                "XamariniOS@2"
               ]
             },
             {
@@ -5536,19 +5604,19 @@
               ]
             },
             {
-              "description": "Set up a Node.js environment and add it to the PATH, additionally providing proxy support",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "UseNode@1"
-              ]
-            },
-            {
               "description": "Finds or downloads and caches the specified version spec of Node.js and adds it to the PATH",
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
                 "NodeTool@0"
+              ]
+            },
+            {
+              "description": "Set up a Node.js environment and add it to the PATH, additionally providing proxy support",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "UseNode@1"
               ]
             },
             {
@@ -5598,6 +5666,14 @@
               "ignoreCase": "value",
               "enum": [
                 "DownloadBuildArtifacts@0"
+              ]
+            },
+            {
+              "description": "Download files that were saved as artifacts of a completed build",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "DownloadBuildArtifacts@1"
               ]
             },
             {
@@ -5653,7 +5729,7 @@
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
-                "GitHubRelease@0"
+                "GitHubRelease@1"
               ]
             },
             {
@@ -5661,7 +5737,7 @@
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
-                "GitHubRelease@1"
+                "GitHubRelease@0"
               ]
             },
             {
@@ -5713,19 +5789,19 @@
               ]
             },
             {
-              "description": "Run a Bash script on macOS, Linux, or Windows",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "Bash@3"
-              ]
-            },
-            {
               "description": "Run a shell script using Bash",
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
                 "ShellScript@2"
+              ]
+            },
+            {
+              "description": "Run a Bash script on macOS, Linux, or Windows",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "Bash@3"
               ]
             },
             {
@@ -9045,42 +9121,6 @@
         {
           "properties": {
             "task": {
-              "description": "Install Apple Provisioning Profile\n\nInstall an Apple provisioning profile required to build on a macOS agent",
-              "ignoreCase": "value",
-              "pattern": "^InstallAppleProvisioningProfile@0$"
-            },
-            "inputs": {
-              "description": "Install Apple Provisioning Profile inputs",
-              "properties": {
-                "provProfileSecureFile": {
-                  "type": "string",
-                  "description": "Provisioning Profile",
-                  "ignoreCase": "key"
-                },
-                "removeProfile": {
-                  "type": "boolean",
-                  "description": "Remove Profile After Build",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "provProfileSecureFile"
-              ]
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task",
-            "inputs"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
               "description": "Install Apple provisioning profile\n\nInstall an Apple provisioning profile required to build on a macOS agent machine",
               "ignoreCase": "value",
               "pattern": "^InstallAppleProvisioningProfile@1$"
@@ -9122,6 +9162,42 @@
           ],
           "required": [
             "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Install Apple Provisioning Profile\n\nInstall an Apple provisioning profile required to build on a macOS agent",
+              "ignoreCase": "value",
+              "pattern": "^InstallAppleProvisioningProfile@0$"
+            },
+            "inputs": {
+              "description": "Install Apple Provisioning Profile inputs",
+              "properties": {
+                "provProfileSecureFile": {
+                  "type": "string",
+                  "description": "Provisioning Profile",
+                  "ignoreCase": "key"
+                },
+                "removeProfile": {
+                  "type": "boolean",
+                  "description": "Remove Profile After Build",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "provProfileSecureFile"
+              ]
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ]
         },
         {
@@ -9394,87 +9470,6 @@
             "inputs": {
               "description": "Publish Pipeline Metadata inputs",
               "properties": {},
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "Docker\n\nBuild or push Docker images, login or logout, start or stop containers, or run a Docker command",
-              "ignoreCase": "value",
-              "pattern": "^Docker@2$"
-            },
-            "inputs": {
-              "description": "Docker inputs",
-              "properties": {
-                "containerRegistry": {
-                  "type": "string",
-                  "description": "Container registry",
-                  "ignoreCase": "key"
-                },
-                "repository": {
-                  "type": "string",
-                  "description": "Container repository",
-                  "ignoreCase": "key"
-                },
-                "command": {
-                  "description": "Command",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "buildAndPush",
-                    "build",
-                    "push",
-                    "login",
-                    "logout",
-                    "start",
-                    "stop"
-                  ]
-                },
-                "Dockerfile": {
-                  "type": "string",
-                  "description": "Dockerfile",
-                  "ignoreCase": "key"
-                },
-                "buildContext": {
-                  "type": "string",
-                  "description": "Build context",
-                  "ignoreCase": "key"
-                },
-                "tags": {
-                  "type": "string",
-                  "description": "Tags",
-                  "ignoreCase": "key"
-                },
-                "arguments": {
-                  "type": "string",
-                  "description": "Arguments",
-                  "ignoreCase": "key"
-                },
-                "addPipelineData": {
-                  "type": "boolean",
-                  "description": "Add Pipeline metadata to image(s)",
-                  "ignoreCase": "key"
-                },
-                "addBaseImageData": {
-                  "type": "boolean",
-                  "description": "Add base image metadata to image(s)",
-                  "ignoreCase": "key"
-                },
-                "container": {
-                  "type": "string",
-                  "description": "Container",
-                  "ignoreCase": "key"
-                }
-              },
               "additionalProperties": false,
               "required": []
             }
@@ -9882,6 +9877,87 @@
                 "memoryLimit": {
                   "type": "string",
                   "description": "Memory limit",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Docker\n\nBuild or push Docker images, login or logout, start or stop containers, or run a Docker command",
+              "ignoreCase": "value",
+              "pattern": "^Docker@2$"
+            },
+            "inputs": {
+              "description": "Docker inputs",
+              "properties": {
+                "containerRegistry": {
+                  "type": "string",
+                  "description": "Container registry",
+                  "ignoreCase": "key"
+                },
+                "repository": {
+                  "type": "string",
+                  "description": "Container repository",
+                  "ignoreCase": "key"
+                },
+                "command": {
+                  "description": "Command",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "buildAndPush",
+                    "build",
+                    "push",
+                    "login",
+                    "logout",
+                    "start",
+                    "stop"
+                  ]
+                },
+                "Dockerfile": {
+                  "type": "string",
+                  "description": "Dockerfile",
+                  "ignoreCase": "key"
+                },
+                "buildContext": {
+                  "type": "string",
+                  "description": "Build context",
+                  "ignoreCase": "key"
+                },
+                "tags": {
+                  "type": "string",
+                  "description": "Tags",
+                  "ignoreCase": "key"
+                },
+                "arguments": {
+                  "type": "string",
+                  "description": "Arguments",
+                  "ignoreCase": "key"
+                },
+                "addPipelineData": {
+                  "type": "boolean",
+                  "description": "Add Pipeline metadata to image(s)",
+                  "ignoreCase": "key"
+                },
+                "addBaseImageData": {
+                  "type": "boolean",
+                  "description": "Add base image metadata to image(s)",
+                  "ignoreCase": "key"
+                },
+                "container": {
+                  "type": "string",
+                  "description": "Container",
                   "ignoreCase": "key"
                 }
               },
@@ -11188,6 +11264,11 @@
                 "cleanDestinationDirectory": {
                   "type": "boolean",
                   "description": "Clean destination directory",
+                  "ignoreCase": "key"
+                },
+                "createExtractDirectory": {
+                  "type": "boolean",
+                  "description": "Create directory for extracting",
                   "ignoreCase": "key"
                 }
               },
@@ -16227,103 +16308,6 @@
             "task": {
               "description": "Xamarin.iOS\n\nBuild an iOS app with Xamarin on macOS",
               "ignoreCase": "value",
-              "pattern": "^XamariniOS@2$"
-            },
-            "inputs": {
-              "description": "Xamarin.iOS inputs",
-              "properties": {
-                "solutionFile": {
-                  "type": "string",
-                  "description": "Solution",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "solution"
-                  ]
-                },
-                "configuration": {
-                  "type": "string",
-                  "description": "Configuration",
-                  "ignoreCase": "key"
-                },
-                "clean": {
-                  "type": "boolean",
-                  "description": "Clean",
-                  "ignoreCase": "key"
-                },
-                "packageApp": {
-                  "type": "boolean",
-                  "description": "Create app package",
-                  "ignoreCase": "key"
-                },
-                "buildForSimulator": {
-                  "type": "boolean",
-                  "description": "Build for iOS Simulator",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "forSimulator"
-                  ]
-                },
-                "runNugetRestore": {
-                  "type": "boolean",
-                  "description": "Run NuGet restore",
-                  "ignoreCase": "key"
-                },
-                "args": {
-                  "type": "string",
-                  "description": "Arguments",
-                  "ignoreCase": "key"
-                },
-                "workingDirectory": {
-                  "type": "string",
-                  "description": "Working directory",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "cwd"
-                  ]
-                },
-                "mdtoolFile": {
-                  "type": "string",
-                  "description": "Build tool path",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "buildToolLocation",
-                    "mdtoolLocation"
-                  ]
-                },
-                "signingIdentity": {
-                  "type": "string",
-                  "description": "Signing identity",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "iosSigningIdentity"
-                  ]
-                },
-                "signingProvisioningProfileID": {
-                  "type": "string",
-                  "description": "Provisioning profile UUID",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "provProfileUuid"
-                  ]
-                }
-              },
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "Xamarin.iOS\n\nBuild an iOS app with Xamarin on macOS",
-              "ignoreCase": "value",
               "pattern": "^XamariniOS@1$"
             },
             "inputs": {
@@ -16470,6 +16454,103 @@
                   "ignoreCase": "key",
                   "aliases": [
                     "removeProfile"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Xamarin.iOS\n\nBuild an iOS app with Xamarin on macOS",
+              "ignoreCase": "value",
+              "pattern": "^XamariniOS@2$"
+            },
+            "inputs": {
+              "description": "Xamarin.iOS inputs",
+              "properties": {
+                "solutionFile": {
+                  "type": "string",
+                  "description": "Solution",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "solution"
+                  ]
+                },
+                "configuration": {
+                  "type": "string",
+                  "description": "Configuration",
+                  "ignoreCase": "key"
+                },
+                "clean": {
+                  "type": "boolean",
+                  "description": "Clean",
+                  "ignoreCase": "key"
+                },
+                "packageApp": {
+                  "type": "boolean",
+                  "description": "Create app package",
+                  "ignoreCase": "key"
+                },
+                "buildForSimulator": {
+                  "type": "boolean",
+                  "description": "Build for iOS Simulator",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "forSimulator"
+                  ]
+                },
+                "runNugetRestore": {
+                  "type": "boolean",
+                  "description": "Run NuGet restore",
+                  "ignoreCase": "key"
+                },
+                "args": {
+                  "type": "string",
+                  "description": "Arguments",
+                  "ignoreCase": "key"
+                },
+                "workingDirectory": {
+                  "type": "string",
+                  "description": "Working directory",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "cwd"
+                  ]
+                },
+                "mdtoolFile": {
+                  "type": "string",
+                  "description": "Build tool path",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "buildToolLocation",
+                    "mdtoolLocation"
+                  ]
+                },
+                "signingIdentity": {
+                  "type": "string",
+                  "description": "Signing identity",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "iosSigningIdentity"
+                  ]
+                },
+                "signingProvisioningProfileID": {
+                  "type": "string",
+                  "description": "Provisioning profile UUID",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "provProfileUuid"
                   ]
                 }
               },
@@ -22851,6 +22932,7 @@
                   "ignoreCase": "all",
                   "enum": [
                     "latest",
+                    "16.0",
                     "15.0",
                     "14.0",
                     "12.0",
@@ -24082,6 +24164,16 @@
                   "type": "string",
                   "description": "Retry count to copy the file",
                   "ignoreCase": "key"
+                },
+                "delayBetweenRetries": {
+                  "type": "string",
+                  "description": "Delay between two retries.",
+                  "ignoreCase": "key"
+                },
+                "ignoreMakeDirErrors": {
+                  "type": "boolean",
+                  "description": "Ignore errors during creation of target folder.",
+                  "ignoreCase": "key"
                 }
               },
               "additionalProperties": false,
@@ -24465,16 +24557,16 @@
         {
           "properties": {
             "task": {
-              "description": "Use Node.js ecosystem\n\nSet up a Node.js environment and add it to the PATH, additionally providing proxy support",
+              "description": "Node.js tool installer\n\nFinds or downloads and caches the specified version spec of Node.js and adds it to the PATH",
               "ignoreCase": "value",
-              "pattern": "^UseNode@1$"
+              "pattern": "^NodeTool@0$"
             },
             "inputs": {
-              "description": "Use Node.js ecosystem inputs",
+              "description": "Node.js tool installer inputs",
               "properties": {
-                "version": {
+                "versionSpec": {
                   "type": "string",
-                  "description": "Version",
+                  "description": "Version Spec",
                   "ignoreCase": "key"
                 },
                 "checkLatest": {
@@ -24503,16 +24595,16 @@
         {
           "properties": {
             "task": {
-              "description": "Node.js tool installer\n\nFinds or downloads and caches the specified version spec of Node.js and adds it to the PATH",
+              "description": "Use Node.js ecosystem\n\nSet up a Node.js environment and add it to the PATH, additionally providing proxy support",
               "ignoreCase": "value",
-              "pattern": "^NodeTool@0$"
+              "pattern": "^UseNode@1$"
             },
             "inputs": {
-              "description": "Node.js tool installer inputs",
+              "description": "Use Node.js ecosystem inputs",
               "properties": {
-                "versionSpec": {
+                "version": {
                   "type": "string",
-                  "description": "Version Spec",
+                  "description": "Version",
                   "ignoreCase": "key"
                 },
                 "checkLatest": {
@@ -25129,6 +25221,11 @@
                   "description": "Destination directory",
                   "ignoreCase": "key"
                 },
+                "cleanDestinationFolder": {
+                  "type": "boolean",
+                  "description": "Clean destination folder",
+                  "ignoreCase": "key"
+                },
                 "parallelizationLimit": {
                   "type": "string",
                   "description": "Parallelization limit",
@@ -25147,6 +25244,122 @@
                 "extractTars": {
                   "type": "boolean",
                   "description": "Extract all files that are stored inside tar archives",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Download build artifacts\n\nDownload files that were saved as artifacts of a completed build",
+              "ignoreCase": "value",
+              "pattern": "^DownloadBuildArtifacts@1$"
+            },
+            "inputs": {
+              "description": "Download build artifacts inputs",
+              "properties": {
+                "buildType": {
+                  "description": "Download artifacts produced by",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "current",
+                    "specific"
+                  ]
+                },
+                "project": {
+                  "type": "string",
+                  "description": "Project",
+                  "ignoreCase": "key"
+                },
+                "pipeline": {
+                  "type": "string",
+                  "description": "Build pipeline",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "definition"
+                  ]
+                },
+                "specificBuildWithTriggering": {
+                  "type": "boolean",
+                  "description": "When appropriate, download artifacts from the triggering build.",
+                  "ignoreCase": "key"
+                },
+                "buildVersionToDownload": {
+                  "description": "Build version to download",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "latest",
+                    "latestFromBranch",
+                    "specific"
+                  ]
+                },
+                "allowPartiallySucceededBuilds": {
+                  "type": "boolean",
+                  "description": "Download artifacts even from partially succeeded builds.",
+                  "ignoreCase": "key"
+                },
+                "branchName": {
+                  "type": "string",
+                  "description": "Branch name",
+                  "ignoreCase": "key"
+                },
+                "buildId": {
+                  "type": "string",
+                  "description": "Build",
+                  "ignoreCase": "key"
+                },
+                "tags": {
+                  "type": "string",
+                  "description": "Build Tags",
+                  "ignoreCase": "key"
+                },
+                "downloadType": {
+                  "description": "Download type",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "single",
+                    "specific"
+                  ]
+                },
+                "artifactName": {
+                  "type": "string",
+                  "description": "Artifact name",
+                  "ignoreCase": "key"
+                },
+                "itemPattern": {
+                  "type": "string",
+                  "description": "Matching pattern",
+                  "ignoreCase": "key"
+                },
+                "downloadPath": {
+                  "type": "string",
+                  "description": "Destination directory",
+                  "ignoreCase": "key"
+                },
+                "parallelizationLimit": {
+                  "type": "string",
+                  "description": "Parallelization limit",
+                  "ignoreCase": "key"
+                },
+                "checkDownloadedFiles": {
+                  "type": "boolean",
+                  "description": "Check downloaded files",
+                  "ignoreCase": "key"
+                },
+                "retryDownloadCount": {
+                  "type": "string",
+                  "description": "Retry count",
                   "ignoreCase": "key"
                 }
               },
@@ -25682,7 +25895,7 @@
             "task": {
               "description": "GitHub Release\n\nCreate, edit, or delete a GitHub release",
               "ignoreCase": "value",
-              "pattern": "^GitHubRelease@0$"
+              "pattern": "^GitHubRelease@1$"
             },
             "inputs": {
               "description": "GitHub Release inputs",
@@ -25715,8 +25928,8 @@
                   "description": "Tag source",
                   "ignoreCase": "all",
                   "enum": [
-                    "auto",
-                    "manual"
+                    "gitTag",
+                    "userSpecifiedTag"
                   ]
                 },
                 "tagPattern": {
@@ -25738,16 +25951,16 @@
                   "description": "Release notes source",
                   "ignoreCase": "all",
                   "enum": [
-                    "file",
-                    "input"
+                    "filePath",
+                    "inline"
                   ]
                 },
-                "releaseNotesFile": {
+                "releaseNotesFilePath": {
                   "type": "string",
                   "description": "Release notes file path",
                   "ignoreCase": "key"
                 },
-                "releaseNotes": {
+                "releaseNotesInline": {
                   "type": "string",
                   "description": "Release notes",
                   "ignoreCase": "key"
@@ -25828,7 +26041,7 @@
             "task": {
               "description": "GitHub Release\n\nCreate, edit, or delete a GitHub release",
               "ignoreCase": "value",
-              "pattern": "^GitHubRelease@1$"
+              "pattern": "^GitHubRelease@0$"
             },
             "inputs": {
               "description": "GitHub Release inputs",
@@ -25861,8 +26074,8 @@
                   "description": "Tag source",
                   "ignoreCase": "all",
                   "enum": [
-                    "gitTag",
-                    "userSpecifiedTag"
+                    "auto",
+                    "manual"
                   ]
                 },
                 "tagPattern": {
@@ -25884,16 +26097,16 @@
                   "description": "Release notes source",
                   "ignoreCase": "all",
                   "enum": [
-                    "filePath",
-                    "inline"
+                    "file",
+                    "input"
                   ]
                 },
-                "releaseNotesFilePath": {
+                "releaseNotesFile": {
                   "type": "string",
                   "description": "Release notes file path",
                   "ignoreCase": "key"
                 },
-                "releaseNotesInline": {
+                "releaseNotes": {
                   "type": "string",
                   "description": "Release notes",
                   "ignoreCase": "key"
@@ -26482,6 +26695,57 @@
         {
           "properties": {
             "task": {
+              "description": "Shell script\n\nRun a shell script using Bash",
+              "ignoreCase": "value",
+              "pattern": "^ShellScript@2$"
+            },
+            "inputs": {
+              "description": "Shell script inputs",
+              "properties": {
+                "scriptPath": {
+                  "type": "string",
+                  "description": "Script Path",
+                  "ignoreCase": "key"
+                },
+                "args": {
+                  "type": "string",
+                  "description": "Arguments",
+                  "ignoreCase": "key"
+                },
+                "disableAutoCwd": {
+                  "type": "boolean",
+                  "description": "Specify Working Directory",
+                  "ignoreCase": "key"
+                },
+                "cwd": {
+                  "type": "string",
+                  "description": "Working Directory",
+                  "ignoreCase": "key"
+                },
+                "failOnStandardError": {
+                  "type": "boolean",
+                  "description": "Fail on Standard Error",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "scriptPath"
+              ]
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
               "description": "Bash\n\nRun a Bash script on macOS, Linux, or Windows",
               "ignoreCase": "value",
               "pattern": "^Bash@3$"
@@ -26543,57 +26807,6 @@
           ],
           "required": [
             "task"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "Shell script\n\nRun a shell script using Bash",
-              "ignoreCase": "value",
-              "pattern": "^ShellScript@2$"
-            },
-            "inputs": {
-              "description": "Shell script inputs",
-              "properties": {
-                "scriptPath": {
-                  "type": "string",
-                  "description": "Script Path",
-                  "ignoreCase": "key"
-                },
-                "args": {
-                  "type": "string",
-                  "description": "Arguments",
-                  "ignoreCase": "key"
-                },
-                "disableAutoCwd": {
-                  "type": "boolean",
-                  "description": "Specify Working Directory",
-                  "ignoreCase": "key"
-                },
-                "cwd": {
-                  "type": "string",
-                  "description": "Working Directory",
-                  "ignoreCase": "key"
-                },
-                "failOnStandardError": {
-                  "type": "boolean",
-                  "description": "Fail on Standard Error",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "scriptPath"
-              ]
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task",
-            "inputs"
           ]
         },
         {
