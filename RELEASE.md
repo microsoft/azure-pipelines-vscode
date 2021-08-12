@@ -4,12 +4,13 @@
 0. Ensure package.json and package-lock.json have the version number you want to release.
   - You can do this with `npm version --no-git-tag-version <patch|minor|major>` to get both files at once.
 0. Ensure the CHANGELOG is up to date.
-0. Manually queue a [Release build](https://dev.azure.com/ms/azure-pipelines-vscode/_build?definitionId=12)
+0. Create a PR on GitHub, mostly for tracking reasons.
+0. Manually queue a [Release build](https://dev.azure.com/ms/azure-pipelines-vscode/_build?definitionId=12) against your PR branch.
   - This will create a GitHub release at the commit you've specified!
 0. Ship the resulting package to the Marketplace.
 You can grab it from either the pipeline run or off GitHub itself.
 0. Bump the package.json/package-lock.json patch version numbers so that CI produces prerelease packages off the "next" release.
-0. Push that change and merge the branch. You can now delete the branch.
+0. Push that change and merge the PR. You can now delete the branch.
 
 ## Bumping service schema
 
