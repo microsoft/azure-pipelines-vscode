@@ -149,24 +149,25 @@ export class GraphHelper {
         let restClient = new RestClient(credentials);
         let roleDefinitionId = `${scope}/providers/Microsoft.Authorization/roleDefinitions/${this.contributorRoleId}`;
         let guid = uuid();
-        let roleAssignementFunction = () => {
+        let createRoleAssignmentPromise = () => {
             return restClient.sendRequest<any>({
                 url: `https://management.azure.com/${scope}/providers/Microsoft.Authorization/roleAssignments/${guid}`,
                 queryParameters: {
-                    "api-version": "2015-07-01"
+                    "api-version": "2021-04-01-preview" // So we have access to the "principalType" property
                 },
                 method: "PUT",
                 body: {
                     "properties": {
                         "roleDefinitionId": roleDefinitionId,
-                        "principalId": objectId
+                        "principalId": objectId,
+                        "principalType": "ServicePrincipal", // Makes the assignment work for newly-created service principals
                     }
                 }
             });
         };
 
         return executeFunctionWithRetry(
-            roleAssignementFunction,
+            createRoleAssignmentPromise,
             GraphHelper.retryCount,
             GraphHelper.retryTimeIntervalInSec,
             Messages.roleAssignmentFailedMessage);

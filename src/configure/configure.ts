@@ -16,6 +16,7 @@ import * as path from 'path';
 import * as templateHelper from './helper/templateHelper';
 import * as utils from 'util';
 import * as vscode from 'vscode';
+import * as azdev from 'azure-devops-node-api';
 import { telemetryHelper } from '../helpers/telemetryHelper';
 import { ControlProvider } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
@@ -104,8 +105,10 @@ class PipelineConfigurer {
         await this.getSelectedPipeline();
 
         if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
-            this.inputs.githubPATToken = await this.getGitHubPATToken();
+            this.inputs.githubPatToken = await this.getGitHubPatToken();
         }
+
+        this.inputs.adoPatToken = await this.getAzureDevOpsPatToken();
 
         if (!this.inputs.targetResource.resource) {
             await this.getAzureResourceDetails();
@@ -279,40 +282,55 @@ class PipelineConfigurer {
         }
     }
 
-    private async getGitHubPATToken(): Promise<string> {
-        let githubPat = null;
-        await telemetryHelper.executeFunctionWithTimeTelemetry(
+    private async getGitHubPatToken(): Promise<string> {
+        return await telemetryHelper.executeFunctionWithTimeTelemetry(
             async () => {
-                githubPat = await this.controlProvider.showInputBox(
+                return await this.controlProvider.showInputBox(
                     constants.GitHubPat,
                     {
                         placeHolder: Messages.enterGitHubPat,
                         prompt: Messages.githubPatTokenHelpMessage,
-                        validateInput: (inputValue) => {
-                            return !inputValue ? Messages.githubPatTokenErrorMessage : null;
+                        validateInput: inputValue => {
+                            return inputValue.length === 0 ? Messages.gitHubPatTokenErrorMessage : null;
                         }
                     });
             },
             TelemetryKeys.GitHubPatDuration);
-        return githubPat;
+    }
+
+    private async getAzureDevOpsPatToken(): Promise<string> {
+        return await telemetryHelper.executeFunctionWithTimeTelemetry(
+            async () => {
+                return await this.controlProvider.showInputBox(
+                    constants.AdoPat,
+                    {
+                        placeHolder: Messages.enterAdoPat,
+                        prompt: Messages.adoPatTokenHelpMessage,
+                        validateInput: inputValue => {
+                            return inputValue.length !== 52 ? Messages.adoPatTokenErrorMessage : null;
+                        }
+                    }
+                )
+            },
+            TelemetryKeys.AdoPatDuration);
     }
 
     private async getAzureDevOpsDetails(): Promise<void> {
         try {
             this.createAzureDevOpsClient();
             if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
-                let repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(this.inputs.sourceRepository.remoteUrl);
-                this.inputs.organizationName = repoDetails.orgnizationName;
-                await this.azureDevOpsClient.getRepository(this.inputs.organizationName, repoDetails.projectName, this.inputs.sourceRepository.repositoryName)
-                    .then((repository) => {
-                        this.inputs.sourceRepository.repositoryId = repository.id;
-                        this.inputs.project = {
-                            id: repository.project.id,
-                            name: repository.project.name
-                        };
-                    });
-            }
-            else {
+                const repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(this.inputs.sourceRepository.remoteUrl);
+                this.inputs.organizationName = repoDetails.organizationName;
+                const authHandler = azdev.getPersonalAccessTokenHandler(this.inputs.adoPatToken);
+                const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
+                const gitApi = await connection.getGitApi();
+                const repository = await gitApi.getRepository(this.inputs.sourceRepository.repositoryName, repoDetails.projectName);
+                this.inputs.sourceRepository.repositoryId = repository.id;
+                this.inputs.project = {
+                    id: repository.project.id,
+                    name: repository.project.name
+                };
+            } else {
                 this.inputs.isNewOrganization = false;
                 let devOpsOrganizations = await this.azureDevOpsClient.listOrganizations();
 
@@ -324,10 +342,14 @@ class PipelineConfigurer {
                         TelemetryKeys.OrganizationListCount);
                     this.inputs.organizationName = selectedOrganization.label;
 
+                    const authHandler = azdev.getPersonalAccessTokenHandler(this.inputs.adoPatToken);
+                    const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
+                    const coreApi = await connection.getCoreApi();
+                    const projects = await coreApi.getProjects();
+
                     let selectedProject = await this.controlProvider.showQuickPick(
                         constants.SelectProject,
-                        this.azureDevOpsClient.listProjects(this.inputs.organizationName)
-                            .then((projects) => projects.map(x => { return { label: x.name, data: x }; })),
+                        projects.map(x => { return { label: x.name, data: x }; }),
                         { placeHolder: Messages.selectProject },
                         TelemetryKeys.ProjectListCount);
                     this.inputs.project = selectedProject.data;
@@ -487,7 +509,9 @@ class PipelineConfigurer {
 
     private async createGithubServiceConnection(): Promise<void> {
         if (!this.serviceConnectionHelper) {
-            this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, this.azureDevOpsClient);
+            const authHandler = azdev.getPersonalAccessTokenHandler(this.inputs.adoPatToken);
+            const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
+            this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, connection);
         }
 
         // Create GitHub service connection in Azure DevOps
@@ -499,7 +523,7 @@ class PipelineConfigurer {
             async () => {
                 try {
                     let serviceConnectionName = `${this.inputs.sourceRepository.repositoryName}-${this.uniqueResourceNameSuffix}`;
-                    this.inputs.sourceRepository.serviceConnectionId = await this.serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, this.inputs.githubPATToken);
+                    this.inputs.sourceRepository.serviceConnectionId = await this.serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, this.inputs.githubPatToken);
                 }
                 catch (error) {
                     telemetryHelper.logError(Layer, TracePoints.GitHubServiceConnectionError, error);
@@ -510,7 +534,9 @@ class PipelineConfigurer {
 
     private async createAzureRMServiceConnection(): Promise<void> {
         if (!this.serviceConnectionHelper) {
-            this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, this.azureDevOpsClient);
+            const authHandler = azdev.getPersonalAccessTokenHandler(this.inputs.adoPatToken);
+            const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
+            this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, connection);
         }
         // TODO: show notification while setup is being done.
         // ?? should SPN created be scoped to resource group of target azure resource.

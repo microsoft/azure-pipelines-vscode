@@ -4,6 +4,7 @@ import { SubscriptionModels } from '@azure/arm-subscriptions';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import { OutputChannel, QuickPickItem, window } from 'vscode';
 import { Messages } from '../resources/messages';
+import { TeamProjectReference } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 
 class ExtensionVariables {
     public azureAccountExtensionApi: AzureAccount;
@@ -57,17 +58,13 @@ export type AzureResourceFilter = AzureSubscription;
 export class WizardInputs {
     organizationName: string;
     isNewOrganization: boolean;
-    project: DevOpsProject;
+    project: TeamProjectReference;
     sourceRepository: GitRepositoryParameters;
     targetResource: AzureParameters = new AzureParameters();
     pipelineParameters: PipelineParameters = new PipelineParameters();
     azureSession: AzureSession;
-    githubPATToken?: string;
-}
-
-export interface DevOpsProject {
-    id: string;
-    name: string;
+    adoPatToken: string;
+    githubPatToken?: string;
 }
 
 export class Organization {

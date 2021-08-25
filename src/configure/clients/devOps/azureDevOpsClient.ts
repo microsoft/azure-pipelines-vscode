@@ -1,6 +1,6 @@
 import { Build, BuildDefinition } from '../../model/azureDevOps';
 import { Messages } from '../../resources/messages';
-import { DevOpsProject, Organization } from '../../model/models';
+import { Organization } from '../../model/models';
 import { AzureDevOpsBaseUrl, ReservedHostNames } from '../../resources/constants';
 import { RestClient } from '../restClient';
 import { RequestPrepareOptions } from '@azure/ms-rest-js';
@@ -107,48 +107,6 @@ export class AzureDevOpsClient {
         }
 
         return this.listOrgPromise;
-    }
-
-    public async listProjects(organizationName: string): Promise<Array<DevOpsProject>> {
-        let url = `${AzureDevOpsBaseUrl}/${organizationName}/_apis/projects`;
-        let response = await this.sendRequest({
-            url: url,
-            headers: {
-                "Content-Type": "application/json"
-            },
-            method: "GET",
-            queryParameters: {
-                "includeCapabilities": "true"
-            },
-            deserializationMapper: null,
-            serializationMapper: null
-        });
-
-        let projects: Array<DevOpsProject> = [];
-        if (response.value && response.value.length > 0) {
-            projects = response.value.map((project) => {
-                return { id: project.id, name: project.name };
-            });
-            projects = projects.sort((proj1, proj2) => stringCompareFunction(proj1.name, proj2.name));
-        }
-        return projects;
-    }
-
-    public async getRepository(organizationName: string, projectName: string, repositoryName: string): Promise<any> {
-        let url = `${AzureDevOpsBaseUrl}/${organizationName}/${projectName}/_apis/git/repositories/${repositoryName}`;
-
-        return this.sendRequest({
-            url: url,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            method: "GET",
-            queryParameters: {
-                "api-version": "5.0"
-            },
-            deserializationMapper: null,
-            serializationMapper: null
-        });
     }
 
     public async createBuildDefinition(organizationName: string, buildDefinition: BuildDefinition): Promise<any> {

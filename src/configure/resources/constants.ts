@@ -142,6 +142,7 @@ export const SelectSubscription = 'selectSubscription';
 export const SelectWebApp = 'selectWebApp';
 export const SelectFunctionApp = 'selectFunctionApp';
 export const GitHubPat = 'gitHubPat';
+export const AdoPat = 'adoPat';
 export const SelectFromMultipleWorkSpace = 'selectFromMultipleWorkSpace';
 export const SelectRemoteForRepo = 'selectRemoteForRepo';
 export const VstsRmScmType = 'VSTSRM';
