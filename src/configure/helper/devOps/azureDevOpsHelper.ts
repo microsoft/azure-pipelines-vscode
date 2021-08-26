@@ -1,12 +1,10 @@
-import { AzureDevOpsClient } from '../../clients/devOps/azureDevOpsClient';
-import { BuildDefinition, BuildDefinitionRepositoryProperties, Build } from '../../model/azureDevOps';
-import { HostedVS2017QueueName } from '../../resources/constants';
 import { Messages } from '../../resources/messages';
 import { telemetryHelper } from '../../../helpers/telemetryHelper';
 import { TracePoints } from '../../resources/tracePoints';
 import { WizardInputs, RepositoryProvider } from '../../model/models';
-import * as util from 'util';
 import * as path from 'path';
+import { BuildDefinition, ContinuousIntegrationTrigger, DefinitionQuality, DefinitionTriggerType, DefinitionType, YamlProcess } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { TaskAgentQueue } from 'azure-devops-node-api/interfaces/TaskAgentInterfaces';
 
 const Layer: string = 'azureDevOpsHelper';
 
@@ -15,12 +13,6 @@ export class AzureDevOpsHelper {
     private static SSHAzureReposUrl = 'ssh.dev.azure.com:v3/';
     private static VSOUrl = '.visualstudio.com/';
     private static SSHVsoReposUrl = 'vs-ssh.visualstudio.com:v3/';
-
-    private azureDevOpsClient: AzureDevOpsClient;
-
-    constructor(azureDevOpsClient: AzureDevOpsClient) {
-        this.azureDevOpsClient = azureDevOpsClient;
-    }
 
     public static isAzureReposUrl(remoteUrl: string): boolean {
         return (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0);
@@ -77,21 +69,8 @@ export class AzureDevOpsHelper {
         }
     }
 
-    public async createAndRunPipeline(pipelineName: string, inputs: WizardInputs): Promise<Build> {
-        try {
-            let buildDefinitionPayload = await this.getBuildDefinitionPayload(pipelineName, inputs);
-            let definition = await this.azureDevOpsClient.createBuildDefinition(inputs.organizationName, buildDefinitionPayload);
-            let build = await this.azureDevOpsClient.queueBuild(inputs.organizationName, this.getQueueBuildPayload(inputs, definition.id, definition.project.id));
-            return build;
-        }
-        catch (error) {
-            throw new Error(util.format(Messages.failedToCreateAzurePipeline, error.message));
-        }
-    }
-
-    private async getBuildDefinitionPayload(pipelineName: string, inputs: WizardInputs): Promise<BuildDefinition> {
-        let queueId = await this.getAgentQueueId(inputs.organizationName, inputs.project.name, HostedVS2017QueueName);
-        let repositoryProperties: BuildDefinitionRepositoryProperties = null;
+    public static getBuildDefinitionPayload(pipelineName: string, queue: TaskAgentQueue, inputs: WizardInputs): BuildDefinition {
+        let repositoryProperties: { [key: string]: string } = null;
 
         if (inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
             repositoryProperties = {
@@ -105,30 +84,27 @@ export class AzureDevOpsHelper {
             };
         }
 
-        let properties = { 'source': 'ms-azure-devops.azure-pipelines' };
+        const properties = { 'source': 'ms-azure-devops.azure-pipelines' };
 
         return {
             name: pipelineName,
-            type: 2, //YAML process type
-            quality: 1, // Defintion=1, Draft=0
+            type: DefinitionType.Build,
+            quality: DefinitionQuality.Definition,
             path: "\\", //Folder path of build definition. Root folder in this case
-            project: {
-                id: inputs.project.id,
-                name: inputs.project.name
-            },
+            project: inputs.project,
             process: {
                 type: 2,
                 yamlFileName: path.join(inputs.pipelineParameters.workingDirectory, inputs.pipelineParameters.pipelineFileName)
-            },
+            } as YamlProcess,
             queue: {
-                id: queueId // Default queue Hosted VS 2017. This value is overriden by queue specified in YAML
+                id: queue.id,
             },
             triggers: [
                 {
-                    triggerType: 2, // Continuous integration trigger type
+                    triggerType: DefinitionTriggerType.ContinuousIntegration, // Continuous integration trigger type
                     settingsSourceType: 2, // Use trigger source as specified in YAML
                     batchChanges: false
-                }
+                } as ContinuousIntegrationTrigger,
             ],
             repository: {
                 id: inputs.sourceRepository.repositoryId,
@@ -142,31 +118,11 @@ export class AzureDevOpsHelper {
         };
     }
 
-    private async getAgentQueueId(organizationName: string, projectName: string, poolName: string): Promise<number> {
-        let queues = await this.azureDevOpsClient.getAgentQueues(organizationName, projectName);
-        let queueId: number = queues.length > 0 ? queues[0].id : null;
-
-        for(let queue of queues) {
-            if(queue.pool && queue.pool.name && queue.pool.name.toLowerCase() === poolName.toLowerCase()) {
-                queueId = queue.id;
-                break;
-            }
-        }
-
-        if(queueId !== null) {
-            return queueId;
-        }
-
-        throw new Error(util.format(Messages.noAgentQueueFound, poolName));
+    public static getOldFormatBuildDefinitionUrl(accountName: string, projectName: string, buildDefinitionId: number) {
+        return `https://${accountName}.visualstudio.com/${projectName}/_build?definitionId=${buildDefinitionId}&_a=summary`;
     }
 
-    private getQueueBuildPayload(inputs: WizardInputs, buildDefinitionId: number, projectId: string): Build {
-        return {
-            id: '',
-            definition: { id: buildDefinitionId },
-            project: { id: projectId },
-            sourceBranch: inputs.sourceRepository.branch,
-            sourceVersion: inputs.sourceRepository.commitId
-        };
+    public static getOldFormatBuildUrl(accountName: string, projectName: string, buildId: number) {
+        return `https://${accountName}.visualstudio.com/${projectName}/_build/results?buildId=${buildId}&view=results`;
     }
 }

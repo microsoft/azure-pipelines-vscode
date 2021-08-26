@@ -26,7 +26,7 @@ export class Messages {
     public static gitHubPatTokenErrorMessage: string = 'GitHub PAT token cannot be empty.';
     public static adoPatTokenErrorMessage: string = 'Azure DevOps PAT token must be 52 characters long.';
     public static githubPatTokenHelpMessage: string = 'GitHub personal access token (PAT) with following permissions: full access to repository webhooks and services, read and write access to all repository data.';
-    public static adoPatTokenHelpMessage: string = 'Azure DevOps personal access token (PAT) with following permissions: read access to code, read & execute access to builds, read access to projects and teams, read, query, and manage access to service connections.';
+    public static adoPatTokenHelpMessage: string = 'Azure DevOps personal access token (PAT) with following permissions: read access to code, read & execute access to builds, read access to projects and teams, read access to agent queues, read, query, and manage access to service connections.';
     public static modifyAndCommitFile: string = 'Modify and save your YAML file. %s will commit this file, push the branch \'%s\' to remote \'%s\' and proceed with deployment.';
     public static noAgentQueueFound: string = 'No agent pool found named "%s".';
     public static notAGitRepository: string = 'Selected workspace is not a [Git](https://git-scm.com/docs/git) repository. Please select a Git repository.';

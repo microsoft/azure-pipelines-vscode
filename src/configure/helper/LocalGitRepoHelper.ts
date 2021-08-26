@@ -52,7 +52,7 @@ export class LocalGitRepoHelper {
 
     public async getGitBranchDetails(): Promise<GitBranchDetails> {
         let status = await this.gitReference.status();
-        let branch = status.current;
+        let branch = status.current; // TODO: This is wrong.
         let remote = status.tracking ? status.tracking.substr(0, status.tracking.indexOf(branch) - 1) : null;
 
         return {
@@ -107,7 +107,7 @@ export class LocalGitRepoHelper {
         let gitLog = await this.gitReference.log();
 
         if (repositoryDetails.remoteName && repositoryDetails.branch) {
-            await this.gitReference.push(repositoryDetails.remoteName, repositoryDetails.branch, {
+            await this.gitReference.push(repositoryDetails.remoteName, undefined, {
                 "--set-upstream": null
             });
         }

@@ -72,7 +72,6 @@ export class Organization {
     accountName: string;
     accountUri: string;
     properties: {};
-    isMSAOrg: boolean;
 }
 
 export class AzureParameters {
