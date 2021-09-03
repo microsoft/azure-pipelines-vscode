@@ -24501,6 +24501,11 @@
             "inputs": {
               "description": "Deploy Azure Static Web App inputs",
               "properties": {
+                "cwd": {
+                  "type": "string",
+                  "description": "Working directory",
+                  "ignoreCase": "key"
+                },
                 "app_location": {
                   "type": "string",
                   "description": "App Location",
