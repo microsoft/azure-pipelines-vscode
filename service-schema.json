@@ -2193,12 +2193,12 @@
               "$ref": "#/definitions/jobContinueOnError"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this job to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this job to complete before the server kills it"
             },
             "cancelTimeoutInMinutes": {
-              "description": "Time to wait for the job to cancel before forcibly terminating it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for the job to cancel before forcibly terminating it"
             },
             "variables": {
               "description": "Job-specific variables",
@@ -2259,12 +2259,12 @@
               "$ref": "#/definitions/jobContinueOnError"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this job to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this job to complete before the server kills it"
             },
             "cancelTimeoutInMinutes": {
-              "description": "Time to wait for the job to cancel before forcibly terminating it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for the job to cancel before forcibly terminating it"
             },
             "variables": {
               "description": "Deployment-specific variables",
@@ -2945,8 +2945,8 @@
           "type": "object",
           "properties": {
             "cancelTimeoutInMinutes": {
-              "description": "Time to wait for the phase to cancel before forcibly terminating it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for the phase to cancel before forcibly terminating it"
             },
             "container": {
               "description": "Container resource name",
@@ -2968,8 +2968,8 @@
               "$ref": "#/definitions/nonEmptyString"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait before cancelling the phase",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait before cancelling the phase"
             },
             "workspace": {
               "$ref": "#/definitions/phaseTargetWorkspace"
@@ -2988,8 +2988,8 @@
           "type": "object",
           "properties": {
             "cancelTimeoutInMinutes": {
-              "description": "Time to wait for the job to cancel before forcibly terminating it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for the job to cancel before forcibly terminating it"
             },
             "matrix": {
               "$ref": "#/definitions/phaseTargetMatrix"
@@ -2999,8 +2999,8 @@
               "$ref": "#/definitions/nonEmptyString"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait before cancelling the job",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait before cancelling the job"
             }
           },
           "additionalProperties": false
@@ -3123,8 +3123,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3186,8 +3186,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3249,8 +3249,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3305,8 +3305,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3381,8 +3381,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3434,8 +3434,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3494,8 +3494,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3543,8 +3543,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3592,8 +3592,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3639,8 +3639,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3705,8 +3705,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3758,8 +3758,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3806,8 +3806,8 @@
               "$ref": "#/definitions/referenceName"
             },
             "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
+              "type": "integer",
+              "description": "Time to wait for this task to complete before the server kills it"
             }
           },
           "additionalProperties": false,
@@ -3910,8 +3910,8 @@
           "$ref": "#/definitions/referenceName"
         },
         "timeoutInMinutes": {
-          "description": "Time to wait for this task to complete before the server kills it",
-          "$ref": "#/definitions/nonEmptyString"
+          "type": "integer",
+          "description": "Time to wait for this task to complete before the server kills it"
         }
       },
       "additionalProperties": false
