@@ -3,12 +3,16 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.194.1
+### Fixed
+- Actually includes the changes intended for 1.194.0
+
 ## 1.194.0
 ### Fixed
 - Property autocompletion no longer adds a duplicate colon if one already exists
 - Fixed two crashes around conditional variables
 ### Updated
-- M195 schema
+- M194 schema
 
 ## 1.191.0
 ### Added
