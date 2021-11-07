@@ -23,12 +23,14 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
+                "${workspaceFolder}/src/test/workspace",
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
             ],
             "outFiles": [
                 "${workspaceFolder}/out/test/**/*.js"
-            ]
+            ],
+            "preLaunchTask": "npm: test-compile"
         },
         {
             "name": "Extension Tests From Server",

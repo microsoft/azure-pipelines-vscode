@@ -1,5 +1,8 @@
 parameters:
-  os: ''
+- name: os
+  displayName: OS
+  type: string
+  default: ''
 
 steps:
 

@@ -1,5 +1,8 @@
 parameters:
-  os: ''
+- name: os
+  displayName: OS
+  type: string
+  default: ''
 
 steps:
 
@@ -10,7 +13,7 @@ steps:
   displayName: Legacy tests with node 6
 
 # Publish test results
-- task: 
+- task:
   displayName: Run android build
   inputs:
     emulatorDevice: myDevice

@@ -8,28 +8,38 @@ import * as vscode from 'vscode';
 
 // This suite performs validation tests that look at validating yaml files.
 // The tests are looking at if there are any file validation errors, and if there are, what are they.
-// 
+//
 // These tests need to ensure validation errors are propagated to the ui, we do not need to test
 // every type and permutation of validation errors, that should be handled in unit tests.
 const extensionId = 'ms-azure-devops.azure-pipelines';
+
+// Workspace state is sticky (yuck),
+// so make sure we clear the open editors after every test
+teardown(async () => {
+    await vscode.commands.executeCommand('workbench.action.closeAllEditors');
+});
 
 suite ('Extension Setup Tests', function() {
     this.timeout(20000);
 
     test("Extension is active", async () => {
-        // Arrange and Act
+        // Arrange
+        const files = await vscode.workspace.findFiles('validfile.yml');
+
+        // Act
+        await vscode.window.showTextDocument(files[0]);
         await sleep(2000);
-        const started = vscode.extensions.getExtension(extensionId).isActive;
+        const activated = vscode.extensions.getExtension(extensionId).isActive;
 
         // Assert
-        assert.equal(started, true);
+        assert.strictEqual(activated, true);
     });
 });
 
 // Helpers
 // 1. Workspace configuration settings are not as expected
 //    console.log('workspace configuration: ' + JSON.stringify(vscode.workspace.getConfiguration()));
-// 2. 
+// 2.
 
 suite('Validation Tests', function() {
     this.timeout(20000);
@@ -46,8 +56,8 @@ suite('Validation Tests', function() {
         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
 
         // Assert
-        assert.equal(emptyDocument.languageId, 'azure-pipelines');
-        assert.equal(diagnostics.length, 0);
+        assert.strictEqual(emptyDocument.languageId, 'azure-pipelines');
+        assert.strictEqual(diagnostics.length, 0);
     });
 
     test ('Given a valid document, there should be no validation errors', async () => {
@@ -62,8 +72,8 @@ suite('Validation Tests', function() {
         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
 
         // Assert
-        assert.equal(emptyDocument.languageId, 'azure-pipelines');
-        assert.equal(diagnostics.length, 0);
+        assert.strictEqual(emptyDocument.languageId, 'azure-pipelines');
+        assert.strictEqual(diagnostics.length, 0);
     });
 
     test ('Given an invalid document, there should be validation errors', async function() {
@@ -78,12 +88,12 @@ suite('Validation Tests', function() {
         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(invalidfile);
 
         // Assert
-        assert.equal(invalidDocument.languageId, 'azure-pipelines');
-        assert.equal(diagnostics.length, 1);
-        assert.equal(diagnostics[0].range.start.line, 0);
-        assert.equal(diagnostics[0].range.start.character, 0);
-        assert.equal(diagnostics[0].range.end.line, 5);
-        assert.equal(diagnostics[0].range.end.character, 0);
+        assert.strictEqual(invalidDocument.languageId, 'azure-pipelines');
+        assert.strictEqual(diagnostics.length, 1);
+        assert.strictEqual(diagnostics[0].range.start.line, 0);
+        assert.strictEqual(diagnostics[0].range.start.character, 0);
+        assert.strictEqual(diagnostics[0].range.end.line, 5);
+        assert.strictEqual(diagnostics[0].range.end.character, 0);
 
         //assert.deepEqual(diagnostics, [{"severity":"Error","message":"Incorrect type. Expected \"object\".","range":[{"line":0,"character":0},{"line":5,"character":0}]}]);
     });
@@ -95,28 +105,28 @@ suite('Validation Tests', function() {
 
     test ('When manually activating an invalid file there should be validation errors', async () => {
         // TODO: Write this test. I have not been able to find a way to manually set the file type through the vscode api.
-        
+
     });
 
     test ('When manually activating a valid file there should not be validation errors', function() {
         // TODO: Write this test. I have not been able to find a way to manually set the file type through the vscode api.
-        
+
     });
 });
 
 // This suite performs autocomplete tests that look for what options are available for autocompletion
 // depending on where we are in a file, what the contents of that file are, and what the schema is.
-// 
+//
 // https://github.com/Microsoft/vscode/issues/23814
 // ALso useful:
 // https://github.com/Microsoft/vscode/issues/111
 // https://github.com/ipatalas/ngComponentUtility/blob/master/test/providers/componentCompletionProvider.test.ts
-// 
+//
 // TODO: Do we need to create a proper completion item provider? How does the language server tie in right now?
 // It may be impossible to check the completion items in the UI and we might have to check them in the server.
 // Or we can take the first suggestion and make sure it works... then we know the options are in the list.
 // Then for the specific recommendations we test that in the completion provider.
-// 
+//
 suite('Autocomplete Tests', function() {
     this.timeout(30000);
     // empty file, beginning of file, end of file, middle of file
@@ -132,7 +142,10 @@ suite('Autocomplete Tests', function() {
         const editor: vscode.TextEditor = await vscode.window.showTextDocument(autoCompleteDoc);
         await sleep(3000); // Give it time to show the validation errors, if any
 
-        setCursorPosition(editor, 13, 9);
+        await editor.edit(edit => {
+            edit.insert(new vscode.Position(15, 7), " ");
+        });
+        await setCursorPosition(editor, 16, 9);
         await triggerIntellisense();
         await acceptSuggestion();
 
@@ -140,9 +153,10 @@ suite('Autocomplete Tests', function() {
         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
         const documentTextArr: string[] = autoCompleteDoc.getText().split('\n');
 
-        assert.equal(autoCompleteDoc.languageId, 'azure-pipelines');
-        assert.equal(diagnostics.length, 0);
-        assert.equal(documentTextArr[12], '- task: AndroidBuild@1');
+        assert.strictEqual(autoCompleteDoc.languageId, 'azure-pipelines');
+        assert.strictEqual(diagnostics.filter(
+            diagnostic => diagnostic.severity !== vscode.DiagnosticSeverity.Hint), 0);
+        assert.strictEqual(documentTextArr[15], '- task: AndroidBuild@1');
     });
 })
 
