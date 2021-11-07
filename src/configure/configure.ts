@@ -220,18 +220,18 @@ class PipelineConfigurer {
 
         if (!gitBranchDetails.remoteName) {
             // Remote tracking branch is not set
-            let remotes = await this.localGitRepoHelper.getGitRemotes();
+            let remotes = await this.localGitRepoHelper.getGitRemoteNames();
             if (remotes.length === 0) {
                 throw new Error(Messages.branchRemoteMissing);
             }
             else if (remotes.length === 1) {
-                gitBranchDetails.remoteName = remotes[0].name;
+                gitBranchDetails.remoteName = remotes[0];
             }
             else {
                 // Show an option to user to select remote to be configured
                 let selectedRemote = await this.controlProvider.showQuickPick(
                     constants.SelectRemoteForRepo,
-                    remotes.map(remote => { return { label: remote.name }; }),
+                    remotes.map(remote => ({ label: remote })),
                     { placeHolder: Messages.selectRemoteForBranch });
                 gitBranchDetails.remoteName = selectedRemote.label;
             }

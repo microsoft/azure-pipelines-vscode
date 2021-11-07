@@ -4,7 +4,6 @@ import * as fs from 'fs/promises';
 import * as git from 'simple-git/promise';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { RemoteWithoutRefs } from 'simple-git/typings/response';
 import { AzureDevOpsHelper } from './devOps/azureDevOpsHelper';
 import { GitHubProvider } from './gitHubHelper';
 import { telemetryHelper } from "../../helpers/telemetryHelper";
@@ -62,14 +61,20 @@ export class LocalGitRepoHelper {
         };
     }
 
-    public async getGitRemotes(): Promise<RemoteWithoutRefs[]> {
-        return this.gitReference.getRemotes(false);
+    public async getGitRemoteNames(): Promise<string[]> {
+        // "origin" is always a remote, even if it doesn't point anywhere
+        // (try `git init` followed by `git remote`).
+        // We need to use the verbose flag to ensure it has refs.
+        const remotes = await this.gitReference.getRemotes(true);
+        return remotes
+            .filter(remote => Object.keys(remote.refs).length > 0)
+            .map(remote => remote.name);
     }
 
     public async getGitRemoteUrl(remoteName: string): Promise<string|void> {
         let remoteUrl = await this.gitReference.remote(["get-url", remoteName]);
         if (remoteUrl) {
-            remoteUrl = (<string>remoteUrl).trim();
+            remoteUrl = remoteUrl.trim();
             if (remoteUrl[remoteUrl.length - 1] === '/') {
                 remoteUrl = remoteUrl.substr(0, remoteUrl.length - 1);
             }
