@@ -1,13 +1,12 @@
 import { GitRepositoryParameters, GitBranchDetails } from '../model/models';
 import { Messages } from '../resources/messages';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import * as git from 'simple-git/promise';
 import * as path from 'path';
-import * as Q from 'q';
 import * as vscode from 'vscode';
 import { RemoteWithoutRefs } from 'simple-git/typings/response';
-import {AzureDevOpsHelper} from './devOps/azureDevOpsHelper';
-import {GitHubProvider} from './gitHubHelper';
+import { AzureDevOpsHelper } from './devOps/azureDevOpsHelper';
+import { GitHubProvider } from './gitHubHelper';
 import { telemetryHelper } from "../../helpers/telemetryHelper";
 import { TelemetryKeys } from "../../helpers/telemetryKeys";
 
@@ -19,35 +18,37 @@ export class LocalGitRepoHelper {
 
     public static async GetHelperInstance(repositoryPath: string): Promise<LocalGitRepoHelper> {
         try {
-            var repoService = new LocalGitRepoHelper();
+            const repoService = new LocalGitRepoHelper();
             repoService.initialize(repositoryPath);
             await repoService.gitReference.status();
             return repoService;
-        }
-        catch(error) {
-            let gitFolderExists = fs.existsSync(path.join(repositoryPath, ".git"));
+        } catch (error) {
+            let gitFolderExists = true;
+            try {
+                await fs.access(path.join(repositoryPath, ".git"));
+            } catch (e) {
+                gitFolderExists = false;
+            }
+
             telemetryHelper.setTelemetry(TelemetryKeys.GitFolderExists, gitFolderExists.toString());
             throw new Error(Messages.notAGitRepository);
         }
     }
 
     public static async GetAvailableFileName(fileName:string, repoPath: string): Promise<string> {
-        let deferred: Q.Deferred<string> = Q.defer();
-        fs.readdir(repoPath, (err, files: string[]) => {
-            if (files.indexOf(fileName) < 0) {
-                deferred.resolve(fileName);
-            }
-            else {
-                for (let i = 1; i < 100; i++) {
-                    let increamentalFileName = LocalGitRepoHelper.getIncreamentalFileName(fileName, i);
-                    if (files.indexOf(increamentalFileName) < 0) {
-                        deferred.resolve(increamentalFileName);
-                    }
-                }
-            }
-        });
+        const files = await fs.readdir(repoPath);
+        if (!files.includes(fileName)) {
+            return fileName;
+        }
 
-        return deferred.promise;
+        for (let i = 1; i < 100; i++) {
+            let incrementalFileName = LocalGitRepoHelper.getIncrementalFileName(fileName, i);
+            if (!files.includes(incrementalFileName)) {
+                return incrementalFileName;
+            }
+        }
+
+        throw new Error(Messages.noAvailableFileNames);
     }
 
     public async getGitBranchDetails(): Promise<GitBranchDetails> {
@@ -91,7 +92,7 @@ export class LocalGitRepoHelper {
      */
     public async addContentToFile(content: string, fileName: string, repoPath: string): Promise<string> {
         let filePath = path.join(repoPath, "/" + fileName);
-        fs.writeFileSync(filePath, content);
+        await fs.writeFile(filePath, content);
         await vscode.workspace.saveAll(true);
         return fileName;
     }
@@ -123,7 +124,7 @@ export class LocalGitRepoHelper {
         return path.normalize(gitRootDir.trim());
     }
 
-    private static getIncreamentalFileName(fileName: string, count: number): string {
+    private static getIncrementalFileName(fileName: string, count: number): string {
         return fileName.substr(0, fileName.indexOf('.')).concat(` (${count})`, fileName.substr(fileName.indexOf('.')));
     }
 

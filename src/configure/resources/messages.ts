@@ -29,6 +29,7 @@ export class Messages {
     public static adoPatTokenHelpMessage: string = 'Azure DevOps personal access token (PAT) with following permissions: read access to code, read & execute access to builds, read access to projects and teams, read access to agent queues, read, query, and manage access to service connections.';
     public static modifyAndCommitFile: string = 'Modify and save your YAML file. %s will commit this file, push the branch \'%s\' to remote \'%s\' and proceed with deployment.';
     public static noAgentQueueFound: string = 'No agent pool found named "%s".';
+    public static noAvailableFileNames: string = 'No available filenames found.';
     public static notAGitRepository: string = 'Selected workspace is not a [Git](https://git-scm.com/docs/git) repository. Please select a Git repository.';
     public static notAzureRepoUrl: string = 'The repo isn\'t hosted with Azure Repos.';
     public static noWorkSpaceSelectedError: string = 'Please select a workspace folder to configure pipeline.';
