@@ -8,7 +8,7 @@ import { stringCompareFunction } from "../../helper/commonHelper";
 import { telemetryHelper } from '../../../helpers/telemetryHelper';
 import * as util from 'util';
 
-export class AzureDevOpsClient {
+export class OrganizationsClient {
     private restClient: RestClient;
     private organizations?: Organization[];
 

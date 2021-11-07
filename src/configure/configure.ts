@@ -1,6 +1,6 @@
 const uuid = require('uuid/v4');
 import { AppServiceClient } from './clients/azure/appServiceClient';
-import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
+import { OrganizationsClient } from './clients/devOps/organizationsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
 import { OperationsClient } from './clients/devOps/operationsClient';
 import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
@@ -51,7 +51,7 @@ export async function configurePipeline() {
 class PipelineConfigurer {
     private inputs: WizardInputs;
     private localGitRepoHelper: LocalGitRepoHelper;
-    private azureDevOpsClient: AzureDevOpsClient;
+    private azureDevOpsClient: OrganizationsClient;
     private serviceConnectionHelper: ServiceConnectionHelper;
     private appServiceClient: AppServiceClient;
     private workspacePath: string;
@@ -630,6 +630,6 @@ class PipelineConfigurer {
     }
 
     private createAzureDevOpsClient(): void {
-        this.azureDevOpsClient = new AzureDevOpsClient(this.inputs.azureSession.credentials2);
+        this.azureDevOpsClient = new OrganizationsClient(this.inputs.azureSession.credentials2);
     }
 }
