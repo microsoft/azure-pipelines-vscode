@@ -324,7 +324,7 @@ class PipelineConfigurer {
                 if (devOpsOrganizations && devOpsOrganizations.length > 0) {
                     let selectedOrganization = await this.controlProvider.showQuickPick(
                         constants.SelectOrganization,
-                        devOpsOrganizations.map(x => { return { label: x.accountName }; }),
+                        devOpsOrganizations.map(organization => { return { label: organization.accountName }; }),
                         { placeHolder: Messages.selectOrganization },
                         TelemetryKeys.OrganizationListCount);
                     this.inputs.organizationName = selectedOrganization.label;
@@ -334,9 +334,11 @@ class PipelineConfigurer {
                     const coreApi = await connection.getCoreApi();
                     const projects = await coreApi.getProjects();
 
-                    let selectedProject = await this.controlProvider.showQuickPick(
+                    // FIXME: It _is_ possible for an organization to have no projects.
+                    // We need to guard against this and create a project for them.
+                    const selectedProject = await this.controlProvider.showQuickPick(
                         constants.SelectProject,
-                        projects.map(x => { return { label: x.name, data: x }; }),
+                        projects.map(project => { return { label: project.name, data: project }; }),
                         { placeHolder: Messages.selectProject },
                         TelemetryKeys.ProjectListCount);
                     this.inputs.project = selectedProject.data;

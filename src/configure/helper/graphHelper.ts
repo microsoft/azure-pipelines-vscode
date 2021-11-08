@@ -103,9 +103,6 @@ export class GraphHelper {
                 "availableToOtherTenants": false,
                 "displayName": name,
                 "homepage": "https://" + name,
-                "identifierUris": [
-                    "https://" + name
-                ],
                 "passwordCredentials": [
                     {
                         "startDate": startDate,
