@@ -1,5 +1,5 @@
 import { Messages } from '../../resources/messages';
-import { Organization } from '../../model/models';
+import { Organization, OrganizationAvailability } from '../../model/models';
 import { ReservedHostNames } from '../../resources/constants';
 import { RestClient } from '../restClient';
 import { RequestPrepareOptions } from '@azure/ms-rest-js';
@@ -7,6 +7,7 @@ import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import { stringCompareFunction } from "../../helper/commonHelper";
 import { telemetryHelper } from '../../../helpers/telemetryHelper';
 import * as util from 'util';
+import { ConnectionData } from 'azure-devops-node-api/interfaces/LocationsInterfaces';
 
 export class OrganizationsClient {
     private restClient: RestClient;
@@ -16,7 +17,7 @@ export class OrganizationsClient {
         this.restClient = new RestClient(credentials);
     }
 
-    public async sendRequest(requestPrepareOptions: RequestPrepareOptions): Promise<any> {
+    public async sendRequest<T>(requestPrepareOptions: RequestPrepareOptions): Promise<T> {
         if (requestPrepareOptions.headers) {
             requestPrepareOptions.headers['X-TFS-Session'] = telemetryHelper.getJourneyId();
         }
@@ -24,10 +25,10 @@ export class OrganizationsClient {
             requestPrepareOptions.headers = { 'X-TFS-Session': telemetryHelper.getJourneyId() };
         }
 
-        return this.restClient.sendRequest(requestPrepareOptions);
+        return this.restClient.sendRequest<T>(requestPrepareOptions);
     }
 
-    public async createOrganization(organizationName: string): Promise<any> {
+    public async createOrganization(organizationName: string): Promise<void> {
         return this.sendRequest({
             url: "https://app.vsaex.visualstudio.com/_apis/HostAcquisition/collections",
             headers: {
@@ -36,7 +37,7 @@ export class OrganizationsClient {
             method: "POST",
             queryParameters: {
                 "collectionName": organizationName,
-                "api-version": "4.0-preview.1",
+                "api-version": "5.0-preview.2",
                 "preferredRegion": "CUS"
             },
         });
@@ -48,7 +49,7 @@ export class OrganizationsClient {
         }
 
         const connectionData = await this.getUserData();
-        const response = await this.sendRequest({
+        const response = await this.sendRequest<{ value: Organization[] }>({
             url: "https://app.vssps.visualstudio.com/_apis/accounts",
             headers: {
                 "Content-Type": "application/json"
@@ -76,15 +77,13 @@ export class OrganizationsClient {
             const url = `https://app.vsaex.visualstudio.com/_apis/HostAcquisition/NameAvailability/${organizationName}`;
 
             try {
-                const response = await this.sendRequest({
+                const response = await this.sendRequest<OrganizationAvailability>({
                     url,
                     headers: {
                         "Content-Type": "application/json",
                         "Accept": "api-version=5.0-preview.1"
                     },
                     method: "GET",
-                    deserializationMapper: null,
-                    serializationMapper: null
                 });
 
                 if (response.name === organizationName && !response.isAvailable) {
@@ -117,7 +116,7 @@ export class OrganizationsClient {
         return organization.accountId;
     }
 
-    private async getUserData(): Promise<any> {
+    private async getUserData(): Promise<ConnectionData> {
         try {
             return this.getConnectionData();
         } catch {
@@ -126,7 +125,7 @@ export class OrganizationsClient {
         }
     }
 
-    private getConnectionData(): Promise<any> {
+    private getConnectionData(): Promise<ConnectionData> {
         return this.sendRequest({
             url: "https://app.vssps.visualstudio.com/_apis/connectiondata",
             headers: {
@@ -136,7 +135,8 @@ export class OrganizationsClient {
         });
     }
 
-    private createUserProfile(): Promise<any> {
+    // TODO: Need to verify this signature
+    private createUserProfile(): Promise<void> {
         return this.sendRequest({
             url: "https://app.vssps.visualstudio.com/_apis/_AzureProfile/CreateProfile",
             headers: {

@@ -66,12 +66,22 @@ export class WizardInputs {
     githubPatToken?: string;
 }
 
-export class Organization {
+export interface Organization {
     accountId: string;
     accountName: string;
     accountUri: string;
     properties: {};
 }
+
+export type OrganizationAvailability = {
+    isAvailable: true;
+    name: string;
+    unavailabilityReason: null;
+} | {
+    isAvailable: false;
+    name: string;
+    unavailabilityReason: string;
+};
 
 export class AzureParameters {
     subscriptionId: string;
