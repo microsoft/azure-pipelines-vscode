@@ -51,6 +51,7 @@ export async function configurePipeline() {
 class PipelineConfigurer {
     private inputs: WizardInputs;
     private localGitRepoHelper: LocalGitRepoHelper;
+    private azureDevOpsClient: azdev.WebApi;
     private organizationsClient: OrganizationsClient;
     private serviceConnectionHelper: ServiceConnectionHelper;
     private appServiceClient: AppServiceClient;
@@ -122,10 +123,8 @@ class PipelineConfigurer {
                         await this.organizationsClient.createOrganization(this.inputs.organizationName);
                         this.organizationsClient.listOrganizations(true);
 
-                        const token = await this.inputs.azureSession.credentials2.getToken();
-                        const authHandler = azdev.getBearerHandler(token.accessToken);
-                        const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
-                        const coreApi = await connection.getCoreApi();
+                        const azureDevOpsClient = await this.getAzureDevOpsClient();
+                        const coreApi = await azureDevOpsClient.getCoreApi();
                         const operation = await coreApi.queueCreateProject({
                             name: this.inputs.project.name,
                             visibility: ProjectVisibility.Private,
@@ -139,7 +138,7 @@ class PipelineConfigurer {
                             },
                         });
 
-                        const operationsClient = new OperationsClient(this.inputs.organizationName, connection);
+                        const operationsClient = new OperationsClient(this.inputs.organizationName, azureDevOpsClient);
                         await operationsClient.waitForOperationSuccess(operation.id);
                         this.inputs.project = await coreApi.getProject(this.inputs.project.name);
                     } catch (error) {
@@ -302,15 +301,13 @@ class PipelineConfigurer {
 
     private async getAzureDevOpsDetails(): Promise<void> {
         try {
-            this.createOrganizationsClient();
-            const token = await this.inputs.azureSession.credentials2.getToken();
+            this.organizationsClient = new OrganizationsClient(this.inputs.azureSession.credentials2);
             if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
                 const repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(this.inputs.sourceRepository.remoteUrl);
                 this.inputs.organizationName = repoDetails.organizationName;
 
-                const authHandler = azdev.getBearerHandler(token.accessToken);
-                const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}/`, authHandler);
-                const gitApi = await connection.getGitApi();
+                const azureDevOpsClient = await this.getAzureDevOpsClient();
+                const gitApi = await azureDevOpsClient.getGitApi();
                 const repository = await gitApi.getRepository(this.inputs.sourceRepository.repositoryName, repoDetails.projectName);
                 this.inputs.sourceRepository.repositoryId = repository.id;
                 this.inputs.project = {
@@ -329,9 +326,8 @@ class PipelineConfigurer {
                         TelemetryKeys.OrganizationListCount);
                     this.inputs.organizationName = selectedOrganization.label;
 
-                    const authHandler = azdev.getBearerHandler(token.accessToken, true);
-                    const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}/`, authHandler);
-                    const coreApi = await connection.getCoreApi();
+                    const azureDevOpsClient = await this.getAzureDevOpsClient();
+                    const coreApi = await azureDevOpsClient.getCoreApi();
                     const projects = await coreApi.getProjects();
 
                     // FIXME: It _is_ possible for an organization to have no projects.
@@ -342,8 +338,7 @@ class PipelineConfigurer {
                         { placeHolder: Messages.selectProject },
                         TelemetryKeys.ProjectListCount);
                     this.inputs.project = selectedProject.data;
-                }
-                else {
+                } else {
                     telemetryHelper.setTelemetry(TelemetryKeys.NewOrganization, 'true');
 
                     this.inputs.isNewOrganization = true;
@@ -495,10 +490,7 @@ class PipelineConfigurer {
 
     private async createGithubServiceConnection(): Promise<void> {
         if (!this.serviceConnectionHelper) {
-            const token = await this.inputs.azureSession.credentials2.getToken();
-            const authHandler = azdev.getBearerHandler(token.accessToken);
-            const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
-            this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, connection);
+            this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, this.azureDevOpsClient);
         }
 
         // Create GitHub service connection in Azure DevOps
@@ -521,10 +513,7 @@ class PipelineConfigurer {
 
     private async createAzureRMServiceConnection(): Promise<void> {
         if (!this.serviceConnectionHelper) {
-            const token = await this.inputs.azureSession.credentials2.getToken();
-            const authHandler = azdev.getBearerHandler(token.accessToken);
-            const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
-            this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, connection);
+            this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, this.azureDevOpsClient);
         }
         // TODO: show notification while setup is being done.
         // ?? should SPN created be scoped to resource group of target azure resource.
@@ -589,12 +578,9 @@ class PipelineConfigurer {
     }
 
     private async createAndRunPipeline(): Promise<Build> {
-        const token = await this.inputs.azureSession.credentials2.getToken();
-        const authHandler = azdev.getBearerHandler(token.accessToken);
-        const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
         return await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
             try {
-                const taskAgentApi = await connection.getTaskAgentApi();
+                const taskAgentApi = await this.azureDevOpsClient.getTaskAgentApi();
                 const queues = await taskAgentApi.getAgentQueuesByNames([constants.HostedVS2017QueueName], this.inputs.project.name);
                 if (queues.length === 0) {
                     throw new Error(utils.format(Messages.noAgentQueueFound, constants.HostedVS2017QueueName));
@@ -602,7 +588,7 @@ class PipelineConfigurer {
 
                 const pipelineName = `${(this.inputs.targetResource.resource ? this.inputs.targetResource.resource.name : this.inputs.pipelineParameters.pipelineTemplate.label)}-${this.uniqueResourceNameSuffix}`;
                 const definitionPayload = AzureDevOpsHelper.getBuildDefinitionPayload(pipelineName, queues[0], this.inputs);
-                const buildApi = await connection.getBuildApi();
+                const buildApi = await this.azureDevOpsClient.getBuildApi();
                 const definition = await buildApi.createDefinition(definitionPayload, this.inputs.project.name);
                 return await buildApi.queueBuild({
                     definition: definition,
@@ -618,7 +604,14 @@ class PipelineConfigurer {
         });
     }
 
-    private createOrganizationsClient(): void {
-        this.organizationsClient = new OrganizationsClient(this.inputs.azureSession.credentials2);
+    private async getAzureDevOpsClient(): Promise<azdev.WebApi> {
+        if (this.azureDevOpsClient) {
+            return this.azureDevOpsClient;
+        }
+
+        const token = await this.inputs.azureSession.credentials2.getToken();
+        const authHandler = azdev.getBearerHandler(token.accessToken);
+        this.azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
+        return this.azureDevOpsClient;
     }
 }
