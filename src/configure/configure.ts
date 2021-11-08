@@ -51,7 +51,7 @@ export async function configurePipeline() {
 class PipelineConfigurer {
     private inputs: WizardInputs;
     private localGitRepoHelper: LocalGitRepoHelper;
-    private azureDevOpsClient: OrganizationsClient;
+    private organizationsClient: OrganizationsClient;
     private serviceConnectionHelper: ServiceConnectionHelper;
     private appServiceClient: AppServiceClient;
     private workspacePath: string;
@@ -99,8 +99,6 @@ class PipelineConfigurer {
             this.inputs.githubPatToken = await this.getGitHubPatToken();
         }
 
-        this.inputs.adoPatToken = await this.getAzureDevOpsPatToken();
-
         if (!this.inputs.targetResource.resource) {
             await this.getAzureResourceDetails();
         }
@@ -121,10 +119,11 @@ class PipelineConfigurer {
                 },
                 async () => {
                     try {
-                        await this.azureDevOpsClient.createOrganization(this.inputs.organizationName);
-                        this.azureDevOpsClient.listOrganizations(true);
+                        await this.organizationsClient.createOrganization(this.inputs.organizationName);
+                        this.organizationsClient.listOrganizations(true);
 
-                        const authHandler = azdev.getPersonalAccessTokenHandler(this.inputs.adoPatToken);
+                        const token = await this.inputs.azureSession.credentials2.getToken();
+                        const authHandler = azdev.getBearerHandler(token.accessToken);
                         const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
                         const coreApi = await connection.getCoreApi();
                         const operation = await coreApi.queueCreateProject({
@@ -301,31 +300,16 @@ class PipelineConfigurer {
             TelemetryKeys.GitHubPatDuration);
     }
 
-    private async getAzureDevOpsPatToken(): Promise<string> {
-        return await telemetryHelper.executeFunctionWithTimeTelemetry(
-            async () => {
-                return await this.controlProvider.showInputBox(
-                    constants.AdoPat,
-                    {
-                        placeHolder: Messages.enterAdoPat,
-                        prompt: Messages.adoPatTokenHelpMessage,
-                        validateInput: inputValue => {
-                            return inputValue.length !== 52 ? Messages.adoPatTokenErrorMessage : null;
-                        }
-                    }
-                )
-            },
-            TelemetryKeys.AdoPatDuration);
-    }
-
     private async getAzureDevOpsDetails(): Promise<void> {
         try {
-            this.createAzureDevOpsClient();
+            this.createOrganizationsClient();
+            const token = await this.inputs.azureSession.credentials2.getToken();
             if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
                 const repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(this.inputs.sourceRepository.remoteUrl);
                 this.inputs.organizationName = repoDetails.organizationName;
-                const authHandler = azdev.getPersonalAccessTokenHandler(this.inputs.adoPatToken);
-                const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
+
+                const authHandler = azdev.getBearerHandler(token.accessToken);
+                const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}/`, authHandler);
                 const gitApi = await connection.getGitApi();
                 const repository = await gitApi.getRepository(this.inputs.sourceRepository.repositoryName, repoDetails.projectName);
                 this.inputs.sourceRepository.repositoryId = repository.id;
@@ -335,7 +319,7 @@ class PipelineConfigurer {
                 };
             } else {
                 this.inputs.isNewOrganization = false;
-                let devOpsOrganizations = await this.azureDevOpsClient.listOrganizations();
+                let devOpsOrganizations = await this.organizationsClient.listOrganizations();
 
                 if (devOpsOrganizations && devOpsOrganizations.length > 0) {
                     let selectedOrganization = await this.controlProvider.showQuickPick(
@@ -345,8 +329,8 @@ class PipelineConfigurer {
                         TelemetryKeys.OrganizationListCount);
                     this.inputs.organizationName = selectedOrganization.label;
 
-                    const authHandler = azdev.getPersonalAccessTokenHandler(this.inputs.adoPatToken);
-                    const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
+                    const authHandler = azdev.getBearerHandler(token.accessToken, true);
+                    const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}/`, authHandler);
                     const coreApi = await connection.getCoreApi();
                     const projects = await coreApi.getProjects();
 
@@ -364,13 +348,13 @@ class PipelineConfigurer {
                     let userName = this.inputs.azureSession.userId.substring(0, this.inputs.azureSession.userId.indexOf("@"));
                     let organizationName = generateDevOpsOrganizationName(userName, this.inputs.sourceRepository.repositoryName);
 
-                    let validationErrorMessage = await this.azureDevOpsClient.validateOrganizationName(organizationName);
+                    let validationErrorMessage = await this.organizationsClient.validateOrganizationName(organizationName);
                     if (validationErrorMessage) {
                         this.inputs.organizationName = await this.controlProvider.showInputBox(
                             constants.EnterOrganizationName,
                             {
                                 placeHolder: Messages.enterAzureDevOpsOrganizationName,
-                                validateInput: (organizationName) => this.azureDevOpsClient.validateOrganizationName(organizationName)
+                                validateInput: (organizationName) => this.organizationsClient.validateOrganizationName(organizationName)
                             });
                     }
                     else {
@@ -487,7 +471,7 @@ class PipelineConfigurer {
             let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
             metadata["properties"] = metadata["properties"] ? metadata["properties"] : {};
             metadata["properties"]["VSTSRM_ProjectId"] = this.inputs.project.id;
-            metadata["properties"]["VSTSRM_AccountId"] = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
+            metadata["properties"]["VSTSRM_AccountId"] = await this.organizationsClient.getOrganizationIdFromName(this.inputs.organizationName);
             metadata["properties"]["VSTSRM_BuildDefinitionId"] = queuedPipeline.definition.id.toString();
             metadata["properties"]["VSTSRM_BuildDefinitionWebAccessUrl"] = buildDefinitionUrl;
             metadata["properties"]["VSTSRM_ConfiguredCDEndPoint"] = '';
@@ -509,7 +493,8 @@ class PipelineConfigurer {
 
     private async createGithubServiceConnection(): Promise<void> {
         if (!this.serviceConnectionHelper) {
-            const authHandler = azdev.getPersonalAccessTokenHandler(this.inputs.adoPatToken);
+            const token = await this.inputs.azureSession.credentials2.getToken();
+            const authHandler = azdev.getBearerHandler(token.accessToken);
             const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
             this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, connection);
         }
@@ -534,7 +519,8 @@ class PipelineConfigurer {
 
     private async createAzureRMServiceConnection(): Promise<void> {
         if (!this.serviceConnectionHelper) {
-            const authHandler = azdev.getPersonalAccessTokenHandler(this.inputs.adoPatToken);
+            const token = await this.inputs.azureSession.credentials2.getToken();
+            const authHandler = azdev.getBearerHandler(token.accessToken);
             const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
             this.serviceConnectionHelper = new ServiceConnectionHelper(this.inputs.organizationName, this.inputs.project.name, connection);
         }
@@ -601,7 +587,8 @@ class PipelineConfigurer {
     }
 
     private async createAndRunPipeline(): Promise<Build> {
-        const authHandler = azdev.getPersonalAccessTokenHandler(this.inputs.adoPatToken);
+        const token = await this.inputs.azureSession.credentials2.getToken();
+        const authHandler = azdev.getBearerHandler(token.accessToken);
         const connection = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
         return await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
             try {
@@ -629,7 +616,7 @@ class PipelineConfigurer {
         });
     }
 
-    private createAzureDevOpsClient(): void {
-        this.azureDevOpsClient = new OrganizationsClient(this.inputs.azureSession.credentials2);
+    private createOrganizationsClient(): void {
+        this.organizationsClient = new OrganizationsClient(this.inputs.azureSession.credentials2);
     }
 }

@@ -16,7 +16,6 @@ export class TelemetryKeys {
     public static BrowsedExistingPipeline = 'browsedExistingPipeline';
     public static ClickedConfigurePipeline = 'clickedConfigurePipeline';
     public static GitHubPatDuration = 'gitHubPatDuration';
-    public static AdoPatDuration = 'adoPatDuration';
 
     // Count of drop down items
     public static OrganizationListCount = 'OrganizationListCount';

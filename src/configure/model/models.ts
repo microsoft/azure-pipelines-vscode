@@ -63,7 +63,6 @@ export class WizardInputs {
     targetResource: AzureParameters = new AzureParameters();
     pipelineParameters: PipelineParameters = new PipelineParameters();
     azureSession: AzureSession;
-    adoPatToken: string;
     githubPatToken?: string;
 }
 
