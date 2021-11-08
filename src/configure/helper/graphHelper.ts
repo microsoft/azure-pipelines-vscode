@@ -7,6 +7,10 @@ import { TokenCredentials } from '@azure/ms-rest-js';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import * as util from 'util';
 
+// TODO: Replace this class with @microsoft/microsoft-graph-client and @azure/arm-authorization
+// client.api("/applications").post()
+// client.api("/servicePrincipals").post()
+// new AuthorizationManagementClient().roleAssignments.create()
 export class GraphHelper {
 
     private static contributorRoleId = "b24988ac-6180-42a0-ab88-20f7382dd24c";
