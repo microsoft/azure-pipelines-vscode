@@ -2,8 +2,13 @@
 #
 # Things which happen regardless of CI, PR, or release builds
 steps:
-- script: npm install
-  displayName: npm install
+- task: NodeTool@0
+  displayName: Install Node 16 LTS or greater
+  inputs:
+    versionSpec: ">=16.13.0"
+
+- script: npm ci
+  displayName: npm ci
 
 - script: npm run compile
   displayName: Build extension
