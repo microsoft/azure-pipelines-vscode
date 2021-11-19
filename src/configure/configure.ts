@@ -1,7 +1,8 @@
 const uuid = require('uuid/v4');
 import { AppServiceClient } from './clients/azure/appServiceClient';
-import { AzureDevOpsClient } from './clients/devOps/azureDevOpsClient';
+import { OrganizationsClient } from './clients/devOps/organizationsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
+import { OperationsClient } from './clients/devOps/operationsClient';
 import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
 import { ResourceManagementModels } from '@azure/arm-resources';
 import { GraphHelper } from './helper/graphHelper';
@@ -16,12 +17,14 @@ import * as path from 'path';
 import * as templateHelper from './helper/templateHelper';
 import * as utils from 'util';
 import * as vscode from 'vscode';
+import * as azdev from 'azure-devops-node-api';
 import { telemetryHelper } from '../helpers/telemetryHelper';
 import { ControlProvider } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
-import { Build } from './model/azureDevOps';
 import { UserCancelledError } from './helper/userCancelledError';
+import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { ProjectVisibility } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 
 const Layer: string = 'configure';
 
@@ -48,9 +51,9 @@ export async function configurePipeline() {
 class PipelineConfigurer {
     private inputs: WizardInputs;
     private localGitRepoHelper: LocalGitRepoHelper;
-    private azureDevOpsClient: AzureDevOpsClient;
+    private azureDevOpsClient: azdev.WebApi;
+    private organizationsClient: OrganizationsClient;
     private serviceConnectionHelper: ServiceConnectionHelper;
-    private azureDevOpsHelper: AzureDevOpsHelper;
     private appServiceClient: AppServiceClient;
     private workspacePath: string;
     private uniqueResourceNameSuffix: string;
@@ -73,17 +76,7 @@ class PipelineConfigurer {
         await this.checkInPipelineFileToRepository();
 
         telemetryHelper.setCurrentStep('CreateAndRunPipeline');
-        let queuedPipeline = await vscode.window.withProgress<Build>({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
-            try {
-                let pipelineName = `${(this.inputs.targetResource.resource ? this.inputs.targetResource.resource.name : this.inputs.pipelineParameters.pipelineTemplate.label)}-${this.uniqueResourceNameSuffix}`;
-                return await this.azureDevOpsHelper.createAndRunPipeline(pipelineName, this.inputs);
-            }
-            catch (error) {
-                telemetryHelper.logError(Layer, TracePoints.CreateAndQueuePipelineFailed, error);
-                throw error;
-            }
-
-        });
+        const queuedPipeline = await this.createAndRunPipeline();
 
         telemetryHelper.setCurrentStep('PostPipelineCreation');
         // This step should be determined by the resoruce target provider (azure app service, function app, aks) type and pipelineProvider(azure pipeline vs github)
@@ -104,7 +97,7 @@ class PipelineConfigurer {
         await this.getSelectedPipeline();
 
         if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
-            this.inputs.githubPATToken = await this.getGitHubPATToken();
+            this.inputs.githubPatToken = await this.getGitHubPatToken();
         }
 
         if (!this.inputs.targetResource.resource) {
@@ -125,22 +118,33 @@ class PipelineConfigurer {
                     location: vscode.ProgressLocation.Notification,
                     title: Messages.creatingAzureDevOpsOrganization
                 },
-                () => {
-                    return this.azureDevOpsClient.createOrganization(this.inputs.organizationName)
-                        .then(() => {
-                            this.azureDevOpsClient.listOrganizations(true);
-                            return this.azureDevOpsClient.createProject(this.inputs.organizationName, this.inputs.project.name);
-                        })
-                        .then(() => {
-                            return this.azureDevOpsClient.getProjectIdFromName(this.inputs.organizationName, this.inputs.project.name);
-                        })
-                        .then((projectId) => {
-                            this.inputs.project.id = projectId;
-                        })
-                        .catch((error) => {
-                            telemetryHelper.logError(Layer, TracePoints.CreateNewOrganizationAndProjectFailure, error);
-                            throw error;
+                async () => {
+                    try {
+                        await this.organizationsClient.createOrganization(this.inputs.organizationName);
+                        this.organizationsClient.listOrganizations(true);
+
+                        const azureDevOpsClient = await this.getAzureDevOpsClient();
+                        const coreApi = await azureDevOpsClient.getCoreApi();
+                        const operation = await coreApi.queueCreateProject({
+                            name: this.inputs.project.name,
+                            visibility: ProjectVisibility.Private,
+                            capabilities: {
+                                versionControl: {
+                                    sourceControlType: "Git"
+                                },
+                                processTemplate: {
+                                    templateTypeId: "adcc42ab-9882-485e-a3ed-7678f01f66bc" // Agile
+                                }
+                            },
                         });
+
+                        const operationsClient = new OperationsClient(this.inputs.organizationName, azureDevOpsClient);
+                        await operationsClient.waitForOperationSuccess(operation.id);
+                        this.inputs.project = await coreApi.getProject(this.inputs.project.name);
+                    } catch (error) {
+                        telemetryHelper.logError(Layer, TracePoints.CreateNewOrganizationAndProjectFailure, error);
+                        throw error;
+                    }
                 });
         }
 
@@ -214,18 +218,18 @@ class PipelineConfigurer {
 
         if (!gitBranchDetails.remoteName) {
             // Remote tracking branch is not set
-            let remotes = await this.localGitRepoHelper.getGitRemotes();
+            let remotes = await this.localGitRepoHelper.getGitRemoteNames();
             if (remotes.length === 0) {
                 throw new Error(Messages.branchRemoteMissing);
             }
             else if (remotes.length === 1) {
-                gitBranchDetails.remoteName = remotes[0].name;
+                gitBranchDetails.remoteName = remotes[0];
             }
             else {
                 // Show an option to user to select remote to be configured
                 let selectedRemote = await this.controlProvider.showQuickPick(
                     constants.SelectRemoteForRepo,
-                    remotes.map(remote => { return { label: remote.name }; }),
+                    remotes.map(remote => ({ label: remote })),
                     { placeHolder: Messages.selectRemoteForBranch });
                 gitBranchDetails.remoteName = selectedRemote.label;
             }
@@ -279,73 +283,75 @@ class PipelineConfigurer {
         }
     }
 
-    private async getGitHubPATToken(): Promise<string> {
-        let githubPat = null;
-        await telemetryHelper.executeFunctionWithTimeTelemetry(
+    private async getGitHubPatToken(): Promise<string> {
+        return await telemetryHelper.executeFunctionWithTimeTelemetry(
             async () => {
-                githubPat = await this.controlProvider.showInputBox(
+                return await this.controlProvider.showInputBox(
                     constants.GitHubPat,
                     {
                         placeHolder: Messages.enterGitHubPat,
                         prompt: Messages.githubPatTokenHelpMessage,
-                        validateInput: (inputValue) => {
-                            return !inputValue ? Messages.githubPatTokenErrorMessage : null;
+                        validateInput: inputValue => {
+                            return inputValue.length === 0 ? Messages.gitHubPatTokenErrorMessage : null;
                         }
                     });
             },
             TelemetryKeys.GitHubPatDuration);
-        return githubPat;
     }
 
     private async getAzureDevOpsDetails(): Promise<void> {
         try {
-            this.createAzureDevOpsClient();
+            this.organizationsClient = new OrganizationsClient(this.inputs.azureSession.credentials2);
             if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.AzureRepos) {
-                let repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(this.inputs.sourceRepository.remoteUrl);
-                this.inputs.organizationName = repoDetails.orgnizationName;
-                await this.azureDevOpsClient.getRepository(this.inputs.organizationName, repoDetails.projectName, this.inputs.sourceRepository.repositoryName)
-                    .then((repository) => {
-                        this.inputs.sourceRepository.repositoryId = repository.id;
-                        this.inputs.project = {
-                            id: repository.project.id,
-                            name: repository.project.name
-                        };
-                    });
-            }
-            else {
+                const repoDetails = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(this.inputs.sourceRepository.remoteUrl);
+                this.inputs.organizationName = repoDetails.organizationName;
+
+                const azureDevOpsClient = await this.getAzureDevOpsClient();
+                const gitApi = await azureDevOpsClient.getGitApi();
+                const repository = await gitApi.getRepository(this.inputs.sourceRepository.repositoryName, repoDetails.projectName);
+                this.inputs.sourceRepository.repositoryId = repository.id;
+                this.inputs.project = {
+                    id: repository.project.id,
+                    name: repository.project.name
+                };
+            } else {
                 this.inputs.isNewOrganization = false;
-                let devOpsOrganizations = await this.azureDevOpsClient.listOrganizations();
+                let devOpsOrganizations = await this.organizationsClient.listOrganizations();
 
                 if (devOpsOrganizations && devOpsOrganizations.length > 0) {
                     let selectedOrganization = await this.controlProvider.showQuickPick(
                         constants.SelectOrganization,
-                        devOpsOrganizations.map(x => { return { label: x.accountName }; }),
+                        devOpsOrganizations.map(organization => { return { label: organization.accountName }; }),
                         { placeHolder: Messages.selectOrganization },
                         TelemetryKeys.OrganizationListCount);
                     this.inputs.organizationName = selectedOrganization.label;
 
-                    let selectedProject = await this.controlProvider.showQuickPick(
+                    const azureDevOpsClient = await this.getAzureDevOpsClient();
+                    const coreApi = await azureDevOpsClient.getCoreApi();
+                    const projects = await coreApi.getProjects();
+
+                    // FIXME: It _is_ possible for an organization to have no projects.
+                    // We need to guard against this and create a project for them.
+                    const selectedProject = await this.controlProvider.showQuickPick(
                         constants.SelectProject,
-                        this.azureDevOpsClient.listProjects(this.inputs.organizationName)
-                            .then((projects) => projects.map(x => { return { label: x.name, data: x }; })),
+                        projects.map(project => { return { label: project.name, data: project }; }),
                         { placeHolder: Messages.selectProject },
                         TelemetryKeys.ProjectListCount);
                     this.inputs.project = selectedProject.data;
-                }
-                else {
+                } else {
                     telemetryHelper.setTelemetry(TelemetryKeys.NewOrganization, 'true');
 
                     this.inputs.isNewOrganization = true;
                     let userName = this.inputs.azureSession.userId.substring(0, this.inputs.azureSession.userId.indexOf("@"));
                     let organizationName = generateDevOpsOrganizationName(userName, this.inputs.sourceRepository.repositoryName);
 
-                    let validationErrorMessage = await this.azureDevOpsClient.validateOrganizationName(organizationName);
+                    let validationErrorMessage = await this.organizationsClient.validateOrganizationName(organizationName);
                     if (validationErrorMessage) {
                         this.inputs.organizationName = await this.controlProvider.showInputBox(
                             constants.EnterOrganizationName,
                             {
                                 placeHolder: Messages.enterAzureDevOpsOrganizationName,
-                                validateInput: (organizationName) => this.azureDevOpsClient.validateOrganizationName(organizationName)
+                                validateInput: (organizationName) => this.organizationsClient.validateOrganizationName(organizationName)
                             });
                     }
                     else {
@@ -455,23 +461,20 @@ class PipelineConfigurer {
             // update SCM type
             this.appServiceClient.updateScmType(this.inputs.targetResource.resource.id);
 
-            let buildDefinitionUrl = this.azureDevOpsClient.getOldFormatBuildDefinitionUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.definition.id);
-            let buildUrl = this.azureDevOpsClient.getOldFormatBuildUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.id);
+            let buildDefinitionUrl = AzureDevOpsHelper.getOldFormatBuildDefinitionUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.definition.id);
+            let buildUrl = AzureDevOpsHelper.getOldFormatBuildUrl(this.inputs.organizationName, this.inputs.project.id, queuedPipeline.id);
 
             // update metadata of app service to store information about the pipeline deploying to web app.
-            new Promise<void>(async (resolve) => {
-                let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
-                metadata["properties"] = metadata["properties"] ? metadata["properties"] : {};
-                metadata["properties"]["VSTSRM_ProjectId"] = `${this.inputs.project.id}`;
-                metadata["properties"]["VSTSRM_AccountId"] = await this.azureDevOpsClient.getOrganizationIdFromName(this.inputs.organizationName);
-                metadata["properties"]["VSTSRM_BuildDefinitionId"] = `${queuedPipeline.definition.id}`;
-                metadata["properties"]["VSTSRM_BuildDefinitionWebAccessUrl"] = `${buildDefinitionUrl}`;
-                metadata["properties"]["VSTSRM_ConfiguredCDEndPoint"] = '';
-                metadata["properties"]["VSTSRM_ReleaseDefinitionId"] = '';
+            let metadata = await this.appServiceClient.getAppServiceMetadata(this.inputs.targetResource.resource.id);
+            metadata["properties"] = metadata["properties"] ? metadata["properties"] : {};
+            metadata["properties"]["VSTSRM_ProjectId"] = this.inputs.project.id;
+            metadata["properties"]["VSTSRM_AccountId"] = await this.organizationsClient.getOrganizationIdFromName(this.inputs.organizationName);
+            metadata["properties"]["VSTSRM_BuildDefinitionId"] = queuedPipeline.definition.id.toString();
+            metadata["properties"]["VSTSRM_BuildDefinitionWebAccessUrl"] = buildDefinitionUrl;
+            metadata["properties"]["VSTSRM_ConfiguredCDEndPoint"] = '';
+            metadata["properties"]["VSTSRM_ReleaseDefinitionId"] = '';
 
-                this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
-                resolve();
-            });
+            this.appServiceClient.updateAppServiceMetadata(this.inputs.targetResource.resource.id, metadata);
 
             // send a deployment log with information about the setup pipeline and links.
             this.appServiceClient.publishDeploymentToAppService(
@@ -499,7 +502,7 @@ class PipelineConfigurer {
             async () => {
                 try {
                     let serviceConnectionName = `${this.inputs.sourceRepository.repositoryName}-${this.uniqueResourceNameSuffix}`;
-                    this.inputs.sourceRepository.serviceConnectionId = await this.serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, this.inputs.githubPATToken);
+                    this.inputs.sourceRepository.serviceConnectionId = await this.serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, this.inputs.githubPatToken);
                 }
                 catch (error) {
                     telemetryHelper.logError(Layer, TracePoints.GitHubServiceConnectionError, error);
@@ -574,11 +577,41 @@ class PipelineConfigurer {
         }
     }
 
-    private createAzureDevOpsClient(): void {
-        this.azureDevOpsClient = new AzureDevOpsClient(this.inputs.azureSession.credentials2);
-        this.azureDevOpsHelper = new AzureDevOpsHelper(this.azureDevOpsClient);
+    private async createAndRunPipeline(): Promise<Build> {
+        return await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
+            try {
+                const taskAgentApi = await this.azureDevOpsClient.getTaskAgentApi();
+                const queues = await taskAgentApi.getAgentQueuesByNames([constants.HostedVS2017QueueName], this.inputs.project.name);
+                if (queues.length === 0) {
+                    throw new Error(utils.format(Messages.noAgentQueueFound, constants.HostedVS2017QueueName));
+                }
+
+                const pipelineName = `${(this.inputs.targetResource.resource ? this.inputs.targetResource.resource.name : this.inputs.pipelineParameters.pipelineTemplate.label)}-${this.uniqueResourceNameSuffix}`;
+                const definitionPayload = AzureDevOpsHelper.getBuildDefinitionPayload(pipelineName, queues[0], this.inputs);
+                const buildApi = await this.azureDevOpsClient.getBuildApi();
+                const definition = await buildApi.createDefinition(definitionPayload, this.inputs.project.name);
+                return await buildApi.queueBuild({
+                    definition: definition,
+                    project: this.inputs.project,
+                    sourceBranch: this.inputs.sourceRepository.branch,
+                    sourceVersion: this.inputs.sourceRepository.commitId
+                }, this.inputs.project.name);
+            }
+            catch (error) {
+                telemetryHelper.logError(Layer, TracePoints.CreateAndQueuePipelineFailed, error);
+                throw error;
+            }
+        });
+    }
+
+    private async getAzureDevOpsClient(): Promise<azdev.WebApi> {
+        if (this.azureDevOpsClient) {
+            return this.azureDevOpsClient;
+        }
+
+        const token = await this.inputs.azureSession.credentials2.getToken();
+        const authHandler = azdev.getBearerHandler(token.accessToken);
+        this.azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${this.inputs.organizationName}`, authHandler);
+        return this.azureDevOpsClient;
     }
 }
-
-// this method is called when your extension is deactivated
-export function deactivate() { }

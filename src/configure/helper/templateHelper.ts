@@ -1,8 +1,7 @@
 import { PipelineTemplate, TargetResourceType, WizardInputs, WebAppKind } from '../model/models';
-import * as fs from 'fs';
+import * as fs from 'fs/promises';
 import * as Mustache from 'mustache';
 import * as path from 'path';
-import * as Q from 'q';
 
 export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): Promise<PipelineTemplate[]> {
     // TO-DO: To populate the possible templates on the basis of azure target resource.
@@ -32,34 +31,27 @@ export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): P
 }
 
 export async function renderContent(templateFilePath: string, context: WizardInputs): Promise<string> {
-    let deferred: Q.Deferred<string> = Q.defer();
-    fs.readFile(templateFilePath, { encoding: "utf8" }, async (error, data) => {
-        if (error) {
-            throw new Error(error.message);
-        }
-        else {
-            let fileContent = Mustache.render(data, context);
-            deferred.resolve(fileContent);
-        }
-    });
-
-    return deferred.promise;
+    const data = await fs.readFile(templateFilePath, { encoding: "utf8" });
+    return Mustache.render(data, context);
 }
 
 async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean, isDotnetCoreApplication: boolean }> {
-    let deferred: Q.Deferred<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean, isDotnetCoreApplication: boolean }> = Q.defer();
-    fs.readdir(repoPath, (err, files: string[]) => {
-        let result = {
-            isNodeApplication: err ? true : isNodeRepo(files),
-            isFunctionApplication: err ? true : isFunctionApp(files),
-            isPythonApplication: err ? true : isPythonRepo(files),
-            isDotnetCoreApplication: err ? true : isDotnetCoreApplication(files)
-            // isContainerApplication: isDockerRepo(files)
-        };
-        deferred.resolve(result);
-    });
+    let files: string[];
+    let err = false;
+    try {
+        files = await fs.readdir(repoPath);
+    } catch (e) {
+        err = true;
+    }
 
-    return deferred.promise;
+    return {
+        isNodeApplication: err ? true : isNodeRepo(files),
+        isFunctionApplication: err ? true : isFunctionApp(files),
+        isPythonApplication: err ? true : isPythonRepo(files),
+        isDotnetCoreApplication: err ? true : isDotnetCoreApplication(files)
+        // isContainerApplication: isDockerRepo(files)
+    };
+
 }
 
 function isNodeRepo(files: string[]): boolean {

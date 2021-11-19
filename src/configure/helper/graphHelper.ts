@@ -7,6 +7,10 @@ import { TokenCredentials } from '@azure/ms-rest-js';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import * as util from 'util';
 
+// TODO: Replace this class with @microsoft/microsoft-graph-client and @azure/arm-authorization
+// client.api("/applications").post()
+// client.api("/servicePrincipals").post()
+// new AuthorizationManagementClient().roleAssignments.create()
 export class GraphHelper {
 
     private static contributorRoleId = "b24988ac-6180-42a0-ab88-20f7382dd24c";
@@ -103,9 +107,6 @@ export class GraphHelper {
                 "availableToOtherTenants": false,
                 "displayName": name,
                 "homepage": "https://" + name,
-                "identifierUris": [
-                    "https://" + name
-                ],
                 "passwordCredentials": [
                     {
                         "startDate": startDate,
@@ -149,24 +150,25 @@ export class GraphHelper {
         let restClient = new RestClient(credentials);
         let roleDefinitionId = `${scope}/providers/Microsoft.Authorization/roleDefinitions/${this.contributorRoleId}`;
         let guid = uuid();
-        let roleAssignementFunction = () => {
+        let createRoleAssignmentPromise = () => {
             return restClient.sendRequest<any>({
                 url: `https://management.azure.com/${scope}/providers/Microsoft.Authorization/roleAssignments/${guid}`,
                 queryParameters: {
-                    "api-version": "2015-07-01"
+                    "api-version": "2021-04-01-preview" // So we have access to the "principalType" property
                 },
                 method: "PUT",
                 body: {
                     "properties": {
                         "roleDefinitionId": roleDefinitionId,
-                        "principalId": objectId
+                        "principalId": objectId,
+                        "principalType": "ServicePrincipal", // Makes the assignment work for newly-created service principals
                     }
                 }
             });
         };
 
         return executeFunctionWithRetry(
-            roleAssignementFunction,
+            createRoleAssignmentPromise,
             GraphHelper.retryCount,
             GraphHelper.retryTimeIntervalInSec,
             Messages.roleAssignmentFailedMessage);

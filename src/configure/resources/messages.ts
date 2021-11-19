@@ -22,10 +22,11 @@ export class Messages {
     public static failedToCreateAzureDevOpsProject: string = 'Couldn\'t create a project in the Azure DevOps organization. Error: %s.';
     public static failedToCreateAzurePipeline: string = 'Couldn\'t configure pipeline. Error: %s';
     public static failedToDetermineAzureRepoDetails: string = 'Failed to determine Azure Repo details from remote url. Please ensure that the remote points to a valid Azure Repos url.';
-    public static githubPatTokenErrorMessage: string = 'GitHub PAT token cannot be empty.';
+    public static gitHubPatTokenErrorMessage: string = 'GitHub PAT token cannot be empty.';
     public static githubPatTokenHelpMessage: string = 'GitHub personal access token (PAT) with following permissions: full access to repository webhooks and services, read and write access to all repository data.';
     public static modifyAndCommitFile: string = 'Modify and save your YAML file. %s will commit this file, push the branch \'%s\' to remote \'%s\' and proceed with deployment.';
     public static noAgentQueueFound: string = 'No agent pool found named "%s".';
+    public static noAvailableFileNames: string = 'No available filenames found.';
     public static notAGitRepository: string = 'Selected workspace is not a [Git](https://git-scm.com/docs/git) repository. Please select a Git repository.';
     public static notAzureRepoUrl: string = 'The repo isn\'t hosted with Azure Repos.';
     public static noWorkSpaceSelectedError: string = 'Please select a workspace folder to configure pipeline.';
@@ -46,8 +47,8 @@ export class Messages {
     public static selectFunctionApp: string = 'Select Function App';
     public static selectWorkspaceFolder: string = 'Select a folder from your workspace to deploy';
     public static signInLabel: string = 'Sign In';
-    public static unableToCreateAzureServiceConnection: string = `Unable to store connection details for Azure subscription.\nOperation Status: %s\nMessage: %s\nService connection is not in ready state.`;
-    public static unableToCreateGitHubServiceConnection: string =`Unable to store connection details for GitHub.\nOperation Status: %s\nService connection is not in ready state.`;
+    public static unableToCreateServiceConnection: string = `Unable to create %s service connection.\nOperation Status: %s\nMessage: %s\nService connection is not in ready state.`;
+    public static timedOutCreatingServiceConnection: string =`Timed out creating %s service connection.\nService connection is not in ready state.`;
     public static retryFailedMessage: string =`Failed after retrying: %s times. Internal Error: %s`;
     public static azureServicePrincipalFailedMessage: string =`Failed while creating Azure service principal.`;
     public static roleAssignmentFailedMessage: string =`Failed while role assignement.`;
