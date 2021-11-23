@@ -28,7 +28,7 @@ suite ('Extension Setup Tests', function() {
 
         // Act
         await vscode.window.showTextDocument(files[0]);
-        await sleep(2000);
+        await sleep(3000);
         const activated = vscode.extensions.getExtension(extensionId).isActive;
 
         // Assert
@@ -142,10 +142,7 @@ suite('Autocomplete Tests', function() {
         const editor: vscode.TextEditor = await vscode.window.showTextDocument(autoCompleteDoc);
         await sleep(3000); // Give it time to show the validation errors, if any
 
-        await editor.edit(edit => {
-            edit.insert(new vscode.Position(15, 7), " ");
-        });
-        await setCursorPosition(editor, 16, 9);
+        await setCursorPosition(editor, 15, 12);
         await triggerIntellisense();
         await acceptSuggestion();
 
@@ -154,18 +151,17 @@ suite('Autocomplete Tests', function() {
         const documentTextArr: string[] = autoCompleteDoc.getText().split('\n');
 
         assert.strictEqual(autoCompleteDoc.languageId, 'azure-pipelines');
-        assert.strictEqual(diagnostics.filter(
-            diagnostic => diagnostic.severity !== vscode.DiagnosticSeverity.Hint), 0);
-        assert.strictEqual(documentTextArr[15], '- task: AndroidBuild@1');
+        assert.strictEqual(diagnostics.filter(diagnostic =>
+            diagnostic.severity !== vscode.DiagnosticSeverity.Hint).length, 0);
+        assert.strictEqual(documentTextArr[15], '- task: npmAuthenticate@0');
     });
 })
 
-// Set the cursor position for the editor.
-// This is 1 indexed, not 0.
-// To figure out the coordinates open the target document and look in the bottom right.
-// You don't have to make it 0 based, this function handles that for you.
+// Set the zero-indexed cursor position for the editor.
+// To figure out the coordinates open the target document and look in the bottom right,
+// then subtract one to each.
 async function setCursorPosition(editor: vscode.TextEditor, line: number, column: number) {
-    editor.selection = new vscode.Selection(line - 1, column - 1, line - 1, column - 1);
+    editor.selection = new vscode.Selection(line, column, line, column);
     await sleep(500);
 }
 
