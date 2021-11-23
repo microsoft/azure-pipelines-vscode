@@ -3,6 +3,13 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.195.0
+### Fixed
+- Emojis no longer cause validation to fail (thanks @PaulTaykalo!)
+- The "Azure Pipelines: Configure Pipeline" command should work again
+### Updated
+- M195 schema
+
 ## 1.194.1
 ### Fixed
 - Actually includes the changes intended for 1.194.0

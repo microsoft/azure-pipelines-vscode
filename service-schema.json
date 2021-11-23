@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/Microsoft/azure-pipelines-vscode/blob/main/service-schema.json",
-  "$comment": "v1.194.0",
+  "$comment": "v1.195.0",
   "title": "Pipeline schema",
   "description": "A pipeline definition",
   "oneOf": [
@@ -5343,19 +5343,19 @@
               ]
             },
             {
-              "description": "Run unit and functional tests (Selenium, Appium, Coded UI test, etc.) using the Visual Studio Test (VsTest) runner. Test frameworks that have a Visual Studio test adapter such as MsTest, xUnit, NUnit, Chutzpah (for JavaScript tests using QUnit, Mocha and Jasmine), etc. can be run. Tests can be distributed on multiple agents using this task (version 2).",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "VSTest@2"
-              ]
-            },
-            {
               "description": "Run tests with Visual Studio test runner",
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
                 "VSTest@1"
+              ]
+            },
+            {
+              "description": "Run unit and functional tests (Selenium, Appium, Coded UI test, etc.) using the Visual Studio Test (VsTest) runner. Test frameworks that have a Visual Studio test adapter such as MsTest, xUnit, NUnit, Chutzpah (for JavaScript tests using QUnit, Mocha and Jasmine), etc. can be run. Tests can be distributed on multiple agents using this task (version 2).",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "VSTest@2"
               ]
             },
             {
@@ -21632,6 +21632,16 @@
                   "type": "boolean",
                   "description": "Fail on Accessibility Error",
                   "ignoreCase": "key"
+                },
+                "baselineFile": {
+                  "type": "string",
+                  "description": "Baseline File Path",
+                  "ignoreCase": "key"
+                },
+                "singleWorker": {
+                  "type": "boolean",
+                  "description": "Uses a single crawler worker.",
+                  "ignoreCase": "key"
                 }
               },
               "additionalProperties": false,
@@ -21701,6 +21711,111 @@
           "required": [
             "task",
             "inputs"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Visual Studio Test\n\nRun tests with Visual Studio test runner",
+              "ignoreCase": "value",
+              "pattern": "^VSTest@1$"
+            },
+            "inputs": {
+              "description": "Visual Studio Test inputs",
+              "properties": {
+                "testAssembly": {
+                  "type": "string",
+                  "description": "Test Assembly",
+                  "ignoreCase": "key"
+                },
+                "testFiltercriteria": {
+                  "type": "string",
+                  "description": "Test Filter criteria",
+                  "ignoreCase": "key"
+                },
+                "runSettingsFile": {
+                  "type": "string",
+                  "description": "Run Settings File",
+                  "ignoreCase": "key"
+                },
+                "overrideTestrunParameters": {
+                  "type": "string",
+                  "description": "Override TestRun Parameters",
+                  "ignoreCase": "key"
+                },
+                "codeCoverageEnabled": {
+                  "type": "boolean",
+                  "description": "Code Coverage Enabled",
+                  "ignoreCase": "key"
+                },
+                "runInParallel": {
+                  "type": "boolean",
+                  "description": "Run In Parallel",
+                  "ignoreCase": "key"
+                },
+                "vstestLocationMethod": {
+                  "description": "VSTest",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "version",
+                    "location"
+                  ]
+                },
+                "vsTestVersion": {
+                  "description": "VSTest version",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "latest",
+                    "14.0",
+                    "12.0"
+                  ]
+                },
+                "vstestLocation": {
+                  "type": "string",
+                  "description": "Path to vstest.console.exe",
+                  "ignoreCase": "key"
+                },
+                "pathtoCustomTestAdapters": {
+                  "type": "string",
+                  "description": "Path to Custom Test Adapters",
+                  "ignoreCase": "key"
+                },
+                "otherConsoleOptions": {
+                  "type": "string",
+                  "description": "Other console options",
+                  "ignoreCase": "key"
+                },
+                "testRunTitle": {
+                  "type": "string",
+                  "description": "Test Run Title",
+                  "ignoreCase": "key"
+                },
+                "platform": {
+                  "type": "string",
+                  "description": "Platform",
+                  "ignoreCase": "key"
+                },
+                "configuration": {
+                  "type": "string",
+                  "description": "Configuration",
+                  "ignoreCase": "key"
+                },
+                "publishRunAttachments": {
+                  "type": "boolean",
+                  "description": "Upload Test Attachments",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
           ]
         },
         {
@@ -21946,111 +22061,6 @@
                 "rerunMaxAttempts": {
                   "type": "string",
                   "description": "Maximum # of attempts",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "Visual Studio Test\n\nRun tests with Visual Studio test runner",
-              "ignoreCase": "value",
-              "pattern": "^VSTest@1$"
-            },
-            "inputs": {
-              "description": "Visual Studio Test inputs",
-              "properties": {
-                "testAssembly": {
-                  "type": "string",
-                  "description": "Test Assembly",
-                  "ignoreCase": "key"
-                },
-                "testFiltercriteria": {
-                  "type": "string",
-                  "description": "Test Filter criteria",
-                  "ignoreCase": "key"
-                },
-                "runSettingsFile": {
-                  "type": "string",
-                  "description": "Run Settings File",
-                  "ignoreCase": "key"
-                },
-                "overrideTestrunParameters": {
-                  "type": "string",
-                  "description": "Override TestRun Parameters",
-                  "ignoreCase": "key"
-                },
-                "codeCoverageEnabled": {
-                  "type": "boolean",
-                  "description": "Code Coverage Enabled",
-                  "ignoreCase": "key"
-                },
-                "runInParallel": {
-                  "type": "boolean",
-                  "description": "Run In Parallel",
-                  "ignoreCase": "key"
-                },
-                "vstestLocationMethod": {
-                  "description": "VSTest",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "version",
-                    "location"
-                  ]
-                },
-                "vsTestVersion": {
-                  "description": "VSTest version",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "latest",
-                    "14.0",
-                    "12.0"
-                  ]
-                },
-                "vstestLocation": {
-                  "type": "string",
-                  "description": "Path to vstest.console.exe",
-                  "ignoreCase": "key"
-                },
-                "pathtoCustomTestAdapters": {
-                  "type": "string",
-                  "description": "Path to Custom Test Adapters",
-                  "ignoreCase": "key"
-                },
-                "otherConsoleOptions": {
-                  "type": "string",
-                  "description": "Other console options",
-                  "ignoreCase": "key"
-                },
-                "testRunTitle": {
-                  "type": "string",
-                  "description": "Test Run Title",
-                  "ignoreCase": "key"
-                },
-                "platform": {
-                  "type": "string",
-                  "description": "Platform",
-                  "ignoreCase": "key"
-                },
-                "configuration": {
-                  "type": "string",
-                  "description": "Configuration",
-                  "ignoreCase": "key"
-                },
-                "publishRunAttachments": {
-                  "type": "boolean",
-                  "description": "Upload Test Attachments",
                   "ignoreCase": "key"
                 }
               },
