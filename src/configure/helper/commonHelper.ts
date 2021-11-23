@@ -1,6 +1,5 @@
 import * as util from 'util';
 import { Messages } from '../resources/messages';
-import Q = require('q');
 import * as logger from '../../logger';
 
 export async function sleepForMilliSeconds(timeInMs: number): Promise<void> {
@@ -67,21 +66,19 @@ export function stringCompareFunction(a: string, b: string): number {
     return 0;
 }
 
-export async function executeFunctionWithRetry(
-    func: () => Promise<any>,
+export async function executeFunctionWithRetry<T>(
+    func: () => Promise<T>,
     retryCount: number = 20,
     retryIntervalTimeInSec: number = 2,
-    errorMessage?: string): Promise<any> {
+    errorMessage?: string): Promise<T> {
         let internalError = null;
-        for (;retryCount > 0; retryCount--) {
+        for (; retryCount > 0; retryCount--) {
             try {
-                let result = await func();
-                return result;
-            }
-            catch (error) {
+                return func();
+            } catch (error) {
                 internalError = error;
                 logger.log(JSON.stringify(error));
-                await Q.delay((resolve) => {resolve();}, retryIntervalTimeInSec * 1000);
+                await sleepForMilliSeconds(retryIntervalTimeInSec * 1000);
             }
         }
 

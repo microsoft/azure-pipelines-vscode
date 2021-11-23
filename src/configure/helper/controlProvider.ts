@@ -7,7 +7,10 @@ export class ControlProvider {
     public async showQuickPick<T extends QuickPickItem>(listName: string, listItems: T[] | Thenable<T[]>, options: QuickPickOptions, itemCountTelemetryKey?: string): Promise<T> {
         try {
             telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, listName);
-            return window.showQuickPick(listItems, options);
+            return window.showQuickPick(listItems, {
+                ignoreFocusOut: true,
+                ...options
+            });
         }
         finally {
             if (itemCountTelemetryKey) {
@@ -18,7 +21,10 @@ export class ControlProvider {
 
     public async showInputBox(inputName: string, options: InputBoxOptions): Promise<string> {
         telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, inputName);
-        return window.showInputBox(options);
+        return window.showInputBox({
+            ignoreFocusOut: true,
+            ...options
+        });
     }
 
     public async showInformationBox(informationIdentifier: string, informationMessage: string, ...actions: string[]): Promise<string> {
