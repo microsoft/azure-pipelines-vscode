@@ -128,7 +128,7 @@
         "compile:dev": "webpack --mode development --progress --color && node copyStaticFiles.js",
         "watch": "node copyStaticFiles.js && webpack --mode development --progress --color --watch",
         "test": "tsc -p ./ && node ./out/test/runTest.js",
-        "unittest": "tsc -p ./ && npx mocha -u tdd out/unittest/*.js"
+        "unittest": "tsc -p ./ && mocha -u tdd out/unittest/*.js"
     },
     "devDependencies": {
         "@types/fs-extra": "4.0.5",
