@@ -33,20 +33,6 @@
             "preLaunchTask": "npm: test-compile"
         },
         {
-            "name": "Extension Tests From Server",
-            "type": "extensionHost",
-            "request": "launch",
-            "runtimeExecutable": "${execPath}",
-            "args": [
-                "${workspaceFolder}/examples/",
-                "--extensionDevelopmentPath=${workspaceFolder}",
-                "--extensionTestsPath=${workspaceFolder}/out/testfromserver"
-            ],
-            "outFiles": [
-                "${workspaceFolder}/out/testfromserver/**/*.js"
-            ]
-        },
-        {
             "name": "Attach to Server",
             "type": "node",
             "request": "attach",
