@@ -19,9 +19,7 @@ teardown(async () => {
     await vscode.commands.executeCommand('workbench.action.closeAllEditors');
 });
 
-suite ('Extension Setup Tests', function() {
-    this.timeout(20000);
-
+suite ('Extension Setup Tests', () => {
     test("Extension is active", async () => {
         // Arrange
         const files = await vscode.workspace.findFiles('validfile.yml');
@@ -41,9 +39,7 @@ suite ('Extension Setup Tests', function() {
 //    console.log('workspace configuration: ' + JSON.stringify(vscode.workspace.getConfiguration()));
 // 2.
 
-suite('Validation Tests', function() {
-    this.timeout(20000);
-
+suite('Validation Tests', () => {
     test ('Given an empty document, there should be no validation errors', async () => {
         // Arrange
         const emptyFiles: vscode.Uri[] = await vscode.workspace.findFiles('emptyfile.yml');
@@ -52,7 +48,7 @@ suite('Validation Tests', function() {
         // Act
         const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
         await vscode.window.showTextDocument(emptyDocument);
-        await sleep(3000); // Give it time to show the validation errors, if any
+        await sleep(5000); // Give it time to show the validation errors, if any
         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
 
         // Assert
@@ -68,7 +64,7 @@ suite('Validation Tests', function() {
         // Act
         const emptyDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
         await vscode.window.showTextDocument(emptyDocument);
-        await sleep(3000); // Give it time to show the validation errors, if any
+        await sleep(5000); // Give it time to show the validation errors, if any
         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
 
         // Assert
@@ -84,7 +80,7 @@ suite('Validation Tests', function() {
         // Act
         const invalidDocument: vscode.TextDocument = await vscode.workspace.openTextDocument(invalidfile);
         await vscode.window.showTextDocument(invalidDocument);
-        await sleep(3000); // Give it time to show the validation errors, if any
+        await sleep(5000); // Give it time to show the validation errors, if any
         const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(invalidfile);
 
         // Assert
@@ -127,8 +123,7 @@ suite('Validation Tests', function() {
 // Or we can take the first suggestion and make sure it works... then we know the options are in the list.
 // Then for the specific recommendations we test that in the completion provider.
 //
-suite('Autocomplete Tests', function() {
-    this.timeout(30000);
+suite('Autocomplete Tests', () => {
     // empty file, beginning of file, end of file, middle of file
     // within a broken file, within a working file(in terms of validation results)
 
@@ -140,19 +135,16 @@ suite('Autocomplete Tests', function() {
         // Act
         const autoCompleteDoc: vscode.TextDocument = await vscode.workspace.openTextDocument(emptyFile);
         const editor: vscode.TextEditor = await vscode.window.showTextDocument(autoCompleteDoc);
-        await sleep(3000); // Give it time to show the validation errors, if any
+        await sleep(5000); // Give it time to show the validation errors, if any
 
         await setCursorPosition(editor, 15, 12);
         await triggerIntellisense();
         await acceptSuggestion();
 
         // Assert
-        const diagnostics: vscode.Diagnostic[] = vscode.languages.getDiagnostics(emptyFile);
         const documentTextArr: string[] = autoCompleteDoc.getText().split('\n');
 
         assert.strictEqual(autoCompleteDoc.languageId, 'azure-pipelines');
-        assert.strictEqual(diagnostics.filter(diagnostic =>
-            diagnostic.severity !== vscode.DiagnosticSeverity.Hint).length, 0);
         assert.strictEqual(documentTextArr[15], '- task: npmAuthenticate@0');
     });
 })

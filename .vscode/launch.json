@@ -29,7 +29,8 @@
             ],
             "outFiles": [
                 "${workspaceFolder}/out/test/**/*.js"
-            ]
+            ],
+            "preLaunchTask": "npm: compile:test",
         },
         {
             "name": "Attach to Server",
