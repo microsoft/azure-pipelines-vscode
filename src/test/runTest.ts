@@ -14,10 +14,11 @@ async function main() {
 
     // If the first argument is a path to a file/folder/workspace,
     // the launched VS Code instance will open it.
-    const launchArgs = [path.resolve(__dirname, './workspace')];
+    // workspace isn't copied to out because it's all YAML files.
+    const launchArgs = [path.resolve(__dirname, '../../src/test/workspace')];
 
     // Download VS Code, unzip it and run the integration test
-    await runTests({extensionDevelopmentPath, extensionTestsPath, launchArgs });
+    await runTests({extensionDevelopmentPath, extensionTestsPath, launchArgs});
   } catch (err) {
     console.error(err);
     console.error('Failed to run tests');
