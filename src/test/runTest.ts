@@ -10,7 +10,7 @@ async function main() {
 
     // The path to the extension test runner script
     // Passed to --extensionTestsPath
-    const extensionTestsPath = path.resolve(__dirname, './suite/index');
+    const extensionTestsPath = path.resolve(__dirname, './index');
 
     // If the first argument is a path to a file/folder/workspace,
     // the launched VS Code instance will open it.
