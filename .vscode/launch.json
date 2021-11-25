@@ -25,7 +25,7 @@
             "args": [
                 "${workspaceFolder}/src/test/workspace",
                 "--extensionDevelopmentPath=${workspaceFolder}",
-                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+                "--extensionTestsPath=${workspaceFolder}/out/test/index"
             ],
             "outFiles": [
                 "${workspaceFolder}/out/test/**/*.js"
