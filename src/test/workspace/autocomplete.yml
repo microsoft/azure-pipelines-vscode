@@ -1,5 +1,8 @@
 parameters:
-  os: ''
+- name: os
+  displayName: OS
+  type: string
+  default: ''
 
 steps:
 
@@ -9,11 +12,11 @@ steps:
 - script: node make.js testLegacy --task "$(task_pattern)"
   displayName: Legacy tests with node 6
 
-# Publish test results
-- task: 
-  displayName: Run android build
+# Authenticate with npm
+- task: npmA
+  displayName: Authenticate with npm
   inputs:
-    emulatorDevice: myDevice
+    workingFile: .npmrc
 
 # Test with node 5
 - script: node make.js test --node 5 --runner ts

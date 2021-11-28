@@ -23,26 +23,14 @@
             "request": "launch",
             "runtimeExecutable": "${execPath}",
             "args": [
+                "${workspaceFolder}/src/test/workspace",
                 "--extensionDevelopmentPath=${workspaceFolder}",
-                "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+                "--extensionTestsPath=${workspaceFolder}/out/test/index"
             ],
             "outFiles": [
                 "${workspaceFolder}/out/test/**/*.js"
-            ]
-        },
-        {
-            "name": "Extension Tests From Server",
-            "type": "extensionHost",
-            "request": "launch",
-            "runtimeExecutable": "${execPath}",
-            "args": [
-                "${workspaceFolder}/examples/",
-                "--extensionDevelopmentPath=${workspaceFolder}",
-                "--extensionTestsPath=${workspaceFolder}/out/testfromserver"
             ],
-            "outFiles": [
-                "${workspaceFolder}/out/testfromserver/**/*.js"
-            ]
+            "preLaunchTask": "npm: compile:test",
         },
         {
             "name": "Attach to Server",

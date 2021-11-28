@@ -21,6 +21,14 @@ steps:
 - script: npm run unittest
   displayName: Run unit tests
 
+- script: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+  displayName: Start xvfb
+
+- script: npm run test
+  displayName: Run integration tests
+  env:
+    DISPLAY: ':99.0'
+
 # Acquire the `vsce` tool and use it to package
 - script: |
     npm install -g vsce
