@@ -1,8 +1,10 @@
 import * as azdev from 'azure-devops-node-api';
 import * as util from 'util';
+
+import { sleepForMilliSeconds } from '../commonHelper';
+import { ServiceConnectionClient } from '../../clients/devOps/serviceConnectionClient';
 import { AadApplication } from '../../model/models';
 import { Messages } from '../../resources/messages';
-import { ServiceConnectionClient } from '../../clients/devOps/serviceConnectionClient';
 
 export class ServiceConnectionHelper {
     private serviceConnectionClient: ServiceConnectionClient;
@@ -48,17 +50,9 @@ export class ServiceConnectionHelper {
                 throw Error(util.format(Messages.unableToCreateServiceConnection, response.result.type, operationStatus.state, operationStatus.statusMessage));
             }
 
-            await this.sleepForMilliSeconds(2000);
+            await sleepForMilliSeconds(2000);
         }
 
         throw Error(util.format(Messages.timedOutCreatingServiceConnection));
-    }
-
-    private async sleepForMilliSeconds(timeInMs: number) {
-        return new Promise<void>((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, timeInMs);
-        });
     }
 }
