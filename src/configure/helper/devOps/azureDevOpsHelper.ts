@@ -1,12 +1,10 @@
-import { Messages } from '../../resources/messages';
-import { telemetryHelper } from '../../../helpers/telemetryHelper';
-import { TracePoints } from '../../resources/tracePoints';
-import { WizardInputs, RepositoryProvider } from '../../model/models';
 import * as path from 'path';
+
 import { BuildDefinition, ContinuousIntegrationTrigger, DefinitionQuality, DefinitionTriggerType, DefinitionType, YamlProcess } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { TaskAgentQueue } from 'azure-devops-node-api/interfaces/TaskAgentInterfaces';
 
-const Layer: string = 'azureDevOpsHelper';
+import { WizardInputs, RepositoryProvider } from '../../model/models';
+import { Messages } from '../../resources/messages';
 
 export class AzureDevOpsHelper {
     private static AzureReposUrl = 'dev.azure.com/';
@@ -33,7 +31,6 @@ export class AzureDevOpsHelper {
             let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
             let parts = part.split('/').filter((value) => !!value);
             if(parts.length !== 4) {
-                telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${AzureDevOpsHelper.AzureReposUrl}, Parts: ${parts.slice(2).toString()}, Length: ${parts.length}`));
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
             }
             return { organizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[3].trim() };
@@ -49,7 +46,6 @@ export class AzureDevOpsHelper {
             }
 
             if(parts.length !== 3) {
-                telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${AzureDevOpsHelper.VSOUrl}, Parts: ${parts.slice(1).toString()}, Length: ${parts.length}`));
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
             }
             return { organizationName: organizationName, projectName: parts[0].trim(), repositoryName: parts[2].trim() };
@@ -59,7 +55,6 @@ export class AzureDevOpsHelper {
             let part = remoteUrl.substr(remoteUrl.indexOf(urlFormat) + urlFormat.length);
             let parts = part.split('/').filter((value) => !!value);
             if(parts.length !== 3) {
-                telemetryHelper.logError(Layer, TracePoints.GetRepositoryDetailsFromRemoteUrlFailed, new Error(`RemoteUrlFormat: ${urlFormat}, Parts: ${parts.slice(2).toString()}, Length: ${parts.length}`));
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
             }
             return { organizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[2].trim() };
