@@ -72,13 +72,13 @@ suite('Diagnostics Tests', () => {
 });
 
 async function getDiagnostics(docUri: vscode.Uri): Promise<vscode.Diagnostic[]> {
-	await activate(docUri);
+    await activate(docUri);
 
-	return vscode.languages.getDiagnostics(docUri);
+    return vscode.languages.getDiagnostics(docUri);
 }
 
 function toRange(sLine: number, sChar: number, eLine: number, eChar: number) {
-	const start = new vscode.Position(sLine, sChar);
-	const end = new vscode.Position(eLine, eChar);
-	return new vscode.Range(start, end);
+    const start = new vscode.Position(sLine, sChar);
+    const end = new vscode.Position(eLine, eChar);
+    return new vscode.Range(start, end);
 }

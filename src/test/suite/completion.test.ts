@@ -37,18 +37,18 @@ suite('Autocomplete Tests', () => {
 });
 
 async function getCompletions(
-	docUri: vscode.Uri,
-	position: vscode.Position,
-	triggerCharacter?: string,
+    docUri: vscode.Uri,
+    position: vscode.Position,
+    triggerCharacter?: string,
 ): Promise<vscode.CompletionList> {
-	await activate(docUri);
+    await activate(docUri);
 
-	// Executing the command `vscode.executeCompletionItemProvider` to simulate triggering completion
+    // Executing the command `vscode.executeCompletionItemProvider` to simulate triggering completion
     // NOTE: This returns *all* completions without filtering, unlike editor.action.triggerSuggest
-	return await vscode.commands.executeCommand(
-		'vscode.executeCompletionItemProvider',
-		docUri,
-		position,
+    return await vscode.commands.executeCommand(
+        'vscode.executeCompletionItemProvider',
+        docUri,
+        position,
         triggerCharacter
-	);
+    );
 }
