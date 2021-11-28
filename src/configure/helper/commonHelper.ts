@@ -54,18 +54,6 @@ export function generateRandomPassword(length: number = 20): string {
     return password;
 }
 
-export function stringCompareFunction(a: string, b: string): number {
-    a = a && a.toLowerCase();
-    b = b && b.toLowerCase();
-    if(a < b) {
-        return -1;
-    }
-    else if(a > b) {
-        return 1;
-    }
-    return 0;
-}
-
 export async function executeFunctionWithRetry<T>(
     func: () => Promise<T>,
     retryCount: number = 20,

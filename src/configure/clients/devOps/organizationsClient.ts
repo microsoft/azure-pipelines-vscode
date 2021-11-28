@@ -1,13 +1,13 @@
-import { Messages } from '../../resources/messages';
-import { Organization, OrganizationAvailability } from '../../model/models';
-import { ReservedHostNames } from '../../resources/constants';
-import { RestClient } from '../restClient';
 import { RequestPrepareOptions } from '@azure/ms-rest-js';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
-import { stringCompareFunction } from "../../helper/commonHelper";
-import { telemetryHelper } from '../../../helpers/telemetryHelper';
-import * as util from 'util';
 import { ConnectionData } from 'azure-devops-node-api/interfaces/LocationsInterfaces';
+import * as util from 'util';
+
+import { RestClient } from '../restClient';
+import { Organization, OrganizationAvailability } from '../../model/models';
+import { ReservedHostNames } from '../../resources/constants';
+import { Messages } from '../../resources/messages';
+import { telemetryHelper } from '../../../helpers/telemetryHelper';
 
 export class OrganizationsClient {
     private restClient: RestClient;
@@ -61,7 +61,16 @@ export class OrganizationsClient {
             },
         });
 
-        this.organizations = response.value.sort((org1, org2) => stringCompareFunction(org1.accountName, org2.accountName));
+        this.organizations = response.value.sort((org1, org2) => {
+            const account1 = org1.accountName.toLowerCase();
+            const account2 = org2.accountName.toLowerCase();
+            if (account1 < account2) {
+                return -1;
+            } else if (account1 > account2) {
+                return 1;
+            }
+            return 0;
+        });
 
         return this.organizations;
     }
