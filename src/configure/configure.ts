@@ -13,11 +13,12 @@ import { SourceOptions, RepositoryProvider, extensionVariables, WizardInputs, We
 import { TracePoints } from './resources/tracePoints';
 import { TelemetryKeys } from '../helpers/telemetryKeys';
 import * as constants from './resources/constants';
+import * as fs from 'fs/promises';
 import * as path from 'path';
-import * as templateHelper from './helper/templateHelper';
 import * as utils from 'util';
 import * as vscode from 'vscode';
 import * as azdev from 'azure-devops-node-api';
+import * as templateHelper from './helper/templateHelper';
 import { telemetryHelper } from '../helpers/telemetryHelper';
 import { ControlProvider } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
@@ -250,6 +251,7 @@ class PipelineConfigurer {
 
         if (remoteUrl) {
             if (AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
+                remoteUrl = AzureDevOpsHelper.getFormattedRemoteUrl(remoteUrl);
                 return <GitRepositoryParameters>{
                     repositoryProvider: RepositoryProvider.AzureRepos,
                     repositoryId: "",
@@ -262,6 +264,7 @@ class PipelineConfigurer {
                 };
             }
             else if (GitHubProvider.isGitHubUrl(remoteUrl)) {
+                remoteUrl = GitHubProvider.getFormattedRemoteUrl(remoteUrl);
                 let repoId = GitHubProvider.getRepositoryIdFromUrl(remoteUrl);
                 return <GitRepositoryParameters>{
                     repositoryProvider: RepositoryProvider.Github,
@@ -539,10 +542,11 @@ class PipelineConfigurer {
 
     private async checkInPipelineFileToRepository(): Promise<void> {
         try {
-            this.inputs.pipelineParameters.pipelineFileName = await this.localGitRepoHelper.addContentToFile(
-                await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs),
-                await LocalGitRepoHelper.GetAvailableFileName("azure-pipelines.yml", this.inputs.sourceRepository.localPath),
-                this.inputs.sourceRepository.localPath);
+            const fileName = await LocalGitRepoHelper.GetAvailableFileName("azure-pipelines.yml", this.inputs.sourceRepository.localPath);
+            const filePath = path.join(this.inputs.sourceRepository.localPath, fileName);
+            const content = await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs);
+            await fs.writeFile(filePath, content);
+            await vscode.workspace.saveAll(true);
             await vscode.window.showTextDocument(vscode.Uri.file(path.join(this.inputs.sourceRepository.localPath, this.inputs.pipelineParameters.pipelineFileName)));
         }
         catch (error) {
