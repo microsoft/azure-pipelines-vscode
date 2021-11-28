@@ -1,8 +1,7 @@
 import { extensionVariables, AzureSession } from "../model/models";
-import { SubscriptionModels } from "@azure/arm-subscriptions";
 
 export function getSubscriptionSession(subscriptionId: string): AzureSession {
-    let currentSubscription: { session: AzureSession, subscription: SubscriptionModels.Subscription } = extensionVariables.azureAccountExtensionApi.subscriptions
+    let currentSubscription = extensionVariables.azureAccountExtensionApi.subscriptions
         .find(subscription => subscription.subscription.subscriptionId.toLowerCase() === subscriptionId.toLowerCase());
 
     // Fallback to first element
