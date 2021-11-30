@@ -38,38 +38,50 @@ export class AzureDevOpsHelper {
 
     public static getRepositoryDetailsFromRemoteUrl(remoteUrl: string): { organizationName: string, projectName: string, repositoryName: string } {
         if (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0) {
-            let part = remoteUrl.substring(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
-            let parts = part.split('/');
-            if(parts.length !== 4) {
+            const part = remoteUrl.substring(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
+            const parts = part.split('/');
+            if (parts.length !== 4) {
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
             }
-            return { organizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[3].trim() };
-        }
-        else if (remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0) {
-            let part = remoteUrl.substring(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
-            let organizationName = remoteUrl.substring(remoteUrl.indexOf('https://') + 'https://'.length, remoteUrl.indexOf('.visualstudio.com'));
-            let parts = part.split('/');
+
+            return {
+                organizationName: parts[0].trim(),
+                projectName: parts[1].trim(),
+                repositoryName: parts[3].trim()
+            };
+        } else if (remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0) {
+            const part = remoteUrl.substring(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
+            const organizationName = remoteUrl.substring(remoteUrl.indexOf('https://') + 'https://'.length, remoteUrl.indexOf('.visualstudio.com'));
+            const parts = part.split('/');
 
             if (parts.length === 4 && parts[0].toLowerCase() === 'defaultcollection') {
                 // Handle scenario where part is 'DefaultCollection/<project>/_git/<repository>'
-                parts = parts.slice(1);
+                parts.shift();
             }
 
-            if(parts.length !== 3) {
+            if (parts.length !== 3) {
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
             }
-            return { organizationName: organizationName, projectName: parts[0].trim(), repositoryName: parts[2].trim() };
-        }
-        else if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
-            let urlFormat = remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 ? AzureDevOpsHelper.SSHAzureReposUrl : AzureDevOpsHelper.SSHVsoReposUrl;
-            let part = remoteUrl.substring(remoteUrl.indexOf(urlFormat) + urlFormat.length);
-            let parts = part.split('/');
-            if(parts.length !== 3) {
+
+            return {
+                organizationName: organizationName,
+                projectName: parts[0].trim(),
+                repositoryName: parts[2].trim()
+            };
+        } else if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
+            const urlFormat = remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 ? AzureDevOpsHelper.SSHAzureReposUrl : AzureDevOpsHelper.SSHVsoReposUrl;
+            const part = remoteUrl.substring(remoteUrl.indexOf(urlFormat) + urlFormat.length);
+            const parts = part.split('/');
+            if (parts.length !== 3) {
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
             }
-            return { organizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[2].trim() };
-        }
-        else {
+
+            return {
+                organizationName: parts[0].trim(),
+                projectName: parts[1].trim(),
+                repositoryName: parts[2].trim()
+            };
+        } else {
             throw new Error(Messages.notAzureRepoUrl);
         }
     }
