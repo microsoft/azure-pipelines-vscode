@@ -38,7 +38,7 @@ export class AzureDevOpsHelper {
 
     public static getRepositoryDetailsFromRemoteUrl(remoteUrl: string): { organizationName: string, projectName: string, repositoryName: string } {
         if (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0) {
-            let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
+            let part = remoteUrl.substring(remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) + AzureDevOpsHelper.AzureReposUrl.length);
             let parts = part.split('/').filter((value) => !!value);
             if(parts.length !== 4) {
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
@@ -46,7 +46,7 @@ export class AzureDevOpsHelper {
             return { organizationName: parts[0].trim(), projectName: parts[1].trim(), repositoryName: parts[3].trim() };
         }
         else if (remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0) {
-            let part = remoteUrl.substr(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
+            let part = remoteUrl.substring(remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) + AzureDevOpsHelper.VSOUrl.length);
             let organizationName = remoteUrl.substring(remoteUrl.indexOf('https://') + 'https://'.length, remoteUrl.indexOf('.visualstudio.com'));
             let parts = part.split('/').filter((value) => !!value);
 
@@ -62,7 +62,7 @@ export class AzureDevOpsHelper {
         }
         else if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
             let urlFormat = remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 ? AzureDevOpsHelper.SSHAzureReposUrl : AzureDevOpsHelper.SSHVsoReposUrl;
-            let part = remoteUrl.substr(remoteUrl.indexOf(urlFormat) + urlFormat.length);
+            let part = remoteUrl.substring(remoteUrl.indexOf(urlFormat) + urlFormat.length);
             let parts = part.split('/').filter((value) => !!value);
             if(parts.length !== 3) {
                 throw new Error(Messages.failedToDetermineAzureRepoDetails);
