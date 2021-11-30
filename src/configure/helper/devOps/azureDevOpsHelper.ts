@@ -7,13 +7,23 @@ import { WizardInputs, RepositoryProvider } from '../../model/models';
 import { Messages } from '../../resources/messages';
 
 export class AzureDevOpsHelper {
+    // https://dev.azure.com/ OR https://org@dev.azure.com/
     private static AzureReposUrl = 'dev.azure.com/';
+
+    // git@ssh.dev.azure.com:v3/
     private static SSHAzureReposUrl = 'ssh.dev.azure.com:v3/';
+
+    // https://org.visualstudio.com/
     private static VSOUrl = '.visualstudio.com/';
+
+    // org@vs-ssh.visualstudio.com:v3/
     private static SSHVsoReposUrl = 'vs-ssh.visualstudio.com:v3/';
 
     public static isAzureReposUrl(remoteUrl: string): boolean {
-        return (remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0);
+        return remoteUrl.indexOf(AzureDevOpsHelper.AzureReposUrl) >= 0 ||
+            remoteUrl.indexOf(AzureDevOpsHelper.VSOUrl) >= 0 ||
+            remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 ||
+            remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0;
     }
 
     public static getFormattedRemoteUrl(remoteUrl: string): string {
