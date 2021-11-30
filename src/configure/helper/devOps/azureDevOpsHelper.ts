@@ -26,6 +26,7 @@ export class AzureDevOpsHelper {
             remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0;
     }
 
+    // TODO: Use ADO instead.
     public static getFormattedRemoteUrl(remoteUrl: string): string {
         // Convert SSH based url to https based url as pipeline service doesn't accept SSH based URL
         if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
@@ -135,6 +136,7 @@ export class AzureDevOpsHelper {
         };
     }
 
+    // TODO: These should be able to be changed to use ADO instead.
     public static getOldFormatBuildDefinitionUrl(accountName: string, projectName: string, buildDefinitionId: number) {
         return `https://${accountName}.visualstudio.com/${projectName}/_build?definitionId=${buildDefinitionId}&_a=summary`;
     }

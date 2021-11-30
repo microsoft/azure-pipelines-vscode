@@ -139,4 +139,20 @@ suite('Azure DevOps Helper', () => {
                 'https://ms.visualstudio.com/example/_git/repo');
         });
     });
+
+    suite('getOldFormatBuildDefinitionUrl', () => {
+        test('Returns a legacy HTTPS VSTS build definition URL', () => {
+            assert.strictEqual(
+                AzureDevOpsHelper.getOldFormatBuildDefinitionUrl('ms', 'example', 42),
+                'https://ms.visualstudio.com/example/_build?definitionId=42&_a=summary');
+        });
+    });
+
+    suite('getOldFormatBuildUrl', () => {
+        test('Returns a legacy HTTPS VSTS build URL', () => {
+            assert.strictEqual(
+                AzureDevOpsHelper.getOldFormatBuildUrl('ms', 'example', 42),
+                'https://ms.visualstudio.com/example/_build/results?buildId=42&view=results');
+        });
+    })
 });
