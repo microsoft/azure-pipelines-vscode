@@ -88,19 +88,15 @@ export class AzureDevOpsHelper {
     }
 
     public static getBuildDefinitionPayload(pipelineName: string, queue: TaskAgentQueue, inputs: WizardInputs): BuildDefinition {
-        let repositoryProperties: { [key: string]: string } = null;
-
-        if (inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
-            repositoryProperties = {
-                apiUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}`,
-                branchesUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}/branches`,
-                cloneUrl: inputs.sourceRepository.remoteUrl,
-                connectedServiceId: inputs.sourceRepository.serviceConnectionId,
-                defaultBranch: inputs.sourceRepository.branch,
-                fullName: inputs.sourceRepository.repositoryName,
-                refsUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}/git/refs`
-            };
-        }
+        const repositoryProperties = inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github ? {
+            apiUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}`,
+            branchesUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}/branches`,
+            cloneUrl: inputs.sourceRepository.remoteUrl,
+            connectedServiceId: inputs.sourceRepository.serviceConnectionId,
+            defaultBranch: inputs.sourceRepository.branch,
+            fullName: inputs.sourceRepository.repositoryName,
+            refsUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}/git/refs`
+        } : null;
 
         const properties = { 'source': 'ms-azure-devops.azure-pipelines' };
 
@@ -112,7 +108,7 @@ export class AzureDevOpsHelper {
             project: inputs.project,
             process: {
                 type: 2,
-                yamlFileName: path.join(inputs.pipelineParameters.workingDirectory, inputs.pipelineParameters.pipelineFileName)
+                yamlFileName: path.join(inputs.pipelineParameters.workingDirectory, inputs.pipelineParameters.pipelineFileName),
             } as YamlProcess,
             queue: {
                 id: queue.id,
@@ -121,7 +117,7 @@ export class AzureDevOpsHelper {
                 {
                     triggerType: DefinitionTriggerType.ContinuousIntegration, // Continuous integration trigger type
                     settingsSourceType: 2, // Use trigger source as specified in YAML
-                    batchChanges: false
+                    batchChanges: false,
                 } as ContinuousIntegrationTrigger,
             ],
             repository: {
@@ -130,9 +126,9 @@ export class AzureDevOpsHelper {
                 type: inputs.sourceRepository.repositoryProvider,
                 defaultBranch: inputs.sourceRepository.branch,
                 url: inputs.sourceRepository.remoteUrl,
-                properties: repositoryProperties
+                properties: repositoryProperties,
             },
-            properties: properties
+            properties: properties,
         };
     }
 
