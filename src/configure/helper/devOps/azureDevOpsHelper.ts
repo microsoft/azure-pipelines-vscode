@@ -29,8 +29,8 @@ export class AzureDevOpsHelper {
     public static getFormattedRemoteUrl(remoteUrl: string): string {
         // Convert SSH based url to https based url as pipeline service doesn't accept SSH based URL
         if (remoteUrl.indexOf(AzureDevOpsHelper.SSHAzureReposUrl) >= 0 || remoteUrl.indexOf(AzureDevOpsHelper.SSHVsoReposUrl) >= 0) {
-            let details = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
-            return `https://${details.organizationName}${AzureDevOpsHelper.VSOUrl}/${details.projectName}/_git/${details.repositoryName}`;
+            const details = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
+            return `https://${details.organizationName}${AzureDevOpsHelper.VSOUrl}${details.projectName}/_git/${details.repositoryName}`;
         }
 
         return remoteUrl;
