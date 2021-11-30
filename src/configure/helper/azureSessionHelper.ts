@@ -1,4 +1,5 @@
-import { extensionVariables, AzureSession } from "../model/models";
+import { AzureSession } from "../model/models";
+import { extensionVariables } from "../../extensionVariables";
 
 export function getSubscriptionSession(subscriptionId: string): AzureSession {
     let currentSubscription = extensionVariables.azureAccountExtensionApi.subscriptions

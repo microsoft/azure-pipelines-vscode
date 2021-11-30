@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 
 import { configurePipeline } from './configure';
 import { Messages } from './resources/messages';
-import { AzureAccount, extensionVariables } from './model/models';
+import { AzureAccount } from './model/models';
+import { extensionVariables } from '../extensionVariables';
 import { telemetryHelper } from '../helpers/telemetryHelper';
 
 export async function activateConfigurePipeline(): Promise<void> {

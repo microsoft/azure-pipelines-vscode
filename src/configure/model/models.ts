@@ -2,17 +2,9 @@ import { Environment } from '@azure/ms-rest-azure-env';
 import { ResourceManagementModels } from '@azure/arm-resources';
 import { SubscriptionModels } from '@azure/arm-subscriptions';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
-import { OutputChannel, QuickPickItem, window } from 'vscode';
+import { QuickPickItem } from 'vscode';
 import { Messages } from '../resources/messages';
 import { TeamProjectReference } from 'azure-devops-node-api/interfaces/CoreInterfaces';
-
-class ExtensionVariables {
-    public azureAccountExtensionApi: AzureAccount;
-    public outputChannel: OutputChannel = window.createOutputChannel('Azure Pipelines');
-}
-
-let extensionVariables = new ExtensionVariables();
-export { extensionVariables };
 
 // https://github.com/microsoft/vscode-azure-account/blob/master/src/azure-account.api.d.ts
 // with just the properties we need
