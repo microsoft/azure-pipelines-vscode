@@ -164,8 +164,7 @@ export class AzureDevOpsHelper {
         const repoParts = repositoryName.split("/");
         const suffix = repoParts[repoParts.length - 1]
             .trim()
-            .replace(/\.+$/, '') // project name cannot end with . or _
-            .replace(/^_+$/, '');
+            .replace(/[._]+$/, ''); // project name cannot end with . or _
 
         return `AzurePipelines-${suffix}`.substring(0, 64);
     }
