@@ -140,4 +140,33 @@ export class AzureDevOpsHelper {
     public static getOldFormatBuildUrl(accountName: string, projectName: string, buildId: number) {
         return `https://${accountName}.visualstudio.com/${projectName}/_build/results?buildId=${buildId}&view=results`;
     }
+
+    public static generateDevOpsOrganizationName(userName: string, repositoryName: string): string {
+        let repositoryNameSuffix = repositoryName.replace("/", "-").trim();
+        let organizationName = `${userName}-${repositoryNameSuffix}`;
+
+        // Name cannot start or end with whitespaces, cannot start with '-', cannot contain characters other than a-z|A-Z|0-9
+        organizationName = organizationName.trim().replace(/^[-]+/, '').replace(/[^a-zA-Z0-9-]/g, '');
+        if(organizationName.length > 50) {
+            organizationName = organizationName.substr(0, 50);
+        }
+
+        return organizationName;
+    }
+
+    public static generateDevOpsProjectName(repositoryName?: string): string {
+        // I don't believe this can be hit based on the caller paths.
+        // Verify to make sure and then make repositoryName required.
+        if (!repositoryName) {
+            return "AzurePipelines";
+        }
+
+        const repoParts = repositoryName.split("/");
+        const suffix = repoParts[repoParts.length - 1]
+            .trim()
+            .replace(/\.+$/, '') // project name cannot end with . or _
+            .replace(/^_+$/, '');
+
+        return `AzurePipelines-${suffix}`.substring(0, 64);
+    }
 }

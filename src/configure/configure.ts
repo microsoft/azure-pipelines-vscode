@@ -3,7 +3,6 @@ import { AppServiceClient } from './clients/azure/appServiceClient';
 import { OrganizationsClient } from './clients/devOps/organizationsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
 import { OperationsClient } from './clients/devOps/operationsClient';
-import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
 import { ResourceManagementModels } from '@azure/arm-resources';
 import { GraphHelper } from './helper/graphHelper';
 import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
@@ -113,7 +112,7 @@ class PipelineConfigurer {
         if (this.inputs.isNewOrganization) {
             this.inputs.project = {
                 id: "",
-                name: generateDevOpsProjectName(this.inputs.sourceRepository.repositoryName)
+                name: AzureDevOpsHelper.generateDevOpsProjectName(this.inputs.sourceRepository.repositoryName)
             };
             await vscode.window.withProgress(
                 {
@@ -347,7 +346,7 @@ class PipelineConfigurer {
 
                     this.inputs.isNewOrganization = true;
                     let userName = this.inputs.azureSession.userId.substring(0, this.inputs.azureSession.userId.indexOf("@"));
-                    let organizationName = generateDevOpsOrganizationName(userName, this.inputs.sourceRepository.repositoryName);
+                    let organizationName = AzureDevOpsHelper.generateDevOpsOrganizationName(userName, this.inputs.sourceRepository.repositoryName);
 
                     let validationErrorMessage = await this.organizationsClient.validateOrganizationName(organizationName);
                     if (validationErrorMessage) {
