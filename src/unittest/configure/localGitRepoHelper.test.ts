@@ -90,21 +90,26 @@ suite('LocalGitRepoHelper', () => {
         });
     });
 
+    // These tests use `git branch` to avoid hardcoding the default branch name,
+    // which is configurable via `init.defaultBranch`.
     suite('getGitBranchDetails', () => {
-        test('Returns remote and branch name', async () => {
+        test('Returns branch and remote name', async () => {
             const helper = await LocalGitRepoHelper.GetHelperInstance(trackingGitPath);
             const details = await helper.getGitBranchDetails();
-            assert.deepStrictEqual(details, {branch: 'main', remoteName: 'origin'});
+            assert.deepStrictEqual(details, {
+                branch: (await SimpleGit(trackingGitPath).branch([])).current,
+                remoteName: 'origin',
+            });
         });
 
         // Re-enable when simple-git >= 2.11.0
         test.skip('Returns null remote if current branch is not tracking a remote', async () => {
             const helper = await LocalGitRepoHelper.GetHelperInstance(remotesGitPath);
             const details = await helper.getGitBranchDetails();
-            assert.deepStrictEqual(details, {branch: 'main', remoteName: null});
+            assert.deepStrictEqual(details, {remoteName: null});
         });
 
-        // Bug in simple-git: currently returns HEAD for detached heads instead of null
+        // Re-enable when simple-git >= 2.48.0 (using new .detached property)
         test.skip('Returns null branch and null remote when on a detached head', async () => {
             const helper = await LocalGitRepoHelper.GetHelperInstance(trackingGitPath);
             const trackingGit = SimpleGit(trackingGitPath);

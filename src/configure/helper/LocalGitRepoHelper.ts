@@ -38,9 +38,9 @@ export class LocalGitRepoHelper {
     }
 
     public async getGitBranchDetails(): Promise<GitBranchDetails> {
-        let status = await this.gitReference.status();
-        let branch = status.current; // FIXME: This doesn't work correctly for empty repos until 2.11.0
-        let remote = status.tracking ? status.tracking.substr(0, status.tracking.indexOf(branch) - 1) : null;
+        const status = await this.gitReference.status();
+        const branch = status.current; // FIXME: This doesn't work correctly for empty repos until 2.11.0
+        const remote = status.tracking ? status.tracking.substr(0, status.tracking.indexOf(branch) - 1) : null;
 
         return {
             branch: branch,
