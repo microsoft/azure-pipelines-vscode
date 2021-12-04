@@ -70,7 +70,7 @@ suite('LocalGitRepoHelper', () => {
         // A repository with a tracking branch
         trackingGitPath = await fs.mkdtemp(path.join(os.tmpdir(), 'azure-pipelines-vscode-git-tracking-'));
         allGitPaths.push(trackingGitPath);
-        await SimpleGit().clone(noRemotesGitPath, trackingGitPath);
+        await SimpleGit(trackingGitPath).clone(noRemotesGitPath, trackingGitPath);
     });
 
     suite('Instantiation', () => {
@@ -187,7 +187,7 @@ suite('LocalGitRepoHelper', () => {
             await remoteGit.addConfig('receive.denyCurrentBranch', 'ignore');
 
             // Clone the repository we just set up so that it's considered a remote
-            localGit = SimpleGit();
+            localGit = SimpleGit(localGitPath);
             await localGit.clone(remoteGitPath, localGitPath);
 
             // Ensure we have committer details for CI
