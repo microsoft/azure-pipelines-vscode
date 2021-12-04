@@ -175,6 +175,10 @@ suite('LocalGitRepoHelper', () => {
             remoteGit = SimpleGit(remoteGitPath);
             await remoteGit.init();
 
+            // Ensure we have committer details for CI
+            await remoteGit.addConfig('user.name', 'azure-pipelines-vscode unit tests');
+            await remoteGit.addConfig('user.email', 'test@example.com');
+
             // We need to give it an initial commit to initialize the default branch.
             // Also allow receiving pushes to the current branch.
             await remoteGit.commit('Initial commit', undefined, {
