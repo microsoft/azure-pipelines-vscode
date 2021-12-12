@@ -3,11 +3,6 @@ import { Messages } from '../resources/messages';
 import * as fs from 'fs/promises';
 import * as git from 'simple-git/promise';
 import * as path from 'path';
-import * as vscode from 'vscode';
-import { AzureDevOpsHelper } from './devOps/azureDevOpsHelper';
-import { GitHubProvider } from './gitHubHelper';
-import { telemetryHelper } from "../../helpers/telemetryHelper";
-import { TelemetryKeys } from "../../helpers/telemetryKeys";
 
 export class LocalGitRepoHelper {
     private gitReference: git.SimpleGit;
@@ -22,14 +17,6 @@ export class LocalGitRepoHelper {
             await repoService.gitReference.status();
             return repoService;
         } catch (error) {
-            let gitFolderExists = true;
-            try {
-                await fs.access(path.join(repositoryPath, ".git"));
-            } catch (e) {
-                gitFolderExists = false;
-            }
-
-            telemetryHelper.setTelemetry(TelemetryKeys.GitFolderExists, gitFolderExists.toString());
             throw new Error(Messages.notAGitRepository);
         }
     }
@@ -51,9 +38,9 @@ export class LocalGitRepoHelper {
     }
 
     public async getGitBranchDetails(): Promise<GitBranchDetails> {
-        let status = await this.gitReference.status();
-        let branch = status.current; // TODO: This is wrong.
-        let remote = status.tracking ? status.tracking.substr(0, status.tracking.indexOf(branch) - 1) : null;
+        const status = await this.gitReference.status();
+        const branch = status.current; // FIXME: This doesn't work correctly for empty repos until 2.11.0
+        const remote = status.tracking ? status.tracking.substr(0, status.tracking.indexOf(branch) - 1) : null;
 
         return {
             branch: branch,
@@ -71,7 +58,7 @@ export class LocalGitRepoHelper {
             .map(remote => remote.name);
     }
 
-    public async getGitRemoteUrl(remoteName: string): Promise<string|void> {
+    public async getGitRemoteUrl(remoteName: string): Promise<string | void> {
         let remoteUrl = await this.gitReference.remote(["get-url", remoteName]);
         if (remoteUrl) {
             remoteUrl = remoteUrl.trim();
@@ -80,26 +67,7 @@ export class LocalGitRepoHelper {
             }
         }
 
-        if (AzureDevOpsHelper.isAzureReposUrl(<string>remoteUrl)) {
-            remoteUrl = AzureDevOpsHelper.getFormattedRemoteUrl(<string>remoteUrl);
-        }
-        else if (GitHubProvider.isGitHubUrl(<string>remoteUrl)) {
-            remoteUrl = GitHubProvider.getFormattedRemoteUrl(<string>remoteUrl);
-        }
         return remoteUrl;
-    }
-
-    /**
-     *
-     * @param pipelineYamlPath : local path of yaml pipeline in the extension
-     * @param context: inputs required to be filled in the yaml pipelines
-     * @returns: thenable object which resolves once all files are added to the repository
-     */
-    public async addContentToFile(content: string, fileName: string, repoPath: string): Promise<string> {
-        let filePath = path.join(repoPath, "/" + fileName);
-        await fs.writeFile(filePath, content);
-        await vscode.workspace.saveAll(true);
-        return fileName;
     }
 
     /**

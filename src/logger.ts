@@ -1,9 +1,9 @@
-import { extensionVariables } from "./configure/model/models";
-
 /*---------------------------------------------------------------------------------------------
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the MIT License.
 *--------------------------------------------------------------------------------------------*/
+
+import { extensionVariables } from "./extensionVariables";
 
 // TODO: How can we write this to disk too so that we can remotely debug issues?
 // TODO: Set env var or something to turn logging on/off?

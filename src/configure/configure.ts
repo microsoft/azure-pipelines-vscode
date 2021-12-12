@@ -3,22 +3,23 @@ import { AppServiceClient } from './clients/azure/appServiceClient';
 import { OrganizationsClient } from './clients/devOps/organizationsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
 import { OperationsClient } from './clients/devOps/operationsClient';
-import { generateDevOpsProjectName, generateDevOpsOrganizationName } from './helper/commonHelper';
 import { ResourceManagementModels } from '@azure/arm-resources';
 import { GraphHelper } from './helper/graphHelper';
 import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
 import { Messages } from './resources/messages';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
-import { SourceOptions, RepositoryProvider, extensionVariables, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails, TargetResourceType } from './model/models';
-import { TracePoints } from './resources/tracePoints';
-import { TelemetryKeys } from '../helpers/telemetryKeys';
+import { SourceOptions, RepositoryProvider, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails, TargetResourceType } from './model/models';
 import * as constants from './resources/constants';
+import { TracePoints } from './resources/tracePoints';
+import { extensionVariables } from '../extensionVariables';
+import { telemetryHelper } from '../helpers/telemetryHelper';
+import { TelemetryKeys } from '../helpers/telemetryKeys';
+import * as fs from 'fs/promises';
 import * as path from 'path';
-import * as templateHelper from './helper/templateHelper';
 import * as utils from 'util';
 import * as vscode from 'vscode';
 import * as azdev from 'azure-devops-node-api';
-import { telemetryHelper } from '../helpers/telemetryHelper';
+import * as templateHelper from './helper/templateHelper';
 import { ControlProvider } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
@@ -111,7 +112,7 @@ class PipelineConfigurer {
         if (this.inputs.isNewOrganization) {
             this.inputs.project = {
                 id: "",
-                name: generateDevOpsProjectName(this.inputs.sourceRepository.repositoryName)
+                name: AzureDevOpsHelper.generateDevOpsProjectName(this.inputs.sourceRepository.repositoryName)
             };
             await vscode.window.withProgress(
                 {
@@ -250,6 +251,7 @@ class PipelineConfigurer {
 
         if (remoteUrl) {
             if (AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
+                remoteUrl = AzureDevOpsHelper.getFormattedRemoteUrl(remoteUrl);
                 return <GitRepositoryParameters>{
                     repositoryProvider: RepositoryProvider.AzureRepos,
                     repositoryId: "",
@@ -262,6 +264,7 @@ class PipelineConfigurer {
                 };
             }
             else if (GitHubProvider.isGitHubUrl(remoteUrl)) {
+                remoteUrl = GitHubProvider.getFormattedRemoteUrl(remoteUrl);
                 let repoId = GitHubProvider.getRepositoryIdFromUrl(remoteUrl);
                 return <GitRepositoryParameters>{
                     repositoryProvider: RepositoryProvider.Github,
@@ -343,7 +346,7 @@ class PipelineConfigurer {
 
                     this.inputs.isNewOrganization = true;
                     let userName = this.inputs.azureSession.userId.substring(0, this.inputs.azureSession.userId.indexOf("@"));
-                    let organizationName = generateDevOpsOrganizationName(userName, this.inputs.sourceRepository.repositoryName);
+                    let organizationName = AzureDevOpsHelper.generateDevOpsOrganizationName(userName, this.inputs.sourceRepository.repositoryName);
 
                     let validationErrorMessage = await this.organizationsClient.validateOrganizationName(organizationName);
                     if (validationErrorMessage) {
@@ -539,10 +542,11 @@ class PipelineConfigurer {
 
     private async checkInPipelineFileToRepository(): Promise<void> {
         try {
-            this.inputs.pipelineParameters.pipelineFileName = await this.localGitRepoHelper.addContentToFile(
-                await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs),
-                await LocalGitRepoHelper.GetAvailableFileName("azure-pipelines.yml", this.inputs.sourceRepository.localPath),
-                this.inputs.sourceRepository.localPath);
+            const fileName = await LocalGitRepoHelper.GetAvailableFileName("azure-pipelines.yml", this.inputs.sourceRepository.localPath);
+            const filePath = path.join(this.inputs.sourceRepository.localPath, fileName);
+            const content = await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs);
+            await fs.writeFile(filePath, content);
+            await vscode.workspace.saveAll(true);
             await vscode.window.showTextDocument(vscode.Uri.file(path.join(this.inputs.sourceRepository.localPath, this.inputs.pipelineParameters.pipelineFileName)));
         }
         catch (error) {
