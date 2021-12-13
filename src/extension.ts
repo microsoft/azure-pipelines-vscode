@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as languageclient from 'vscode-languageclient/node';
 
 import * as logger from './logger';
-import { SchemaAssociationService, SchemaAssociationNotification } from './schema-association-service';
+import { getSchemaAssociation, locateSchemaFile, SchemaAssociationNotification } from './schema-association-service';
 import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from './schema-contributor';
 import { telemetryHelper } from './helpers/telemetryHelper';
 
@@ -35,17 +35,15 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
     const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Language', serverOptions, clientOptions);
 
-    const schemaAssociationService = new SchemaAssociationService(context.extensionPath);
-
     const disposable = client.start();
     context.subscriptions.push(disposable);
-
-    const initialSchemaAssociations = schemaAssociationService.getSchemaAssociation();
 
     // If this throws, the telemetry event in activate() will catch & log it
     await client.onReady();
 
     // Notify the server which schemas to use.
+    const schemaFilePath = await locateSchemaFile(context);
+    const initialSchemaAssociations = getSchemaAssociation(schemaFilePath);
     client.sendNotification(SchemaAssociationNotification.type, initialSchemaAssociations);
 
     // Fired whenever the server is about to validate a YAML file (e.g. on content change),
@@ -65,11 +63,10 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
 
     // Let the server know of any schema changes.
-    // TODO: move to schema-association-service?
-    vscode.workspace.onDidChangeConfiguration(event => {
+    vscode.workspace.onDidChangeConfiguration(async event => {
         if (event.affectsConfiguration('azure-pipelines.customSchemaFile')) {
-            schemaAssociationService.locateSchemaFile();
-            const newSchema = schemaAssociationService.getSchemaAssociation();
+            const schemaFilePath = await locateSchemaFile(context);
+            const newSchema = getSchemaAssociation(schemaFilePath);
             client.sendNotification(SchemaAssociationNotification.type, newSchema);
         }
     });

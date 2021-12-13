@@ -11,7 +11,7 @@ import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper
 import { SourceOptions, RepositoryProvider, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails, TargetResourceType } from './model/models';
 import * as constants from './resources/constants';
 import { TracePoints } from './resources/tracePoints';
-import { extensionVariables } from '../extensionVariables';
+import { getAzureAccountExtensionApi } from '../extensionApis';
 import { telemetryHelper } from '../helpers/telemetryHelper';
 import { TelemetryKeys } from '../helpers/telemetryKeys';
 import * as fs from 'fs/promises';
@@ -29,8 +29,8 @@ import { ProjectVisibility } from 'azure-devops-node-api/interfaces/CoreInterfac
 
 const Layer: string = 'configure';
 
-export async function configurePipeline() {
-    if (!(await extensionVariables.azureAccountExtensionApi.waitForLogin())) {
+export async function configurePipeline(): Promise<void> {
+    if (!(await getAzureAccountExtensionApi().waitForLogin())) {
         telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
 
         let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
@@ -39,8 +39,7 @@ export async function configurePipeline() {
                 async () => {
                     await vscode.commands.executeCommand("azure-account.login");
                 });
-        }
-        else {
+        } else {
             throw new Error(Messages.azureLoginRequired);
         }
     }
@@ -389,7 +388,7 @@ class PipelineConfigurer {
 
     private async getAzureResourceDetails(): Promise<void> {
         // show available subscriptions and get the chosen one
-        let subscriptionList = extensionVariables.azureAccountExtensionApi.filters.map((subscriptionObject) => {
+        let subscriptionList = getAzureAccountExtensionApi().filters.map((subscriptionObject) => {
             return <QuickPickItemWithData>{
                 label: `${<string>subscriptionObject.subscription.displayName}`,
                 data: subscriptionObject,

@@ -1,13 +1,13 @@
 import { AzureSession } from "../model/models";
-import { extensionVariables } from "../../extensionVariables";
+import { getAzureAccountExtensionApi } from "../../extensionApis";
 
 export function getSubscriptionSession(subscriptionId: string): AzureSession {
-    let currentSubscription = extensionVariables.azureAccountExtensionApi.subscriptions
+    let currentSubscription = getAzureAccountExtensionApi().subscriptions
         .find(subscription => subscription.subscription.subscriptionId.toLowerCase() === subscriptionId.toLowerCase());
 
     // Fallback to first element
     if (!currentSubscription) {
-        currentSubscription = extensionVariables.azureAccountExtensionApi.subscriptions[0];
+        currentSubscription = getAzureAccountExtensionApi().subscriptions[0];
     }
 
     return currentSubscription.session;
