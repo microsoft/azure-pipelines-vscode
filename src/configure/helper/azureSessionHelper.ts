@@ -1,13 +1,14 @@
 import { AzureSession } from "../model/models";
 import { getAzureAccountExtensionApi } from "../../extensionApis";
 
-export function getSubscriptionSession(subscriptionId: string): AzureSession {
-    let currentSubscription = getAzureAccountExtensionApi().subscriptions
+export async function getSubscriptionSession(subscriptionId: string): Promise<AzureSession> {
+    const azureAccountApi = await getAzureAccountExtensionApi();
+    let currentSubscription = azureAccountApi.subscriptions
         .find(subscription => subscription.subscription.subscriptionId.toLowerCase() === subscriptionId.toLowerCase());
 
     // Fallback to first element
     if (!currentSubscription) {
-        currentSubscription = getAzureAccountExtensionApi().subscriptions[0];
+        currentSubscription = azureAccountApi.subscriptions[0];
     }
 
     return currentSubscription.session;

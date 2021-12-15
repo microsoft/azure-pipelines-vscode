@@ -30,7 +30,8 @@ import { ProjectVisibility } from 'azure-devops-node-api/interfaces/CoreInterfac
 const Layer: string = 'configure';
 
 export async function configurePipeline(): Promise<void> {
-    if (!(await getAzureAccountExtensionApi().waitForLogin())) {
+    const azureAccountApi = await getAzureAccountExtensionApi();
+    if (!(await azureAccountApi.waitForLogin())) {
         telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
 
         let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
@@ -388,7 +389,8 @@ class PipelineConfigurer {
 
     private async getAzureResourceDetails(): Promise<void> {
         // show available subscriptions and get the chosen one
-        let subscriptionList = getAzureAccountExtensionApi().filters.map((subscriptionObject) => {
+        const azureAccountApi = await getAzureAccountExtensionApi();
+        let subscriptionList = azureAccountApi.filters.map((subscriptionObject) => {
             return <QuickPickItemWithData>{
                 label: `${<string>subscriptionObject.subscription.displayName}`,
                 data: subscriptionObject,
@@ -399,7 +401,7 @@ class PipelineConfigurer {
         if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
             let selectedSubscription: QuickPickItemWithData = await this.controlProvider.showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
             this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
-            this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
+            this.inputs.azureSession = await getSubscriptionSession(this.inputs.targetResource.subscriptionId);
 
             // show available resources and get the chosen one
             this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials2, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
@@ -427,7 +429,7 @@ class PipelineConfigurer {
             this.inputs.targetResource.resource = selectedResource.data;
         } else if(subscriptionList.length > 0 ) {
             this.inputs.targetResource.subscriptionId = subscriptionList[0].data.subscription.subscriptionId;
-            this.inputs.azureSession = getSubscriptionSession(this.inputs.targetResource.subscriptionId);
+            this.inputs.azureSession = await getSubscriptionSession(this.inputs.targetResource.subscriptionId);
         }
     }
 

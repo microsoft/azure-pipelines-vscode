@@ -26,7 +26,8 @@ export async function locateSchemaFile(context: vscode.ExtensionContext): Promis
 
     if (remoteUrl && AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
         const { organizationName } = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
-        if (!(await getAzureAccountExtensionApi().waitForLogin())) {
+        const azureAccountApi = await getAzureAccountExtensionApi();
+        if (!(await azureAccountApi.waitForLogin())) {
             await vscode.commands.executeCommand("azure-account.login");
             // let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
             // if (signIn && signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
@@ -53,7 +54,7 @@ export async function locateSchemaFile(context: vscode.ExtensionContext): Promis
         }
 
         // If not, retrieve it.
-        const token = await getAzureAccountExtensionApi().sessions[0].credentials2.getToken();
+        const token = await azureAccountApi.sessions[0].credentials2.getToken();
         const authHandler = azdev.getBearerHandler(token.accessToken);
         const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
         const taskAgentApi = await azureDevOpsClient.getTaskAgentApi();
