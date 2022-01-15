@@ -161,7 +161,7 @@
         "azure-pipelines-language-server": "0.6.7",
         "html-to-text": "^5.1.1",
         "mustache": "3.0.1",
-        "shelljs": "^0.3.0",
+        "shelljs": "^0.8.5",
         "simple-git": "1.110.0",
         "uuid": "^3.3.2",
         "vscode-extension-telemetry": "^0.1.6",
