@@ -3,6 +3,7 @@
 'use strict';
 
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 
 /** @type {import('webpack').Configuration} */
 const config = {
@@ -40,6 +41,13 @@ const config = {
       }
     ]
   },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        { from: 'src/configure/templates', to: 'configure/templates' },
+      ],
+    }),
+  ],
   // Disable optimization until vscode-azure-account supports @azure/core-auth
   // and we move off of @azure/ms-rest-nodeauth.
   // https://github.com/Azure/ms-rest-nodeauth/issues/83
