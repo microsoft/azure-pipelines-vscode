@@ -18,7 +18,9 @@
         "theme": "light"
     },
     "engines": {
-        "vscode": "^1.45.1"
+        "vscode": "^1.45.1",
+        "node": ">=16.14.0",
+        "npm": ">=8.3.0"
     },
     "categories": [
         "Programming Languages",
