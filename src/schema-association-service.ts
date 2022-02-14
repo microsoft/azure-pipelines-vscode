@@ -82,23 +82,19 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
         // Create the global storage folder to guarantee that it exists.
         await vscode.workspace.fs.createDirectory(context.globalStorageUri);
 
-        // Do we already have the schema cached?
-        // TODO: How do we bust the cache?
-        const filename = `${organizationName}-schema.json`;
-        const schemaUri = Utils.joinPath(context.globalStorageUri, filename);
-        const schemas = await vscode.workspace.fs.readDirectory(context.globalStorageUri);
-        if (schemas.find(schema => schema[0] === filename && schema[1] === vscode.FileType.File)) {
-            return schemaUri;
-        }
-
-        // If not, retrieve it.
+        // Grab and save the schema.
+        // NOTE: Despite saving the schema to disk, we don't do treat it as a cache
+        // for the following reasons:
+        // 1. ADO doesn't provide an API to indicate which version (milestone) it's on.
+        // 2. Even if it did, organizations can add/remove tasks at any time.
+        // 3. Schema association only happens at startup or when schema settings change,
+        //    so typically we'll only hit the network once per session anyway.
         const token = await azureAccountApi.sessions[0].credentials2.getToken();
         const authHandler = azdev.getBearerHandler(token.accessToken);
         const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
         const taskAgentApi = await azureDevOpsClient.getTaskAgentApi();
         const schema = JSON.stringify(await taskAgentApi.getYamlSchema());
-
-        // Cache the schema for future lookups.
+        const schemaUri = Utils.joinPath(context.globalStorageUri, `${organizationName}-schema.json`);
         await vscode.workspace.fs.writeFile(schemaUri, Buffer.from(schema));
 
         return schemaUri;
