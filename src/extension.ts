@@ -11,6 +11,7 @@ import * as logger from './logger';
 import { getSchemaAssociation, locateSchemaFile, SchemaAssociationNotification } from './schema-association-service';
 import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from './schema-contributor';
 import { telemetryHelper } from './helpers/telemetryHelper';
+import { getAzureAccountExtensionApi } from './extensionApis';
 
 export async function activate(context: vscode.ExtensionContext) {
     const configurePipelineEnabled = vscode.workspace.getConfiguration('azure-pipelines').get<boolean>('configure', true);
@@ -63,13 +64,23 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
 
     // Let the server know of any schema changes.
-    vscode.workspace.onDidChangeConfiguration(async event => {
+    context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
         if (event.affectsConfiguration('azure-pipelines.customSchemaFile')) {
             const schemaFilePath = await locateSchemaFile(context);
             const newSchema = getSchemaAssociation(schemaFilePath);
             client.sendNotification(SchemaAssociationNotification.type, newSchema);
         }
-    });
+    }));
+
+    // Re-request the schema on Azure login since auto-detection is dependent on login.
+    const azureAccountApi = await getAzureAccountExtensionApi();
+    context.subscriptions.push(azureAccountApi.onStatusChanged(async status => {
+        if (status === 'LoggedIn') {
+            const schemaFilePath = await locateSchemaFile(context);
+            const newSchema = getSchemaAssociation(schemaFilePath);
+            client.sendNotification(SchemaAssociationNotification.type, newSchema);
+        }
+    }));
 }
 
 function getServerOptions(context: vscode.ExtensionContext): languageclient.ServerOptions {

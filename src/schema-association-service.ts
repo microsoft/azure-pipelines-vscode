@@ -65,28 +65,33 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
         const { organizationName } = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
         const azureAccountApi = await getAzureAccountExtensionApi();
         if (!(await azureAccountApi.waitForLogin())) {
-            // TODO: Don't block on this, return the fallback schema until they auth.
-            const action = await vscode.window.showInformationMessage("Sign in to Azure to auto-detect tasks specific to your organization", Messages.signInLabel);
-            if (action === Messages.signInLabel) {
-                await vscode.window.withProgress({
-                    location: vscode.ProgressLocation.Notification,
-                    title: Messages.waitForAzureSignIn
-                }, async () => {
-                    await vscode.commands.executeCommand("azure-account.login");
-                });
-            } else {
-                return undefined;
-            }
+            // Don't await this message so that we can return the fallback schema instead of blocking.
+            // We'll detect the login in extension.ts and then re-request the schema.
+            const actionPromise = vscode.window.showInformationMessage("Sign in to Azure to auto-detect tasks specific to your organization", Messages.signInLabel);
+            actionPromise.then(async action => {
+                if (action === Messages.signInLabel) {
+                    await vscode.window.withProgress({
+                        location: vscode.ProgressLocation.Notification,
+                        title: Messages.waitForAzureSignIn,
+                    }, async () => {
+                        await vscode.commands.executeCommand("azure-account.login");
+                    });
+                }
+            });
+
+            return undefined;
         }
 
         // Create the global storage folder to guarantee that it exists.
         await vscode.workspace.fs.createDirectory(context.globalStorageUri);
 
         // Grab and save the schema.
-        // NOTE: Despite saving the schema to disk, we don't do treat it as a cache
+        // TODO: Prompt for the correct session to use.
+        // NOTE: Despite saving the schema to disk, we don't treat it as a cache
         // for the following reasons:
-        // 1. ADO doesn't provide an API to indicate which version (milestone) it's on.
-        // 2. Even if it did, organizations can add/remove tasks at any time.
+        // 1. ADO doesn't provide an API to indicate which version (milestone) it's on,
+        //    so we don't have a way of busting the cache.
+        // 2. Even if we did, organizations can add/remove tasks at any time.
         // 3. Schema association only happens at startup or when schema settings change,
         //    so typically we'll only hit the network once per session anyway.
         const token = await azureAccountApi.sessions[0].credentials2.getToken();
