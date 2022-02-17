@@ -67,7 +67,7 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
         if (!(await azureAccountApi.waitForLogin())) {
             // Don't await this message so that we can return the fallback schema instead of blocking.
             // We'll detect the login in extension.ts and then re-request the schema.
-            const actionPromise = vscode.window.showInformationMessage("Sign in to Azure to auto-detect tasks specific to your organization", Messages.signInLabel);
+            const actionPromise = vscode.window.showInformationMessage("Sign in to Azure for enhanced Azure Pipelines IntelliSense", Messages.signInLabel);
             actionPromise.then(async action => {
                 if (action === Messages.signInLabel) {
                     await vscode.window.withProgress({
