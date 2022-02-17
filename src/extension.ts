@@ -43,9 +43,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     await client.onReady();
 
     // Notify the server which schemas to use.
-    const schemaFilePath = await locateSchemaFile(context);
-    const initialSchemaAssociations = getSchemaAssociation(schemaFilePath);
-    client.sendNotification(SchemaAssociationNotification.type, initialSchemaAssociations);
+    await loadSchema(context, client);
 
     // Fired whenever the server is about to validate a YAML file (e.g. on content change),
     // and allows us to return a custom schema to use for validation.
@@ -66,9 +64,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     // Let the server know of any schema changes.
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
         if (event.affectsConfiguration('azure-pipelines.customSchemaFile')) {
-            const schemaFilePath = await locateSchemaFile(context);
-            const newSchema = getSchemaAssociation(schemaFilePath);
-            client.sendNotification(SchemaAssociationNotification.type, newSchema);
+            await loadSchema(context, client);
         }
     }));
 
@@ -76,11 +72,16 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     const azureAccountApi = await getAzureAccountExtensionApi();
     context.subscriptions.push(azureAccountApi.onStatusChanged(async status => {
         if (status === 'LoggedIn') {
-            const schemaFilePath = await locateSchemaFile(context);
-            const newSchema = getSchemaAssociation(schemaFilePath);
-            client.sendNotification(SchemaAssociationNotification.type, newSchema);
+            await loadSchema(context, client);
         }
     }));
+}
+
+// Find the schema and notify the server.
+async function loadSchema(context: vscode.ExtensionContext, client: languageclient.LanguageClient): Promise<void> {
+    const schemaFilePath = await locateSchemaFile(context);
+    const schema = getSchemaAssociation(schemaFilePath);
+    client.sendNotification(SchemaAssociationNotification.type, schema);
 }
 
 function getServerOptions(context: vscode.ExtensionContext): languageclient.ServerOptions {
