@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { AzureAccount } from './configure/model/models';
-import { Messages } from './configure/resources/messages';
+import { Messages } from './messages';
 
 let azureAccountExtensionApi: AzureAccount;
 export async function getAzureAccountExtensionApi(): Promise<AzureAccount> {

@@ -11,7 +11,7 @@ import * as azdev from 'azure-devops-node-api';
 import { getAzureAccountExtensionApi } from './extensionApis';
 import { AzureDevOpsHelper } from './configure/helper/devOps/azureDevOpsHelper';
 import { LocalGitRepoHelper } from './configure/helper/LocalGitRepoHelper';
-import { Messages } from './configure/resources/messages';
+import { Messages } from './messages';
 
 export async function locateSchemaFile(context: vscode.ExtensionContext): Promise<string> {
     let schemaUri = await autoDetectSchema(context);
@@ -67,7 +67,7 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
         if (!(await azureAccountApi.waitForLogin())) {
             // Don't await this message so that we can return the fallback schema instead of blocking.
             // We'll detect the login in extension.ts and then re-request the schema.
-            const actionPromise = vscode.window.showInformationMessage("Sign in to Azure for enhanced Azure Pipelines IntelliSense", Messages.signInLabel);
+            const actionPromise = vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel);
             actionPromise.then(async action => {
                 if (action === Messages.signInLabel) {
                     await vscode.window.withProgress({

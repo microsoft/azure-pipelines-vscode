@@ -3,7 +3,7 @@ import { ResourceManagementModels } from '@azure/arm-resources';
 import { SubscriptionModels } from '@azure/arm-subscriptions';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import { Event, QuickPickItem } from 'vscode';
-import { Messages } from '../resources/messages';
+import { Messages } from '../../messages';
 import { TeamProjectReference } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 
 // https://github.com/microsoft/vscode-azure-account/blob/main/src/azure-account.api.d.ts

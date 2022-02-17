@@ -3,7 +3,7 @@ import * as util from 'util';
 import { OperationReference, OperationStatus } from 'azure-devops-node-api/interfaces/common/OperationsInterfaces';
 import { sleepForMilliSeconds } from '../../helper/commonHelper';
 import { AzureDevOpsBaseUrl } from "../../resources/constants";
-import { Messages } from '../../resources/messages';
+import { Messages } from '../../../messages';
 
 export class OperationsClient {
     private connection: azdev.WebApi;
