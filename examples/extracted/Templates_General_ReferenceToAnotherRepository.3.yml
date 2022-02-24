@@ -1,9 +1,0 @@
-resources:
-  repositories:
-  - repository: vso
-    clean: true
-    ref: main
-    type: tfsgit
-steps:
-- task: Bash@3
-- script: this one is right!

@@ -1,6 +1,0 @@
-steps:
-- template: my-steps.yml@self
-  parameters:
-    env:
-      entryfile1: aaa
-      entryfile2: bbb

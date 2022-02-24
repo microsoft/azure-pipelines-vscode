@@ -1,0 +1,202 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/g4rcez/nuclei-vscode/blob/main/service-schema.json",
+  "$comment": "v1.195.0",
+  "title": "Pipeline schema",
+  "description": "A pipeline definition",
+  "oneOf": [
+    {
+      "$ref": "#/definitions/template"
+    },
+    {
+      "type": "string",
+      "pattern": "^$"
+    }
+  ],
+  "definitions": {
+    "string": {
+      "type": "string"
+    },
+    "sequence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/any"
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "any": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/any"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": true
+        }
+      ]
+    },
+    "template": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "description": "Unique ID for template.",
+              "$ref": "#/definitions/id"
+            },
+            "info": {
+              "description": "Template metadata information.",
+              "$ref": "#/definitions/info"
+            },
+            "requests": {
+              "description": "Template metadata information.",
+              "$ref": "#/definitions/requests"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["id", "info"]
+        }
+      ]
+    },
+    "id": {
+      "type": "string"
+    },
+    "requests": {
+      "type": "array",
+      "items": [
+        {
+          "required": ["path", "method"],
+          "properties": {
+            "path": {
+              "description": "The path for HTTP requests. It supports variables.",
+              "$ref": "#/definitions/arrayString",
+              "type": "array"
+            },
+            "id": {
+              "description": "ID for this request.",
+              "$ref": "#/definitions/id"
+            },
+            "body": {
+              "description": "Request body.",
+              "type": "string"
+            },
+            "payloads": {
+              "$ref": "#/definitions/dict",
+              "description": "The payloads for the current request."
+            },
+            "headers": {
+              "$ref": "#/definitions/dict",
+              "description": "HTTP headers to send with this request."
+            },
+            "race_count": {
+              "type": "number",
+              "description": "The number of times to send a request in Race Condition Attack."
+            },
+            "max-redirects": {
+              "type": "number",
+              "description": "The maximum number of redirects that should be followed."
+            },
+            "pipeline": {
+              "type": "boolean",
+              "description": "Pipeline defines if the attack should be performed with HTTP 1.1 Pipelining."
+            },
+            "method": {
+              "description": "HTTP method used for this request.",
+              "enum": [
+                "CONNECT",
+                "DELETE",
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "PATCH",
+                "POST",
+                "PURGE",
+                "PUT",
+                "TRACE"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "info": {
+      "type": "object",
+      "required": ["name", "author", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Good short summary that identifies what the template does."
+        },
+        "author": {
+          "type": "string",
+          "description": "Authors of the template. Multiple values can also be specified separated by comas 'foo,bar'"
+        },
+        "tags": {
+          "type": "string",
+          "description": "Any tags for the template. Multiple values can also be specified separated by comas 'foo,bar'"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the template. You can go in-depth here on what the template actually does."
+        },
+        "reference": {
+          "type": "array",
+          "$ref": "#/definitions/arrayString",
+          "description": "Relevant links to the template, 'https://foo.io'"
+        },
+        "metadata": {
+          "$ref": "#/definitions/dict",
+          "description": "Metadata of the template."
+        },
+        "remediation": {
+          "type": "string",
+          "description": "How to mitigate the problem find by this template."
+        },
+        "severity": {
+          "type": "string",
+          "description": "Severity of the test in this template.",
+          "enum": ["medium", "high", "critical", "limit", "info", "low"]
+        },
+        "classification": {
+          "type": "object",
+          "properties": {
+            "cve-id": {
+              "type": "string",
+              "description": "CVE ID for the template."
+            },
+            "cvss-metrics": {
+              "type": "string",
+              "description": "CVSS Metrics for the template."
+            },
+            "cwe-id": {
+              "description": "CWE ID for the template.",
+              "type": "string"
+            },
+            "cvss-score": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "arrayString": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "dict": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

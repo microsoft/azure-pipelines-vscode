@@ -1,7 +1,0 @@
-resources:
-  repositories:
-  - repository: tools
-steps:
-- template: aaa-steps.yml
-- template: tools-entry-dir\tools-steps.yml@tools
-- template: zzz-steps.yml

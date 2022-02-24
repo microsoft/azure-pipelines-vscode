@@ -1,7 +1,0 @@
-jobs:
-- job: nestedJob1
-  steps:
-  - script: echo hello from template job 1
-- job: nestedJob2
-  steps:
-  - script: echo hello from template job 2

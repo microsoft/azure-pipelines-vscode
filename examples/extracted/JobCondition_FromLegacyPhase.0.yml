@@ -1,7 +1,0 @@
-phases:
-- phase: job1
-- phase: job2
-  dependsOn: job1
-  condition: variables.condition1
-- phase: job3
-  condition: variables.condition2

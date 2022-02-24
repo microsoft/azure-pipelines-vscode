@@ -1,4 +1,0 @@
-cancelTimeoutInMinutes: 5
-pool: server
-steps:
-- task: Bash@3

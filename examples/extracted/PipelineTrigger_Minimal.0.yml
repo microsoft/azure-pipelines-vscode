@@ -1,5 +1,0 @@
-trigger:
-- main
-- releases/*
-steps:
-- script: echo hello

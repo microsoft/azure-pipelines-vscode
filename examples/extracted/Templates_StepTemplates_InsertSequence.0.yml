@@ -1,6 +1,0 @@
-steps:
-- template: my-steps.yml
-  parameters:
-    preBuild:
-    - script: pre-build 1
-    - script: pre-build 2

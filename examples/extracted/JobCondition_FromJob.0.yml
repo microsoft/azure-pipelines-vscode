@@ -1,7 +1,0 @@
-jobs:
-- job: job1
-- job: job2
-  dependsOn: job1
-  condition: variables.condition1
-- job: job3
-  condition: variables.condition2

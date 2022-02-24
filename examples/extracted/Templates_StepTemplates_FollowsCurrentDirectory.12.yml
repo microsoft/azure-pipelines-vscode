@@ -1,7 +1,0 @@
-resources:
-  repositories:
-  - repository: tools
-steps:
-- script: echo hi from bbb-steps.yml
-- script: echo hi from ttt-steps.yml
-- script: echo hi from zzz-steps.yml

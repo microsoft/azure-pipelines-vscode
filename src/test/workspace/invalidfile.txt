@@ -1,5 +1,0 @@
-this is an invalid yaml schema file and should fail
-
-more text
-
-more

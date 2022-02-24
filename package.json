@@ -1,175 +1,147 @@
 {
-    "name": "azure-pipelines",
-    "displayName": "Azure Pipelines",
-    "description": "Syntax highlighting, IntelliSense, and more for Azure Pipelines YAML",
-    "version": "1.201.0",
-    "publisher": "ms-azure-devops",
-    "aiKey": "AIF-d9b70cd4-b9f9-4d70-929b-a071c400b217",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/Microsoft/azure-pipelines-vscode"
-    },
-    "homepage": "https://github.com/Microsoft/azure-pipelines-vscode/blob/main/README.md",
-    "bugs": "https://github.com/Microsoft/azure-pipelines-vscode/issues/",
-    "license": "MIT",
-    "icon": "assets/pipelines.png",
-    "galleryBanner": {
-        "color": "#D4DCEC",
-        "theme": "light"
-    },
-    "engines": {
-        "vscode": "^1.45.1",
-        "node": ">=12.20.0"
-    },
-    "categories": [
-        "Programming Languages",
-        "Formatters",
-        "Azure"
-    ],
-    "tags": [
-        "azure-pipelines",
-        "Azure Pipelines",
-        "YAML"
-    ],
-    "keywords": [
-        "YAML",
-        "Azure Pipelines",
-        "continuous integration",
-        "CI/CD"
-    ],
-    "activationEvents": [
-        "onLanguage:azure-pipelines",
-        "onCommand:azure-pipelines.configure-pipeline"
-    ],
-    "main": "./dist/extension",
-    "capabilities": {
-        "untrustedWorkspaces": {
-            "supported": "limited",
-            "restrictedConfigurations": [
-                "azure-pipelines.customSchemaFile"
-            ]
-        }
-    },
-    "contributes": {
-        "languages": [
-            {
-                "id": "azure-pipelines",
-                "configuration": "./language-configuration.json",
-                "filenamePatterns": [
-                    "azure-pipelines.yml",
-                    "azure-pipelines.yaml",
-                    ".azure-pipelines.yml",
-                    ".azure-pipelines.yaml",
-                    "azure-pipelines/**/*.yml",
-                    "azure-pipelines/**/*.yaml",
-                    ".azure-pipelines/**/*.yml",
-                    ".azure-pipelines/**/*.yaml",
-                    ".vsts-ci.yml",
-                    "vsts-ci.yml"
-                ],
-                "aliases": [
-                    "Azure Pipelines"
-                ]
-            }
+  "name": "nuclei-vscode",
+  "displayName": "Nuclei Vscode",
+  "description": "Syntax highlighting, IntelliSense, and more for Nuclei templates YAML",
+  "version": "0.0.1",
+  "publisher": "g4rcez",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/g4rcez/nuclei-vscode"
+  },
+  "homepage": "https://github.com/g4rcez/nuclei-vscode/blob/main/README.md",
+  "bugs": "https://github.com/g4rcez/nuclei-vscode/issues/",
+  "license": "MIT",
+  "icon": "assets/logo.png",
+  "galleryBanner": {
+    "color": "#D4DCEC",
+    "theme": "light"
+  },
+  "engines": {
+    "vscode": "^1.45.1",
+    "node": ">=12.20.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Formatters"
+  ],
+  "tags": [
+    "nuclei-vscode",
+    "Nuclei templates",
+    "YAML"
+  ],
+  "keywords": [
+    "YAML",
+    "nuclei",
+    "templates",
+    "project discovery"
+  ],
+  "activationEvents": [
+    "onLanguage:nuclei-vscode",
+    "onCommand:nuclei-vscode.configure-pipeline"
+  ],
+  "main": "./dist/extension",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "restrictedConfigurations": [
+        "nuclei-vscode.customSchemaFile"
+      ]
+    }
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "nuclei-vscode",
+        "configuration": "./language-configuration.json",
+        "filenamePatterns": [
+          "template.yml",
+          "template.yaml"
         ],
-        "grammars": [
-            {
-                "language": "azure-pipelines",
-                "scopeName": "source.yaml",
-                "path": "./syntaxes/yaml.tmLanguage.json"
-            }
-        ],
-        "configuration": {
-            "title": "Azure Pipelines",
-            "properties": {
-                "azure-pipelines.configure": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Enable 'Configure Pipeline' feature"
-                },
-                "azure-pipelines.customSchemaFile": {
-                    "type": "string",
-                    "description": "Use a different schema file",
-                    "scope": "machine-overridable"
-                }
-            }
+        "aliases": [
+          "Nuclei Vscode"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "nuclei-vscode",
+        "scopeName": "source.yaml",
+        "path": "./syntaxes/yaml.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Nuclei Vscode",
+      "properties": {
+        "nuclei-vscode.configure": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable 'Configure Pipeline' feature"
         },
-        "configurationDefaults": {
-            "[azure-pipelines]": {
-                "editor.insertSpaces": true,
-                "editor.tabSize": 2,
-                "editor.quickSuggestions": {
-                    "other": true,
-                    "comments": false,
-                    "strings": true
-                },
-                "editor.autoIndent": "full"
-            }
-        },
-        "commands": [
-            {
-                "command": "azure-pipelines.configure-pipeline",
-                "title": "Configure Pipeline",
-                "category": "Azure Pipelines"
-            }
-        ],
-        "menus": {
-            "explorer/context": [
-                {
-                    "command": "azure-pipelines.configure-pipeline",
-                    "group": "Azure Pipelines",
-                    "when": "explorerResourceIsFolder == true"
-                }
-            ]
+        "nuclei-vscode.customSchemaFile": {
+          "type": "string",
+          "description": "Use a different schema file",
+          "scope": "machine-overridable"
         }
+      }
     },
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "webpack --mode production --progress --color",
-        "compile:dev": "webpack --mode development --progress --color",
-        "watch": "webpack --mode development --progress --color --watch",
-        "compile:test": "npm run compile:dev && tsc -p ./",
-        "test": "npm run compile:test && node ./out/test/runTest.js",
-        "unittest": "npm run compile:test && mocha -u tdd out/unittest/**/*.js"
+    "configurationDefaults": {
+      "[nuclei-vscode]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.quickSuggestions": {
+          "other": true,
+          "comments": false,
+          "strings": true
+        },
+        "editor.autoIndent": "full"
+      }
     },
-    "devDependencies": {
-        "@types/fs-extra": "4.0.5",
-        "@types/glob": "^7.2.0",
-        "@types/html-to-text": "^5.1.2",
-        "@types/mocha": "^9.0.0",
-        "@types/mustache": "0.8.32",
-        "@types/node": "^14.16.0",
-        "@types/vscode": "^1.45.1",
-        "@vscode/test-electron": "^1.6.2",
-        "ajv": "^6.9.1",
-        "assert": "1.4.1",
-        "copy-webpack-plugin": "^10.2.0",
-        "glob": "^7.1.6",
-        "mocha": "^9.1.1",
-        "ts-loader": "^8.0.14",
-        "ts-node": "7.0.1",
-        "tslint": "5.8.0",
-        "typescript": "^4.1.0",
-        "webpack": "^5.17.0",
-        "webpack-cli": "^4.4.0"
-    },
-    "dependencies": {
-        "@azure/arm-appservice": "^6.1.0",
-        "@azure/arm-resources": "^4.0.0",
-        "@azure/arm-subscriptions": "^3.0.0",
-        "@azure/ms-rest-azure-env": "^2.0.0",
-        "@azure/ms-rest-nodeauth": "^3.0.6",
-        "azure-devops-node-api": "^11.0.1",
-        "azure-pipelines-language-server": "0.6.7",
-        "html-to-text": "^5.1.1",
-        "mustache": "3.0.1",
-        "simple-git": "1.110.0",
-        "uuid": "^3.3.2",
-        "vscode-extension-telemetry": "^0.1.6",
-        "vscode-languageclient": "^7.0.0",
-        "vscode-uri": "^3.0.2"
-    },
-    "extensionDependencies": [
-        "ms-vscode.azure-account"
-    ]
+    "commands": [
+      {
+        "command": "nuclei-vscode.configure-pipeline",
+        "title": "Configure Pipeline",
+        "category": "Nuclei Vscode"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "nuclei-vscode.configure-pipeline",
+          "group": "Nuclei Vscode",
+          "when": "explorerResourceIsFolder == true"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "schema": "ts-node src/generate-schema.ts",
+    "vscode:prepublish": "npm run compile",
+    "compile": "npm run schema && webpack --mode production --progress --color",
+    "compile:dev": "webpack --mode development --progress --color",
+    "watch": "webpack --mode development --progress --color --watch"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "4.0.5",
+    "@types/glob": "^7.2.0",
+    "@types/node": "^14.16.0",
+    "@types/vscode": "^1.45.1",
+    "ajv": "^6.9.1",
+    "assert": "1.4.1",
+    "copy-webpack-plugin": "^10.2.0",
+    "glob": "^7.1.6",
+    "mocha": "^9.1.1",
+    "ts-loader": "^8.0.14",
+    "ts-node": "7.0.1",
+    "tslint": "5.8.0",
+    "typescript": "^4.1.0",
+    "webpack": "^5.17.0",
+    "webpack-cli": "^4.4.0"
+  },
+  "dependencies": {
+    "azure-pipelines-language-server": "0.6.7",
+    "vscode-languageclient": "^7.0.0",
+    "vscode-uri": "^3.0.2",
+    "zod": "3.12.0",
+    "zod-to-json-schema": "3.11.3"
+  }
 }

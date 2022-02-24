@@ -1,9 +1,0 @@
-phases:
-- phase: job1
-- phase: job2
-  queue:
-    name: myPool
-    workspace:
-      clean: all
-  steps:
-  - script: echo hi

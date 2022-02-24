@@ -1,4 +1,0 @@
-jobs:
-- job: ttt
-  steps:
-  - script: echo hi from ttt-jobs.yml

@@ -1,6 +1,0 @@
-steps:
-- template: my-steps.yml
-  parameters:
-    env:
-      var1: val1
-      var2: val2

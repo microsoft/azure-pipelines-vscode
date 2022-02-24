@@ -1,9 +1,0 @@
-resources:
-  repositories:
-  - repository: tools
-jobs:
-- template: my-jobs.yml@tools
-  parameters:
-    env:
-      entryfile1: aaa
-      entryfile2: bbb

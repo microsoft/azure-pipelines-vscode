@@ -1,6 +1,0 @@
-jobs:
-- template: my-jobs.yml@self
-  parameters:
-    env:
-      entryfile1: aaa
-      entryfile2: bbb

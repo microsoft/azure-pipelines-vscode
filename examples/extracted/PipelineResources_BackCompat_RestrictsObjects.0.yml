@@ -1,6 +1,0 @@
-resources:
-- repo: self
-  clean:
-  - foo
-steps:
-- script: echo hi

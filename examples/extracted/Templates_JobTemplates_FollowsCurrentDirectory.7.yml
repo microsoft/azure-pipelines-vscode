@@ -1,4 +1,0 @@
-jobs:
-- job: zzz
-  steps:
-  - script: echo hi from zzz-jobs.yml

@@ -1,9 +1,0 @@
-resources:
-  containers:
-  - container: dev1
-    image: ubuntu:16.04
-    type: docker
-pool: myPool
-container: dev1
-steps:
-- script: echo hi

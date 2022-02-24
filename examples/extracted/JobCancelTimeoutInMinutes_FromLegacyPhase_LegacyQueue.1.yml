@@ -1,8 +1,0 @@
-jobs:
-- job: job1
-- job: job2
-  cancelTimeoutInMinutes: 5
-  pool: myPool
-- job: job3
-  cancelTimeoutInMinutes: $[ variables.theCancelTimeoutInMinutes ]
-  pool: myPool

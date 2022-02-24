@@ -1,6 +1,0 @@
-variables:
-  var1: val1
-jobs:
-- job: jobOne
-  steps:
-  - script: echo hello

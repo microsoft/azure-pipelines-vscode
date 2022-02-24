@@ -1,6 +1,0 @@
-{
-    "files.associations": {
-        "*.yml": "azure-pipelines",
-        "**/*.yml": "azure-pipelines"
-    }
-}

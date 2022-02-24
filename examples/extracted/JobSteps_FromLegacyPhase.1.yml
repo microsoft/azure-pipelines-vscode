@@ -1,5 +1,0 @@
-jobs:
-- job: myJob
-  steps:
-  - task: Bash@3
-  - script: echo hi

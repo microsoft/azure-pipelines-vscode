@@ -1,8 +1,0 @@
-phases:
-- phase: job1
-- phase: job2
-  server:
-    parallel: 5
-- phase: job3
-  server:
-    parallel: $[ variables.parallel ]

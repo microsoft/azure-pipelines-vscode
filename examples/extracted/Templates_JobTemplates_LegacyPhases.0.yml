@@ -1,6 +1,0 @@
-jobs:
-- template: my-jobs.yml
-  parameters:
-    env:
-      ccc: ddd
-      eee: fff

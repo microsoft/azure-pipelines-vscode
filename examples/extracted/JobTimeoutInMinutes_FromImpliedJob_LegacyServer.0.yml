@@ -1,4 +1,0 @@
-server:
-  timeoutInMinutes: 5
-steps:
-- task: Bash@3

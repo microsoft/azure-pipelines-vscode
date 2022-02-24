@@ -1,6 +1,0 @@
-steps:
-- template: my-steps.yml
-  parameters:
-    env:
-      ccc: ddd
-      eee: fff

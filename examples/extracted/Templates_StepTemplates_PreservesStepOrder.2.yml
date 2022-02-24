@@ -1,5 +1,0 @@
-steps:
-- script: echo hello from entry file 1
-- script: echo hello from template step 1
-- script: echo hello from template step 2
-- script: echo hello from entry file 2

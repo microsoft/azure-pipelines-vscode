@@ -1,7 +1,0 @@
-pool:
-  name: myPool
-  demands:
-  - demand1 -equals value1
-  - demand2 -equals value2
-steps:
-- script: echo hi

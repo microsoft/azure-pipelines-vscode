@@ -1,7 +1,0 @@
-jobs:
-- job: 1
-- job: job1
-- job: nestedJob1
-- job: nestedJob2
-- job: job2
-- job: 2

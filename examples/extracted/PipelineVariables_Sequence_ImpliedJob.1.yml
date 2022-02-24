@@ -1,4 +1,0 @@
-variables:
-  var1: val1
-steps:
-- script: echo hello

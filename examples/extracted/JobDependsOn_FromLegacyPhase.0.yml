@@ -1,8 +1,0 @@
-phases:
-- phase: job1
-- phase: job2
-  dependsOn: job1
-- phase: job3
-  dependsOn:
-  - job1
-  - job2

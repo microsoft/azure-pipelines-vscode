@@ -1,8 +1,0 @@
-jobs:
-- job: job1
-  steps:
-  - script: echo hello from entry file 1
-- template: my-jobs.yml
-- job: job2
-  steps:
-  - script: echo hello from entry file 2

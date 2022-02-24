@@ -1,4 +1,0 @@
-strategy:
-  parallel: 5
-steps:
-- script: echo hi

@@ -1,6 +1,0 @@
-queue:
-  name: myPool
-  workspace:
-    clean: all
-steps:
-- script: echo hi

@@ -1,6 +1,0 @@
-jobs:
-- job: job1
-- job: job2
-  timeoutInMinutes: 5
-- job: job3
-  timeoutInMinutes: $[ variables.theTimeoutInMinutes ]

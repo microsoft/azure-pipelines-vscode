@@ -1,32 +1,29 @@
 // @ts-check
-
-'use strict';
-
-const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
-
+"use strict";
+const path = require("path");
 /** @type {import('webpack').Configuration} */
 const config = {
-  target: 'node',
+  target: "node",
   entry: {
-    extension: './src/extension.ts',
-    server: './node_modules/azure-pipelines-language-server/out/server.js'
+    extension: "./src/extension.ts",
+    server: "./node_modules/azure-pipelines-language-server/out/server.js",
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js',
-    libraryTarget: 'commonjs2',
-    devtoolModuleFilenameTemplate: '../[resource-path]'
+    path: path.resolve(__dirname, "dist"),
+    filename: "[name].js",
+    libraryTarget: "commonjs2",
+    devtoolModuleFilenameTemplate: "../[resource-path]",
   },
-  devtool: 'source-map',
+  devtool: "source-map",
   externals: {
-    vscode: 'commonjs vscode',
-    'applicationinsights-native-metrics': 'commonjs applicationinsights-native-metrics', // we're not native
-    '@opentelemetry/tracing': 'commonjs @opentelemetry/tracing', // optional
+    vscode: "commonjs vscode",
+    "applicationinsights-native-metrics":
+      "commonjs applicationinsights-native-metrics", // we're not native
+    "@opentelemetry/tracing": "commonjs @opentelemetry/tracing", // optional
   },
-  mode: 'production',
+  mode: "production",
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: [".ts", ".js"],
   },
   module: {
     rules: [
@@ -35,22 +32,12 @@ const config = {
         exclude: /node_modules/,
         use: [
           {
-            loader: 'ts-loader'
-          }
-        ]
-      }
-    ]
+            loader: "ts-loader",
+          },
+        ],
+      },
+    ],
   },
-  plugins: [
-    new CopyPlugin({
-      patterns: [
-        { from: 'src/configure/templates', to: 'configure/templates' },
-      ],
-    }),
-  ],
-  // Disable optimization until vscode-azure-account supports @azure/core-auth
-  // and we move off of @azure/ms-rest-nodeauth.
-  // https://github.com/Azure/ms-rest-nodeauth/issues/83
   optimization: {
     minimize: false,
   },

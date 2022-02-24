@@ -1,5 +1,0 @@
-resources:
-- repo: self
-  abc: def
-steps:
-- script: echo hi

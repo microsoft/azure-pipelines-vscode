@@ -1,5 +1,0 @@
-name: my pipline name format
-phases:
-- phase: jobOne
-  steps:
-  - script: echo hello

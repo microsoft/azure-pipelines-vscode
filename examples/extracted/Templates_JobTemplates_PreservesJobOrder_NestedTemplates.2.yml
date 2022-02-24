@@ -1,4 +1,0 @@
-jobs:
-- job: 1
-- template: jobs.yml
-- job: 2

@@ -1,7 +1,0 @@
-steps:
-- script: echo 1
-- script: echo steps 1
-- script: echo nested-steps 1
-- script: echo nested-steps 2
-- script: echo steps 2
-- script: echo 2

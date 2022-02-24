@@ -1,8 +1,0 @@
-jobs:
-- job: job1
-- job: job2
-  strategy:
-    parallel: 5
-- job: job3
-  strategy:
-    parallel: $[ variables.parallel ]

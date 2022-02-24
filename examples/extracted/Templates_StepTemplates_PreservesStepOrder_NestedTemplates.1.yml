@@ -1,4 +1,0 @@
-steps:
-- script: echo steps 1
-- template: nested-steps.yml
-- script: echo steps 2

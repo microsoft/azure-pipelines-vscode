@@ -1,8 +1,0 @@
-jobs:
-- job: job1
-- job: job2
-  pool: myPool
-  workspace:
-    clean: all
-  steps:
-  - script: echo hi

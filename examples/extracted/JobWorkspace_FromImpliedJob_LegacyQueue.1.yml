@@ -1,5 +1,0 @@
-pool: myPool
-workspace:
-  clean: all
-steps:
-- script: echo hi

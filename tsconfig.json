@@ -1,58 +1,19 @@
 {
-    "compilerOptions": {
-        /* Parse in strict mode and emit "use strict" for each source file. */
-        "alwaysStrict": true,
-
-        /* List of library files to be included in the compilation. */
-        "lib": [ "es2019" ],
-
-        /* Specify module code generation. */
-        "module": "commonjs",
-
-        /*  */
-        "moduleResolution": "node",
-
-        /* Report errors for fallthrough cases in switch statement. */
-        "noFallthroughCasesInSwitch": true,
-
-        /* Report error when not all code paths in function return a value. */
-        "noImplicitReturns": true,
-
-        /* Report errors on unused locals. */
-        "noUnusedLocals": true,
-
-        /* Report errors on unused parameters. */
-        //"noUnusedParameters": true,
-
-        /* Redirect output structure to the directory. */
-        "outDir": "out",
-
-        /* Specifies the root directory of input files. Only use to control the output directory structure with --outDir. */
-        "rootDir": "src",
-
-        /* Generates corresponding .map file. */
-        "sourceMap": true,
-
-        /* Enable all strict type checking options.
-           Enabling --strict enables
-                --noImplicitAny,
-                --noImplicitThis,
-                --alwaysStrict,
-                --strictNullChecks,
-                --strictFunctionTypes
-                --strictPropertyInitialization.
-        */
-        //"strict": true,
-
-        /* Specify ECMAScript target version. */
-        "target": "es2019",
-
-        /*  */
-        "allowJs": true,
-
-        "skipLibCheck": true // https://github.com/Azure/ms-rest-js/issues/367
-    },
-    "include": [
-        "src"
-    ]
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "lib": ["es2019"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "outDir": "out",
+    "rootDir": "src",
+    "sourceMap": true,
+    "strict": false,
+    "target": "es2019",
+    "allowJs": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
 }

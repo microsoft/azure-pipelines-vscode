@@ -1,4 +1,0 @@
-steps:
-- script: echo 1
-- template: steps.yml
-- script: echo 2
