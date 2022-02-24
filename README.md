@@ -15,6 +15,14 @@ You can configure filename patterns to match as `nuclei-vscode` language.
 },
 ```
 
+or, you can just enable manually:
+
+```
+> Ctrl + Shift + P
+> Change Language Mode
+> Nuclei Vscode (nuclei-vscode)
+```
+
 ### Schema support
 
 - **id**: url friendly regex. Not nuclei default regex for ID

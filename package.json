@@ -79,6 +79,21 @@
         },
         "editor.autoIndent": "full"
       }
+    },
+    "configuration": {
+      "title": "Nuclei Vscode",
+      "properties": {
+        "nuclei-vscode.configure": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable 'Configure Template' feature"
+        },
+        "nuclei-vscode.customSchemaFile": {
+          "type": "string",
+          "description": "Use a different schema file",
+          "scope": "machine-overridable"
+        }
+      }
     }
   },
   "scripts": {
