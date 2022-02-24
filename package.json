@@ -36,8 +36,7 @@
     "project discovery"
   ],
   "activationEvents": [
-    "onLanguage:nuclei-vscode",
-    "onCommand:nuclei-vscode.configure-pipeline"
+    "onLanguage:nuclei-vscode"
   ],
   "main": "./dist/extension",
   "capabilities": {
@@ -69,21 +68,6 @@
         "path": "./syntaxes/yaml.tmLanguage.json"
       }
     ],
-    "configuration": {
-      "title": "Nuclei Vscode",
-      "properties": {
-        "nuclei-vscode.configure": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable 'Configure Pipeline' feature"
-        },
-        "nuclei-vscode.customSchemaFile": {
-          "type": "string",
-          "description": "Use a different schema file",
-          "scope": "machine-overridable"
-        }
-      }
-    },
     "configurationDefaults": {
       "[nuclei-vscode]": {
         "editor.insertSpaces": true,
@@ -95,22 +79,6 @@
         },
         "editor.autoIndent": "full"
       }
-    },
-    "commands": [
-      {
-        "command": "nuclei-vscode.configure-pipeline",
-        "title": "Configure Pipeline",
-        "category": "Nuclei Vscode"
-      }
-    ],
-    "menus": {
-      "explorer/context": [
-        {
-          "command": "nuclei-vscode.configure-pipeline",
-          "group": "Nuclei Vscode",
-          "when": "explorerResourceIsFolder == true"
-        }
-      ]
     }
   },
   "scripts": {

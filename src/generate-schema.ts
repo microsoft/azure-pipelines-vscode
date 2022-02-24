@@ -1,7 +1,7 @@
-import { z } from "zod";
-import zodToJsonSchema from "zod-to-json-schema";
 import * as fs from "fs";
 import * as path from "path";
+import { z } from "zod";
+import zodToJsonSchema from "zod-to-json-schema";
 
 export enum Severity {
   info = "info",
@@ -64,8 +64,8 @@ type Classification = Partial<{
 
 type Info = {
   name: string;
-  author: string; // Nuclei transform this in array, split by comma
-  tags: string; // Nuclei transform this in array, split by comma
+  author: string;
+  tags: string;
   description: string;
   reference: string[];
   severity: Severity;
@@ -97,6 +97,8 @@ const integer = z.number().int().positive();
 
 const nucleiArrayLike = z.string().regex(/^([a-zA-Z0-9_-]+,?)+$/);
 
+const bool = z.boolean().optional();
+
 const nucleiRequestSchema = z.object({
   method: z.nativeEnum(HttpMethod),
   path: z.array(z.string().nonempty()).nonempty(),
@@ -106,19 +108,50 @@ const nucleiRequestSchema = z.object({
   headers: z.record(z.string()).optional(),
   race_count: integer.optional(),
   threads: integer.optional(),
-  redirects: z.boolean().optional(),
-  pipeline: z.boolean().optional(),
-  unsafe: z.boolean().optional(),
-  race: z.boolean().optional(),
+  redirects: bool,
+  pipeline: bool,
+  unsafe: bool,
+  race: bool,
   "max-redirects": integer.optional(),
   "pipeline-concurrent-connections": integer.optional(),
   "pipeline-requests-per-connection": integer.optional(),
   "max-size": integer.optional(),
-  "req-condition": z.boolean().optional(),
-  "iterate-all": z.boolean().optional(),
-  "skip-variables-check": z.boolean().optional(),
-  "stop-at-first-match": z.boolean().optional(),
-  "cookie-reuse": z.boolean().optional(),
+  "req-condition": bool,
+  "iterate-all": bool,
+  "skip-variables-check": bool,
+  "stop-at-first-match": bool,
+  "cookie-reuse": bool,
+});
+
+enum DnsRequestType {
+  A = "A",
+  NS = "NS",
+  DS = "DS",
+  CNAME = "SOA",
+  PTR = "PTR",
+  MX = "TXT",
+  AAAA = "AAAA",
+}
+
+enum DnsClass {
+  inet = "inet",
+  csnet = "csnet",
+  chaos = "chaos",
+  hesiod = "hesiod",
+  any = "any",
+  none = "none",
+}
+
+const nucleiDnsSchema = z.object({
+  id: notEmptyString,
+  retries: integer.optional(),
+  trace: bool,
+  class: z.nativeEnum(DnsClass),
+  name: notEmptyString.optional(),
+  recursion: bool,
+  type: z.nativeEnum(DnsRequestType),
+  "trace-max-recursion": integer.optional(),
+  resolvers: z.array(notEmptyString).optional(),
 });
 
 const templateInfoSchema = z.object({
@@ -145,15 +178,18 @@ const templateSchema = z.object({
     .regex(/^([a-zA-Z0-9]+[-_])*[a-zA-Z0-9]+$/)
     .nonempty(),
   info: templateInfoSchema,
+  "self-container": bool,
+  "stop-at-first-match": bool,
+  dns: z.array(nucleiDnsSchema).nonempty(),
   requests: z.array(nucleiRequestSchema).nonempty(),
 });
 
 const jsonSchema: any = zodToJsonSchema(templateSchema, "template");
 
-jsonSchema.title = "Pipeline schema";
-jsonSchema.description = "A pipeline definition";
+jsonSchema.title = "Nuclei template schema";
+jsonSchema.description = "A Nuclei template definition";
 
 fs.writeFileSync(
   path.resolve(process.cwd(), "service-schema.json"),
-  JSON.stringify(jsonSchema)
+  JSON.stringify(jsonSchema, null, 2)
 );

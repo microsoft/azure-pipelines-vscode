@@ -1,1 +1,273 @@
-{"$schema":"http://json-schema.org/draft-07/schema#","$ref":"#/definitions/template","definitions":{"template":{"type":"object","properties":{"id":{"type":"string","pattern":"^([a-zA-Z0-9]+[-_])*[a-zA-Z0-9]+$","minLength":1},"info":{"type":"object","properties":{"name":{"type":"string","minLength":1},"tags":{"type":"string","pattern":"^([a-zA-Z0-9_-]+,?)+$"},"author":{"$ref":"#/properties/info/properties/tags"},"description":{"type":"string","minLength":1,"maxLength":2048},"reference":{"type":"array","items":{"type":"string","minLength":1,"format":"uri"}},"severity":{"type":"string","enum":["info","low","medium","high","critical"]},"remediation":{"type":"string"},"classification":{"type":"object","properties":{"cve-id":{"type":"string","pattern":"^CVE-\\d{4}-\\d{4,7}$"},"cwd-id":{"type":"string","pattern":"^CWE-[0-9]+$"},"cvss-metrics":{"type":"string"},"cvss-score":{"type":"integer","exclusiveMinimum":0,"minimum":0,"maximum":10}},"required":["cve-id","cwd-id","cvss-metrics","cvss-score"],"additionalProperties":false}},"required":["name","tags","author"],"additionalProperties":false},"requests":{"type":"array","items":{"type":"object","properties":{"method":{"type":"string","enum":["GET","POST","PUT","DELETE","CONNECT","OPTIONS","TRACE","PATCH","PURGE","Debug"]},"path":{"type":"array","items":{"type":"string","minLength":1},"minItems":1},"attack":{"type":"string","enum":["batteringram","pitchfork","clusterbomb"]},"id":{"type":"string"},"body":{"type":"string"},"headers":{"type":"object","additionalProperties":{"type":"string"}},"race_count":{"type":"integer","exclusiveMinimum":0},"threads":{"$ref":"#/properties/requests/items/properties/race_count"},"redirects":{"type":"boolean"},"pipeline":{"type":"boolean"},"unsafe":{"type":"boolean"},"race":{"type":"boolean"},"max-redirects":{"$ref":"#/properties/requests/items/properties/race_count"},"pipeline-concurrent-connections":{"$ref":"#/properties/requests/items/properties/race_count"},"pipeline-requests-per-connection":{"$ref":"#/properties/requests/items/properties/race_count"},"max-size":{"$ref":"#/properties/requests/items/properties/race_count"},"req-condition":{"type":"boolean"},"iterate-all":{"type":"boolean"},"skip-variables-check":{"type":"boolean"},"stop-at-first-match":{"type":"boolean"},"cookie-reuse":{"type":"boolean"}},"required":["method","path"],"additionalProperties":false},"minItems":1}},"required":["id","info","requests"],"additionalProperties":false}},"title":"Pipeline schema","description":"A pipeline definition"}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/template",
+  "definitions": {
+    "template": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^([a-zA-Z0-9]+[-_])*[a-zA-Z0-9]+$",
+          "minLength": 1
+        },
+        "info": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tags": {
+              "type": "string",
+              "pattern": "^([a-zA-Z0-9_-]+,?)+$"
+            },
+            "author": {
+              "$ref": "#/properties/info/properties/tags"
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "reference": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "format": "uri"
+              }
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "info",
+                "low",
+                "medium",
+                "high",
+                "critical"
+              ]
+            },
+            "remediation": {
+              "type": "string"
+            },
+            "classification": {
+              "type": "object",
+              "properties": {
+                "cve-id": {
+                  "type": "string",
+                  "pattern": "^CVE-\\d{4}-\\d{4,7}$"
+                },
+                "cwd-id": {
+                  "type": "string",
+                  "pattern": "^CWE-[0-9]+$"
+                },
+                "cvss-metrics": {
+                  "type": "string"
+                },
+                "cvss-score": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "minimum": 0,
+                  "maximum": 10
+                }
+              },
+              "required": [
+                "cve-id",
+                "cwd-id",
+                "cvss-metrics",
+                "cvss-score"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "name",
+            "tags",
+            "author"
+          ],
+          "additionalProperties": false
+        },
+        "self-container": {
+          "type": "boolean"
+        },
+        "stop-at-first-match": {
+          "$ref": "#/properties/self-container"
+        },
+        "dns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "$ref": "#/properties/info/properties/name"
+              },
+              "retries": {
+                "type": "integer",
+                "exclusiveMinimum": 0
+              },
+              "trace": {
+                "$ref": "#/properties/self-container"
+              },
+              "class": {
+                "type": "string",
+                "enum": [
+                  "inet",
+                  "csnet",
+                  "chaos",
+                  "hesiod",
+                  "any",
+                  "none"
+                ]
+              },
+              "name": {
+                "$ref": "#/properties/info/properties/name"
+              },
+              "recursion": {
+                "$ref": "#/properties/self-container"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "A",
+                  "NS",
+                  "DS",
+                  "SOA",
+                  "PTR",
+                  "TXT",
+                  "AAAA"
+                ]
+              },
+              "trace-max-recursion": {
+                "$ref": "#/properties/dns/items/properties/retries"
+              },
+              "resolvers": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/properties/info/properties/name"
+                }
+              }
+            },
+            "required": [
+              "id",
+              "class",
+              "type"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "requests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "method": {
+                "type": "string",
+                "enum": [
+                  "GET",
+                  "POST",
+                  "PUT",
+                  "DELETE",
+                  "CONNECT",
+                  "OPTIONS",
+                  "TRACE",
+                  "PATCH",
+                  "PURGE",
+                  "Debug"
+                ]
+              },
+              "path": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              },
+              "attack": {
+                "type": "string",
+                "enum": [
+                  "batteringram",
+                  "pitchfork",
+                  "clusterbomb"
+                ]
+              },
+              "id": {
+                "type": "string"
+              },
+              "body": {
+                "type": "string"
+              },
+              "headers": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "race_count": {
+                "$ref": "#/properties/dns/items/properties/retries"
+              },
+              "threads": {
+                "$ref": "#/properties/dns/items/properties/retries"
+              },
+              "redirects": {
+                "$ref": "#/properties/self-container"
+              },
+              "pipeline": {
+                "$ref": "#/properties/self-container"
+              },
+              "unsafe": {
+                "$ref": "#/properties/self-container"
+              },
+              "race": {
+                "$ref": "#/properties/self-container"
+              },
+              "max-redirects": {
+                "$ref": "#/properties/dns/items/properties/retries"
+              },
+              "pipeline-concurrent-connections": {
+                "$ref": "#/properties/dns/items/properties/retries"
+              },
+              "pipeline-requests-per-connection": {
+                "$ref": "#/properties/dns/items/properties/retries"
+              },
+              "max-size": {
+                "$ref": "#/properties/dns/items/properties/retries"
+              },
+              "req-condition": {
+                "$ref": "#/properties/self-container"
+              },
+              "iterate-all": {
+                "$ref": "#/properties/self-container"
+              },
+              "skip-variables-check": {
+                "$ref": "#/properties/self-container"
+              },
+              "stop-at-first-match": {
+                "$ref": "#/properties/self-container"
+              },
+              "cookie-reuse": {
+                "$ref": "#/properties/self-container"
+              }
+            },
+            "required": [
+              "method",
+              "path"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "id",
+        "info",
+        "dns",
+        "requests"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "title": "Nuclei template schema",
+  "description": "A Nuclei template definition"
+}
