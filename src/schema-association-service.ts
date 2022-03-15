@@ -14,9 +14,14 @@ import { LocalGitRepoHelper } from './configure/helper/LocalGitRepoHelper';
 import { Messages } from './messages';
 
 export async function locateSchemaFile(context: vscode.ExtensionContext): Promise<string> {
-    let schemaUri = await autoDetectSchema(context);
-    if (schemaUri) {
-        return schemaUri.toString();
+    let schemaUri: vscode.Uri | undefined;
+    try {
+        schemaUri = await autoDetectSchema(context);
+        if (schemaUri) {
+            return schemaUri.toString();
+        }
+    } catch (error) {
+        // Well, we tried our best. Fall back to the predetermined schema paths.
     }
 
     let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile');
