@@ -4,7 +4,7 @@ import * as util from 'util';
 import { sleepForMilliSeconds } from '../commonHelper';
 import { ServiceConnectionClient } from '../../clients/devOps/serviceConnectionClient';
 import { AadApplication } from '../../model/models';
-import { Messages } from '../../resources/messages';
+import { Messages } from '../../../messages';
 
 export class ServiceConnectionHelper {
     private serviceConnectionClient: ServiceConnectionClient;

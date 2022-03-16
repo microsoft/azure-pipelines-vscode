@@ -1,7 +1,7 @@
 const uuid = require('uuid/v1');
 import { AzureSession, AadApplication } from '../model/models';
 import { generateRandomPassword, executeFunctionWithRetry } from './commonHelper';
-import { Messages } from '../resources/messages';
+import { Messages } from '../../messages';
 import { RestClient } from '../clients/restClient';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';

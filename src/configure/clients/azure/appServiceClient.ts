@@ -5,7 +5,7 @@ import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 
 import { AzureResourceClient } from './azureResourceClient';
 import { WebAppKind, ParsedAzureResourceId } from '../../model/models';
-import {Messages} from '../../resources/messages';
+import { Messages } from '../../../messages';
 
 export class AppServiceClient extends AzureResourceClient {
 

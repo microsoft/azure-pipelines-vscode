@@ -6,7 +6,7 @@ import * as util from 'util';
 import { RestClient } from '../restClient';
 import { Organization, OrganizationAvailability } from '../../model/models';
 import { ReservedHostNames } from '../../resources/constants';
-import { Messages } from '../../resources/messages';
+import { Messages } from '../../../messages';
 import { telemetryHelper } from '../../../helpers/telemetryHelper';
 
 export class OrganizationsClient {

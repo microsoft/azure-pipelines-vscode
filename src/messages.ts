@@ -55,5 +55,5 @@ export class Messages {
     public static waitForAzureSignIn: string = `Waiting for Azure sign-in...`;
     public static cannotFindPipelineUrlInMetaDataException = 'We were unable to find pipeline associated with the Azure Web App. Please click on "Browse Pipeline" to explore.';
     public static cannotFindOrganizationWithName = 'Unable to find organization with name: %s';
-
+    public static signInForEnhancedIntelliSense = 'Sign in to Azure for enhanced Azure Pipelines IntelliSense';
 }

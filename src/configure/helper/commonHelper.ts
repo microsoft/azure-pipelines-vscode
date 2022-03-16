@@ -1,5 +1,5 @@
 import * as util from 'util';
-import { Messages } from '../resources/messages';
+import { Messages } from '../../messages';
 import * as logger from '../../logger';
 
 export async function sleepForMilliSeconds(timeInMs: number): Promise<void> {

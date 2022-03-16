@@ -8,9 +8,10 @@ import * as vscode from 'vscode';
 import * as languageclient from 'vscode-languageclient/node';
 
 import * as logger from './logger';
-import { SchemaAssociationService, SchemaAssociationNotification } from './schema-association-service';
+import { getSchemaAssociation, locateSchemaFile, SchemaAssociationNotification } from './schema-association-service';
 import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from './schema-contributor';
 import { telemetryHelper } from './helpers/telemetryHelper';
+import { getAzureAccountExtensionApi } from './extensionApis';
 
 export async function activate(context: vscode.ExtensionContext) {
     const configurePipelineEnabled = vscode.workspace.getConfiguration('azure-pipelines').get<boolean>('configure', true);
@@ -35,18 +36,14 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
     const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Language', serverOptions, clientOptions);
 
-    const schemaAssociationService = new SchemaAssociationService(context.extensionPath);
-
     const disposable = client.start();
     context.subscriptions.push(disposable);
-
-    const initialSchemaAssociations = schemaAssociationService.getSchemaAssociation();
 
     // If this throws, the telemetry event in activate() will catch & log it
     await client.onReady();
 
     // Notify the server which schemas to use.
-    client.sendNotification(SchemaAssociationNotification.type, initialSchemaAssociations);
+    await loadSchema(context, client);
 
     // Fired whenever the server is about to validate a YAML file (e.g. on content change),
     // and allows us to return a custom schema to use for validation.
@@ -65,14 +62,26 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
 
     // Let the server know of any schema changes.
-    // TODO: move to schema-association-service?
-    vscode.workspace.onDidChangeConfiguration(event => {
+    context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
         if (event.affectsConfiguration('azure-pipelines.customSchemaFile')) {
-            schemaAssociationService.locateSchemaFile();
-            const newSchema = schemaAssociationService.getSchemaAssociation();
-            client.sendNotification(SchemaAssociationNotification.type, newSchema);
+            await loadSchema(context, client);
         }
-    });
+    }));
+
+    // Re-request the schema on Azure login since auto-detection is dependent on login.
+    const azureAccountApi = await getAzureAccountExtensionApi();
+    context.subscriptions.push(azureAccountApi.onStatusChanged(async status => {
+        if (status === 'LoggedIn') {
+            await loadSchema(context, client);
+        }
+    }));
+}
+
+// Find the schema and notify the server.
+async function loadSchema(context: vscode.ExtensionContext, client: languageclient.LanguageClient): Promise<void> {
+    const schemaFilePath = await locateSchemaFile(context);
+    const schema = getSchemaAssociation(schemaFilePath);
+    client.sendNotification(SchemaAssociationNotification.type, schema);
 }
 
 function getServerOptions(context: vscode.ExtensionContext): languageclient.ServerOptions {

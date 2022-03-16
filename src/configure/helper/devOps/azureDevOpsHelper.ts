@@ -4,7 +4,7 @@ import { BuildDefinition, ContinuousIntegrationTrigger, DefinitionQuality, Defin
 import { TaskAgentQueue } from 'azure-devops-node-api/interfaces/TaskAgentInterfaces';
 
 import { WizardInputs, RepositoryProvider } from '../../model/models';
-import { Messages } from '../../resources/messages';
+import { Messages } from '../../../messages';
 
 export class AzureDevOpsHelper {
     // https://dev.azure.com/ OR https://org@dev.azure.com/

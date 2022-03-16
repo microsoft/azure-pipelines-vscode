@@ -1,5 +1,5 @@
 import { GitRepositoryParameters, GitBranchDetails } from '../model/models';
-import { Messages } from '../resources/messages';
+import { Messages } from '../../messages';
 import * as fs from 'fs/promises';
 import * as git from 'simple-git/promise';
 import * as path from 'path';

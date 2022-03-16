@@ -2,15 +2,17 @@ import { Environment } from '@azure/ms-rest-azure-env';
 import { ResourceManagementModels } from '@azure/arm-resources';
 import { SubscriptionModels } from '@azure/arm-subscriptions';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
-import { QuickPickItem } from 'vscode';
-import { Messages } from '../resources/messages';
+import { Event, QuickPickItem } from 'vscode';
+import { Messages } from '../../messages';
 import { TeamProjectReference } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 
-// https://github.com/microsoft/vscode-azure-account/blob/master/src/azure-account.api.d.ts
+// https://github.com/microsoft/vscode-azure-account/blob/main/src/azure-account.api.d.ts
 // with just the properties we need
+export type AzureLoginStatus = 'Initializing' | 'LoggingIn' | 'LoggedIn' | 'LoggedOut';
+
 export interface AzureAccount {
-	// readonly status: AzureLoginStatus;
-	// readonly onStatusChanged: Event<AzureLoginStatus>;
+	readonly status: AzureLoginStatus;
+	readonly onStatusChanged: Event<AzureLoginStatus>;
 	readonly waitForLogin: () => Promise<boolean>;
 	readonly sessions: AzureSession[];
 	// readonly onSessionsChanged: Event<void>;
