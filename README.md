@@ -8,7 +8,7 @@ This VS Code extension adds syntax highlighting and autocompletion for Azure Pip
 
 ## Validation
 
-Basic YAML validation is built in to VS Code, but now you can have syntax highlighting that's aware of the Pipelines YAML schema. This means that you get red squigglies if you say tasks: where you meant task:. IntelliSense is also schema-aware. Wherever you are in the file, press Ctrl-Space to see what options you have at that point.
+Basic YAML validation is built in to VS Code, but now you can have syntax highlighting that's aware of the Pipelines YAML schema. This means that you get red squigglies if you say `tasks:` where you meant `task:`. IntelliSense is also schema-aware. Wherever you are in the file, press Ctrl-Space to see what options you have at that point.
 
 By default, the extension will highlight known Azure Pipelines files in the root of your workspace. You can change the language mode at the lower right to work with one file at a time. Click the language picker, then choose "Azure Pipelines". If you have files which should always use this extension, set your user or workspace settings to match those file paths with this extension. For example:
 
@@ -20,22 +20,25 @@ By default, the extension will highlight known Azure Pipelines files in the root
 }
 ```
 
-### Specific schema
+### Schema auto-detection
 
 Out of the box, the extension has a generic schema file that includes only in-box tasks.
 You probably have custom tasks installed in your organization.
-To teach the extension about those, grab a copy of your schema and tell the extension where to find it.
 
-1. Visit `https://dev.azure.com/YOU-ORG-HERE/_apis/distributedtask/yamlschema` and save the output as `my-schema.json`.
+If the repository you're working in is hosted in Azure Repos, the extension will automatically detect and use
+your organization's schema! All you need to do is login to Azure when prompted.
+
+### Specific schema
+
+If your repository isn't hosted in Azure Repos, you can tell the extension where to find the correct schema.
+
+1. Visit `https://dev.azure.com/YOUR-ORG-HERE/_apis/distributedtask/yamlschema` and save the output as `my-schema.json`.
 2. Edit your workspace's `settings.json` to include this:
 ```json
 {
   "azure-pipelines.customSchemaFile": "./path/to/my-schema.json"
 }
 ```
-3. Restart VS Code.
-The extension will now validate against your schema.
-It'll give you autocompletes for your custom tasks.
 
 ## Document formatting
 
