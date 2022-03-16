@@ -11,7 +11,7 @@
   - This will create a GitHub release at the commit you've specified!
 0. Ship the resulting package to the [Marketplace](https://marketplace.visualstudio.com/manage/publishers/ms-azure-devops).
   - You can grab it from either the pipeline run or off GitHub itself.
-0. Bump the package.json/package-lock.json patch version numbers so that CI produces prerelease packages off the "next" release.
+0. Run `npm version --no-git-tag-version patch` so that packages produced by CI are treated as newer than the released version.
 0. Push that change and merge the PR. You can now delete the branch.
 
 ## Bumping service schema
