@@ -1,8 +1,9 @@
 # Releasing the extension
 
 0. Work in a branch. I sometimes go with `ship-<version-num>`, for example, `ship-191`.
-0. Ensure package.json and package-lock.json have the version number you want to release.
-  - You can do this with `npm version --no-git-tag-version <patch|minor|major>` to get both files at once.
+0. Find the current sprint using https://whatsprintis.it.
+0. Update the version to the major sprint number using `npm version --no-git-tag-version THE_SPRINT_VERSION`.
+  - Replace `THE_SPRINT_VERSION` with `patch` if you are doing a bugfix release.
 0. Ensure the CHANGELOG is up to date.
 0. Update the [service schema](#bumping-service-schema).
 0. Create a PR on GitHub, mostly for tracking reasons.
