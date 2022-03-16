@@ -1,8 +1,9 @@
 # Releasing the extension
 
 0. Work in a branch. I sometimes go with `ship-<version-num>`, for example, `ship-191`.
-0. Ensure package.json and package-lock.json have the version number you want to release.
-  - You can do this with `npm version --no-git-tag-version <patch|minor|major>` to get both files at once.
+0. Find the current sprint using https://whatsprintis.it.
+0. Update the version to the major sprint number using `npm version --no-git-tag-version THE_SPRINT_VERSION`.
+  - Replace `THE_SPRINT_VERSION` with `patch` if you are doing a bugfix release.
 0. Ensure the CHANGELOG is up to date.
 0. Update the [service schema](#bumping-service-schema).
 0. Create a PR on GitHub, mostly for tracking reasons.
@@ -10,7 +11,7 @@
   - This will create a GitHub release at the commit you've specified!
 0. Ship the resulting package to the [Marketplace](https://marketplace.visualstudio.com/manage/publishers/ms-azure-devops).
   - You can grab it from either the pipeline run or off GitHub itself.
-0. Bump the package.json/package-lock.json patch version numbers so that CI produces prerelease packages off the "next" release.
+0. Run `npm version --no-git-tag-version patch` so that packages produced by CI are treated as newer than the released version.
 0. Push that change and merge the PR. You can now delete the branch.
 
 ## Bumping service schema
