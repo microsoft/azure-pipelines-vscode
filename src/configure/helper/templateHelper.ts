@@ -2,11 +2,13 @@ import { PipelineTemplate, TargetResourceType, WizardInputs, WebAppKind } from '
 import * as fs from 'fs/promises';
 import * as Mustache from 'mustache';
 import * as path from 'path';
+import * as vscode from 'vscode';
+import { URI } from 'vscode-uri';
 
-export async function analyzeRepoAndListAppropriatePipeline(repoPath: string): Promise<PipelineTemplate[]> {
+export async function analyzeRepoAndListAppropriatePipeline(repoUri: URI): Promise<PipelineTemplate[]> {
     // TO-DO: To populate the possible templates on the basis of azure target resource.
     let templateList = simpleWebAppTemplates;
-    let analysisResult = await analyzeRepo(repoPath);
+    let analysisResult = await analyzeRepo(repoUri);
 
 
     if (analysisResult.isNodeApplication) {
@@ -35,14 +37,16 @@ export async function renderContent(templateFilePath: string, context: WizardInp
     return Mustache.render(data, context);
 }
 
-async function analyzeRepo(repoPath: string): Promise<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean, isDotnetCoreApplication: boolean }> {
-    let files: string[];
+async function analyzeRepo(repoUri: URI): Promise<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean, isDotnetCoreApplication: boolean }> {
+    let contents: [string, vscode.FileType][];
     let err = false;
     try {
-        files = await fs.readdir(repoPath);
+        contents = await vscode.workspace.fs.readDirectory(repoUri);
     } catch (e) {
         err = true;
     }
+
+    const files = contents.filter(file => file[1] !== vscode.FileType.Directory).map(file => file[0]);
 
     return {
         isNodeApplication: err ? true : isNodeRepo(files),

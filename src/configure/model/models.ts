@@ -3,6 +3,7 @@ import { ResourceManagementModels } from '@azure/arm-resources';
 import { SubscriptionModels } from '@azure/arm-subscriptions';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import { Event, QuickPickItem } from 'vscode';
+import { URI } from 'vscode-uri';
 import { Messages } from '../../messages';
 import { TeamProjectReference } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 
@@ -97,7 +98,7 @@ export interface GitRepositoryParameters {
     remoteUrl: string;
     branch: string;
     commitId: string;
-    localPath?: string;
+    rootUri: URI;
     serviceConnectionId?: string; // Id of the service connection in Azure DevOps
 }
 
@@ -138,11 +139,8 @@ export enum WebAppKind {
     LinuxContainerApp = 'app,linux,container'
 }
 
-export class QuickPickItemWithData implements QuickPickItem {
-    label: string;
-    data: any;
-    description?: string;
-    detail?: string;
+export interface QuickPickItemWithData<T> extends QuickPickItem {
+    data: T;
 }
 
 export class ParsedAzureResourceId {
