@@ -58,7 +58,7 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
     // Get the remote URL if we're in a Git repo
     let remoteUrl: string | void;
     try {
-        const gitHelper = await LocalGitRepoHelper.GetHelperInstance(vscode.workspace.workspaceFolders[0].uri.fsPath);
+        const gitHelper = await LocalGitRepoHelper.GetHelperInstance(vscode.workspace.workspaceFolders[0].uri);
         const remoteName = (await gitHelper.getGitBranchDetails()).remoteName;
         remoteUrl = await gitHelper.getGitRemoteUrl(remoteName);
     } catch (error) {

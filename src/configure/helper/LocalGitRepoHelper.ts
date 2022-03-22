@@ -2,7 +2,7 @@ import { GitRepositoryParameters, GitBranchDetails } from '../model/models';
 import { Messages } from '../../messages';
 import * as fs from 'fs/promises';
 import * as git from 'simple-git/promise';
-import * as path from 'path';
+import { URI } from 'vscode-uri';
 
 export class LocalGitRepoHelper {
     private gitReference: git.SimpleGit;
@@ -10,10 +10,10 @@ export class LocalGitRepoHelper {
     private constructor() {
     }
 
-    public static async GetHelperInstance(repositoryPath: string): Promise<LocalGitRepoHelper> {
+    public static async GetHelperInstance(repositoryUri: URI): Promise<LocalGitRepoHelper> {
         try {
             const repoService = new LocalGitRepoHelper();
-            repoService.initialize(repositoryPath);
+            repoService.initialize(repositoryUri);
             await repoService.gitReference.status();
             return repoService;
         } catch (error) {
@@ -21,7 +21,7 @@ export class LocalGitRepoHelper {
         }
     }
 
-    public static async GetAvailableFileName(fileName:string, repoPath: string): Promise<string> {
+    public static async GetAvailableFileName(fileName: string, repoPath: string): Promise<string> {
         const files = await fs.readdir(repoPath);
         if (!files.includes(fileName)) {
             return fileName;
@@ -92,16 +92,11 @@ export class LocalGitRepoHelper {
         return gitLog.latest.hash;
     }
 
-    public async getGitRootDirectory(): Promise<string> {
-        let gitRootDir = await this.gitReference.revparse(["--show-toplevel"]);
-        return path.normalize(gitRootDir.trim());
-    }
-
     private static getIncrementalFileName(fileName: string, count: number): string {
         return fileName.substr(0, fileName.indexOf('.')).concat(` (${count})`, fileName.substr(fileName.indexOf('.')));
     }
 
-    private initialize(repositoryPath: string): void {
-        this.gitReference = git(repositoryPath);
+    private initialize(repositoryUri: URI): void {
+        this.gitReference = git(repositoryUri.fsPath);
     }
 }
