@@ -1,11 +1,12 @@
 const uuid = require('uuid/v1');
-import { AzureSession, AadApplication } from '../model/models';
+import { AadApplication } from '../model/models';
 import { generateRandomPassword, executeFunctionWithRetry } from './commonHelper';
 import { Messages } from '../../messages';
 import { RestClient } from '../clients/restClient';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 import * as util from 'util';
+import { AzureSession } from '../../typings/azure-account.api';
 
 // TODO: Replace this class with @microsoft/microsoft-graph-client and @azure/arm-authorization
 // client.api("/applications").post()

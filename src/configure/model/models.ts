@@ -1,55 +1,10 @@
-import { Environment } from '@azure/ms-rest-azure-env';
 import { ResourceManagementModels } from '@azure/arm-resources';
-import { SubscriptionModels } from '@azure/arm-subscriptions';
-import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
-import { Event, QuickPickItem } from 'vscode';
+import { QuickPickItem } from 'vscode';
 import { URI } from 'vscode-uri';
 import { Messages } from '../../messages';
 import { TeamProjectReference } from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import { AzureSession } from '../../typings/azure-account.api';
 
-// https://github.com/microsoft/vscode-azure-account/blob/main/src/azure-account.api.d.ts
-// with just the properties we need
-export type AzureLoginStatus = 'Initializing' | 'LoggingIn' | 'LoggedIn' | 'LoggedOut';
-
-export interface AzureAccount {
-	readonly status: AzureLoginStatus;
-	readonly onStatusChanged: Event<AzureLoginStatus>;
-	readonly waitForLogin: () => Promise<boolean>;
-	readonly sessions: AzureSession[];
-	// readonly onSessionsChanged: Event<void>;
-	readonly subscriptions: AzureSubscription[];
-	// readonly onSubscriptionsChanged: Event<void>;
-	readonly waitForSubscriptions: () => Promise<boolean>;
-	readonly filters: AzureResourceFilter[];
-	// readonly onFiltersChanged: Event<void>;
-	readonly waitForFilters: () => Promise<boolean>;
-	// createCloudShell(os: 'Linux' | 'Windows'): CloudShell;
-}
-
-export interface AzureSession {
-	readonly environment: Environment;
-	readonly userId: string;
-	readonly tenantId: string;
-
-	/**
-	 * The credentials object for azure-sdk-for-node modules https://github.com/azure/azure-sdk-for-node
-	 */
-	// readonly credentials: ServiceClientCredentials;
-
-	/**
-	 * The credentials object for azure-sdk-for-js modules https://github.com/azure/azure-sdk-for-js
-	 */
-	readonly credentials2: TokenCredentialsBase;
-}
-
-export interface AzureSubscription {
-	readonly session: AzureSession;
-	readonly subscription: SubscriptionModels.Subscription;
-}
-
-export type AzureResourceFilter = AzureSubscription;
-
-// Other models
 export class WizardInputs {
     organizationName: string;
     isNewOrganization: boolean;

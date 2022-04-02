@@ -8,7 +8,7 @@ import { GraphHelper } from './helper/graphHelper';
 import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
 import { Messages } from '../messages';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
-import { SourceOptions, RepositoryProvider, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails, TargetResourceType, AzureSubscription } from './model/models';
+import { SourceOptions, RepositoryProvider, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails, TargetResourceType } from './model/models';
 import * as constants from './resources/constants';
 import { TracePoints } from './resources/tracePoints';
 import { getAzureAccountExtensionApi } from '../extensionApis';
@@ -26,12 +26,13 @@ import { getSubscriptionSession } from './helper/azureSessionHelper';
 import { UserCancelledError } from './helper/userCancelledError';
 import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { ProjectVisibility } from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import { AzureAccount, AzureSubscription } from '../typings/azure-account.api';
 
 const Layer: string = 'configure';
 
 export async function configurePipeline(): Promise<void> {
-    const azureAccountApi = await getAzureAccountExtensionApi();
-    if (!(await azureAccountApi.waitForLogin())) {
+    const azureAccount = await getAzureAccountExtensionApi();
+    if (!(await azureAccount.waitForLogin())) {
         telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
 
         let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
@@ -45,7 +46,7 @@ export async function configurePipeline(): Promise<void> {
         }
     }
 
-    const configurer = new PipelineConfigurer();
+    const configurer = new PipelineConfigurer(azureAccount);
     await configurer.configure();
 }
 
@@ -60,7 +61,7 @@ class PipelineConfigurer {
     private uniqueResourceNameSuffix: string;
     private controlProvider: ControlProvider;
 
-    public constructor() {
+    public constructor(private azureAccount: AzureAccount) {
         this.inputs = new WizardInputs();
         this.uniqueResourceNameSuffix = uuid().substr(0, 5);
         this.controlProvider = new ControlProvider();
@@ -380,7 +381,7 @@ class PipelineConfigurer {
     private async getAzureResourceDetails(): Promise<void> {
         // show available subscriptions and get the chosen one
         const azureAccountApi = await getAzureAccountExtensionApi();
-        const subscriptionList = azureAccountApi.filters.map((subscriptionObject) => {
+        const subscriptionList = azureAccountApi.filters.map(subscriptionObject => {
             return <QuickPickItemWithData<AzureSubscription>>{
                 label: `${<string>subscriptionObject.subscription.displayName}`,
                 data: subscriptionObject,
@@ -388,11 +389,11 @@ class PipelineConfigurer {
             };
         });
 
-        if(this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
+        if (this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
             const selectedSubscription: QuickPickItemWithData<AzureSubscription> =
                 await this.controlProvider.showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
             this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
-            this.inputs.azureSession = await getSubscriptionSession(this.inputs.targetResource.subscriptionId);
+            this.inputs.azureSession = await getSubscriptionSession(this.azureAccount, this.inputs.targetResource.subscriptionId);
 
             // show available resources and get the chosen one
             this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials2, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
@@ -418,9 +419,9 @@ class PipelineConfigurer {
                 TelemetryKeys.WebAppListCount);
 
             this.inputs.targetResource.resource = selectedResource.data;
-        } else if(subscriptionList.length > 0 ) {
+        } else if (subscriptionList.length > 0) {
             this.inputs.targetResource.subscriptionId = subscriptionList[0].data.subscription.subscriptionId;
-            this.inputs.azureSession = await getSubscriptionSession(this.inputs.targetResource.subscriptionId);
+            this.inputs.azureSession = await getSubscriptionSession(this.azureAccount, this.inputs.targetResource.subscriptionId);
         }
     }
 
