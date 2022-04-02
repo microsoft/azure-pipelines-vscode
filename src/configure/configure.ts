@@ -8,7 +8,7 @@ import { GraphHelper } from './helper/graphHelper';
 import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
 import { Messages } from '../messages';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
-import { SourceOptions, RepositoryProvider, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails, TargetResourceType, AzureSubscription } from './model/models';
+import { SourceOptions, RepositoryProvider, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails, TargetResourceType } from './model/models';
 import * as constants from './resources/constants';
 import { TracePoints } from './resources/tracePoints';
 import { getAzureAccountExtensionApi } from '../extensionApis';

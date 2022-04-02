@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { Messages } from './messages';
 import { AzureAccount } from './typings/azure-account.api';
-import { API, GitExtension } from './typings/git';
 
 let azureAccountExtensionApi: AzureAccount;
 export async function getAzureAccountExtensionApi(): Promise<AzureAccount> {
