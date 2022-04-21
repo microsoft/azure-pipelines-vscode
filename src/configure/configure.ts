@@ -20,6 +20,7 @@ import * as vscode from 'vscode';
 import { URI, Utils } from 'vscode-uri';
 import * as azdev from 'azure-devops-node-api';
 import * as templateHelper from './helper/templateHelper';
+import { getAvailableFileName } from './helper/commonHelper';
 import { ControlProvider } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
@@ -535,7 +536,7 @@ class PipelineConfigurer {
 
     private async checkInPipelineFileToRepository(): Promise<void> {
         try {
-            const fileName = await LocalGitRepoHelper.GetAvailableFileName("azure-pipelines.yml", this.inputs.sourceRepository.rootUri.fsPath);
+            const fileName = await getAvailableFileName("azure-pipelines.yml", this.inputs.sourceRepository.rootUri);
             const filePath = Utils.joinPath(this.inputs.sourceRepository.rootUri, fileName);
             const content = await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs);
             await vscode.workspace.fs.writeFile(filePath, Buffer.from(content));
