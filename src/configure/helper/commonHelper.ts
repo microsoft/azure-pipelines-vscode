@@ -1,3 +1,5 @@
+import * as vscode from 'vscode';
+import { URI } from 'vscode-uri';
 import * as util from 'util';
 import { Messages } from '../../messages';
 import * as logger from '../../logger';
@@ -39,4 +41,25 @@ export async function executeFunctionWithRetry<T>(
         }
 
         throw errorMessage ? errorMessage.concat(util.format(Messages.retryFailedMessage, retryCount, JSON.stringify(internalError))): util.format  (Messages.retryFailedMessage, retryCount, JSON.stringify(internalError));
+}
+
+export async function getAvailableFileName(fileName: string, repoPath: URI): Promise<string> {
+    const files = (await vscode.workspace.fs.readDirectory(repoPath)).map(entries => entries[0]);
+    if (!files.includes(fileName)) {
+        return fileName;
+    }
+
+    for (let i = 1; i < 100; i++) {
+        const incrementalFileName = getIncrementalFileName(fileName, i);
+        if (!files.includes(incrementalFileName)) {
+            return incrementalFileName;
+        }
+    }
+
+    throw new Error(Messages.noAvailableFileNames);
+}
+
+function getIncrementalFileName(fileName: string, count: number): string {
+    const periodIndex = fileName.indexOf('.');
+    return fileName.substring(0, periodIndex).concat(` (${count})`, fileName.substring(periodIndex));
 }

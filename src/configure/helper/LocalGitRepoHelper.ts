@@ -1,6 +1,5 @@
 import { GitRepositoryParameters, GitBranchDetails } from '../model/models';
 import { Messages } from '../../messages';
-import * as fs from 'fs/promises';
 import * as git from 'simple-git/promise';
 import { URI } from 'vscode-uri';
 
@@ -19,22 +18,6 @@ export class LocalGitRepoHelper {
         } catch (error) {
             throw new Error(Messages.notAGitRepository);
         }
-    }
-
-    public static async GetAvailableFileName(fileName: string, repoPath: string): Promise<string> {
-        const files = await fs.readdir(repoPath);
-        if (!files.includes(fileName)) {
-            return fileName;
-        }
-
-        for (let i = 1; i < 100; i++) {
-            let incrementalFileName = LocalGitRepoHelper.getIncrementalFileName(fileName, i);
-            if (!files.includes(incrementalFileName)) {
-                return incrementalFileName;
-            }
-        }
-
-        throw new Error(Messages.noAvailableFileNames);
     }
 
     public async getGitBranchDetails(): Promise<GitBranchDetails> {
@@ -90,10 +73,6 @@ export class LocalGitRepoHelper {
         }
 
         return gitLog.latest.hash;
-    }
-
-    private static getIncrementalFileName(fileName: string, count: number): string {
-        return fileName.substr(0, fileName.indexOf('.')).concat(` (${count})`, fileName.substr(fileName.indexOf('.')));
     }
 
     private initialize(repositoryUri: URI): void {
