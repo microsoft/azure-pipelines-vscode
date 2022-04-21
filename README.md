@@ -28,7 +28,7 @@ You probably have custom tasks installed in your organization.
 If the repository you're working in is hosted in Azure Repos, the extension will automatically detect and use
 your organization's schema! All you need to do is login to Azure when prompted.
 
-> If automatic fetching of the organization schema doesn't work, try signing using `Azure: Sign In` command from vscode command palette (Ctrl/Cmd + Shift + P). If that doesn't help, try signing out first (`Azure: Sign In` command).
+> If automatic fetching of the organization schema doesn't work, try signing out and signing back in using the `Azure: Sign Out` and `Azure: Sign In` commands from the VS Code command palette (Ctrl/Cmd + Shift + P).
 
 ### Specific schema
 
