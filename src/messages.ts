@@ -3,7 +3,9 @@ export class Messages {
     public static addYmlFile: string = 'Add Azure Pipelines YAML definition.';
     public static analyzingRepo: string = 'Analyzing your repo';
     public static appKindIsNotSupported: string = 'App type "%s" is not yet supported.';
-    public static azureAccountExntesionUnavailable: string = 'Azure-Account extension could not be fetched. Please ensure it\'s installed and activated.';
+    public static azureAccountExtensionUnavailable: string = 'Azure Account extension could not be fetched. Please ensure it\'s installed and activated.';
+    public static gitExtensionUnavailable: string = 'Git extension could not be fetched. Please ensure it\'s installed and activated.';
+    public static gitExtensionNotEnabled: string = 'Git extension is not enabled. Please change the `git.enabled` setting to true.';
     public static azureLoginRequired: string = 'Please sign in to your Azure account first.';
     public static branchRemoteMissing: string = `The current branch doesn't have a tracking branch, and the selected repository has no remotes. We're unable to create a remote tracking branch. Please [set a remote tracking branch](https://git-scm.com/docs/git-branch#Documentation/git-branch.txt---track) first, and then try this again.`;
     public static browsePipeline: string = 'Browse Pipeline';

@@ -5,13 +5,12 @@ import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
 import { OperationsClient } from './clients/devOps/operationsClient';
 import { ResourceManagementModels } from '@azure/arm-resources';
 import { GraphHelper } from './helper/graphHelper';
-import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
 import { Messages } from '../messages';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
-import { SourceOptions, RepositoryProvider, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails, TargetResourceType } from './model/models';
+import { SourceOptions, RepositoryProvider, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, TargetResourceType } from './model/models';
 import * as constants from './resources/constants';
 import { TracePoints } from './resources/tracePoints';
-import { getAzureAccountExtensionApi } from '../extensionApis';
+import { getAzureAccountExtensionApi, getGitExtensionApi } from '../extensionApis';
 import { telemetryHelper } from '../helpers/telemetryHelper';
 import { TelemetryKeys } from '../helpers/telemetryKeys';
 import * as path from 'path';
@@ -28,6 +27,7 @@ import { UserCancelledError } from './helper/userCancelledError';
 import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { ProjectVisibility } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import { AzureAccount, AzureSubscription } from '../typings/azure-account.api';
+import * as git from '../typings/git';
 
 const Layer: string = 'configure';
 
@@ -47,13 +47,14 @@ export async function configurePipeline(): Promise<void> {
         }
     }
 
-    const configurer = new PipelineConfigurer(azureAccount);
+    const gitExtension = await getGitExtensionApi();
+
+    const configurer = new PipelineConfigurer(azureAccount, gitExtension);
     await configurer.configure();
 }
 
 class PipelineConfigurer {
     private inputs: WizardInputs;
-    private localGitRepoHelper: LocalGitRepoHelper;
     private azureDevOpsClient: azdev.WebApi;
     private organizationsClient: OrganizationsClient;
     private serviceConnectionHelper: ServiceConnectionHelper;
@@ -62,7 +63,7 @@ class PipelineConfigurer {
     private uniqueResourceNameSuffix: string;
     private controlProvider: ControlProvider;
 
-    public constructor(private azureAccount: AzureAccount) {
+    public constructor(private azureAccount: AzureAccount, private gitExtension: git.API) {
         this.inputs = new WizardInputs();
         this.uniqueResourceNameSuffix = uuid().substr(0, 5);
         this.controlProvider = new ControlProvider();
@@ -207,40 +208,40 @@ class PipelineConfigurer {
     }
 
     private async getGitDetailsFromRepository(): Promise<void> {
-        this.localGitRepoHelper = await LocalGitRepoHelper.GetHelperInstance(this.workspaceUri);
-        let gitBranchDetails = await this.localGitRepoHelper.getGitBranchDetails();
+        const repo = this.gitExtension.getRepository(this.workspaceUri);
+        await repo.status();
+        let { name, remote } = repo.state.HEAD;
 
-        if (!gitBranchDetails.remoteName) {
-            // Remote tracking branch is not set
-            let remotes = await this.localGitRepoHelper.getGitRemoteNames();
+        if (!remote) {
+            // Remote tracking branch is not set, see if we have any remotes we can use.
+            const remotes = repo.state.remotes;
             if (remotes.length === 0) {
                 throw new Error(Messages.branchRemoteMissing);
-            }
-            else if (remotes.length === 1) {
-                gitBranchDetails.remoteName = remotes[0];
-            }
-            else {
+            } else if (remotes.length === 1) {
+                remote = remotes[0].name;
+            } else {
                 // Show an option to user to select remote to be configured
-                let selectedRemote = await this.controlProvider.showQuickPick(
+                const selectedRemote = await this.controlProvider.showQuickPick(
                     constants.SelectRemoteForRepo,
-                    remotes.map(remote => ({ label: remote })),
+                    remotes.map(remote => ({ label: remote.name })),
                     { placeHolder: Messages.selectRemoteForBranch });
-                gitBranchDetails.remoteName = selectedRemote.label;
+                remote = selectedRemote.label;
             }
         }
 
+        this.inputs.sourceRepository = await this.getGitRepositoryParameters(name, remote);
+
         // Set working directory relative to repository root
         this.inputs.pipelineParameters.workingDirectory = path.relative(this.inputs.sourceRepository.rootUri.fsPath, this.workspaceUri.fsPath);
-
-        this.inputs.sourceRepository = await this.getGitRepositoryParameters(gitBranchDetails);
 
         // set telemetry
         telemetryHelper.setTelemetry(TelemetryKeys.RepoProvider, this.inputs.sourceRepository.repositoryProvider);
     }
 
-    private async getGitRepositoryParameters(gitRepositoryDetails: GitBranchDetails): Promise<GitRepositoryParameters> {
-        let remoteUrl = await this.localGitRepoHelper.getGitRemoteUrl(gitRepositoryDetails.remoteName);
+    private async getGitRepositoryParameters(branch: string, remoteName: string): Promise<GitRepositoryParameters> {
+        const repo = this.gitExtension.getRepository(this.workspaceUri);
 
+        let remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName).fetchUrl;
         if (remoteUrl) {
             if (AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
                 remoteUrl = AzureDevOpsHelper.getFormattedRemoteUrl(remoteUrl);
@@ -248,9 +249,9 @@ class PipelineConfigurer {
                     repositoryProvider: RepositoryProvider.AzureRepos,
                     repositoryId: "",
                     repositoryName: AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl).repositoryName,
-                    remoteName: gitRepositoryDetails.remoteName,
+                    remoteName: remoteName,
                     remoteUrl: remoteUrl,
-                    branch: gitRepositoryDetails.branch,
+                    branch: branch,
                     commitId: "",
                     rootUri: this.workspaceUri
                 };
@@ -262,9 +263,9 @@ class PipelineConfigurer {
                     repositoryProvider: RepositoryProvider.Github,
                     repositoryId: repoId,
                     repositoryName: repoId,
-                    remoteName: gitRepositoryDetails.remoteName,
+                    remoteName: remoteName,
                     remoteUrl: remoteUrl,
-                    branch: gitRepositoryDetails.branch,
+                    branch: branch,
                     commitId: "",
                     rootUri: this.workspaceUri
                 };
@@ -542,28 +543,29 @@ class PipelineConfigurer {
             await vscode.workspace.fs.writeFile(filePath, Buffer.from(content));
             await vscode.workspace.saveAll(true);
             await vscode.window.showTextDocument(Utils.joinPath(this.inputs.sourceRepository.rootUri, this.inputs.pipelineParameters.pipelineFileName));
-        }
-        catch (error) {
+        } catch (error) {
             telemetryHelper.logError(Layer, TracePoints.AddingContentToPipelineFileFailed, error);
             throw error;
         }
 
         try {
             while (!this.inputs.sourceRepository.commitId) {
-                let commitOrDiscard = await vscode.window.showInformationMessage(utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, this.inputs.sourceRepository.branch, this.inputs.sourceRepository.remoteName), Messages.commitAndPush, Messages.discardPipeline);
-                if (commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
+                const commitOrDiscard = await vscode.window.showInformationMessage(utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, this.inputs.sourceRepository.branch, this.inputs.sourceRepository.remoteName), Messages.commitAndPush, Messages.discardPipeline);
+                if (commitOrDiscard?.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
                     await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
                         try {
                             // handle when the branch is not upto date with remote branch and push fails
-                            this.inputs.sourceRepository.commitId = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFileName, this.inputs.sourceRepository);
-                        }
-                        catch (error) {
+                            const repo = this.gitExtension.getRepository(this.workspaceUri);
+                            await repo.add([this.inputs.pipelineParameters.pipelineFileName]);
+                            await repo.commit(Messages.addYmlFile); // TODO: Only commit the YAML file. Need to file a feature request on VS Code for this.
+                            await repo.push(this.inputs.sourceRepository.remoteName);
+                            this.inputs.sourceRepository.commitId = repo.state.HEAD.commit;
+                        } catch (error) {
                             telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
                             vscode.window.showErrorMessage(utils.format(Messages.commitFailedErrorMessage, error.message));
                         }
                     });
-                }
-                else {
+                } else {
                     telemetryHelper.setTelemetry(TelemetryKeys.PipelineDiscarded, 'true');
                     throw new UserCancelledError();
                 }

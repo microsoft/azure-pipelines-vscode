@@ -8,9 +8,8 @@ import * as vscode from 'vscode';
 import { Utils } from 'vscode-uri';
 import * as languageclient from 'vscode-languageclient/node';
 import * as azdev from 'azure-devops-node-api';
-import { getAzureAccountExtensionApi } from './extensionApis';
+import { getAzureAccountExtensionApi, getGitExtensionApi } from './extensionApis';
 import { AzureDevOpsHelper } from './configure/helper/devOps/azureDevOpsHelper';
-import { LocalGitRepoHelper } from './configure/helper/LocalGitRepoHelper';
 import { Messages } from './messages';
 
 export async function locateSchemaFile(context: vscode.ExtensionContext): Promise<string> {
@@ -58,9 +57,11 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
     // Get the remote URL if we're in a Git repo
     let remoteUrl: string | void;
     try {
-        const gitHelper = await LocalGitRepoHelper.GetHelperInstance(vscode.workspace.workspaceFolders[0].uri);
-        const remoteName = (await gitHelper.getGitBranchDetails()).remoteName;
-        remoteUrl = await gitHelper.getGitRemoteUrl(remoteName);
+        const gitExtension = await getGitExtensionApi();
+        const repo = gitExtension.getRepository(vscode.workspace.workspaceFolders[0].uri);
+        await repo.status();
+        const remoteName = repo.state.HEAD.remote;
+        remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName).fetchUrl;
     } catch (error) {
         return undefined;
     }

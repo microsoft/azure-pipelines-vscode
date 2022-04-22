@@ -18,7 +18,7 @@
         "theme": "light"
     },
     "engines": {
-        "vscode": "^1.45.1",
+        "vscode": "^1.64.0",
         "node": ">=12.20.0"
     },
     "categories": [
@@ -163,7 +163,6 @@
         "azure-pipelines-language-server": "0.6.7",
         "html-to-text": "^5.1.1",
         "mustache": "3.0.1",
-        "simple-git": "1.110.0",
         "uuid": "^3.3.2",
         "vscode-extension-telemetry": "^0.1.6",
         "vscode-languageclient": "^7.0.0",

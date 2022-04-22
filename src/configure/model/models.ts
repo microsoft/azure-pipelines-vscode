@@ -155,8 +155,3 @@ export interface AadApplication {
     secret: string;
     objectId: string;
 }
-
-export interface GitBranchDetails {
-    remoteName: string;
-    branch: string;
-}
