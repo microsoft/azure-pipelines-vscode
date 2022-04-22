@@ -19,7 +19,7 @@ import { URI, Utils } from 'vscode-uri';
 import * as azdev from 'azure-devops-node-api';
 import * as templateHelper from './helper/templateHelper';
 import { getAvailableFileName } from './helper/commonHelper';
-import { ControlProvider } from './helper/controlProvider';
+import { showQuickPick, showInputBox } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
 import { UserCancelledError } from './helper/userCancelledError';
@@ -72,7 +72,7 @@ async function getWorkspace(): Promise<URI> {
             telemetryHelper.setTelemetry(TelemetryKeys.MultipleWorkspaceFolders, 'true');
             const workspaceFolderOptions: QuickPickItemWithData<vscode.WorkspaceFolder>[] =
                 workspaceFolders.map(folder => ({ label: folder.name, data: folder }));
-            const selectedWorkspaceFolder = await this.controlProvider.showQuickPick(
+            const selectedWorkspaceFolder = await showQuickPick(
                 constants.SelectFromMultipleWorkSpace,
                 workspaceFolderOptions,
                 { placeHolder: Messages.selectWorkspaceFolder });
@@ -102,7 +102,6 @@ class PipelineConfigurer {
     private serviceConnectionHelper: ServiceConnectionHelper;
     private appServiceClient: AppServiceClient;
     private uniqueResourceNameSuffix: string;
-    private controlProvider = new ControlProvider();
 
     public constructor(
         private workspaceUri: URI,
@@ -221,7 +220,7 @@ class PipelineConfigurer {
                 remote = remotes[0].name;
             } else {
                 // Show an option to user to select remote to be configured
-                const selectedRemote = await this.controlProvider.showQuickPick(
+                const selectedRemote = await showQuickPick(
                     constants.SelectRemoteForRepo,
                     remotes.map(remote => ({ label: remote.name })),
                     { placeHolder: Messages.selectRemoteForBranch });
@@ -275,7 +274,7 @@ class PipelineConfigurer {
     private async getGitHubPatToken(): Promise<string> {
         return await telemetryHelper.executeFunctionWithTimeTelemetry(
             async () => {
-                return await this.controlProvider.showInputBox(
+                return await showInputBox(
                     constants.GitHubPat,
                     {
                         placeHolder: Messages.enterGitHubPat,
@@ -308,7 +307,7 @@ class PipelineConfigurer {
                 let devOpsOrganizations = await this.organizationsClient.listOrganizations();
 
                 if (devOpsOrganizations && devOpsOrganizations.length > 0) {
-                    let selectedOrganization = await this.controlProvider.showQuickPick(
+                    let selectedOrganization = await showQuickPick(
                         constants.SelectOrganization,
                         devOpsOrganizations.map(organization => { return { label: organization.accountName }; }),
                         { placeHolder: Messages.selectOrganization },
@@ -321,7 +320,7 @@ class PipelineConfigurer {
 
                     // FIXME: It _is_ possible for an organization to have no projects.
                     // We need to guard against this and create a project for them.
-                    const selectedProject = await this.controlProvider.showQuickPick(
+                    const selectedProject = await showQuickPick(
                         constants.SelectProject,
                         projects.map(project => { return { label: project.name, data: project }; }),
                         { placeHolder: Messages.selectProject },
@@ -336,7 +335,7 @@ class PipelineConfigurer {
 
                     let validationErrorMessage = await this.organizationsClient.validateOrganizationName(organizationName);
                     if (validationErrorMessage) {
-                        this.inputs.organizationName = await this.controlProvider.showInputBox(
+                        this.inputs.organizationName = await showInputBox(
                             constants.EnterOrganizationName,
                             {
                                 placeHolder: Messages.enterAzureDevOpsOrganizationName,
@@ -362,7 +361,7 @@ class PipelineConfigurer {
         );
 
         // TO:DO- Get applicable pipelines for the repo type and azure target type if target already selected
-        let selectedOption = await this.controlProvider.showQuickPick(
+        let selectedOption = await showQuickPick(
             constants.SelectPipelineTemplate,
             appropriatePipelines.map((pipeline) => { return { label: pipeline.label }; }),
             { placeHolder: Messages.selectPipelineTemplate },
@@ -386,7 +385,7 @@ class PipelineConfigurer {
 
         if (this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
             const selectedSubscription: QuickPickItemWithData<AzureSubscription> =
-                await this.controlProvider.showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
+                await showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
             this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
             this.inputs.azureSession = await getSubscriptionSession(this.azureAccount, this.inputs.targetResource.subscriptionId);
 
@@ -407,7 +406,7 @@ class PipelineConfigurer {
                     break;
             }
 
-            const selectedResource: QuickPickItemWithData<ResourceManagementModels.GenericResource> = await this.controlProvider.showQuickPick(
+            const selectedResource: QuickPickItemWithData<ResourceManagementModels.GenericResource> = await showQuickPick(
                 selectAppText,
                 resourceArray,
                 { placeHolder: placeHolderText },
