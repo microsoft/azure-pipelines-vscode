@@ -26,7 +26,7 @@ import { UserCancelledError } from './helper/userCancelledError';
 import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { ProjectVisibility } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import { AzureAccount, AzureSubscription } from '../typings/azure-account.api';
-import * as git from '../typings/git';
+import { Repository } from '../typings/git';
 
 const Layer: string = 'configure';
 
@@ -105,7 +105,7 @@ class PipelineConfigurer {
 
     public constructor(
         private workspaceUri: URI,
-        private repo: git.Repository,
+        private repo: Repository,
         private azureAccount: AzureAccount) {
         this.uniqueResourceNameSuffix = uuid().substr(0, 5);
     }
