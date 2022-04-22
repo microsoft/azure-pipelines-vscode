@@ -1,5 +1,3 @@
-import * as path from 'path';
-
 import { BuildDefinition, ContinuousIntegrationTrigger, DefinitionQuality, DefinitionTriggerType, DefinitionType, YamlProcess } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { TaskAgentQueue } from 'azure-devops-node-api/interfaces/TaskAgentInterfaces';
 
@@ -108,7 +106,7 @@ export class AzureDevOpsHelper {
             project: inputs.project,
             process: {
                 type: 2,
-                yamlFileName: path.join(inputs.pipelineParameters.workingDirectory, inputs.pipelineParameters.pipelineFileName),
+                yamlFileName: inputs.pipelineParameters.pipelineFileName,
             } as YamlProcess,
             queue: {
                 id: queue.id,

@@ -1,6 +1,5 @@
 import { ResourceManagementModels } from '@azure/arm-resources';
 import { QuickPickItem } from 'vscode';
-import { URI } from 'vscode-uri';
 import { Messages } from '../../messages';
 import { TeamProjectReference } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import { AzureSession } from '../../typings/azure-account.api';
@@ -42,7 +41,6 @@ export class AzureParameters {
 export class PipelineParameters {
     pipelineFileName: string;
     pipelineTemplate: PipelineTemplate;
-    workingDirectory: string;
 }
 
 export interface GitRepositoryParameters {
@@ -53,7 +51,6 @@ export interface GitRepositoryParameters {
     remoteUrl: string;
     branch: string;
     commitId: string;
-    rootUri: URI;
     serviceConnectionId?: string; // Id of the service connection in Azure DevOps
 }
 

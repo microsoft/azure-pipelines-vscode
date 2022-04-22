@@ -13,7 +13,6 @@ import { TracePoints } from './resources/tracePoints';
 import { getAzureAccountExtensionApi, getGitExtensionApi } from '../extensionApis';
 import { telemetryHelper } from '../helpers/telemetryHelper';
 import { TelemetryKeys } from '../helpers/telemetryKeys';
-import * as path from 'path';
 import * as utils from 'util';
 import * as vscode from 'vscode';
 import { URI, Utils } from 'vscode-uri';
@@ -231,9 +230,6 @@ class PipelineConfigurer {
 
         this.inputs.sourceRepository = await this.getGitRepositoryParameters(name, remote);
 
-        // Set working directory relative to repository root
-        this.inputs.pipelineParameters.workingDirectory = path.relative(this.inputs.sourceRepository.rootUri.fsPath, this.workspaceUri.fsPath);
-
         // set telemetry
         telemetryHelper.setTelemetry(TelemetryKeys.RepoProvider, this.inputs.sourceRepository.repositoryProvider);
     }
@@ -252,8 +248,7 @@ class PipelineConfigurer {
                     remoteName: remoteName,
                     remoteUrl: remoteUrl,
                     branch: branch,
-                    commitId: "",
-                    rootUri: this.workspaceUri
+                    commitId: ""
                 };
             }
             else if (GitHubProvider.isGitHubUrl(remoteUrl)) {
@@ -266,8 +261,7 @@ class PipelineConfigurer {
                     remoteName: remoteName,
                     remoteUrl: remoteUrl,
                     branch: branch,
-                    commitId: "",
-                    rootUri: this.workspaceUri
+                    commitId: ""
                 };
             }
             else {
@@ -365,7 +359,7 @@ class PipelineConfigurer {
     private async getSelectedPipeline(): Promise<void> {
         let appropriatePipelines: PipelineTemplate[] = await vscode.window.withProgress(
             { location: vscode.ProgressLocation.Notification, title: Messages.analyzingRepo },
-            () => templateHelper.analyzeRepoAndListAppropriatePipeline(this.inputs.sourceRepository.rootUri)
+            () => templateHelper.analyzeRepoAndListAppropriatePipeline(this.workspaceUri)
         );
 
         // TO:DO- Get applicable pipelines for the repo type and azure target type if target already selected
@@ -537,11 +531,11 @@ class PipelineConfigurer {
 
     private async checkInPipelineFileToRepository(): Promise<void> {
         try {
-            this.inputs.pipelineParameters.pipelineFileName = await getAvailableFileName("azure-pipelines.yml", this.inputs.sourceRepository.rootUri);
-            const filePath = Utils.joinPath(this.inputs.sourceRepository.rootUri, this.inputs.pipelineParameters.pipelineFileName);
+            this.inputs.pipelineParameters.pipelineFileName = await getAvailableFileName("azure-pipelines.yml", this.workspaceUri);
+            const fileUri = Utils.joinPath(this.workspaceUri, this.inputs.pipelineParameters.pipelineFileName);
             const content = await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs);
-            await vscode.workspace.fs.writeFile(filePath, Buffer.from(content));
-            await vscode.window.showTextDocument(filePath);
+            await vscode.workspace.fs.writeFile(fileUri, Buffer.from(content));
+            await vscode.window.showTextDocument(fileUri);
         } catch (error) {
             telemetryHelper.logError(Layer, TracePoints.AddingContentToPipelineFileFailed, error);
             throw error;
@@ -555,7 +549,7 @@ class PipelineConfigurer {
                         try {
                             // handle when the branch is not upto date with remote branch and push fails
                             const repo = this.gitExtension.getRepository(this.workspaceUri);
-                            await repo.add([Utils.joinPath(this.inputs.sourceRepository.rootUri, this.inputs.pipelineParameters.pipelineFileName).fsPath]);
+                            await repo.add([Utils.joinPath(this.workspaceUri, this.inputs.pipelineParameters.pipelineFileName).fsPath]);
                             await repo.commit(Messages.addYmlFile); // TODO: Only commit the YAML file. Need to file a feature request on VS Code for this.
                             await repo.push(this.inputs.sourceRepository.remoteName);
                             this.inputs.sourceRepository.commitId = repo.state.HEAD.commit;
