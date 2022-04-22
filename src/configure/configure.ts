@@ -35,8 +35,8 @@ export async function configurePipeline(): Promise<void> {
     if (!(await azureAccount.waitForLogin())) {
         telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
 
-        let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
-        if (signIn && signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
+        const signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
+        if (signIn?.toLowerCase() === Messages.signInLabel.toLowerCase()) {
             await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.waitForAzureSignIn },
                 async () => {
                     await vscode.commands.executeCommand("azure-account.login");
@@ -47,25 +47,63 @@ export async function configurePipeline(): Promise<void> {
     }
 
     const gitExtension = await getGitExtensionApi();
+    const workspaceUri = await getWorkspace();
+    const repo = gitExtension.getRepository(workspaceUri);
+    await repo.status(); // Refresh the repo status so we have accurate info
 
-    const configurer = new PipelineConfigurer(azureAccount, gitExtension);
+    const configurer = new PipelineConfigurer(workspaceUri, repo, azureAccount);
     await configurer.configure();
 }
 
+async function getWorkspace(): Promise<URI> {
+    const workspaceFolders = vscode.workspace?.workspaceFolders;
+    if (workspaceFolders?.length > 0) {
+        telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.CurrentWorkspace);
+
+        if (workspaceFolders.length === 1) {
+            telemetryHelper.setTelemetry(TelemetryKeys.MultipleWorkspaceFolders, 'false');
+            return workspaceFolders[0].uri;
+        } else {
+            telemetryHelper.setTelemetry(TelemetryKeys.MultipleWorkspaceFolders, 'true');
+            const workspaceFolderOptions: QuickPickItemWithData<vscode.WorkspaceFolder>[] =
+                workspaceFolders.map(folder => ({ label: folder.name, data: folder }));
+            const selectedWorkspaceFolder = await this.controlProvider.showQuickPick(
+                constants.SelectFromMultipleWorkSpace,
+                workspaceFolderOptions,
+                { placeHolder: Messages.selectWorkspaceFolder });
+            return selectedWorkspaceFolder.data.uri;
+        }
+    } else {
+        telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.BrowseLocalMachine);
+        const selectedFolders = await vscode.window.showOpenDialog({
+            openLabel: Messages.selectFolderLabel,
+            canSelectFiles: false,
+            canSelectFolders: true,
+            canSelectMany: false,
+        });
+
+        if (selectedFolders?.length > 0) {
+            return selectedFolders[0];
+        } else {
+            throw new Error(Messages.noWorkSpaceSelectedError);
+        }
+    }
+}
+
 class PipelineConfigurer {
-    private inputs: WizardInputs;
+    private inputs = new WizardInputs();
     private azureDevOpsClient: azdev.WebApi;
     private organizationsClient: OrganizationsClient;
     private serviceConnectionHelper: ServiceConnectionHelper;
     private appServiceClient: AppServiceClient;
-    private workspaceUri: URI;
     private uniqueResourceNameSuffix: string;
-    private controlProvider: ControlProvider;
+    private controlProvider = new ControlProvider();
 
-    public constructor(private azureAccount: AzureAccount, private gitExtension: git.API) {
-        this.inputs = new WizardInputs();
+    public constructor(
+        private workspaceUri: URI,
+        private repo: git.Repository,
+        private azureAccount: AzureAccount) {
         this.uniqueResourceNameSuffix = uuid().substr(0, 5);
-        this.controlProvider = new ControlProvider();
     }
 
     public async configure() {
@@ -96,7 +134,13 @@ class PipelineConfigurer {
     }
 
     private async getAllRequiredInputs() {
-        await this.getSourceRepositoryDetails();
+        try {
+            await this.getGitDetailsFromRepository();
+        } catch (error) {
+            telemetryHelper.logError(Layer, TracePoints.GetSourceRepositoryDetailsFailed, error);
+            throw error;
+        }
+
         await this.getSelectedPipeline();
 
         if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
@@ -160,60 +204,12 @@ class PipelineConfigurer {
         }
     }
 
-    private async getSourceRepositoryDetails(): Promise<void> {
-        try {
-            await this.setWorkspace();
-            await this.getGitDetailsFromRepository();
-        }
-        catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.GetSourceRepositoryDetailsFailed, error);
-            throw error;
-        }
-    }
-
-    private async setWorkspace(): Promise<void> {
-        const workspaceFolders = vscode.workspace?.workspaceFolders;
-        if (workspaceFolders?.length > 0) {
-            telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.CurrentWorkspace);
-
-            if (workspaceFolders.length === 1) {
-                telemetryHelper.setTelemetry(TelemetryKeys.MultipleWorkspaceFolders, 'false');
-                this.workspaceUri = workspaceFolders[0].uri;
-            } else {
-                telemetryHelper.setTelemetry(TelemetryKeys.MultipleWorkspaceFolders, 'true');
-                const workspaceFolderOptions: QuickPickItemWithData<vscode.WorkspaceFolder>[] =
-                    workspaceFolders.map(folder => ({ label: folder.name, data: folder }));
-                const selectedWorkspaceFolder = await this.controlProvider.showQuickPick(
-                    constants.SelectFromMultipleWorkSpace,
-                    workspaceFolderOptions,
-                    { placeHolder: Messages.selectWorkspaceFolder });
-                this.workspaceUri = selectedWorkspaceFolder.data.uri;
-            }
-        } else {
-            telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.BrowseLocalMachine);
-            const selectedFolders: URI[] = await vscode.window.showOpenDialog({
-                openLabel: Messages.selectFolderLabel,
-                canSelectFiles: false,
-                canSelectFolders: true,
-                canSelectMany: false,
-            });
-
-            if (selectedFolders?.length > 0) {
-                this.workspaceUri = selectedFolders[0];
-            } else {
-                throw new Error(Messages.noWorkSpaceSelectedError);
-            }
-        }
-    }
-
     private async getGitDetailsFromRepository(): Promise<void> {
-        const repo = this.gitExtension.getRepository(this.workspaceUri);
-        await repo.status();
-        let { name, remote } = repo.state.HEAD;
+        let { name, remote } = this.repo.state.HEAD;
 
         if (!remote) {
             // Remote tracking branch is not set, see if we have any remotes we can use.
-            const remotes = repo.state.remotes;
+            const remotes = this.repo.state.remotes;
             if (remotes.length === 0) {
                 throw new Error(Messages.branchRemoteMissing);
             } else if (remotes.length === 1) {
@@ -235,9 +231,7 @@ class PipelineConfigurer {
     }
 
     private async getGitRepositoryParameters(branch: string, remoteName: string): Promise<GitRepositoryParameters> {
-        const repo = this.gitExtension.getRepository(this.workspaceUri);
-
-        let remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName).fetchUrl;
+        let remoteUrl = this.repo.state.remotes.find(remote => remote.name === remoteName).fetchUrl;
         if (remoteUrl) {
             if (AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
                 remoteUrl = AzureDevOpsHelper.getFormattedRemoteUrl(remoteUrl);
@@ -548,11 +542,10 @@ class PipelineConfigurer {
                     await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
                         try {
                             // handle when the branch is not upto date with remote branch and push fails
-                            const repo = this.gitExtension.getRepository(this.workspaceUri);
-                            await repo.add([Utils.joinPath(this.workspaceUri, this.inputs.pipelineParameters.pipelineFileName).fsPath]);
-                            await repo.commit(Messages.addYmlFile); // TODO: Only commit the YAML file. Need to file a feature request on VS Code for this.
-                            await repo.push(this.inputs.sourceRepository.remoteName);
-                            this.inputs.sourceRepository.commitId = repo.state.HEAD.commit;
+                            await this.repo.add([Utils.joinPath(this.workspaceUri, this.inputs.pipelineParameters.pipelineFileName).fsPath]);
+                            await this.repo.commit(Messages.addYmlFile); // TODO: Only commit the YAML file. Need to file a feature request on VS Code for this.
+                            await this.repo.push(this.inputs.sourceRepository.remoteName);
+                            this.inputs.sourceRepository.commitId = this.repo.state.HEAD.commit;
                         } catch (error) {
                             telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
                             vscode.window.showErrorMessage(utils.format(Messages.commitFailedErrorMessage, error.message));
