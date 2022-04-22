@@ -49,7 +49,12 @@ export async function configurePipeline(): Promise<void> {
     const gitExtension = await getGitExtensionApi();
     const workspaceUri = await getWorkspace();
     const repo = gitExtension.getRepository(workspaceUri);
-    await repo.status(); // Refresh the repo status so we have accurate info
+    if (repo === null) {
+        throw new Error(Messages.notAGitRepository);
+    }
+
+    // Refresh the repo status so that we have accurate info.
+    await repo.status();
 
     const configurer = new PipelineConfigurer(workspaceUri, repo, azureAccount);
     await configurer.configure();
