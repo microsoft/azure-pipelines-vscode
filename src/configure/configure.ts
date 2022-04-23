@@ -552,7 +552,7 @@ class PipelineConfigurer {
                             this.inputs.sourceRepository.commitId = this.repo.state.HEAD.commit;
                         } catch (error) {
                             telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
-                            vscode.window.showErrorMessage(utils.format(Messages.commitFailedErrorMessage, error.message));
+                            vscode.window.showErrorMessage(utils.format(Messages.commitFailedErrorMessage, error.stderr));
                         }
                     });
                 } else {
