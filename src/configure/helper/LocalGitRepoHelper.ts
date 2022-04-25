@@ -1,10 +1,10 @@
 import { GitRepositoryParameters, GitBranchDetails } from '../model/models';
 import { Messages } from '../../messages';
-import * as git from 'simple-git/promise';
+import simpleGit, { SimpleGit } from 'simple-git';
 import { URI } from 'vscode-uri';
 
 export class LocalGitRepoHelper {
-    private gitReference: git.SimpleGit;
+    private gitReference: SimpleGit;
 
     private constructor() {
     }
@@ -76,6 +76,6 @@ export class LocalGitRepoHelper {
     }
 
     private initialize(repositoryUri: URI): void {
-        this.gitReference = git(repositoryUri.fsPath);
+        this.gitReference = simpleGit(repositoryUri.fsPath);
     }
 }
