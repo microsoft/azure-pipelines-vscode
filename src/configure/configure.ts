@@ -5,29 +5,28 @@ import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
 import { OperationsClient } from './clients/devOps/operationsClient';
 import { ResourceManagementModels } from '@azure/arm-resources';
 import { GraphHelper } from './helper/graphHelper';
-import { LocalGitRepoHelper } from './helper/LocalGitRepoHelper';
 import { Messages } from '../messages';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
-import { SourceOptions, RepositoryProvider, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, GitBranchDetails, TargetResourceType } from './model/models';
+import { SourceOptions, RepositoryProvider, WizardInputs, WebAppKind, PipelineTemplate, QuickPickItemWithData, GitRepositoryParameters, TargetResourceType } from './model/models';
 import * as constants from './resources/constants';
 import { TracePoints } from './resources/tracePoints';
-import { getAzureAccountExtensionApi } from '../extensionApis';
+import { getAzureAccountExtensionApi, getGitExtensionApi } from '../extensionApis';
 import { telemetryHelper } from '../helpers/telemetryHelper';
 import { TelemetryKeys } from '../helpers/telemetryKeys';
-import * as path from 'path';
 import * as utils from 'util';
 import * as vscode from 'vscode';
 import { URI, Utils } from 'vscode-uri';
 import * as azdev from 'azure-devops-node-api';
 import * as templateHelper from './helper/templateHelper';
 import { getAvailableFileName } from './helper/commonHelper';
-import { ControlProvider } from './helper/controlProvider';
+import { showQuickPick, showInputBox } from './helper/controlProvider';
 import { GitHubProvider } from './helper/gitHubHelper';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
 import { UserCancelledError } from './helper/userCancelledError';
 import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { ProjectVisibility } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import { AzureAccount, AzureSubscription } from '../typings/azure-account.api';
+import { Repository } from '../typings/git';
 
 const Layer: string = 'configure';
 
@@ -36,8 +35,8 @@ export async function configurePipeline(): Promise<void> {
     if (!(await azureAccount.waitForLogin())) {
         telemetryHelper.setTelemetry(TelemetryKeys.AzureLoginRequired, 'true');
 
-        let signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
-        if (signIn && signIn.toLowerCase() === Messages.signInLabel.toLowerCase()) {
+        const signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
+        if (signIn?.toLowerCase() === Messages.signInLabel.toLowerCase()) {
             await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.waitForAzureSignIn },
                 async () => {
                     await vscode.commands.executeCommand("azure-account.login");
@@ -47,25 +46,68 @@ export async function configurePipeline(): Promise<void> {
         }
     }
 
-    const configurer = new PipelineConfigurer(azureAccount);
+    const gitExtension = await getGitExtensionApi();
+    const workspaceUri = await getWorkspace();
+    const repo = gitExtension.getRepository(workspaceUri);
+    if (repo === null) {
+        throw new Error(Messages.notAGitRepository);
+    }
+
+    // Refresh the repo status so that we have accurate info.
+    await repo.status();
+
+    const configurer = new PipelineConfigurer(workspaceUri, repo, azureAccount);
     await configurer.configure();
 }
 
+async function getWorkspace(): Promise<URI> {
+    const workspaceFolders = vscode.workspace?.workspaceFolders;
+    if (workspaceFolders?.length > 0) {
+        telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.CurrentWorkspace);
+
+        if (workspaceFolders.length === 1) {
+            telemetryHelper.setTelemetry(TelemetryKeys.MultipleWorkspaceFolders, 'false');
+            return workspaceFolders[0].uri;
+        } else {
+            telemetryHelper.setTelemetry(TelemetryKeys.MultipleWorkspaceFolders, 'true');
+            const workspaceFolderOptions: QuickPickItemWithData<vscode.WorkspaceFolder>[] =
+                workspaceFolders.map(folder => ({ label: folder.name, data: folder }));
+            const selectedWorkspaceFolder = await showQuickPick(
+                constants.SelectFromMultipleWorkSpace,
+                workspaceFolderOptions,
+                { placeHolder: Messages.selectWorkspaceFolder });
+            return selectedWorkspaceFolder.data.uri;
+        }
+    } else {
+        telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.BrowseLocalMachine);
+        const selectedFolders = await vscode.window.showOpenDialog({
+            openLabel: Messages.selectFolderLabel,
+            canSelectFiles: false,
+            canSelectFolders: true,
+            canSelectMany: false,
+        });
+
+        if (selectedFolders?.length > 0) {
+            return selectedFolders[0];
+        } else {
+            throw new Error(Messages.noWorkSpaceSelectedError);
+        }
+    }
+}
+
 class PipelineConfigurer {
-    private inputs: WizardInputs;
-    private localGitRepoHelper: LocalGitRepoHelper;
+    private inputs = new WizardInputs();
     private azureDevOpsClient: azdev.WebApi;
     private organizationsClient: OrganizationsClient;
     private serviceConnectionHelper: ServiceConnectionHelper;
     private appServiceClient: AppServiceClient;
-    private workspaceUri: URI;
     private uniqueResourceNameSuffix: string;
-    private controlProvider: ControlProvider;
 
-    public constructor(private azureAccount: AzureAccount) {
-        this.inputs = new WizardInputs();
+    public constructor(
+        private workspaceUri: URI,
+        private repo: Repository,
+        private azureAccount: AzureAccount) {
         this.uniqueResourceNameSuffix = uuid().substr(0, 5);
-        this.controlProvider = new ControlProvider();
     }
 
     public async configure() {
@@ -96,7 +138,13 @@ class PipelineConfigurer {
     }
 
     private async getAllRequiredInputs() {
-        await this.getSourceRepositoryDetails();
+        try {
+            await this.getGitDetailsFromRepository();
+        } catch (error) {
+            telemetryHelper.logError(Layer, TracePoints.GetSourceRepositoryDetailsFailed, error);
+            throw error;
+        }
+
         await this.getSelectedPipeline();
 
         if (this.inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github) {
@@ -160,87 +208,34 @@ class PipelineConfigurer {
         }
     }
 
-    private async getSourceRepositoryDetails(): Promise<void> {
-        try {
-            await this.setWorkspace();
-            await this.getGitDetailsFromRepository();
-        }
-        catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.GetSourceRepositoryDetailsFailed, error);
-            throw error;
-        }
-    }
-
-    private async setWorkspace(): Promise<void> {
-        const workspaceFolders = vscode.workspace?.workspaceFolders;
-        if (workspaceFolders?.length > 0) {
-            telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.CurrentWorkspace);
-
-            if (workspaceFolders.length === 1) {
-                telemetryHelper.setTelemetry(TelemetryKeys.MultipleWorkspaceFolders, 'false');
-                this.workspaceUri = workspaceFolders[0].uri;
-            } else {
-                telemetryHelper.setTelemetry(TelemetryKeys.MultipleWorkspaceFolders, 'true');
-                const workspaceFolderOptions: QuickPickItemWithData<vscode.WorkspaceFolder>[] =
-                    workspaceFolders.map(folder => ({ label: folder.name, data: folder }));
-                const selectedWorkspaceFolder = await this.controlProvider.showQuickPick(
-                    constants.SelectFromMultipleWorkSpace,
-                    workspaceFolderOptions,
-                    { placeHolder: Messages.selectWorkspaceFolder });
-                this.workspaceUri = selectedWorkspaceFolder.data.uri;
-            }
-        } else {
-            telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.BrowseLocalMachine);
-            const selectedFolders: URI[] = await vscode.window.showOpenDialog({
-                openLabel: Messages.selectFolderLabel,
-                canSelectFiles: false,
-                canSelectFolders: true,
-                canSelectMany: false,
-            });
-
-            if (selectedFolders?.length > 0) {
-                this.workspaceUri = selectedFolders[0];
-            } else {
-                throw new Error(Messages.noWorkSpaceSelectedError);
-            }
-        }
-    }
-
     private async getGitDetailsFromRepository(): Promise<void> {
-        this.localGitRepoHelper = await LocalGitRepoHelper.GetHelperInstance(this.workspaceUri);
-        let gitBranchDetails = await this.localGitRepoHelper.getGitBranchDetails();
+        let { name, remote } = this.repo.state.HEAD;
 
-        if (!gitBranchDetails.remoteName) {
-            // Remote tracking branch is not set
-            let remotes = await this.localGitRepoHelper.getGitRemoteNames();
+        if (!remote) {
+            // Remote tracking branch is not set, see if we have any remotes we can use.
+            const remotes = this.repo.state.remotes;
             if (remotes.length === 0) {
                 throw new Error(Messages.branchRemoteMissing);
-            }
-            else if (remotes.length === 1) {
-                gitBranchDetails.remoteName = remotes[0];
-            }
-            else {
+            } else if (remotes.length === 1) {
+                remote = remotes[0].name;
+            } else {
                 // Show an option to user to select remote to be configured
-                let selectedRemote = await this.controlProvider.showQuickPick(
+                const selectedRemote = await showQuickPick(
                     constants.SelectRemoteForRepo,
-                    remotes.map(remote => ({ label: remote })),
+                    remotes.map(remote => ({ label: remote.name })),
                     { placeHolder: Messages.selectRemoteForBranch });
-                gitBranchDetails.remoteName = selectedRemote.label;
+                remote = selectedRemote.label;
             }
         }
 
-        // Set working directory relative to repository root
-        this.inputs.pipelineParameters.workingDirectory = path.relative(this.inputs.sourceRepository.rootUri.fsPath, this.workspaceUri.fsPath);
-
-        this.inputs.sourceRepository = await this.getGitRepositoryParameters(gitBranchDetails);
+        this.inputs.sourceRepository = await this.getGitRepositoryParameters(name, remote);
 
         // set telemetry
         telemetryHelper.setTelemetry(TelemetryKeys.RepoProvider, this.inputs.sourceRepository.repositoryProvider);
     }
 
-    private async getGitRepositoryParameters(gitRepositoryDetails: GitBranchDetails): Promise<GitRepositoryParameters> {
-        let remoteUrl = await this.localGitRepoHelper.getGitRemoteUrl(gitRepositoryDetails.remoteName);
-
+    private async getGitRepositoryParameters(branch: string, remoteName: string): Promise<GitRepositoryParameters> {
+        let remoteUrl = this.repo.state.remotes.find(remote => remote.name === remoteName).fetchUrl;
         if (remoteUrl) {
             if (AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
                 remoteUrl = AzureDevOpsHelper.getFormattedRemoteUrl(remoteUrl);
@@ -248,11 +243,10 @@ class PipelineConfigurer {
                     repositoryProvider: RepositoryProvider.AzureRepos,
                     repositoryId: "",
                     repositoryName: AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl).repositoryName,
-                    remoteName: gitRepositoryDetails.remoteName,
+                    remoteName: remoteName,
                     remoteUrl: remoteUrl,
-                    branch: gitRepositoryDetails.branch,
-                    commitId: "",
-                    rootUri: this.workspaceUri
+                    branch: branch,
+                    commitId: ""
                 };
             }
             else if (GitHubProvider.isGitHubUrl(remoteUrl)) {
@@ -262,11 +256,10 @@ class PipelineConfigurer {
                     repositoryProvider: RepositoryProvider.Github,
                     repositoryId: repoId,
                     repositoryName: repoId,
-                    remoteName: gitRepositoryDetails.remoteName,
+                    remoteName: remoteName,
                     remoteUrl: remoteUrl,
-                    branch: gitRepositoryDetails.branch,
-                    commitId: "",
-                    rootUri: this.workspaceUri
+                    branch: branch,
+                    commitId: ""
                 };
             }
             else {
@@ -281,7 +274,7 @@ class PipelineConfigurer {
     private async getGitHubPatToken(): Promise<string> {
         return await telemetryHelper.executeFunctionWithTimeTelemetry(
             async () => {
-                return await this.controlProvider.showInputBox(
+                return await showInputBox(
                     constants.GitHubPat,
                     {
                         placeHolder: Messages.enterGitHubPat,
@@ -314,7 +307,7 @@ class PipelineConfigurer {
                 let devOpsOrganizations = await this.organizationsClient.listOrganizations();
 
                 if (devOpsOrganizations && devOpsOrganizations.length > 0) {
-                    let selectedOrganization = await this.controlProvider.showQuickPick(
+                    let selectedOrganization = await showQuickPick(
                         constants.SelectOrganization,
                         devOpsOrganizations.map(organization => { return { label: organization.accountName }; }),
                         { placeHolder: Messages.selectOrganization },
@@ -327,7 +320,7 @@ class PipelineConfigurer {
 
                     // FIXME: It _is_ possible for an organization to have no projects.
                     // We need to guard against this and create a project for them.
-                    const selectedProject = await this.controlProvider.showQuickPick(
+                    const selectedProject = await showQuickPick(
                         constants.SelectProject,
                         projects.map(project => { return { label: project.name, data: project }; }),
                         { placeHolder: Messages.selectProject },
@@ -342,7 +335,7 @@ class PipelineConfigurer {
 
                     let validationErrorMessage = await this.organizationsClient.validateOrganizationName(organizationName);
                     if (validationErrorMessage) {
-                        this.inputs.organizationName = await this.controlProvider.showInputBox(
+                        this.inputs.organizationName = await showInputBox(
                             constants.EnterOrganizationName,
                             {
                                 placeHolder: Messages.enterAzureDevOpsOrganizationName,
@@ -364,11 +357,11 @@ class PipelineConfigurer {
     private async getSelectedPipeline(): Promise<void> {
         let appropriatePipelines: PipelineTemplate[] = await vscode.window.withProgress(
             { location: vscode.ProgressLocation.Notification, title: Messages.analyzingRepo },
-            () => templateHelper.analyzeRepoAndListAppropriatePipeline(this.inputs.sourceRepository.rootUri)
+            () => templateHelper.analyzeRepoAndListAppropriatePipeline(this.workspaceUri)
         );
 
         // TO:DO- Get applicable pipelines for the repo type and azure target type if target already selected
-        let selectedOption = await this.controlProvider.showQuickPick(
+        let selectedOption = await showQuickPick(
             constants.SelectPipelineTemplate,
             appropriatePipelines.map((pipeline) => { return { label: pipeline.label }; }),
             { placeHolder: Messages.selectPipelineTemplate },
@@ -392,7 +385,7 @@ class PipelineConfigurer {
 
         if (this.inputs.pipelineParameters.pipelineTemplate.targetType != TargetResourceType.None) {
             const selectedSubscription: QuickPickItemWithData<AzureSubscription> =
-                await this.controlProvider.showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
+                await showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
             this.inputs.targetResource.subscriptionId = selectedSubscription.data.subscription.subscriptionId;
             this.inputs.azureSession = await getSubscriptionSession(this.azureAccount, this.inputs.targetResource.subscriptionId);
 
@@ -413,7 +406,7 @@ class PipelineConfigurer {
                     break;
             }
 
-            const selectedResource: QuickPickItemWithData<ResourceManagementModels.GenericResource> = await this.controlProvider.showQuickPick(
+            const selectedResource: QuickPickItemWithData<ResourceManagementModels.GenericResource> = await showQuickPick(
                 selectAppText,
                 resourceArray,
                 { placeHolder: placeHolderText },
@@ -536,34 +529,33 @@ class PipelineConfigurer {
 
     private async checkInPipelineFileToRepository(): Promise<void> {
         try {
-            const fileName = await getAvailableFileName("azure-pipelines.yml", this.inputs.sourceRepository.rootUri);
-            const filePath = Utils.joinPath(this.inputs.sourceRepository.rootUri, fileName);
+            this.inputs.pipelineParameters.pipelineFileName = await getAvailableFileName("azure-pipelines.yml", this.workspaceUri);
+            const fileUri = Utils.joinPath(this.workspaceUri, this.inputs.pipelineParameters.pipelineFileName);
             const content = await templateHelper.renderContent(this.inputs.pipelineParameters.pipelineTemplate.path, this.inputs);
-            await vscode.workspace.fs.writeFile(filePath, Buffer.from(content));
-            await vscode.workspace.saveAll(true);
-            await vscode.window.showTextDocument(Utils.joinPath(this.inputs.sourceRepository.rootUri, this.inputs.pipelineParameters.pipelineFileName));
-        }
-        catch (error) {
+            await vscode.workspace.fs.writeFile(fileUri, Buffer.from(content));
+            await vscode.window.showTextDocument(fileUri);
+        } catch (error) {
             telemetryHelper.logError(Layer, TracePoints.AddingContentToPipelineFileFailed, error);
             throw error;
         }
 
         try {
             while (!this.inputs.sourceRepository.commitId) {
-                let commitOrDiscard = await vscode.window.showInformationMessage(utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, this.inputs.sourceRepository.branch, this.inputs.sourceRepository.remoteName), Messages.commitAndPush, Messages.discardPipeline);
-                if (commitOrDiscard && commitOrDiscard.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
+                const commitOrDiscard = await vscode.window.showInformationMessage(utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, this.inputs.sourceRepository.branch, this.inputs.sourceRepository.remoteName), Messages.commitAndPush, Messages.discardPipeline);
+                if (commitOrDiscard?.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
                     await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async (progress) => {
                         try {
                             // handle when the branch is not upto date with remote branch and push fails
-                            this.inputs.sourceRepository.commitId = await this.localGitRepoHelper.commitAndPushPipelineFile(this.inputs.pipelineParameters.pipelineFileName, this.inputs.sourceRepository);
-                        }
-                        catch (error) {
+                            await this.repo.add([Utils.joinPath(this.workspaceUri, this.inputs.pipelineParameters.pipelineFileName).fsPath]);
+                            await this.repo.commit(Messages.addYmlFile); // TODO: Only commit the YAML file. Need to file a feature request on VS Code for this.
+                            await this.repo.push(this.inputs.sourceRepository.remoteName);
+                            this.inputs.sourceRepository.commitId = this.repo.state.HEAD.commit;
+                        } catch (error) {
                             telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
-                            vscode.window.showErrorMessage(utils.format(Messages.commitFailedErrorMessage, error.message));
+                            vscode.window.showErrorMessage(utils.format(Messages.commitFailedErrorMessage, error.stderr));
                         }
                     });
-                }
-                else {
+                } else {
                     telemetryHelper.setTelemetry(TelemetryKeys.PipelineDiscarded, 'true');
                     throw new UserCancelledError();
                 }
