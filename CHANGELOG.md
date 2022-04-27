@@ -3,6 +3,13 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.204.0
+### Fixed
+- Fixed Configure Pipeline flow
+- Updated dependencies to fix security vulnerabilities
+### Updated
+- M202 schema
+
 ## 1.202.0
 ### Added
 - Your organization's schema will now be auto-detected and used if your repo is hosted in Azure Repos

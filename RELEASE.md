@@ -4,7 +4,7 @@
 0. Find the current sprint using https://whatsprintis.it.
 0. Update the version to the major sprint number using `npm version --no-git-tag-version THE_SPRINT_VERSION`.
   - Replace `THE_SPRINT_VERSION` with `patch` if you are doing a bugfix release.
-0. Ensure the CHANGELOG is up to date.
+0. Ensure the [CHANGELOG](CHANGELOG.md) is up to date.
 0. Update the [service schema](#bumping-service-schema).
 0. Create a PR on GitHub, mostly for tracking reasons.
 0. Manually queue a [Release build](https://dev.azure.com/ms/azure-pipelines-vscode/_build?definitionId=12) against your PR branch.
@@ -16,7 +16,8 @@
 
 ## Bumping service schema
 
-0. Get the new schema from https://dev.azure.com/vscode-schema/_apis/distributedtask/yamlschema
+0. Go to a personal Azure DevOps organization that is not joined to a work-related AAD organization
+0. Get the new schema from https://dev.azure.com/YOUR-PERSONAL-ORG/_apis/distributedtask/yamlschema
 0. Replace `service-schema.json` with the results of that endpoint.
 0. In VS Code, run `Format document` to keep the diff readable.
-0. Update `$comment` with the Azure DevOps sprint info (you can see the sprint number in the lower left of the Azure DevOps UI at https://dev.azure.com/vscode-schema/).
+0. Update `$comment` with the Azure DevOps sprint info (you can see the sprint number by going to https://dev.azure.com/YOUR-PERSONAL-ORG/_home/about).
