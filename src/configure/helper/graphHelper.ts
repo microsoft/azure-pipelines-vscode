@@ -1,4 +1,4 @@
-const uuid = require('uuid/v1');
+import { v4 as uuid } from 'uuid';
 import { AadApplication } from '../model/models';
 import { generateRandomPassword, executeFunctionWithRetry } from './commonHelper';
 import { Messages } from '../../messages';

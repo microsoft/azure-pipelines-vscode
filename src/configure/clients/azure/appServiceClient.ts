@@ -1,4 +1,4 @@
-const uuid = require('uuid/v4');
+import { v4 as uuid } from 'uuid';
 import { ResourceManagementModels } from '@azure/arm-resources';
 import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-appservice';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
