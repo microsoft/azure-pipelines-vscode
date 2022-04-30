@@ -22,7 +22,6 @@ const config = {
   externals: {
     vscode: 'commonjs vscode',
     'applicationinsights-native-metrics': 'commonjs applicationinsights-native-metrics', // we're not native
-    '@opentelemetry/tracing': 'commonjs @opentelemetry/tracing', // optional
   },
   mode: 'production',
   resolve: {
