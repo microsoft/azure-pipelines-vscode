@@ -28096,6 +28096,89 @@
           "required": [
             "task"
           ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Create Work Item Task\n\nThe Create Work Item task allows you to create a work item from a build or release.",
+              "ignoreCase": "value",
+              "pattern": "^CreateWorkItem@0$"
+            },
+            "inputs": {
+              "description": "Create Work Item inputs",
+              "properties": {
+                "teamProject": {
+                },
+                "workItemType": {
+                },
+                "title": {
+                },
+                "assignedTo": {
+                },
+                "areaPath": {
+                },
+                "iterationPath": {
+                },
+                "fieldMappings": {
+                },
+                "associate": {
+                },
+                "associationType": {
+                },
+                "linkWorkItems": {
+                },
+                "linkType": {
+                },
+                "linkTarget": {
+                },
+                "targetId": {
+                },
+                "targetWiql": {
+                },
+                "limitWorkItemLinksToSameProject": {
+                },
+                "linkPR": {
+                },
+                "commitsAndChangesets": {
+                },
+                "addAttachments": {
+                },
+                "attachmentsFolder": {
+                },
+                "attachments": {
+                },
+                "preventDuplicates": {
+                },
+                "keyFields": {
+                },
+                "updateDuplicates": {
+                },
+                "updateRules": {
+                },
+                "createOutputs": {
+                },
+                "outputVariables": {
+                },
+                "authToken": {
+                },
+                "allowRedirectDowngrade": {
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "workItemType",
+                "title"
+              ]
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
+          ]
         }
       ]
     }
