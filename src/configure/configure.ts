@@ -1,4 +1,4 @@
-const uuid = require('uuid/v4');
+import { v4 as uuid } from 'uuid';
 import { AppServiceClient } from './clients/azure/appServiceClient';
 import { OrganizationsClient } from './clients/devOps/organizationsClient';
 import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';

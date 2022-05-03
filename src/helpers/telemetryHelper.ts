@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import TelemetryReporter from 'vscode-extension-telemetry';
+import TelemetryReporter from '@vscode/extension-telemetry';
 
 import { TelemetryKeys } from './telemetryKeys';
 import * as logger from '../logger';
 import { parseError } from './parseError';
 
-const uuid = require('uuid/v4');
+import { v4 as uuid } from 'uuid';
 
 const extensionName = 'ms-azure-devops.azure-pipelines';
 const packageJSON = vscode.extensions.getExtension(extensionName).packageJSON;
