@@ -25,9 +25,6 @@ variables:
   # Test Projects
   testProjects: "**/*[Tt]est*/*.csproj"
 
-  # Dotnet Core Version
-  dotnetCoreVersion: 2.x
-
 stages:
 - stage: Build
   displayName: Build stage
@@ -39,12 +36,6 @@ stages:
       vmImage: $(vmImageName)
 
     steps:
-    - task: UseDotNet@2
-      displayName: 'Use .NET Core sdk'
-      inputs:
-        packageType: sdk
-        version: $(dotnetCoreVersion)
-
     - task: DotNetCoreCLI@2
       displayName: Restore
       inputs:

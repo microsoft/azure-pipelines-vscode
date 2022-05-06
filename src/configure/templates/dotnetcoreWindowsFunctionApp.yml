@@ -16,6 +16,15 @@ variables:
   # Agent VM image name
   vmImageName: 'windows-latest'
 
+  # Build Configuration
+  buildConfiguration: 'Release'
+
+  # Build Projects
+  buildProjects: "**/*.csproj"
+
+  # Test Projects
+  testProjects: "**/*[Tt]est*/*.csproj"
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -28,22 +37,36 @@ stages:
 
     steps:
     - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: 'restore'
+        publishWebProjects: true
+        projects: $(buildProjects)
+
+    - task: DotNetCoreCLI@2
       displayName: Build
       inputs:
         command: 'build'
-        projects: '*.csproj'
-        arguments: --output publish_output --configuration Release
+        projects: $(buildProjects)
+        arguments: --configuration $(buildConfiguration)
 
-    - task: ArchiveFiles@2
-      displayName: 'Archive files'
+    - task: DotNetCoreCLI@2
+      displayName: Test
       inputs:
-        rootFolderOrFile: 'publish_output'
-        includeRootFolder: false
-        archiveType: zip
-        archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
-        replaceExistingArchive: true
+        command: 'test'
+        projects: $(testProjects)
+        publishWebProjects: true
+        arguments: --configuration $(buildConfiguration)
 
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+    - task: DotNetCoreCLI@2
+      displayName: Publish
+      inputs:
+        command: 'publish'
+        publishWebProjects: true
+        arguments: --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
+        zipAfterPublish: true
+
+    - publish: $(Build.ArtifactStagingDirectory)
       artifact: drop
 
 - stage: Deploy
@@ -69,4 +92,4 @@ stages:
               azureSubscription: '$(azureSubscription)'
               appType: functionApp
               appName: $(functionAppName)
-              package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
+              package: '$(Pipeline.Workspace)/**/*.zip'
