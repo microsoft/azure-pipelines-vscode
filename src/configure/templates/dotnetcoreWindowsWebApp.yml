@@ -14,7 +14,7 @@ variables:
   webAppName: '{{{ targetResource.resource.name }}}'
 
   # Agent VM image name
-  vmImageName: 'vs2017-win2016'
+  vmImageName: 'windows-latest'
 
   # Build Configuration
   buildConfiguration: 'Release'

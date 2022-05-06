@@ -11,6 +11,9 @@ variables:
   # Web app name
   webAppName: '{{{ targetResource.resource.name }}}'
 
+  # Agent VM image name
+  vmImageName: 'windows-latest'
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -18,7 +21,7 @@ stages:
   - job: BuildJob
     displayName: Build
     pool:
-      vmImage: 'vs2017-win2016'
+      vmImage: $(vmImageName)
 
     steps:
 
@@ -42,7 +45,7 @@ stages:
   - deployment: Deploy
     environment: 'development'
     pool:
-      vmImage: 'vs2017-win2016'
+      vmImage: $(vmImageName)
 
     strategy:
       runOnce:
