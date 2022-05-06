@@ -89,35 +89,35 @@ function isDotnetApplication(files: string[]): boolean {
 const nodeTemplates: Array<PipelineTemplate> = [
     {
         label: 'Node.js with npm to Windows Web App',
-        path: path.join(__dirname, 'configure/templates/nodejs.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.WindowsApp
-    },
-    {
-        label: 'Node.js with Gulp to Windows Web App',
-        path: path.join(__dirname, 'configure/templates/nodejsWithGulp.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.WindowsApp
-    },
-    {
-        label: 'Node.js with Grunt to Windows Web App',
-        path: path.join(__dirname, 'configure/templates/nodejsWithGrunt.yml'),
+        path: path.join(__dirname, 'configure/templates/nodejsWindowsWebApp.yml'),
         language: 'node',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.WindowsApp
     },
     {
         label: 'Node.js with Angular to Windows Web App',
-        path: path.join(__dirname, 'configure/templates/nodejsWithAngular.yml'),
+        path: path.join(__dirname, 'configure/templates/nodejsWindowsWebAppAngular.yml'),
+        language: 'node',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
+    },
+    {
+        label: 'Node.js with Gulp to Windows Web App',
+        path: path.join(__dirname, 'configure/templates/nodejsWindowsWebAppGulp.yml'),
+        language: 'node',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
+    },
+    {
+        label: 'Node.js with Grunt to Windows Web App',
+        path: path.join(__dirname, 'configure/templates/nodejsWindowsWebAppGrunt.yml'),
         language: 'node',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.WindowsApp
     },
     {
         label: 'Node.js with Webpack to Windows Web App',
-        path: path.join(__dirname, 'configure/templates/nodejsWithWebpack.yml'),
+        path: path.join(__dirname, 'configure/templates/nodejsWindowsWebAppWebpack.yml'),
         language: 'node',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.WindowsApp
