@@ -19,9 +19,6 @@ variables:
   # Environment name
   environmentName: '{{{ targetResource.resource.name }}}'
 
-  # Python version: 3.7
-  pythonVersion: '3.7'
-
 stages:
 - stage: Build
   displayName: Build stage
@@ -29,12 +26,8 @@ stages:
   - job: BuildJob
     pool:
       vmImage: $(vmImageName)
-    steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '$(pythonVersion)'
-      displayName: 'Use Python $(pythonVersion)'
 
+    steps:
     - script: |
         python -m venv antenv
         source antenv/bin/activate
@@ -69,12 +62,6 @@ stages:
       runOnce:
         deploy:
           steps:
-
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: '$(pythonVersion)'
-            displayName: 'Use Python version'
-
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App : {{ webAppName }}'
             inputs:
