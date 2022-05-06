@@ -11,9 +11,6 @@ variables:
   # Web app name
   webAppName: '{{{ targetResource.resource.name }}}'
 
-  # Working Directory
-  workingDirectory: '{{{ pipelineParameters.workingDirectory }}}'
-
 stages:
 - stage: Build
   displayName: Build stage
@@ -28,7 +25,7 @@ stages:
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: $(workingDirectory)
+        rootFolderOrFile: '.'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip

@@ -16,9 +16,6 @@ variables:
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
-  # Working Directory
-  workingDirectory: '$(System.DefaultWorkingDirectory)'
-
   # Build Configuration
   buildConfiguration: 'Release'
 
@@ -47,7 +44,7 @@ stages:
       inputs:
         packageType: sdk
         version: $(dotnetCoreVersion)
-        
+
     - task: DotNetCoreCLI@2
       displayName: Restore
       inputs:
@@ -61,7 +58,7 @@ stages:
         command: 'build'
         projects: $(buildProjects)
         arguments: --configuration $(buildConfiguration)
-    
+
     - task: DotNetCoreCLI@2
       displayName: Test
       inputs:

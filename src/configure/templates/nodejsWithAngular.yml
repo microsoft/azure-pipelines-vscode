@@ -13,9 +13,6 @@ variables:
   # Web app name
   webAppName: '{{{ targetResource.resource.name }}}'
 
-  # Working Directory
-  workingDirectory: '{{{ pipelineParameters.workingDirectory }}}'
-
 stages:
 - stage: Build
   displayName: Build stage

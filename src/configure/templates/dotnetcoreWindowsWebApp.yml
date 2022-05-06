@@ -16,9 +16,6 @@ variables:
   # Agent VM image name
   vmImageName: 'vs2017-win2016'
 
-  # Working Directory
-  workingDirectory: '$(System.DefaultWorkingDirectory)'
-
   # Build Configuration
   buildConfiguration: 'Release'
 
@@ -30,7 +27,7 @@ variables:
 
   # Dotnet Core Version
   dotnetCoreVersion: 2.x
-  
+
 stages:
 - stage: Build
   displayName: Build stage
@@ -61,7 +58,7 @@ stages:
         command: 'build'
         projects: $(buildProjects)
         arguments: --configuration $(buildConfiguration)
-    
+
     - task: DotNetCoreCLI@2
       displayName: Test
       inputs:
