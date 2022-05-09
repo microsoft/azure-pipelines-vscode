@@ -1,15 +1,15 @@
 # Python to Linux Web App on Azure
-# Build your Python project and deploy it to Azure as a Linux Web App.
-# Change python version to one thats appropriate for your application.
+# Build a Python project and deploy it to Azure as a Linux Web App.
+# Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
-- master
+- {{{ sourceRepository.branch }}}
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
   azureServiceConnectionId: '{{{ targetResource.serviceConnectionId }}}'
-  
+
   # Web app name
   webAppName: '{{{ targetResource.resource.name }}}'
 
@@ -19,12 +19,6 @@ variables:
   # Environment name
   environmentName: '{{{ targetResource.resource.name }}}'
 
-  # Project root folder. Point to the folder containing manage.py file.
-  projectRoot: $(System.DefaultWorkingDirectory)
-  
-  # Python version: 3.7
-  pythonVersion: '3.7'
-
 stages:
 - stage: Build
   displayName: Build stage
@@ -32,25 +26,20 @@ stages:
   - job: BuildJob
     pool:
       vmImage: $(vmImageName)
+
     steps:
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '$(pythonVersion)'
-      displayName: 'Use Python $(pythonVersion)'
-    
     - script: |
         python -m venv antenv
         source antenv/bin/activate
         python -m pip install --upgrade pip
         pip install setup
         pip install -r requirements.txt
-      workingDirectory: $(projectRoot)
       displayName: "Install requirements"
 
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: '$(projectRoot)'
+        rootFolderOrFile: '.'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
@@ -73,12 +62,6 @@ stages:
       runOnce:
         deploy:
           steps:
-          
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: '$(pythonVersion)'
-            displayName: 'Use Python version'
-
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App : {{ webAppName }}'
             inputs:

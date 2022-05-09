@@ -1,5 +1,5 @@
-# Node.js with webpack on Windows Web App
-# Build a Node.js project using the webpack CLI and deploy it to Azure as a Windows web app.
+# Node.js with gulp on Windows Web App
+# Build a Node.js project using the gulp task runner and deploy it to Azure as a Windows web app.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
@@ -13,35 +13,28 @@ variables:
   # Web app name
   webAppName: '{{{ targetResource.resource.name }}}'
 
-  # Working Directory
-  workingDirectory: '{{{ pipelineParameters.workingDirectory }}}'
+  # Agent VM image name
+  vmImageName: 'windows-latest'
 
 stages:
 - stage: Build
   displayName: Build stage
   jobs:
-  - job: BuildJob
+  - job: Build
     displayName: Build
     pool:
-      vmImage: 'vs2017-win2016'
+      vmImage: $(vmImageName)
 
     steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '10.x'
-      displayName: 'Install Node.js'
-
     - script: |
-        npm install -g webpack webpack-cli --save-dev
         npm install
-        npx webpack --config webpack.config.js
-      displayName: 'npm install, run webpack'
-      workingDirectory: $(workingDirectory)
+        gulp default --gulpfile gulpfile.js
+      displayName: 'npm install and run gulp'
 
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: $(workingDirectory)
+        rootFolderOrFile: '.'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
@@ -58,7 +51,7 @@ stages:
   - deployment: Deploy
     environment: 'development'
     pool:
-      vmImage: 'vs2017-win2016'
+      vmImage: $(vmImageName)
 
     strategy:
       runOnce:

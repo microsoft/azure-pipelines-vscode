@@ -24,8 +24,8 @@ export async function analyzeRepoAndListAppropriatePipeline(repoUri: URI): Promi
         templateList = functionTemplates.concat(templateList);
     }
 
-    if(analysisResult.isDotnetCoreApplication) {
-        templateList = dotnetCoreTemplates.concat(templateList);
+    if(analysisResult.isDotnetApplication) {
+        templateList = dotnetTemplates.concat(templateList);
     }
 
     // add all possible templates as we could not detect the appropriate onesı
@@ -37,7 +37,7 @@ export async function renderContent(templateFilePath: string, context: WizardInp
     return Mustache.render(data, context);
 }
 
-async function analyzeRepo(repoUri: URI): Promise<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean, isDotnetCoreApplication: boolean }> {
+async function analyzeRepo(repoUri: URI): Promise<{ isNodeApplication: boolean, isFunctionApplication: boolean, isPythonApplication: boolean, isDotnetApplication: boolean }> {
     let contents: [string, vscode.FileType][];
     let err = false;
     try {
@@ -52,7 +52,7 @@ async function analyzeRepo(repoUri: URI): Promise<{ isNodeApplication: boolean, 
         isNodeApplication: err ? true : isNodeRepo(files),
         isFunctionApplication: err ? true : isFunctionApp(files),
         isPythonApplication: err ? true : isPythonRepo(files),
-        isDotnetCoreApplication: err ? true : isDotnetCoreApplication(files)
+        isDotnetApplication: err ? true : isDotnetApplication(files)
         // isContainerApplication: isDockerRepo(files)
     };
 
@@ -80,7 +80,7 @@ function isPythonRepo(files: string[]): boolean {
     })
 }
 
-function isDotnetCoreApplication(files: string[]): boolean {
+function isDotnetApplication(files: string[]): boolean {
     return files.some((file) => {
         return file.toLowerCase().endsWith("sln") || file.toLowerCase().endsWith("csproj") || file.toLowerCase().endsWith("fsproj");
     })
@@ -89,35 +89,35 @@ function isDotnetCoreApplication(files: string[]): boolean {
 const nodeTemplates: Array<PipelineTemplate> = [
     {
         label: 'Node.js with npm to Windows Web App',
-        path: path.join(__dirname, 'configure/templates/nodejs.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.WindowsApp
-    },
-    {
-        label: 'Node.js with Gulp to Windows Web App',
-        path: path.join(__dirname, 'configure/templates/nodejsWithGulp.yml'),
-        language: 'node',
-        targetType: TargetResourceType.WebApp,
-        targetKind: WebAppKind.WindowsApp
-    },
-    {
-        label: 'Node.js with Grunt to Windows Web App',
-        path: path.join(__dirname, 'configure/templates/nodejsWithGrunt.yml'),
+        path: path.join(__dirname, 'configure/templates/nodejsWindowsWebApp.yml'),
         language: 'node',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.WindowsApp
     },
     {
         label: 'Node.js with Angular to Windows Web App',
-        path: path.join(__dirname, 'configure/templates/nodejsWithAngular.yml'),
+        path: path.join(__dirname, 'configure/templates/nodejsWindowsWebAppAngular.yml'),
+        language: 'node',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
+    },
+    {
+        label: 'Node.js with Gulp to Windows Web App',
+        path: path.join(__dirname, 'configure/templates/nodejsWindowsWebAppGulp.yml'),
+        language: 'node',
+        targetType: TargetResourceType.WebApp,
+        targetKind: WebAppKind.WindowsApp
+    },
+    {
+        label: 'Node.js with Grunt to Windows Web App',
+        path: path.join(__dirname, 'configure/templates/nodejsWindowsWebAppGrunt.yml'),
         language: 'node',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.WindowsApp
     },
     {
         label: 'Node.js with Webpack to Windows Web App',
-        path: path.join(__dirname, 'configure/templates/nodejsWithWebpack.yml'),
+        path: path.join(__dirname, 'configure/templates/nodejsWindowsWebAppWebpack.yml'),
         language: 'node',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.WindowsApp
@@ -141,18 +141,18 @@ const pythonTemplates: Array<PipelineTemplate> = [
     }
 ];
 
-const dotnetCoreTemplates: Array<PipelineTemplate> = [
+const dotnetTemplates: Array<PipelineTemplate> = [
     {
-        label: '.NET Core Web App to Windows on Azure',
-        path: path.join(__dirname, 'configure/templates/dotnetcoreWindowsWebApp.yml'),
-        language: 'dotnetcore',
+        label: '.NET Web App to Windows on Azure',
+        path: path.join(__dirname, 'configure/templates/dotnetWindowsWebApp.yml'),
+        language: 'dotnet',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.WindowsApp
     },
     {
-        label: '.NET Core Web App to Linux on Azure',
-        path: path.join(__dirname, 'configure/templates/dotnetcoreLinuxWebApp.yml'),
-        language: 'dotnetcore',
+        label: '.NET Web App to Linux on Azure',
+        path: path.join(__dirname, 'configure/templates/dotnetLinuxWebApp.yml'),
+        language: 'dotnet',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.LinuxApp
     }
@@ -184,8 +184,8 @@ const functionTemplates: Array<PipelineTemplate> = [
         targetKind: WebAppKind.FunctionAppLinux
     },
     {
-        label: '.NET Core Function App to Windows Azure Function',
-        path: path.join(__dirname, 'configure/templates/dotnetcoreWindowsFunctionApp.yml'),
+        label: '.NET Function App to Windows Azure Function',
+        path: path.join(__dirname, 'configure/templates/dotnetWindowsFunctionApp.yml'),
         language: 'dotnet',
         targetType: TargetResourceType.WebApp,
         targetKind: WebAppKind.FunctionApp

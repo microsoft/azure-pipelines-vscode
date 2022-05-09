@@ -1,10 +1,10 @@
-# .NET Core Web App to Linux on Azure
-# Build a .NET Core Web App and deploy it to Azure as a Linux Web App.
+# .NET Web App to Linux on Azure
+# Build a .NET Web App and deploy it to Azure as a Linux Web App.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- master
+- {{{ sourceRepository.branch }}}
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
@@ -16,9 +16,6 @@ variables:
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
-  # Working Directory
-  workingDirectory: '$(System.DefaultWorkingDirectory)'
-
   # Build Configuration
   buildConfiguration: 'Release'
 
@@ -27,9 +24,6 @@ variables:
 
   # Test Projects
   testProjects: "**/*[Tt]est*/*.csproj"
-
-  # Dotnet Core Version
-  dotnetCoreVersion: 2.x
 
 stages:
 - stage: Build
@@ -42,12 +36,6 @@ stages:
       vmImage: $(vmImageName)
 
     steps:
-    - task: UseDotNet@2
-      displayName: 'Use .NET Core sdk'
-      inputs:
-        packageType: sdk
-        version: $(dotnetCoreVersion)
-        
     - task: DotNetCoreCLI@2
       displayName: Restore
       inputs:
@@ -61,7 +49,7 @@ stages:
         command: 'build'
         projects: $(buildProjects)
         arguments: --configuration $(buildConfiguration)
-    
+
     - task: DotNetCoreCLI@2
       displayName: Test
       inputs:

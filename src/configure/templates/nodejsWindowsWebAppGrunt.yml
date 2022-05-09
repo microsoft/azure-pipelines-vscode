@@ -13,34 +13,28 @@ variables:
   # Web app name
   webAppName: '{{{ targetResource.resource.name }}}'
 
-  # Working Directory
-  workingDirectory: '{{{ pipelineParameters.workingDirectory }}}'
+  # Agent VM image name
+  vmImageName: 'windows-latest'
 
 stages:
 - stage: Build
   displayName: Build stage
   jobs:
-  - job: BuildJob
+  - job: Build
     displayName: Build
     pool:
-      vmImage: 'vs2017-win2016'
+      vmImage: $(vmImageName)
 
     steps:
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '10.x'
-      displayName: 'Install Node.js'
-
     - script: |
         npm install
         grunt --gruntfile Gruntfile.js
       displayName: 'npm install and run grunt'
-      workingDirectory: $(workingDirectory)
 
     - task: ArchiveFiles@2
       displayName: 'Archive files'
       inputs:
-        rootFolderOrFile: $(workingDirectory)
+        rootFolderOrFile: '.'
         includeRootFolder: false
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
@@ -57,7 +51,7 @@ stages:
   - deployment: Deploy
     environment: 'development'
     pool:
-      vmImage: 'vs2017-win2016'
+      vmImage: $(vmImageName)
 
     strategy:
       runOnce:
