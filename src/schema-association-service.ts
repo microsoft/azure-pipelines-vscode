@@ -60,7 +60,7 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
         const gitExtension = await getGitExtensionApi();
         const repo = gitExtension.getRepository(vscode.workspace.workspaceFolders[0].uri);
         await repo.status();
-        const remoteName = repo.state.HEAD.remote;
+        const remoteName = repo.state.HEAD.upstream.remote;
         remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName).fetchUrl;
     } catch (error) {
         return undefined;
