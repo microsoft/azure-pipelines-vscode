@@ -3,6 +3,13 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.205.0
+### Fixed
+- Fixed a bug in 1.204.0 that prevented schema auto-detection from working (thanks @krokofant!)
+### Updated
+- All templates have been updated to use the latest versions of agents and tooling
+- M203 schema
+
 ## 1.204.0
 ### Fixed
 - Fixed Configure Pipeline flow
