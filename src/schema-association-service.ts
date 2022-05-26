@@ -10,7 +10,10 @@ import * as languageclient from 'vscode-languageclient/node';
 import * as azdev from 'azure-devops-node-api';
 import { getAzureAccountExtensionApi, getGitExtensionApi } from './extensionApis';
 import { AzureDevOpsHelper } from './configure/helper/devOps/azureDevOpsHelper';
+import { showQuickPick } from './configure/helper/controlProvider';
+import { QuickPickItemWithData } from './configure/model/models';
 import { Messages } from './messages';
+import { AzureSession } from './typings/azure-account.api';
 
 export async function locateSchemaFile(context: vscode.ExtensionContext): Promise<string> {
     let schemaUri: vscode.Uri | undefined;
@@ -91,8 +94,24 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
         // Create the global storage folder to guarantee that it exists.
         await vscode.workspace.fs.createDirectory(context.globalStorageUri);
 
+        // Prompt for the right Azure session to use.
+        let session: AzureSession;
+        if (azureAccountApi.sessions.length > 1) {
+            const sessions: QuickPickItemWithData<AzureSession>[] =
+                azureAccountApi.sessions.map(session => ({ label: session.tenantId, data: session }));
+            const selectedSession = await showQuickPick('sessions', sessions, {
+                placeHolder: `Select tenant associated with the "${organizationName}" Azure DevOps organization`,
+            });
+
+            if (selectedSession === undefined) {
+                return undefined;
+            }
+            session = selectedSession.data;
+        } else {
+            session = azureAccountApi.sessions[0];
+        }
+
         // Grab and save the schema.
-        // TODO: Prompt for the correct session to use.
         // NOTE: Despite saving the schema to disk, we don't treat it as a cache
         // for the following reasons:
         // 1. ADO doesn't provide an API to indicate which version (milestone) it's on,
@@ -100,7 +119,7 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
         // 2. Even if we did, organizations can add/remove tasks at any time.
         // 3. Schema association only happens at startup or when schema settings change,
         //    so typically we'll only hit the network once per session anyway.
-        const token = await azureAccountApi.sessions[0].credentials2.getToken();
+        const token = await session.credentials2.getToken();
         const authHandler = azdev.getBearerHandler(token.accessToken);
         const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
         const taskAgentApi = await azureDevOpsClient.getTaskAgentApi();
