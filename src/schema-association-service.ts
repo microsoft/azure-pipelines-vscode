@@ -15,6 +15,9 @@ import { QuickPickItemWithData } from './configure/model/models';
 import { Messages } from './messages';
 import { AzureSession } from './typings/azure-account.api';
 
+// TODO: In order to support Pipelines files from multiple workspaces,
+// we need to call this on _every_ Azure Pipelines file open event,
+// not just at startup/config change.
 export async function locateSchemaFile(context: vscode.ExtensionContext): Promise<string> {
     let schemaUri: vscode.Uri | undefined;
     try {
@@ -91,9 +94,6 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
             return undefined;
         }
 
-        // Create the global storage folder to guarantee that it exists.
-        await vscode.workspace.fs.createDirectory(context.globalStorageUri);
-
         // Prompt for the right Azure session to use.
         let session: AzureSession;
         if (azureAccountApi.sessions.length > 1) {
@@ -110,6 +110,9 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
         } else {
             session = azureAccountApi.sessions[0];
         }
+
+        // Create the global storage folder to guarantee that it exists.
+        await vscode.workspace.fs.createDirectory(context.globalStorageUri);
 
         // Grab and save the schema.
         // NOTE: Despite saving the schema to disk, we don't treat it as a cache
