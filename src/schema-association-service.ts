@@ -9,6 +9,7 @@ import { Utils } from 'vscode-uri';
 import * as languageclient from 'vscode-languageclient/node';
 import * as azdev from 'azure-devops-node-api';
 import { getAzureAccountExtensionApi, getGitExtensionApi } from './extensionApis';
+import { OrganizationsClient } from './configure/clients/devOps/organizationsClient';
 import { AzureDevOpsHelper } from './configure/helper/devOps/azureDevOpsHelper';
 import { showQuickPick } from './configure/helper/controlProvider';
 import { QuickPickItemWithData } from './configure/model/models';
@@ -60,79 +61,103 @@ export function getSchemaAssociation(schemaFilePath: string): ISchemaAssociation
 }
 
 async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscode.Uri | undefined> {
-    // Get the remote URL if we're in a Git repo
-    let remoteUrl: string | void;
-    try {
-        const gitExtension = await getGitExtensionApi();
-        const repo = gitExtension.getRepository(vscode.workspace.workspaceFolders[0].uri);
-        await repo.status();
-        const remoteName = repo.state.HEAD.upstream.remote;
-        remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName).fetchUrl;
-    } catch (error) {
+    const azureAccountApi = await getAzureAccountExtensionApi();
+    if (!(await azureAccountApi.waitForLogin())) {
+        // Don't await this message so that we can return the fallback schema instead of blocking.
+        // We'll detect the login in extension.ts and then re-request the schema.
+        const actionPromise = vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel);
+        actionPromise.then(async action => {
+            if (action === Messages.signInLabel) {
+                await vscode.window.withProgress({
+                    location: vscode.ProgressLocation.Notification,
+                    title: Messages.waitForAzureSignIn,
+                }, async () => {
+                    await vscode.commands.executeCommand("azure-account.login");
+                });
+            }
+        });
+
         return undefined;
     }
 
-    // Are we in an Azure Repo?
-    if (remoteUrl && AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
-        const { organizationName } = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
-        const azureAccountApi = await getAzureAccountExtensionApi();
-        if (!(await azureAccountApi.waitForLogin())) {
-            // Don't await this message so that we can return the fallback schema instead of blocking.
-            // We'll detect the login in extension.ts and then re-request the schema.
-            const actionPromise = vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel);
-            actionPromise.then(async action => {
-                if (action === Messages.signInLabel) {
-                    await vscode.window.withProgress({
-                        location: vscode.ProgressLocation.Notification,
-                        title: Messages.waitForAzureSignIn,
-                    }, async () => {
-                        await vscode.commands.executeCommand("azure-account.login");
-                    });
-                }
-            });
+    // Get the remote URL if we're in a Git repo.
+    let remoteUrl: string | undefined;
+    const gitExtension = await getGitExtensionApi();
+    const repo = gitExtension.getRepository(vscode.workspace.workspaceFolders[0].uri);
+    if (repo !== null) {
+        await repo.status();
+        if (repo.state.HEAD.upstream !== undefined) {
+            const remoteName = repo.state.HEAD.upstream.remote;
+            remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName).fetchUrl;
+        }
+    }
 
+    let organizationName: string;
+    let session: AzureSession;
+    if (remoteUrl !== undefined && AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
+        // If we're in an Azure repo, we can silently determine the organization name and session.
+        organizationName = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl).organizationName;
+        for (const azureSession of azureAccountApi.sessions) {
+            const organizationsClient = new OrganizationsClient(azureSession.credentials2);
+            const organizations = await organizationsClient.listOrganizations();
+            if (organizations.find(org => org.accountName.toLowerCase() === organizationName.toLowerCase())) {
+                session = azureSession;
+                break;
+            }
+        }
+
+        // No access to the organization.
+        // TODO: Pop up an error message.
+        if (session === undefined) {
+            return undefined;
+        }
+    } else {
+        // Otherwise, we need to manually prompt.
+        const organizationAndSessions: QuickPickItemWithData<AzureSession>[] = [];
+
+        // FIXME: azureAccountApi.sessions changes under us. Why?
+        for (const azureSession of azureAccountApi.sessions) {
+            const organizationsClient = new OrganizationsClient(azureSession.credentials2);
+            const organizations = await organizationsClient.listOrganizations();
+            organizationAndSessions.push(...organizations.map(organization => ({
+                label: organization.accountName,
+                data: azureSession,
+            })));
+        }
+
+        // FIXME: Show an information message first before throwing a quick pick in their face.
+        const selectedOrganizationAndSession = await showQuickPick('organization', organizationAndSessions, {
+            placeHolder: `Select Azure DevOps organization associated with this repository`,
+        });
+
+        if (selectedOrganizationAndSession === undefined) {
             return undefined;
         }
 
-        // Prompt for the right Azure session to use.
-        let session: AzureSession;
-        if (azureAccountApi.sessions.length > 1) {
-            const sessions: QuickPickItemWithData<AzureSession>[] =
-                azureAccountApi.sessions.map(session => ({ label: session.tenantId, data: session }));
-            const selectedSession = await showQuickPick('sessions', sessions, {
-                placeHolder: `Select tenant associated with the "${organizationName}" Azure DevOps organization`,
-            });
-
-            if (selectedSession === undefined) {
-                return undefined;
-            }
-            session = selectedSession.data;
-        } else {
-            session = azureAccountApi.sessions[0];
-        }
-
-        // Create the global storage folder to guarantee that it exists.
-        await vscode.workspace.fs.createDirectory(context.globalStorageUri);
-
-        // Grab and save the schema.
-        // NOTE: Despite saving the schema to disk, we don't treat it as a cache
-        // for the following reasons:
-        // 1. ADO doesn't provide an API to indicate which version (milestone) it's on,
-        //    so we don't have a way of busting the cache.
-        // 2. Even if we did, organizations can add/remove tasks at any time.
-        // 3. Schema association only happens at startup or when schema settings change,
-        //    so typically we'll only hit the network once per session anyway.
-        const token = await session.credentials2.getToken();
-        const authHandler = azdev.getBearerHandler(token.accessToken);
-        const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
-        const taskAgentApi = await azureDevOpsClient.getTaskAgentApi();
-        const schema = JSON.stringify(await taskAgentApi.getYamlSchema());
-        const schemaUri = Utils.joinPath(context.globalStorageUri, `${organizationName}-schema.json`);
-        await vscode.workspace.fs.writeFile(schemaUri, Buffer.from(schema));
-
-        return schemaUri;
+        organizationName = selectedOrganizationAndSession.label;
+        session = selectedOrganizationAndSession.data;
     }
-    return undefined;
+
+    // Create the global storage folder to guarantee that it exists.
+    await vscode.workspace.fs.createDirectory(context.globalStorageUri);
+
+    // Grab and save the schema.
+    // NOTE: Despite saving the schema to disk, we don't treat it as a cache
+    // for the following reasons:
+    // 1. ADO doesn't provide an API to indicate which version (milestone) it's on,
+    //    so we don't have a way of busting the cache.
+    // 2. Even if we did, organizations can add/remove tasks at any time.
+    // 3. Schema association only happens at startup or when schema settings change,
+    //    so typically we'll only hit the network once per session anyway.
+    const token = await session.credentials2.getToken();
+    const authHandler = azdev.getBearerHandler(token.accessToken);
+    const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
+    const taskAgentApi = await azureDevOpsClient.getTaskAgentApi();
+    const schema = JSON.stringify(await taskAgentApi.getYamlSchema());
+    const schemaUri = Utils.joinPath(context.globalStorageUri, `${organizationName}-schema.json`);
+    await vscode.workspace.fs.writeFile(schemaUri, Buffer.from(schema));
+
+    return schemaUri;
 }
 
 // Mapping of glob pattern -> schemas
