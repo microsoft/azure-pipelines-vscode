@@ -20,9 +20,10 @@ import { AzureSession } from './typings/azure-account.api';
 const selectOrganizationEvent: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 export const onDidSelectOrganization = selectOrganizationEvent.event;
 
-// TODO: In order to support Pipelines files from multiple workspaces,
+// TODO: In order to support Pipelines files from multiple folders in a workspace,
 // we need to call this on _every_ Azure Pipelines file open event,
 // not just at startup/config change.
+// Will need to listen to vscode.workspace.onDidOpenTextDocument in extension.ts.
 export async function locateSchemaFile(context: vscode.ExtensionContext): Promise<string> {
     let schemaUri: vscode.Uri | undefined;
     try {
@@ -32,7 +33,7 @@ export async function locateSchemaFile(context: vscode.ExtensionContext): Promis
         }
     } catch (error) {
         // Well, we tried our best. Fall back to the predetermined schema paths.
-        // TODO: Stop try/catching this once we're more confident in the schema detection.
+        // TODO: Start exposing errors once we're more confident in the schema detection.
     }
 
     let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile');
