@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { Utils } from 'vscode-uri';
 import * as languageclient from 'vscode-languageclient/node';
 import * as azdev from 'azure-devops-node-api';
+import { format } from 'util';
 import { getAzureAccountExtensionApi, getGitExtensionApi } from './extensionApis';
 import { OrganizationsClient } from './configure/clients/devOps/organizationsClient';
 import { AzureDevOpsHelper } from './configure/helper/devOps/azureDevOpsHelper';
@@ -15,6 +16,9 @@ import { showQuickPick } from './configure/helper/controlProvider';
 import { QuickPickItemWithData } from './configure/model/models';
 import { Messages } from './messages';
 import { AzureSession } from './typings/azure-account.api';
+
+const selectOrganizationEvent: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+export const onDidSelectOrganization = selectOrganizationEvent.event;
 
 // TODO: In order to support Pipelines files from multiple workspaces,
 // we need to call this on _every_ Azure Pipelines file open event,
@@ -28,6 +32,7 @@ export async function locateSchemaFile(context: vscode.ExtensionContext): Promis
         }
     } catch (error) {
         // Well, we tried our best. Fall back to the predetermined schema paths.
+        // TODO: Stop try/catching this once we're more confident in the schema detection.
     }
 
     let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile');
@@ -65,17 +70,17 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
     if (!(await azureAccountApi.waitForLogin())) {
         // Don't await this message so that we can return the fallback schema instead of blocking.
         // We'll detect the login in extension.ts and then re-request the schema.
-        const actionPromise = vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel);
-        actionPromise.then(async action => {
-            if (action === Messages.signInLabel) {
-                await vscode.window.withProgress({
-                    location: vscode.ProgressLocation.Notification,
-                    title: Messages.waitForAzureSignIn,
-                }, async () => {
-                    await vscode.commands.executeCommand("azure-account.login");
-                });
-            }
-        });
+        vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel)
+            .then(async action => {
+                if (action === Messages.signInLabel) {
+                    await vscode.window.withProgress({
+                        location: vscode.ProgressLocation.Notification,
+                        title: Messages.waitForAzureSignIn,
+                    }, async () => {
+                        await vscode.commands.executeCommand("azure-account.login");
+                    });
+                }
+            });
 
         return undefined;
     }
@@ -93,7 +98,7 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
     }
 
     let organizationName: string;
-    let session: AzureSession;
+    let session: AzureSession | undefined;
     if (remoteUrl !== undefined && AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
         // If we're in an Azure repo, we can silently determine the organization name and session.
         organizationName = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl).organizationName;
@@ -105,37 +110,66 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
                 break;
             }
         }
-
-        // No access to the organization.
-        // TODO: Pop up an error message.
-        if (session === undefined) {
-            return undefined;
-        }
     } else {
-        // Otherwise, we need to manually prompt.
-        const organizationAndSessions: QuickPickItemWithData<AzureSession>[] = [];
+        const azurePipelinesOrganizationAndTenant = context.workspaceState.get<{ organization: string; tenant: string; }>('azurePipelinesOrganizationAndTenant');
+        if (azurePipelinesOrganizationAndTenant !== undefined) {
+            // If we already have cached information for this workspace, use it.
+            organizationName = azurePipelinesOrganizationAndTenant.organization;
+            session = azureAccountApi.sessions.find(session => session.tenantId === azurePipelinesOrganizationAndTenant.tenant);
+        } else {
+            // Otherwise, we need to manually prompt.
+            // We do this by asking them to select an organization via an information message,
+            // then displaying the quick pick of all the organizations they have access to.
+            // We *do not* await this message so that we can use the fallback schema while waiting.
+            // We'll detect when they choose the organization in extension.ts and then re-request the schema.
+            vscode.window.showInformationMessage(Messages.selectOrganizationForEnhancedIntelliSense, Messages.selectOrganizationLabel)
+                .then(async action => {
+                    if (action === Messages.selectOrganizationLabel) {
+                        // Lazily construct list of organizations so that we can immediately show the quick pick,
+                        // then fill in the choices as they come in.
+                        const organizationAndSessionsPromise: Promise<QuickPickItemWithData<AzureSession>[]> = new Promise(async resolve => {
+                            const organizationAndSessions: QuickPickItemWithData<AzureSession>[] = [];
 
-        // FIXME: azureAccountApi.sessions changes under us. Why?
-        for (const azureSession of azureAccountApi.sessions) {
-            const organizationsClient = new OrganizationsClient(azureSession.credentials2);
-            const organizations = await organizationsClient.listOrganizations();
-            organizationAndSessions.push(...organizations.map(organization => ({
-                label: organization.accountName,
-                data: azureSession,
-            })));
-        }
+                            // FIXME: azureAccountApi.sessions changes under us. Why?
+                            for (const azureSession of azureAccountApi.sessions) {
+                                const organizationsClient = new OrganizationsClient(azureSession.credentials2);
+                                const organizations = await organizationsClient.listOrganizations();
+                                organizationAndSessions.push(...organizations.map(organization => ({
+                                    label: organization.accountName,
+                                    data: azureSession,
+                                })));
+                            }
 
-        // FIXME: Show an information message first before throwing a quick pick in their face.
-        const selectedOrganizationAndSession = await showQuickPick('organization', organizationAndSessions, {
-            placeHolder: `Select Azure DevOps organization associated with this repository`,
-        });
+                            resolve(organizationAndSessions);
+                        });
 
-        if (selectedOrganizationAndSession === undefined) {
+                        const selectedOrganizationAndSession = await showQuickPick('organization', organizationAndSessionsPromise, {
+                            placeHolder: 'Select Azure DevOps organization associated with this folder',
+                        });
+
+                        if (selectedOrganizationAndSession === undefined) {
+                            return undefined;
+                        }
+
+                        organizationName = selectedOrganizationAndSession.label;
+                        session = selectedOrganizationAndSession.data;
+
+                        await context.workspaceState.update('azurePipelinesOrganizationAndTenant', {
+                            organization: organizationName,
+                            tenant: session.tenantId,
+                        });
+
+                        selectOrganizationEvent.fire();
+                    }
+                });
             return undefined;
         }
+    }
 
-        organizationName = selectedOrganizationAndSession.label;
-        session = selectedOrganizationAndSession.data;
+    // Not logged into an account that has access.
+    if (session === undefined) {
+        vscode.window.showErrorMessage(format(Messages.unableToAccessOrganization, organizationName));
+        return undefined;
     }
 
     // Create the global storage folder to guarantee that it exists.

@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as languageclient from 'vscode-languageclient/node';
 
 import * as logger from './logger';
-import { getSchemaAssociation, locateSchemaFile, SchemaAssociationNotification } from './schema-association-service';
+import { getSchemaAssociation, locateSchemaFile, onDidSelectOrganization, SchemaAssociationNotification } from './schema-association-service';
 import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from './schema-contributor';
 import { telemetryHelper } from './helpers/telemetryHelper';
 import { getAzureAccountExtensionApi } from './extensionApis';
@@ -74,6 +74,12 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
         if (status === 'LoggedIn') {
             await loadSchema(context, client);
         }
+    }));
+
+    // We now have an organization for non-Azure Repos workspaces,
+    // so we can try auto-detecting the schema again.
+    context.subscriptions.push(onDidSelectOrganization(async () => {
+        await loadSchema(context, client);
     }));
 }
 
