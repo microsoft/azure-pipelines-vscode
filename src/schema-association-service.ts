@@ -24,6 +24,7 @@ export async function locateSchemaFile(
     context: vscode.ExtensionContext,
     workspaceFolder: vscode.WorkspaceFolder | undefined): Promise<string> {
     let schemaUri: vscode.Uri | undefined;
+    // FIXME: Handle the case where workspaceFolder === undefined.
     try {
         schemaUri = await autoDetectSchema(context, workspaceFolder);
         if (schemaUri) {
@@ -34,8 +35,8 @@ export async function locateSchemaFile(
         // TODO: Start exposing errors once we're more confident in the schema detection.
     }
 
-    let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile');
-    if ((alternateSchema?.trim().length ?? 0) === 0) {
+    let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile', '');
+    if (alternateSchema.trim().length === 0) {
         alternateSchema = path.join(context.extensionPath, 'service-schema.json');
     }
 
@@ -45,7 +46,7 @@ export async function locateSchemaFile(
     } else if (path.isAbsolute(alternateSchema)) {
         schemaUri = vscode.Uri.file(alternateSchema);
     } else {
-        schemaUri = vscode.Uri.file(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, alternateSchema));
+        schemaUri = vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, alternateSchema));
     }
 
     return schemaUri.toString();
@@ -93,9 +94,9 @@ async function autoDetectSchema(
         const repo = gitExtension.getRepository(workspaceFolder.uri);
         if (repo !== null) {
             await repo.status();
-            if (repo.state.HEAD.upstream !== undefined) {
+            if (repo.state.HEAD?.upstream !== undefined) {
                 const remoteName = repo.state.HEAD.upstream.remote;
-                remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName).fetchUrl;
+                remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName)?.fetchUrl;
             }
         }
     }
@@ -114,7 +115,6 @@ async function autoDetectSchema(
             }
         }
     } else {
-        // FIXME: Handle the case where workspaceFolder === undefined.
         const azurePipelinesDetails = context.workspaceState.get<{
             [folder: string]: { organization: string; tenant: string; }
         }>('azurePipelinesDetails');
@@ -161,7 +161,7 @@ async function autoDetectSchema(
                         });
 
                         if (selectedOrganizationAndSession === undefined) {
-                            return undefined;
+                            return;
                         }
 
                         organizationName = selectedOrganizationAndSession.label;

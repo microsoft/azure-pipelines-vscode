@@ -66,7 +66,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     }));
 
     // Load the schema if we were activated because an Azure Pipelines file.
-    if (vscode.window.activeTextEditor.document.languageId === 'azure-pipelines') {
+    if (vscode.window.activeTextEditor?.document.languageId === 'azure-pipelines') {
         await loadSchema(context, client);
     }
 
@@ -96,8 +96,8 @@ async function loadSchema(
     client: languageclient.LanguageClient,
     workspaceFolder?: vscode.WorkspaceFolder): Promise<void> {
     if (workspaceFolder === undefined) {
-        const textDocument = vscode.window.activeTextEditor.document;
-        if (textDocument.languageId !== 'azure-pipelines') {
+        const textDocument = vscode.window.activeTextEditor?.document;
+        if (textDocument?.languageId !== 'azure-pipelines') {
             return;
         }
 
