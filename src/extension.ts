@@ -42,9 +42,6 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     // If this throws, the telemetry event in activate() will catch & log it
     await client.onReady();
 
-    // Notify the server which schemas to use.
-    await loadSchema(context, client);
-
     // Fired whenever the server is about to validate a YAML file (e.g. on content change),
     // and allows us to return a custom schema to use for validation.
     client.onRequest(CUSTOM_SCHEMA_REQUEST, (resource: string) => {
@@ -68,6 +65,16 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
         }
     }));
 
+    // Load the schema if we were activated because an Azure Pipelines file.
+    if (vscode.window.activeTextEditor.document.languageId === 'azure-pipelines') {
+        await loadSchema(context, client);
+    }
+
+    // And subscribe to future open events, as well.
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async textDocument => {
+        await loadSchema(context, client);
+    }));
+
     // Re-request the schema on Azure login since auto-detection is dependent on login.
     const azureAccountApi = await getAzureAccountExtensionApi();
     context.subscriptions.push(azureAccountApi.onStatusChanged(async status => {
@@ -76,16 +83,28 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
         }
     }));
 
-    // We now have an organization for non-Azure Repos workspaces,
+    // We now have an organization for a non-Azure Repo folder,
     // so we can try auto-detecting the schema again.
-    context.subscriptions.push(onDidSelectOrganization(async () => {
-        await loadSchema(context, client);
+    context.subscriptions.push(onDidSelectOrganization(async workspaceFolder => {
+        await loadSchema(context, client, workspaceFolder);
     }));
 }
 
 // Find the schema and notify the server.
-async function loadSchema(context: vscode.ExtensionContext, client: languageclient.LanguageClient): Promise<void> {
-    const schemaFilePath = await locateSchemaFile(context);
+async function loadSchema(
+    context: vscode.ExtensionContext,
+    client: languageclient.LanguageClient,
+    workspaceFolder?: vscode.WorkspaceFolder): Promise<void> {
+    if (workspaceFolder === undefined) {
+        const textDocument = vscode.window.activeTextEditor.document;
+        if (textDocument.languageId !== 'azure-pipelines') {
+            return;
+        }
+
+        workspaceFolder = vscode.workspace.getWorkspaceFolder(textDocument.uri);
+    }
+
+    const schemaFilePath = await locateSchemaFile(context, workspaceFolder);
     const schema = getSchemaAssociation(schemaFilePath);
     client.sendNotification(SchemaAssociationNotification.type, schema);
 }
