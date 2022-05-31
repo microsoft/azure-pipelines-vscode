@@ -20,6 +20,11 @@ import { AzureSession } from './typings/azure-account.api';
 const selectOrganizationEvent = new vscode.EventEmitter<vscode.WorkspaceFolder>();
 export const onDidSelectOrganization = selectOrganizationEvent.event;
 
+/**
+ * A session-level cache of all the organizations we've saved the schema for.
+ */
+const seenOrganizations = new Set<string>();
+
 export async function locateSchemaFile(
     context: vscode.ExtensionContext,
     workspaceFolder: vscode.WorkspaceFolder | undefined): Promise<string> {
@@ -193,22 +198,26 @@ async function autoDetectSchema(
     // Create the global storage folder to guarantee that it exists.
     await vscode.workspace.fs.createDirectory(context.globalStorageUri);
 
-    // Grab and save the schema.
-    // NOTE: Despite saving the schema to disk, we don't treat it as a cache
-    // for the following reasons:
+    // Grab and save the schema if we haven't already seen the organization this session.
+    // NOTE: Despite saving the schema to disk, we can't use it as a persistent cache because:
     // 1. ADO doesn't provide an API to indicate which version (milestone) it's on,
     //    so we don't have a way of busting the cache.
     // 2. Even if we did, organizations can add/remove tasks at any time.
-    // 3. Schema association only happens when a new repository is opened
-    //    or when schema settings change, so we won't be hitting the network that often.
-    // TODO: Fix so that we only retrieve schema once per repository per session.
+    // So we do the next-best thing and keep a session-level cache so we only
+    // hit the network to request an updated schema for an organization once per session.
+    const schemaUri = Utils.joinPath(context.globalStorageUri, `${organizationName}-schema.json`);
+    if (seenOrganizations.has(organizationName)) {
+        return schemaUri;
+    }
+
     const token = await session.credentials2.getToken();
     const authHandler = azdev.getBearerHandler(token.accessToken);
     const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
     const taskAgentApi = await azureDevOpsClient.getTaskAgentApi();
     const schema = JSON.stringify(await taskAgentApi.getYamlSchema());
-    const schemaUri = Utils.joinPath(context.globalStorageUri, `${organizationName}-schema.json`);
     await vscode.workspace.fs.writeFile(schemaUri, Buffer.from(schema));
+
+    seenOrganizations.add(organizationName);
 
     return schemaUri;
 }

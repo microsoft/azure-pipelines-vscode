@@ -71,7 +71,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     }
 
     // And subscribe to future open events, as well.
-    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async textDocument => {
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async () => {
         await loadSchema(context, client);
     }));
 
