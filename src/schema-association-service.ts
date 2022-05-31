@@ -99,7 +99,11 @@ async function autoDetectSchema(
     // Get the remote URL if we're in a Git repo.
     let remoteUrl: string | undefined;
     const gitExtension = await getGitExtensionApi();
-    const repo = gitExtension.getRepository(workspaceFolder.uri);
+
+    // Use openRepository because it's possible the Git extension hasn't
+    // finished opening all the repositories yet, and thus getRepository
+    // may return null if an Azure Pipelines file is open on startup.
+    const repo = await gitExtension.openRepository(workspaceFolder.uri);
     if (repo !== null) {
         await repo.status();
         if (repo.state.HEAD?.upstream !== undefined) {
