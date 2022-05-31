@@ -24,15 +24,17 @@ export async function locateSchemaFile(
     context: vscode.ExtensionContext,
     workspaceFolder: vscode.WorkspaceFolder | undefined): Promise<string> {
     let schemaUri: vscode.Uri | undefined;
-    // FIXME: Handle the case where workspaceFolder === undefined.
-    try {
-        schemaUri = await autoDetectSchema(context, workspaceFolder);
-        if (schemaUri) {
-            return schemaUri.toString();
+    // TODO: Support auto-detection for Azure Pipelines files outside of the workspace.
+    if (workspaceFolder !== undefined) {
+        try {
+            schemaUri = await autoDetectSchema(context, workspaceFolder);
+            if (schemaUri) {
+                return schemaUri.toString();
+            }
+        } catch (error) {
+            // Well, we tried our best. Fall back to the predetermined schema paths.
+            // TODO: Start exposing errors once we're more confident in the schema detection.
         }
-    } catch (error) {
-        // Well, we tried our best. Fall back to the predetermined schema paths.
-        // TODO: Start exposing errors once we're more confident in the schema detection.
     }
 
     let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile', '');
@@ -45,8 +47,10 @@ export async function locateSchemaFile(
         schemaUri = vscode.Uri.parse(alternateSchema, true);
     } else if (path.isAbsolute(alternateSchema)) {
         schemaUri = vscode.Uri.file(alternateSchema);
-    } else {
+    } else if (workspaceFolder !== undefined) {
         schemaUri = vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, alternateSchema));
+    } else {
+        schemaUri = vscode.Uri.file(path.join(context.extensionPath, 'service-schema.json'));
     }
 
     return schemaUri.toString();
@@ -67,7 +71,7 @@ export function getSchemaAssociation(schemaFilePath: string): ISchemaAssociation
 
 async function autoDetectSchema(
     context: vscode.ExtensionContext,
-    workspaceFolder: vscode.WorkspaceFolder | undefined): Promise<vscode.Uri | undefined> {
+    workspaceFolder: vscode.WorkspaceFolder): Promise<vscode.Uri | undefined> {
     const azureAccountApi = await getAzureAccountExtensionApi();
     if (!(await azureAccountApi.waitForLogin())) {
         // Don't await this message so that we can return the fallback schema instead of blocking.
@@ -89,15 +93,13 @@ async function autoDetectSchema(
 
     // Get the remote URL if we're in a Git repo.
     let remoteUrl: string | undefined;
-    if (workspaceFolder !== undefined) {
-        const gitExtension = await getGitExtensionApi();
-        const repo = gitExtension.getRepository(workspaceFolder.uri);
-        if (repo !== null) {
-            await repo.status();
-            if (repo.state.HEAD?.upstream !== undefined) {
-                const remoteName = repo.state.HEAD.upstream.remote;
-                remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName)?.fetchUrl;
-            }
+    const gitExtension = await getGitExtensionApi();
+    const repo = gitExtension.getRepository(workspaceFolder.uri);
+    if (repo !== null) {
+        await repo.status();
+        if (repo.state.HEAD?.upstream !== undefined) {
+            const remoteName = repo.state.HEAD.upstream.remote;
+            remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName)?.fetchUrl;
         }
     }
 
