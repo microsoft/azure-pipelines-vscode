@@ -60,6 +60,9 @@ export async function locateSchemaFile(
         schemaUri = vscode.Uri.file(path.join(context.extensionPath, 'service-schema.json'));
     }
 
+    // TODO: We should update getSchemaAssociations so we don't need to constantly
+    // notify the server of a "new" schema when in reality we're simply updating
+    // associations -- which is exactly what getSchemaAssociations is there for!
     return schemaUri.toString();
 }
 
