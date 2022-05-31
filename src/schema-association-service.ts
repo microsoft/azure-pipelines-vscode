@@ -14,6 +14,7 @@ import { OrganizationsClient } from './configure/clients/devOps/organizationsCli
 import { AzureDevOpsHelper } from './configure/helper/devOps/azureDevOpsHelper';
 import { showQuickPick } from './configure/helper/controlProvider';
 import { QuickPickItemWithData } from './configure/model/models';
+import * as logger from './logger';
 import { Messages } from './messages';
 import { AzureSession } from './typings/azure-account.api';
 
@@ -38,7 +39,8 @@ export async function locateSchemaFile(
             }
         } catch (error) {
             // Well, we tried our best. Fall back to the predetermined schema paths.
-            // TODO: Start exposing errors once we're more confident in the schema detection.
+            // TODO: Re-throw error once we're more confident in the schema detection.
+            logger.log(`Error auto-detecting schema: ${error}`, 'SchemaAutoDetectError');
         }
     }
 
