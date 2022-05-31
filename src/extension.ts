@@ -71,8 +71,16 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     }
 
     // And subscribe to future open events, as well.
-    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async () => {
-        await loadSchema(context, client);
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async textDocument => {
+        // NOTE: We need to explicitly compute the workspace folder here rather than
+        // relying on the logic in loadSchema, because somehow preview editors
+        // don't count as "active".
+        if (textDocument?.languageId !== 'azure-pipelines') {
+            return;
+        }
+
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(textDocument.uri);
+        await loadSchema(context, client, workspaceFolder);
     }));
 
     // Re-request the schema on Azure login since auto-detection is dependent on login.
