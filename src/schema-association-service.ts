@@ -35,7 +35,7 @@ export async function locateSchemaFile(
         try {
             schemaUri = await autoDetectSchema(context, workspaceFolder);
             if (schemaUri) {
-                return schemaUri.toString();
+                return schemaUri.path;
             }
         } catch (error) {
             // Well, we tried our best. Fall back to the predetermined schema paths.
@@ -63,7 +63,7 @@ export async function locateSchemaFile(
     // TODO: We should update getSchemaAssociations so we don't need to constantly
     // notify the server of a "new" schema when in reality we're simply updating
     // associations -- which is exactly what getSchemaAssociations is there for!
-    return schemaUri.toString();
+    return schemaUri.path;
 }
 
 // Looking at how the vscode-yaml extension does it, it looks like this is meant as a
