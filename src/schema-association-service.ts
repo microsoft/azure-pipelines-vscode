@@ -8,23 +8,44 @@ import * as vscode from 'vscode';
 import { Utils } from 'vscode-uri';
 import * as languageclient from 'vscode-languageclient/node';
 import * as azdev from 'azure-devops-node-api';
+import { format } from 'util';
 import { getAzureAccountExtensionApi, getGitExtensionApi } from './extensionApis';
+import { OrganizationsClient } from './configure/clients/devOps/organizationsClient';
 import { AzureDevOpsHelper } from './configure/helper/devOps/azureDevOpsHelper';
+import { showQuickPick } from './configure/helper/controlProvider';
+import { QuickPickItemWithData } from './configure/model/models';
+import * as logger from './logger';
 import { Messages } from './messages';
+import { AzureSession } from './typings/azure-account.api';
 
-export async function locateSchemaFile(context: vscode.ExtensionContext): Promise<string> {
+const selectOrganizationEvent = new vscode.EventEmitter<vscode.WorkspaceFolder>();
+export const onDidSelectOrganization = selectOrganizationEvent.event;
+
+/**
+ * A session-level cache of all the organizations we've saved the schema for.
+ */
+const seenOrganizations = new Set<string>();
+
+export async function locateSchemaFile(
+    context: vscode.ExtensionContext,
+    workspaceFolder: vscode.WorkspaceFolder | undefined): Promise<string> {
     let schemaUri: vscode.Uri | undefined;
-    try {
-        schemaUri = await autoDetectSchema(context);
-        if (schemaUri) {
-            return schemaUri.toString();
+    // TODO: Support auto-detection for Azure Pipelines files outside of the workspace.
+    if (workspaceFolder !== undefined) {
+        try {
+            schemaUri = await autoDetectSchema(context, workspaceFolder);
+            if (schemaUri) {
+                return schemaUri.path;
+            }
+        } catch (error) {
+            // Well, we tried our best. Fall back to the predetermined schema paths.
+            // TODO: Re-throw error once we're more confident in the schema detection.
+            logger.log(`Error auto-detecting schema: ${error}`, 'SchemaAutoDetectError');
         }
-    } catch (error) {
-        // Well, we tried our best. Fall back to the predetermined schema paths.
     }
 
-    let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile');
-    if ((alternateSchema?.trim().length ?? 0) === 0) {
+    let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile', '');
+    if (alternateSchema.trim().length === 0) {
         alternateSchema = path.join(context.extensionPath, 'service-schema.json');
     }
 
@@ -33,11 +54,16 @@ export async function locateSchemaFile(context: vscode.ExtensionContext): Promis
         schemaUri = vscode.Uri.parse(alternateSchema, true);
     } else if (path.isAbsolute(alternateSchema)) {
         schemaUri = vscode.Uri.file(alternateSchema);
+    } else if (workspaceFolder !== undefined) {
+        schemaUri = vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, alternateSchema));
     } else {
-        schemaUri = vscode.Uri.file(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, alternateSchema));
+        schemaUri = vscode.Uri.file(path.join(context.extensionPath, 'service-schema.json'));
     }
 
-    return schemaUri.toString();
+    // TODO: We should update getSchemaAssociations so we don't need to constantly
+    // notify the server of a "new" schema when in reality we're simply updating
+    // associations -- which is exactly what getSchemaAssociations is there for!
+    return schemaUri.path;
 }
 
 // Looking at how the vscode-yaml extension does it, it looks like this is meant as a
@@ -53,28 +79,15 @@ export function getSchemaAssociation(schemaFilePath: string): ISchemaAssociation
     return { '*': [schemaFilePath] };
 }
 
-async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscode.Uri | undefined> {
-    // Get the remote URL if we're in a Git repo
-    let remoteUrl: string | void;
-    try {
-        const gitExtension = await getGitExtensionApi();
-        const repo = gitExtension.getRepository(vscode.workspace.workspaceFolders[0].uri);
-        await repo.status();
-        const remoteName = repo.state.HEAD.upstream.remote;
-        remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName).fetchUrl;
-    } catch (error) {
-        return undefined;
-    }
-
-    // Are we in an Azure Repo?
-    if (remoteUrl && AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
-        const { organizationName } = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
-        const azureAccountApi = await getAzureAccountExtensionApi();
-        if (!(await azureAccountApi.waitForLogin())) {
-            // Don't await this message so that we can return the fallback schema instead of blocking.
-            // We'll detect the login in extension.ts and then re-request the schema.
-            const actionPromise = vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel);
-            actionPromise.then(async action => {
+async function autoDetectSchema(
+    context: vscode.ExtensionContext,
+    workspaceFolder: vscode.WorkspaceFolder): Promise<vscode.Uri | undefined> {
+    const azureAccountApi = await getAzureAccountExtensionApi();
+    if (!(await azureAccountApi.waitForLogin())) {
+        // Don't await this message so that we can return the fallback schema instead of blocking.
+        // We'll detect the login in extension.ts and then re-request the schema.
+        vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel)
+            .then(async action => {
                 if (action === Messages.signInLabel) {
                     await vscode.window.withProgress({
                         location: vscode.ProgressLocation.Notification,
@@ -85,32 +98,137 @@ async function autoDetectSchema(context: vscode.ExtensionContext): Promise<vscod
                 }
             });
 
+        return undefined;
+    }
+
+    // Get the remote URL if we're in a Git repo.
+    let remoteUrl: string | undefined;
+    const gitExtension = await getGitExtensionApi();
+
+    // Use openRepository because it's possible the Git extension hasn't
+    // finished opening all the repositories yet, and thus getRepository
+    // may return null if an Azure Pipelines file is open on startup.
+    const repo = await gitExtension.openRepository(workspaceFolder.uri);
+    if (repo !== null) {
+        await repo.status();
+        if (repo.state.HEAD?.upstream !== undefined) {
+            const remoteName = repo.state.HEAD.upstream.remote;
+            remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName)?.fetchUrl;
+        }
+    }
+
+    let organizationName: string;
+    let session: AzureSession | undefined;
+    if (remoteUrl !== undefined && AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
+        // If we're in an Azure repo, we can silently determine the organization name and session.
+        organizationName = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl).organizationName;
+        for (const azureSession of azureAccountApi.sessions) {
+            const organizationsClient = new OrganizationsClient(azureSession.credentials2);
+            const organizations = await organizationsClient.listOrganizations();
+            if (organizations.find(org => org.accountName.toLowerCase() === organizationName.toLowerCase())) {
+                session = azureSession;
+                break;
+            }
+        }
+    } else {
+        const azurePipelinesDetails = context.workspaceState.get<{
+            [folder: string]: { organization: string; tenant: string; }
+        }>('azurePipelinesDetails');
+        if (azurePipelinesDetails?.[workspaceFolder.name] !== undefined) {
+            // If we already have cached information for this workspace folder, use it.
+            const details = azurePipelinesDetails[workspaceFolder.name];
+            organizationName = details.organization;
+            session = azureAccountApi.sessions.find(session => session.tenantId === details.tenant);
+        } else {
+            // Otherwise, we need to manually prompt.
+            // We do this by asking them to select an organization via an information message,
+            // then displaying the quick pick of all the organizations they have access to.
+            // We *do not* await this message so that we can use the fallback schema while waiting.
+            // We'll detect when they choose the organization in extension.ts and then re-request the schema.
+            vscode.window.showInformationMessage(
+                format(Messages.selectOrganizationForEnhancedIntelliSense, workspaceFolder.name),
+                Messages.selectOrganizationLabel)
+                .then(async action => {
+                    if (action === Messages.selectOrganizationLabel) {
+                        // Lazily construct list of organizations so that we can immediately show the quick pick,
+                        // then fill in the choices as they come in.
+                        const organizationAndSessionsPromise = new Promise<
+                            QuickPickItemWithData<AzureSession>[]
+                        >(async resolve => {
+                            const organizationAndSessions: QuickPickItemWithData<AzureSession>[] = [];
+
+                            // FIXME: azureAccountApi.sessions changes under us. Why?
+                            for (const azureSession of azureAccountApi.sessions) {
+                                const organizationsClient = new OrganizationsClient(azureSession.credentials2);
+                                const organizations = await organizationsClient.listOrganizations();
+                                organizationAndSessions.push(...organizations.map(organization => ({
+                                    label: organization.accountName,
+                                    data: azureSession,
+                                })));
+                            }
+
+                            resolve(organizationAndSessions);
+                        });
+
+                        const selectedOrganizationAndSession = await showQuickPick(
+                            'organization',
+                            organizationAndSessionsPromise, {
+                                placeHolder: format(Messages.selectOrganizationPlaceholder, workspaceFolder.name),
+                        });
+
+                        if (selectedOrganizationAndSession === undefined) {
+                            return;
+                        }
+
+                        organizationName = selectedOrganizationAndSession.label;
+                        session = selectedOrganizationAndSession.data;
+
+                        await context.workspaceState.update('azurePipelinesDetails', {
+                            ...azurePipelinesDetails,
+                            [workspaceFolder.name]: {
+                                organization: organizationName,
+                                tenant: session.tenantId,
+                            }
+                        });
+
+                        selectOrganizationEvent.fire(workspaceFolder);
+                    }
+                });
             return undefined;
         }
+    }
 
-        // Create the global storage folder to guarantee that it exists.
-        await vscode.workspace.fs.createDirectory(context.globalStorageUri);
+    // Not logged into an account that has access.
+    if (session === undefined) {
+        vscode.window.showErrorMessage(format(Messages.unableToAccessOrganization, organizationName));
+        return undefined;
+    }
 
-        // Grab and save the schema.
-        // TODO: Prompt for the correct session to use.
-        // NOTE: Despite saving the schema to disk, we don't treat it as a cache
-        // for the following reasons:
-        // 1. ADO doesn't provide an API to indicate which version (milestone) it's on,
-        //    so we don't have a way of busting the cache.
-        // 2. Even if we did, organizations can add/remove tasks at any time.
-        // 3. Schema association only happens at startup or when schema settings change,
-        //    so typically we'll only hit the network once per session anyway.
-        const token = await azureAccountApi.sessions[0].credentials2.getToken();
-        const authHandler = azdev.getBearerHandler(token.accessToken);
-        const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
-        const taskAgentApi = await azureDevOpsClient.getTaskAgentApi();
-        const schema = JSON.stringify(await taskAgentApi.getYamlSchema());
-        const schemaUri = Utils.joinPath(context.globalStorageUri, `${organizationName}-schema.json`);
-        await vscode.workspace.fs.writeFile(schemaUri, Buffer.from(schema));
+    // Create the global storage folder to guarantee that it exists.
+    await vscode.workspace.fs.createDirectory(context.globalStorageUri);
 
+    // Grab and save the schema if we haven't already seen the organization this session.
+    // NOTE: Despite saving the schema to disk, we can't use it as a persistent cache because:
+    // 1. ADO doesn't provide an API to indicate which version (milestone) it's on,
+    //    so we don't have a way of busting the cache.
+    // 2. Even if we did, organizations can add/remove tasks at any time.
+    // So we do the next-best thing and keep a session-level cache so we only
+    // hit the network to request an updated schema for an organization once per session.
+    const schemaUri = Utils.joinPath(context.globalStorageUri, `${organizationName}-schema.json`);
+    if (seenOrganizations.has(organizationName)) {
         return schemaUri;
     }
-    return undefined;
+
+    const token = await session.credentials2.getToken();
+    const authHandler = azdev.getBearerHandler(token.accessToken);
+    const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
+    const taskAgentApi = await azureDevOpsClient.getTaskAgentApi();
+    const schema = JSON.stringify(await taskAgentApi.getYamlSchema());
+    await vscode.workspace.fs.writeFile(schemaUri, Buffer.from(schema));
+
+    seenOrganizations.add(organizationName);
+
+    return schemaUri;
 }
 
 // Mapping of glob pattern -> schemas
@@ -119,5 +237,5 @@ interface ISchemaAssociations {
 }
 
 export namespace SchemaAssociationNotification {
-	export const type: languageclient.NotificationType<ISchemaAssociations> = new languageclient.NotificationType('json/schemaAssociations');
+	export const type = new languageclient.NotificationType<ISchemaAssociations>('json/schemaAssociations');
 }

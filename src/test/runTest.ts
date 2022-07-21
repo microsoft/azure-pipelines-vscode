@@ -25,7 +25,11 @@ async function main() {
     const vscodeExecutablePath = await downloadAndUnzipVSCode();
     const cliPath = resolveCliPathFromVSCodeExecutablePath(vscodeExecutablePath);
 
-    cp.spawnSync(cliPath, ['--install-extension', 'ms-vscode.azure-account'], {
+    // 0.11.0 has a bug where it blocks extension loading on first launch:
+    // https://github.com/microsoft/vscode-azure-account/pull/603.
+    // Since we always launch for the first time in CI, that turns out
+    // to be problematic.
+    cp.spawnSync(cliPath, ['--install-extension', 'ms-vscode.azure-account@0.10.1'], {
       encoding: 'utf-8',
       stdio: 'inherit'
     });

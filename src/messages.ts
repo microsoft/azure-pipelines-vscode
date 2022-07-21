@@ -41,6 +41,9 @@ export class Messages {
     public static resourceTypeIsNotSupported: string = '"%s" resources are not yet supported for configuring pipelines.';
     public static selectFolderLabel: string = 'Select source folder for configuring pipeline';
     public static selectOrganization: string = 'Select an Azure DevOps organization';
+    public static selectOrganizationForEnhancedIntelliSense: string = 'Select Azure DevOps organization associated with the %s repository for enhanced Azure Pipelines IntelliSense.';
+    public static selectOrganizationLabel: string = 'Select organization';
+    public static selectOrganizationPlaceholder: string = 'Select Azure DevOps organization associated with the %s repository';
     public static selectPipelineTemplate: string = 'Select an Azure Pipelines template...';
     public static selectProject: string = 'Select an Azure DevOps project';
     public static selectRemoteForBranch: string = 'Select the remote repository where you want to track your current branch';
@@ -49,6 +52,7 @@ export class Messages {
     public static selectFunctionApp: string = 'Select Function App';
     public static selectWorkspaceFolder: string = 'Select a folder from your workspace to deploy';
     public static signInLabel: string = 'Sign In';
+    public static unableToAccessOrganization: string = 'Unable to access the "%s" organization. Make sure you\'re signed into the right Azure account.';
     public static unableToCreateServiceConnection: string = `Unable to create %s service connection.\nOperation Status: %s\nMessage: %s\nService connection is not in ready state.`;
     public static timedOutCreatingServiceConnection: string =`Timed out creating %s service connection.\nService connection is not in ready state.`;
     public static retryFailedMessage: string =`Failed after retrying: %s times. Internal Error: %s`;

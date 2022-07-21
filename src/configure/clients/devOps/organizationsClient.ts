@@ -57,7 +57,7 @@ export class OrganizationsClient {
             method: "GET",
             queryParameters: {
                 "memberId": connectionData.authenticatedUser.id,
-                "api-version": "5.0",
+                "api-version": "7.0",
             },
         });
 
