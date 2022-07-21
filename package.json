@@ -162,7 +162,7 @@
         "@azure/ms-rest-nodeauth": "^3.0.6",
         "@vscode/extension-telemetry": "^0.5.1",
         "azure-devops-node-api": "^11.0.1",
-        "azure-pipelines-language-server": "0.6.7",
+        "azure-pipelines-language-server": "0.6.8",
         "html-to-text": "^5.1.1",
         "mustache": "^4.2.0",
         "uuid": "^8.3.2",
