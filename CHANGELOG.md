@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/). Versionin
 ### Updated
 - M206 schema
 
-## 1.205.1
+## 1.205.0
 ### Fixed
 - Fixed a bug in 1.204.0 that prevented schema auto-detection from working (thanks @krokofant!)
 ### Updated
