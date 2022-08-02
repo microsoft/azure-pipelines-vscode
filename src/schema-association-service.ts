@@ -83,7 +83,14 @@ async function autoDetectSchema(
     context: vscode.ExtensionContext,
     workspaceFolder: vscode.WorkspaceFolder): Promise<vscode.Uri | undefined> {
     const azureAccountApi = await getAzureAccountExtensionApi();
-    if (!(await azureAccountApi.waitForLogin())) {
+
+    // We could care less about the subscriptions; all we need are the sessions.
+    // However, there's no waitForSessions API, and waitForLogin returns before
+    // the underlying account information is guaranteed to finish loading.
+    // The next-best option is then waitForSubscriptions which, by definition,
+    // can't return until the sessions are also available.
+    // This only returns false if there is no login.
+    if (!(await azureAccountApi.waitForSubscriptions())) {
         // Don't await this message so that we can return the fallback schema instead of blocking.
         // We'll detect the login in extension.ts and then re-request the schema.
         vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel)
@@ -157,7 +164,6 @@ async function autoDetectSchema(
                         >(async resolve => {
                             const organizationAndSessions: QuickPickItemWithData<AzureSession>[] = [];
 
-                            // FIXME: azureAccountApi.sessions changes under us. Why?
                             for (const azureSession of azureAccountApi.sessions) {
                                 const organizationsClient = new OrganizationsClient(azureSession.credentials2);
                                 const organizations = await organizationsClient.listOrganizations();

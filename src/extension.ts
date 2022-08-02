@@ -93,12 +93,11 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
         await loadSchema(context, client);
     }));
 
-    // Re-request the schema on Azure login since auto-detection is dependent on login.
+    // Re-request the schema when sessions change since auto-detection is dependent on
+    // being able to query ADO organizations using session credentials.
     const azureAccountApi = await getAzureAccountExtensionApi();
-    context.subscriptions.push(azureAccountApi.onStatusChanged(async status => {
-        if (status === 'LoggedIn') {
-            await loadSchema(context, client);
-        }
+    context.subscriptions.push(azureAccountApi.onSessionsChanged(async () => {
+        await loadSchema(context, client);
     }));
 
     // We now have an organization for a non-Azure Repo folder,
