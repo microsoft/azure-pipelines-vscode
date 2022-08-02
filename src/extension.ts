@@ -84,16 +84,13 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     }
 
     // And subscribe to future open events, as well.
-    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async textDocument => {
-        // NOTE: We need to explicitly compute the workspace folder here rather than
-        // relying on the logic in loadSchema, because somehow preview editors
-        // don't count as "active".
-        if (textDocument?.languageId !== LANGUAGE_IDENTIFIER) {
-            return;
-        }
+    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async () => {
+        await loadSchema(context, client);
+    }));
 
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(textDocument.uri);
-        await loadSchema(context, client, workspaceFolder);
+    // Or if the active editor's language changes.
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async () => {
+        await loadSchema(context, client);
     }));
 
     // Re-request the schema on Azure login since auto-detection is dependent on login.
