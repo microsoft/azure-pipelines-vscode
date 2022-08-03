@@ -94,6 +94,10 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
         // so we need to figure out the workspace folder ourselves.
         // Besides, even if it fired after activeTextEditor was updated,
         // there's no guarantee that the new text document was the active editor.
+        if (textDocument.uri !== vscode.window.activeTextEditor?.document.uri) {
+            return;
+        }
+
         if (textDocument.languageId !== LANGUAGE_IDENTIFIER) {
             return;
         }
