@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as languageclient from 'vscode-languageclient/node';
 
 import * as logger from './logger';
-import { getSchemaAssociation, locateSchemaFile, onDidSelectOrganization, SchemaAssociationNotification } from './schema-association-service';
+import { getSchemaAssociation, locateSchema, onDidSelectOrganization, SchemaAssociationNotification } from './schema-association-service';
 import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from './schema-contributor';
 import { telemetryHelper } from './helpers/telemetryHelper';
 import { getAzureAccountExtensionApi } from './extensionApis';
@@ -71,21 +71,23 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     // TODO: Can we get rid of this since it's set in package.json?
     vscode.languages.setLanguageConfiguration(LANGUAGE_IDENTIFIER, { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
 
+    const languageStatusItem = vscode.languages.createLanguageStatusItem(LANGUAGE_IDENTIFIER, DOCUMENT_SELECTOR);
+
     // Let the server know of any schema changes.
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
         if (event.affectsConfiguration('azure-pipelines.customSchemaFile')) {
-            await loadSchema(context, client);
+            await loadSchema(context, client, languageStatusItem);
         }
     }));
 
     // Load the schema if we were activated because an Azure Pipelines file.
     if (vscode.window.activeTextEditor?.document.languageId === LANGUAGE_IDENTIFIER) {
-        await loadSchema(context, client);
+        await loadSchema(context, client, languageStatusItem);
     }
 
     // And subscribe to future open events, as well.
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async () => {
-        await loadSchema(context, client);
+        await loadSchema(context, client, languageStatusItem);
     }));
 
     // Or if the active editor's language changes.
@@ -98,7 +100,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
             return;
         }
 
-        await loadSchema(context, client);
+        await loadSchema(context, client, languageStatusItem);
     }));
 
     // Re-request the schema when sessions change since auto-detection is dependent on
@@ -106,14 +108,14 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     const azureAccountApi = await getAzureAccountExtensionApi();
     context.subscriptions.push(azureAccountApi.onSessionsChanged(async () => {
         if (azureAccountApi.status === 'LoggedIn') {
-            await loadSchema(context, client);
+            await loadSchema(context, client, languageStatusItem);
         }
     }));
 
     // We now have an organization for a non-Azure Repo folder,
     // so we can try auto-detecting the schema again.
     context.subscriptions.push(onDidSelectOrganization(async workspaceFolder => {
-        await loadSchema(context, client, workspaceFolder);
+        await loadSchema(context, client, languageStatusItem, workspaceFolder);
     }));
 }
 
@@ -121,6 +123,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 async function loadSchema(
     context: vscode.ExtensionContext,
     client: languageclient.LanguageClient,
+    languageStatusItem: vscode.LanguageStatusItem,
     workspaceFolder?: vscode.WorkspaceFolder): Promise<void> {
     if (workspaceFolder === undefined) {
         const textDocument = vscode.window.activeTextEditor?.document;
@@ -131,9 +134,18 @@ async function loadSchema(
         workspaceFolder = vscode.workspace.getWorkspaceFolder(textDocument.uri);
     }
 
-    const schemaFilePath = await locateSchemaFile(context, workspaceFolder);
-    const schema = getSchemaAssociation(schemaFilePath);
+    languageStatusItem.text = 'Detecting schema...';
+    languageStatusItem.busy = true;
+
+    const schemaDetails = await locateSchema(context, workspaceFolder);
+    const schema = getSchemaAssociation(schemaDetails.uri.path);
     client.sendNotification(SchemaAssociationNotification.type, schema);
+
+    languageStatusItem.text = `Using ${schemaDetails.source} schema`;
+    if (schemaDetails.source === 'custom') {
+        languageStatusItem.detail = schemaDetails.uri.fsPath;
+    }
+    languageStatusItem.busy = false;
 }
 
 function getServerOptions(context: vscode.ExtensionContext): languageclient.ServerOptions {

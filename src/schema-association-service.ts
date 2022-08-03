@@ -18,6 +18,11 @@ import * as logger from './logger';
 import { Messages } from './messages';
 import { AzureSession } from './typings/azure-account.api';
 
+interface SchemaDetails {
+    source: string;
+    uri: vscode.Uri;
+};
+
 const selectOrganizationEvent = new vscode.EventEmitter<vscode.WorkspaceFolder>();
 export const onDidSelectOrganization = selectOrganizationEvent.event;
 
@@ -26,20 +31,20 @@ export const onDidSelectOrganization = selectOrganizationEvent.event;
  */
 const seenOrganizations = new Set<string>();
 
-export async function locateSchemaFile(
+export async function locateSchema(
     context: vscode.ExtensionContext,
-    workspaceFolder: vscode.WorkspaceFolder | undefined): Promise<string> {
-    let schemaUri: vscode.Uri | undefined;
+    workspaceFolder: vscode.WorkspaceFolder | undefined): Promise<SchemaDetails> {
+    let schemaDetails: SchemaDetails | undefined;
     // TODO: Support auto-detection for Azure Pipelines files outside of the workspace.
     if (workspaceFolder !== undefined) {
         try {
             logger.log(`Detecting schema for workspace folder ${workspaceFolder.name}`, 'SchemaDetection');
-            schemaUri = await autoDetectSchema(context, workspaceFolder);
-            if (schemaUri) {
+            schemaDetails = await autoDetectSchema(context, workspaceFolder);
+            if (schemaDetails) {
                 logger.log(
-                    `Detected schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
+                    `Detected schema for workspace folder ${workspaceFolder.name}: ${schemaDetails.uri.path}`,
                     'SchemaDetection');
-                return schemaUri.path;
+                return schemaDetails;
             }
         } catch (error) {
             // Well, we tried our best. Fall back to the predetermined schema paths.
@@ -50,30 +55,38 @@ export async function locateSchemaFile(
         }
     }
 
-    let alternateSchema = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile', '');
-    if (alternateSchema.trim().length === 0) {
-        alternateSchema = path.join(context.extensionPath, 'service-schema.json');
+    const customSchemaFile = vscode.workspace.getConfiguration('azure-pipelines').get<string>('customSchemaFile', '');
+    if (customSchemaFile.trim().length !== 0) {
+        if (path.isAbsolute(customSchemaFile)) {
+            schemaDetails = {
+                source: 'custom',
+                uri: vscode.Uri.file(customSchemaFile)
+            };
+        } else if (workspaceFolder !== undefined) {
+            schemaDetails = {
+                source: 'custom',
+                uri: vscode.Uri.joinPath(workspaceFolder.uri, customSchemaFile)
+            };
+        }
     }
 
-    // A somewhat hacky way to support both files and URLs without requiring use of the file:// URI scheme
-    if (alternateSchema.toLowerCase().startsWith("http://") || alternateSchema.toLowerCase().startsWith("https://")) {
-        schemaUri = vscode.Uri.parse(alternateSchema, true);
-    } else if (path.isAbsolute(alternateSchema)) {
-        schemaUri = vscode.Uri.file(alternateSchema);
-    } else if (workspaceFolder !== undefined) {
-        schemaUri = vscode.Uri.file(path.join(workspaceFolder.uri.fsPath, alternateSchema));
-    } else {
-        schemaUri = vscode.Uri.file(path.join(context.extensionPath, 'service-schema.json'));
+    // TODO: Check if schemaDetails.uri actually exists on disk.
+
+    if (schemaDetails === undefined) {
+        schemaDetails = {
+            source: 'default',
+            uri: vscode.Uri.file(path.join(context.extensionPath, 'service-schema.json')),
+        };
     }
 
     logger.log(
-        `Using hardcoded schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
+        `Using hardcoded schema for workspace folder ${workspaceFolder.name}: ${schemaDetails.uri.path}`,
         'SchemaDetection');
 
     // TODO: We should update getSchemaAssociations so we don't need to constantly
     // notify the server of a "new" schema when in reality we're simply updating
     // associations -- which is exactly what getSchemaAssociations is there for!
-    return schemaUri.path;
+    return schemaDetails;
 }
 
 // Looking at how the vscode-yaml extension does it, it looks like this is meant as a
@@ -91,7 +104,7 @@ export function getSchemaAssociation(schemaFilePath: string): ISchemaAssociation
 
 async function autoDetectSchema(
     context: vscode.ExtensionContext,
-    workspaceFolder: vscode.WorkspaceFolder): Promise<vscode.Uri | undefined> {
+    workspaceFolder: vscode.WorkspaceFolder): Promise<SchemaDetails | undefined> {
     const azureAccountApi = await getAzureAccountExtensionApi();
 
     // We could care less about the subscriptions; all we need are the sessions.
@@ -253,7 +266,10 @@ async function autoDetectSchema(
     const schemaUri = Utils.joinPath(context.globalStorageUri, `${organizationName}-schema.json`);
     if (seenOrganizations.has(organizationName)) {
         logger.log(`Returning cached schema for ${workspaceFolder.name}`, 'SchemaDetection');
-        return schemaUri;
+        return {
+            source: organizationName,
+            uri: schemaUri,
+        };
     }
 
     logger.log(`Retrieving schema for ${workspaceFolder.name}`, 'SchemaDetection');
@@ -267,7 +283,10 @@ async function autoDetectSchema(
 
     seenOrganizations.add(organizationName);
 
-    return schemaUri;
+    return {
+        source: organizationName,
+        uri: schemaUri,
+    };
 }
 
 // Mapping of glob pattern -> schemas

@@ -18,7 +18,7 @@
         "theme": "light"
     },
     "engines": {
-        "vscode": "^1.64.0",
+        "vscode": "^1.65.0",
         "node": ">=12.20.0"
     },
     "categories": [
@@ -140,7 +140,7 @@
         "@types/mustache": "0.8.32",
         "@types/node": "^14.16.0",
         "@types/uuid": "^8.3.4",
-        "@types/vscode": "~1.64.0",
+        "@types/vscode": "~1.65.0",
         "@vscode/test-electron": "^1.6.2",
         "ajv": "^6.9.1",
         "assert": "1.4.1",
