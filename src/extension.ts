@@ -110,7 +110,9 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     // being able to query ADO organizations using session credentials.
     const azureAccountApi = await getAzureAccountExtensionApi();
     context.subscriptions.push(azureAccountApi.onSessionsChanged(async () => {
-        await loadSchema(context, client);
+        if (azureAccountApi.status === 'LoggedIn') {
+            await loadSchema(context, client);
+        }
     }));
 
     // We now have an organization for a non-Azure Repo folder,
