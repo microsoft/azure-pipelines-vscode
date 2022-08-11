@@ -33,14 +33,20 @@ export async function locateSchemaFile(
     // TODO: Support auto-detection for Azure Pipelines files outside of the workspace.
     if (workspaceFolder !== undefined) {
         try {
+            logger.log(`Detecting schema for workspace folder ${workspaceFolder.name}`, 'SchemaDetection');
             schemaUri = await autoDetectSchema(context, workspaceFolder);
             if (schemaUri) {
+                logger.log(
+                    `Detected schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
+                    'SchemaDetection');
                 return schemaUri.path;
             }
         } catch (error) {
             // Well, we tried our best. Fall back to the predetermined schema paths.
             // TODO: Re-throw error once we're more confident in the schema detection.
-            logger.log(`Error auto-detecting schema: ${error}`, 'SchemaAutoDetectError');
+            logger.log(
+                `Error auto-detecting schema for workspace folder ${workspaceFolder.name}: ${error}`,
+                'SchemaDetection');
         }
     }
 
@@ -59,6 +65,10 @@ export async function locateSchemaFile(
     } else {
         schemaUri = vscode.Uri.file(path.join(context.extensionPath, 'service-schema.json'));
     }
+
+    logger.log(
+        `Using hardcoded schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
+        'SchemaDetection');
 
     // TODO: We should update getSchemaAssociations so we don't need to constantly
     // notify the server of a "new" schema when in reality we're simply updating
@@ -91,6 +101,8 @@ async function autoDetectSchema(
     // can't return until the sessions are also available.
     // This only returns false if there is no login.
     if (!(await azureAccountApi.waitForSubscriptions())) {
+        logger.log(`Waiting for login`, 'SchemaDetection');
+
         // Don't await this message so that we can return the fallback schema instead of blocking.
         // We'll detect the login in extension.ts and then re-request the schema.
         vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel)
@@ -123,15 +135,19 @@ async function autoDetectSchema(
             if (repo.state.HEAD?.upstream !== undefined) {
                 const remoteName = repo.state.HEAD.upstream.remote;
                 remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName)?.fetchUrl;
+                logger.log(`Found remote URL for ${workspaceFolder.name}: ${remoteUrl}`, 'SchemaDetection');
             }
         }
-    } catch {
-        // Ignore - perhaps they're not in a Git repo, and so don't have the Git extension enabled.
+    } catch (error) {
+        // Log and that's it - perhaps they're not in a Git repo, and so don't have the Git extension enabled.
+        logger.log(`${workspaceFolder.name} has no remote URLs: ${error}`, 'SchemaDetection');
     }
 
     let organizationName: string;
     let session: AzureSession | undefined;
     if (remoteUrl !== undefined && AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
+        logger.log(`${workspaceFolder.name} is an Azure repo`, 'SchemaDetection');
+
         // If we're in an Azure repo, we can silently determine the organization name and session.
         organizationName = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl).organizationName;
         for (const azureSession of azureAccountApi.sessions) {
@@ -143,6 +159,8 @@ async function autoDetectSchema(
             }
         }
     } else {
+        logger.log(`${workspaceFolder.name} has no remote URL or is not an Azure repo`, 'SchemaDetection');
+
         const azurePipelinesDetails = context.workspaceState.get<{
             [folder: string]: { organization: string; tenant: string; }
         }>('azurePipelinesDetails');
@@ -151,7 +169,13 @@ async function autoDetectSchema(
             const details = azurePipelinesDetails[workspaceFolder.name];
             organizationName = details.organization;
             session = azureAccountApi.sessions.find(session => session.tenantId === details.tenant);
+
+            logger.log(
+                `Using cached information for ${workspaceFolder.name}: ${organizationName}, ${session.tenantId}`,
+                'SchemaDetection');
         } else {
+            logger.log(`Prompting for organization for ${workspaceFolder.name}`, 'SchemaDetection');
+
             // Otherwise, we need to manually prompt.
             // We do this by asking them to select an organization via an information message,
             // then displaying the quick pick of all the organizations they have access to.
@@ -211,6 +235,7 @@ async function autoDetectSchema(
 
     // Not logged into an account that has access.
     if (session === undefined) {
+        logger.log(`No organization found for ${workspaceFolder.name}`, 'SchemaDetection');
         vscode.window.showErrorMessage(format(Messages.unableToAccessOrganization, organizationName));
         return undefined;
     }
@@ -227,8 +252,11 @@ async function autoDetectSchema(
     // hit the network to request an updated schema for an organization once per session.
     const schemaUri = Utils.joinPath(context.globalStorageUri, `${organizationName}-schema.json`);
     if (seenOrganizations.has(organizationName)) {
+        logger.log(`Returning cached schema for ${workspaceFolder.name}`, 'SchemaDetection');
         return schemaUri;
     }
+
+    logger.log(`Retrieving schema for ${workspaceFolder.name}`, 'SchemaDetection');
 
     const token = await session.credentials2.getToken();
     const authHandler = azdev.getBearerHandler(token.accessToken);
