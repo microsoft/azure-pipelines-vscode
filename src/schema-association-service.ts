@@ -174,6 +174,7 @@ async function autoDetectSchema(
     } else {
         logger.log(`${workspaceFolder.name} has no remote URL or is not an Azure repo`, 'SchemaDetection');
 
+        // TODO: Redo this as workspace state is context-specific.
         const azurePipelinesDetails = context.workspaceState.get<{
             [folder: string]: { organization: string; tenant: string; }
         }>('azurePipelinesDetails');
