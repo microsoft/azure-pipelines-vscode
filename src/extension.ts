@@ -90,20 +90,15 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 
     // Or if the active editor's language changes.
     context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async textDocument => {
-        // This event fires before activeTextEditor is updated,
-        // so we need to figure out the workspace folder ourselves.
-        // Besides, even if it fired after activeTextEditor was updated,
-        // there's no guarantee that the new text document was the active editor.
+        // Ensure this event is due to a language change.
+        // Since onDidOpenTextDocument is fired *before* activeTextEditor changes,
+        // if the URIs are the same we know that the new text document must be
+        // due to a language change.
         if (textDocument.uri !== vscode.window.activeTextEditor?.document.uri) {
             return;
         }
 
-        if (textDocument.languageId !== LANGUAGE_IDENTIFIER) {
-            return;
-        }
-
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(textDocument.uri);
-        await loadSchema(context, client, workspaceFolder);
+        await loadSchema(context, client);
     }));
 
     // Re-request the schema when sessions change since auto-detection is dependent on
