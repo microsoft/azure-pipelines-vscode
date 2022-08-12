@@ -13,8 +13,21 @@ import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from
 import { telemetryHelper } from './helpers/telemetryHelper';
 import { getAzureAccountExtensionApi } from './extensionApis';
 
+/**
+ * The unique string that identifies the Azure Pipelines languge.
+ */
+const LANGUAGE_IDENTIFIER = 'azure-pipelines';
+
+/**
+ * The document selector to use when deciding whether to activate Azure Pipelines-specific features.
+ */
+const DOCUMENT_SELECTOR = [
+    { language: LANGUAGE_IDENTIFIER, scheme: 'file' },
+    { language: LANGUAGE_IDENTIFIER, scheme: 'untitled' }
+]
+
 export async function activate(context: vscode.ExtensionContext) {
-    const configurePipelineEnabled = vscode.workspace.getConfiguration('azure-pipelines').get<boolean>('configure', true);
+    const configurePipelineEnabled = vscode.workspace.getConfiguration(LANGUAGE_IDENTIFIER).get<boolean>('configure', true);
     telemetryHelper.initialize('azurePipelines.activate', {
         isActivationEvent: 'true',
         configurePipelineEnabled: `${configurePipelineEnabled}`,
@@ -34,7 +47,7 @@ export async function activate(context: vscode.ExtensionContext) {
 async function activateYmlContributor(context: vscode.ExtensionContext) {
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
-    const client = new languageclient.LanguageClient('azure-pipelines', 'Azure Pipelines Language', serverOptions, clientOptions);
+    const client = new languageclient.LanguageClient(LANGUAGE_IDENTIFIER, 'Azure Pipelines Language', serverOptions, clientOptions);
 
     const disposable = client.start();
     context.subscriptions.push(disposable);
@@ -56,7 +69,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     });
 
     // TODO: Can we get rid of this since it's set in package.json?
-    vscode.languages.setLanguageConfiguration('azure-pipelines', { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
+    vscode.languages.setLanguageConfiguration(LANGUAGE_IDENTIFIER, { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
 
     // Let the server know of any schema changes.
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
@@ -66,27 +79,33 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     }));
 
     // Load the schema if we were activated because an Azure Pipelines file.
-    if (vscode.window.activeTextEditor?.document.languageId === 'azure-pipelines') {
+    if (vscode.window.activeTextEditor?.document.languageId === LANGUAGE_IDENTIFIER) {
         await loadSchema(context, client);
     }
 
     // And subscribe to future open events, as well.
+    context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async () => {
+        await loadSchema(context, client);
+    }));
+
+    // Or if the active editor's language changes.
     context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(async textDocument => {
-        // NOTE: We need to explicitly compute the workspace folder here rather than
-        // relying on the logic in loadSchema, because somehow preview editors
-        // don't count as "active".
-        if (textDocument?.languageId !== 'azure-pipelines') {
+        // Ensure this event is due to a language change.
+        // Since onDidOpenTextDocument is fired *before* activeTextEditor changes,
+        // if the URIs are the same we know that the new text document must be
+        // due to a language change.
+        if (textDocument.uri !== vscode.window.activeTextEditor?.document.uri) {
             return;
         }
 
-        const workspaceFolder = vscode.workspace.getWorkspaceFolder(textDocument.uri);
-        await loadSchema(context, client, workspaceFolder);
+        await loadSchema(context, client);
     }));
 
-    // Re-request the schema on Azure login since auto-detection is dependent on login.
+    // Re-request the schema when sessions change since auto-detection is dependent on
+    // being able to query ADO organizations using session credentials.
     const azureAccountApi = await getAzureAccountExtensionApi();
-    context.subscriptions.push(azureAccountApi.onStatusChanged(async status => {
-        if (status === 'LoggedIn') {
+    context.subscriptions.push(azureAccountApi.onSessionsChanged(async () => {
+        if (azureAccountApi.status === 'LoggedIn') {
             await loadSchema(context, client);
         }
     }));
@@ -105,7 +124,7 @@ async function loadSchema(
     workspaceFolder?: vscode.WorkspaceFolder): Promise<void> {
     if (workspaceFolder === undefined) {
         const textDocument = vscode.window.activeTextEditor?.document;
-        if (textDocument?.languageId !== 'azure-pipelines') {
+        if (textDocument?.languageId !== LANGUAGE_IDENTIFIER) {
             return;
         }
 
@@ -133,10 +152,7 @@ function getServerOptions(context: vscode.ExtensionContext): languageclient.Serv
 function getClientOptions(): languageclient.LanguageClientOptions {
     return {
         // Register the server for Azure Pipelines documents
-        documentSelector: [
-            { language: 'azure-pipelines', scheme: 'file' },
-            { language: 'azure-pipelines', scheme: 'untitled' }
-        ],
+        documentSelector: DOCUMENT_SELECTOR,
         synchronize: {
             // TODO: Switch to handling the workspace/configuration request
             configurationSection: ['yaml', 'http.proxy', 'http.proxyStrictSSL'],
