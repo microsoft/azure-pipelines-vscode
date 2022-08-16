@@ -185,7 +185,7 @@ async function autoDetectSchema(
             session = azureAccountApi.sessions.find(session => session.tenantId === details.tenant);
 
             logger.log(
-                `Using cached information for ${workspaceFolder.name}: ${organizationName}, ${session.tenantId}`,
+                `Using cached information for ${workspaceFolder.name}: ${organizationName}, ${session?.tenantId}`,
                 'SchemaDetection');
         } else {
             logger.log(`Prompting for organization for ${workspaceFolder.name}`, 'SchemaDetection');
