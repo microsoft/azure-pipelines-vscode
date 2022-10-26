@@ -2310,6 +2310,9 @@
           "additionalProperties": false,
           "firstProperty": [
             "deployment"
+          ],
+          "required": [
+            "environment"
           ]
         },
         {
