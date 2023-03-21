@@ -6070,7 +6070,7 @@
                   ]
                 },
                 "progressPreference": {
-                  "description": "ProgressPreference",
+                  "description": "When not set to Default, prepends the line $DebugPreference = 'VALUE' at the top of your script.",
                   "ignoreCase": "all",
                   "enum": [
                     "default",
