@@ -6069,6 +6069,16 @@
                     "silentlyContinue"
                   ]
                 },
+                "progressPreference": {
+                  "description": "ProgressPreference",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "default",
+                    "stop",
+                    "continue",
+                    "silentlyContinue"
+                  ]
+                },
                 "failOnStderr": {
                   "type": "boolean",
                   "description": "Fail on Standard Error",
