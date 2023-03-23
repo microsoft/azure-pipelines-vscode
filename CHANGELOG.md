@@ -3,6 +3,10 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.220.0
+### Updated
+- M218 schema
+
 ## 1.208.0
 ### Added
 - Schema auto-detection now works for all workspaces
