@@ -411,7 +411,19 @@
           "required": [
             "steps"
           ]
-        }
+        },
+        {
+          "type": "object",
+          "properties": {
+            "variables": {
+              "description": "Variables for this template",
+              "$ref": "#/definitions/variables"
+            }
+          },
+          "required": [
+            "variables"
+          ]
+        }   
       ]
     },
     "pipelineBase": {
