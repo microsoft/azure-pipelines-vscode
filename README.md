@@ -108,3 +108,13 @@ If you are also working on the language server:
 # Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) if you want to jump in!
+
+## Modifying the Schema
+
+The schema used in this project is automatically generated and not modifiable by our team. It originates from Azure DevOps, which is an external system and not managed by our team members. Consequently, we do not have the authority or access to modify the schema as per our needs.
+
+Moreover, the schema from Azure DevOps is not publicly available, and any alterations to it are beyond our control.
+
+This means that certain syntax issues related to the strucutre of the yaml files is outside the control of the team.
+
+For example, when creating a variable template, you will get a warning stating you are missing the property stages.
