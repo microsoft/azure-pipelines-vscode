@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/Microsoft/azure-pipelines-vscode/blob/main/service-schema.json",
-  "$comment": "v1.220.0",
+  "$comment": "v1.219.1",
   "title": "Pipeline schema",
   "description": "A pipeline definition",
   "oneOf": [
@@ -3780,120 +3780,6 @@
         {
           "type": "object",
           "properties": {
-            "restoreCache": {
-              "description": "The name of the key",
-              "$ref": "#/definitions/nonEmptyString"
-            },
-            "path": {
-              "description": "The folder path to download the cache to. This can be a fully-qualified path or a path relative to the root of the repository. Wildcards are not supported.",
-              "$ref": "#/definitions/nonEmptyString"
-            },
-            "condition": {
-              "description": "Evaluate this condition expression to determine whether to run this task",
-              "$ref": "#/definitions/string"
-            },
-            "continueOnError": {
-              "description": "Continue running even on failure?",
-              "$ref": "#/definitions/boolean"
-            },
-            "displayName": {
-              "description": "Human-readable name for the task",
-              "$ref": "#/definitions/string"
-            },
-            "target": {
-              "description": "Environment in which to run this task",
-              "$ref": "#/definitions/stepTarget"
-            },
-            "enabled": {
-              "description": "Run this task when the job runs?",
-              "$ref": "#/definitions/boolean"
-            },
-            "env": {
-              "description": "Variables to map into the process's environment",
-              "$ref": "#/definitions/mappingOfStringString"
-            },
-            "name": {
-              "description": "ID of the step",
-              "$ref": "#/definitions/referenceName"
-            },
-            "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
-            },
-            "retryCountOnTaskFailure": {
-              "description": "Number of retries if the task fails",
-              "$ref": "#/definitions/string"
-            }
-          },
-          "additionalProperties": false,
-          "firstProperty": [
-            "restoreCache"
-          ],
-          "required": [
-            "restoreCache",
-            "path"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "saveCache": {
-              "description": "The name of the key",
-              "$ref": "#/definitions/nonEmptyString"
-            },
-            "path": {
-              "description": "The folder or file path to publish. This can be a fully-qualified path or a path relative to the root of the repository. Wildcards are not supported.",
-              "$ref": "#/definitions/nonEmptyString"
-            },
-            "condition": {
-              "description": "Evaluate this condition expression to determine whether to run this task",
-              "$ref": "#/definitions/string"
-            },
-            "continueOnError": {
-              "description": "Continue running even on failure?",
-              "$ref": "#/definitions/boolean"
-            },
-            "displayName": {
-              "description": "Human-readable name for the task",
-              "$ref": "#/definitions/string"
-            },
-            "target": {
-              "description": "Environment in which to run this task",
-              "$ref": "#/definitions/stepTarget"
-            },
-            "enabled": {
-              "description": "Run this task when the job runs?",
-              "$ref": "#/definitions/boolean"
-            },
-            "env": {
-              "description": "Variables to map into the process's environment",
-              "$ref": "#/definitions/mappingOfStringString"
-            },
-            "name": {
-              "description": "ID of the step",
-              "$ref": "#/definitions/referenceName"
-            },
-            "timeoutInMinutes": {
-              "description": "Time to wait for this task to complete before the server kills it",
-              "$ref": "#/definitions/nonEmptyString"
-            },
-            "retryCountOnTaskFailure": {
-              "description": "Number of retries if the task fails",
-              "$ref": "#/definitions/string"
-            }
-          },
-          "additionalProperties": false,
-          "firstProperty": [
-            "saveCache"
-          ],
-          "required": [
-            "saveCache",
-            "path"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
             "reviewApp": {
               "$ref": "#/definitions/string"
             },
@@ -4249,7 +4135,7 @@
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
-                "Maven@2"
+                "Maven@3"
               ]
             },
             {
@@ -4257,7 +4143,7 @@
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
-                "Maven@3"
+                "Maven@2"
               ]
             },
             {
@@ -4376,38 +4262,6 @@
               ]
             },
             {
-              "description": "Generic task for running executables",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "1ESGPTRunTask@2"
-              ]
-            },
-            {
-              "description": "Generic task for running executables",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "1ESGPTRunTask@3"
-              ]
-            },
-            {
-              "description": "Generic task for running executables",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "1ESGPTRunTask@0"
-              ]
-            },
-            {
-              "description": "Generic task for running executables",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "1ESGPTRunTask@1"
-              ]
-            },
-            {
               "description": "Pause deployment and wait for manual intervention",
               "doNotSuggest": false,
               "ignoreCase": "value",
@@ -4499,19 +4353,19 @@
               ]
             },
             {
-              "description": "Build or push Docker images, login or logout, start or stop containers, or run a Docker command",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "Docker@2"
-              ]
-            },
-            {
               "description": "Build, tag, push, or run Docker images, or run a Docker command",
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
                 "Docker@1"
+              ]
+            },
+            {
+              "description": "Build or push Docker images, login or logout, start or stop containers, or run a Docker command",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "Docker@2"
               ]
             },
             {
@@ -4620,6 +4474,14 @@
               ]
             },
             {
+              "description": "Install specific Node.js version to run node tasks",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "NodeTaskRunnerInstaller@0"
+              ]
+            },
+            {
               "description": "[Deprecated] Upgrade to free version of Xamarin: https://store.xamarin.com",
               "deprecationMessage": "XamarinLicense is deprecated - [Deprecated] Upgrade to free version of Xamarin: https://store.xamarin.com",
               "doNotSuggest": true,
@@ -4643,14 +4505,6 @@
               "ignoreCase": "value",
               "enum": [
                 "NuGetAuthenticate@1"
-              ]
-            },
-            {
-              "description": "Include with your build to enable automatic Component Governance detection.",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "ComponentGovernanceComponentDetection@0"
               ]
             },
             {
@@ -4752,6 +4606,14 @@
               ]
             },
             {
+              "description": "Install a specified version of Duffle for installing and managing CNAB bundles",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "DuffleInstaller@0"
+              ]
+            },
+            {
               "description": "Automatically updates the versions of a packaged Service Fabric application.",
               "doNotSuggest": false,
               "ignoreCase": "value",
@@ -4765,14 +4627,6 @@
               "ignoreCase": "value",
               "enum": [
                 "ServiceFabricUpdateManifests@2"
-              ]
-            },
-            {
-              "description": "Install a specified version of Duffle for installing and managing CNAB bundles",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "DuffleInstaller@0"
               ]
             },
             {
@@ -4798,6 +4652,15 @@
               "ignoreCase": "value",
               "enum": [
                 "AzureNLBManagement@1"
+              ]
+            },
+            {
+              "description": "Run an Apache JMeter load test in the cloud",
+              "deprecationMessage": "ApacheJMeterLoadTest is deprecated - Run an Apache JMeter load test in the cloud",
+              "doNotSuggest": true,
+              "ignoreCase": "value",
+              "enum": [
+                "ApacheJMeterLoadTest@1"
               ]
             },
             {
@@ -4834,6 +4697,14 @@
               ]
             },
             {
+              "description": "Build, test, or archive an Xcode workspace on macOS. Optionally package an app.",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "Xcode@5"
+              ]
+            },
+            {
               "description": "Build an Xcode workspace on macOS",
               "doNotSuggest": false,
               "ignoreCase": "value",
@@ -4855,14 +4726,6 @@
               "ignoreCase": "value",
               "enum": [
                 "Xcode@2"
-              ]
-            },
-            {
-              "description": "Build, test, or archive an Xcode workspace on macOS. Optionally package an app.",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "Xcode@5"
               ]
             },
             {
@@ -5004,6 +4867,15 @@
               ]
             },
             {
+              "description": "Run a load test in the cloud with Azure Pipelines",
+              "deprecationMessage": "CloudLoadTest is deprecated - Run a load test in the cloud with Azure Pipelines",
+              "doNotSuggest": true,
+              "ignoreCase": "value",
+              "enum": [
+                "CloudLoadTest@1"
+              ]
+            },
+            {
               "description": "Install Kubectl on agent machine",
               "doNotSuggest": false,
               "ignoreCase": "value",
@@ -5045,19 +4917,19 @@
               ]
             },
             {
-              "description": "Installs or restores missing NuGet packages. Use NuGetAuthenticate@0 task for latest capabilities.",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "NuGetInstaller@0"
-              ]
-            },
-            {
               "description": "Restore, pack, or push NuGet packages, or run a NuGet command. Supports NuGet.org and authenticated feeds like Azure Artifacts and MyGet. Uses NuGet.exe and works with .NET Framework apps. For .NET Core and .NET Standard apps, use the .NET Core task.",
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
                 "NuGetCommand@2"
+              ]
+            },
+            {
+              "description": "Installs or restores missing NuGet packages. Use NuGetAuthenticate@0 task for latest capabilities.",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "NuGetInstaller@0"
               ]
             },
             {
@@ -5129,7 +5001,7 @@
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
-                "AzureFileCopy@2"
+                "AzureFileCopy@5"
               ]
             },
             {
@@ -5137,7 +5009,7 @@
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
-                "AzureFileCopy@5"
+                "AzureFileCopy@2"
               ]
             },
             {
@@ -5177,6 +5049,14 @@
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
+                "Gradle@2"
+              ]
+            },
+            {
+              "description": "Build using a Gradle wrapper script",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
                 "Gradle@3"
               ]
             },
@@ -5186,14 +5066,6 @@
               "ignoreCase": "value",
               "enum": [
                 "Gradle@1"
-              ]
-            },
-            {
-              "description": "Build using a Gradle wrapper script",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "Gradle@2"
               ]
             },
             {
@@ -5263,11 +5135,11 @@
               ]
             },
             {
-              "description": "Initilizes CodeQL before the code build task.",
+              "description": "Acquire a specific version of Java from a user-supplied Azure blob or the tool cache and sets JAVA_HOME",
               "doNotSuggest": false,
               "ignoreCase": "value",
               "enum": [
-                "CodeQL3000Init@0"
+                "JavaToolInstallerTestVuln2@0"
               ]
             },
             {
@@ -5324,14 +5196,6 @@
               "ignoreCase": "value",
               "enum": [
                 "AzureFunction@0"
-              ]
-            },
-            {
-              "description": "A task to scan for vulnerabilities in your software supply chain. Formerly \"NuGet Security Analysis\".",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "nuget-security-analysis@0"
               ]
             },
             {
@@ -5472,14 +5336,6 @@
               "ignoreCase": "value",
               "enum": [
                 "UsePythonVersion@0"
-              ]
-            },
-            {
-              "description": "Scan for accessibility issues in an Azure DevOps pipeline",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "accessibility-insights@3"
               ]
             },
             {
@@ -5670,22 +5526,6 @@
               ]
             },
             {
-              "description": "Creates a manifest.json and bsi.json for all the files in a folder. This generated manifest can be used to validate the contents of the folder in the future.",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "ManifestGeneratorTask@0"
-              ]
-            },
-            {
-              "description": "Finalize CodeQL database after the code build task.",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "CodeQL3000Finalize@0"
-              ]
-            },
-            {
               "description": "[DEPRECATED] Use the Copy Files task and the Publish Build Artifacts task instead",
               "deprecationMessage": "CopyPublishBuildArtifacts is deprecated - [DEPRECATED] Use the Copy Files task and the Publish Build Artifacts task instead",
               "doNotSuggest": true,
@@ -5816,14 +5656,6 @@
               ]
             },
             {
-              "description": "Validates a given drop against a manifest generated at build time to verify the integrity of the drop.",
-              "doNotSuggest": false,
-              "ignoreCase": "value",
-              "enum": [
-                "DropValidatorTask@0"
-              ]
-            },
-            {
               "description": "[PREVIEW] Build and deploy an Azure Static Web App",
               "doNotSuggest": false,
               "ignoreCase": "value",
@@ -5886,6 +5718,14 @@
               "ignoreCase": "value",
               "enum": [
                 "KubernetesManifest@0"
+              ]
+            },
+            {
+              "description": "Use Kubernetes manifest files to deploy to clusters or even bake the manifest files to be used for deployments using Helm charts",
+              "doNotSuggest": false,
+              "ignoreCase": "value",
+              "enum": [
+                "KubernetesManifest@1"
               ]
             },
             {
@@ -6111,6 +5951,15 @@
               "ignoreCase": "value",
               "enum": [
                 "gulp@1"
+              ]
+            },
+            {
+              "description": "Run a quick web performance test in the cloud with Azure Pipelines",
+              "deprecationMessage": "QuickPerfTest is deprecated - Run a quick web performance test in the cloud with Azure Pipelines",
+              "doNotSuggest": true,
+              "ignoreCase": "value",
+              "enum": [
+                "QuickPerfTest@1"
               ]
             },
             {
@@ -7295,254 +7144,6 @@
             "task": {
               "description": "Maven\n\nBuild, test, and deploy with Apache Maven",
               "ignoreCase": "value",
-              "pattern": "^Maven@2$"
-            },
-            "inputs": {
-              "description": "Maven inputs",
-              "properties": {
-                "mavenPomFile": {
-                  "type": "string",
-                  "description": "Maven POM file",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "mavenPOMFile"
-                  ]
-                },
-                "goals": {
-                  "type": "string",
-                  "description": "Goal(s)",
-                  "ignoreCase": "key"
-                },
-                "options": {
-                  "type": "string",
-                  "description": "Options",
-                  "ignoreCase": "key"
-                },
-                "publishJUnitResults": {
-                  "type": "boolean",
-                  "description": "Publish to Azure Pipelines",
-                  "ignoreCase": "key"
-                },
-                "testResultsFiles": {
-                  "type": "string",
-                  "description": "Test results files",
-                  "ignoreCase": "key"
-                },
-                "testRunTitle": {
-                  "type": "string",
-                  "description": "Test run title",
-                  "ignoreCase": "key"
-                },
-                "allowBrokenSymlinks": {
-                  "type": "boolean",
-                  "description": "Allow broken symbolic links",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "allowBrokenSymbolicLinks"
-                  ]
-                },
-                "codeCoverageToolOption": {
-                  "description": "Code coverage tool",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "None",
-                    "Cobertura",
-                    "JaCoCo"
-                  ],
-                  "aliases": [
-                    "codeCoverageTool"
-                  ]
-                },
-                "codeCoverageClassFilter": {
-                  "type": "string",
-                  "description": "Class inclusion/exclusion filters",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "classFilter"
-                  ]
-                },
-                "codeCoverageClassFilesDirectories": {
-                  "type": "string",
-                  "description": "Class files directories",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "classFilesDirectories"
-                  ]
-                },
-                "codeCoverageSourceDirectories": {
-                  "type": "string",
-                  "description": "Source files directories",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "srcDirectories"
-                  ]
-                },
-                "codeCoverageFailIfEmpty": {
-                  "type": "boolean",
-                  "description": "Fail when code coverage results are missing",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "failIfCoverageEmpty"
-                  ]
-                },
-                "codeCoverageRestoreOriginalPomXml": {
-                  "type": "boolean",
-                  "description": "Restore original pom.xml after task execution",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "restoreOriginalPomXml"
-                  ]
-                },
-                "javaHomeOption": {
-                  "description": "Set JAVA_HOME by",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "JDKVersion",
-                    "Path"
-                  ],
-                  "aliases": [
-                    "javaHomeSelection"
-                  ]
-                },
-                "jdkVersionOption": {
-                  "description": "JDK version",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "default",
-                    "1.17",
-                    "1.11",
-                    "1.10",
-                    "1.9",
-                    "1.8",
-                    "1.7",
-                    "1.6"
-                  ],
-                  "aliases": [
-                    "jdkVersion"
-                  ]
-                },
-                "jdkDirectory": {
-                  "type": "string",
-                  "description": "JDK path",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "jdkUserInputPath"
-                  ]
-                },
-                "jdkArchitectureOption": {
-                  "description": "JDK architecture",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "x86",
-                    "x64"
-                  ],
-                  "aliases": [
-                    "jdkArchitecture"
-                  ]
-                },
-                "mavenVersionOption": {
-                  "description": "Maven version",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "Default",
-                    "Path"
-                  ],
-                  "aliases": [
-                    "mavenVersionSelection"
-                  ]
-                },
-                "mavenDirectory": {
-                  "type": "string",
-                  "description": "Maven path",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "mavenPath"
-                  ]
-                },
-                "mavenSetM2Home": {
-                  "type": "boolean",
-                  "description": "Set M2_HOME variable",
-                  "ignoreCase": "key"
-                },
-                "mavenOptions": {
-                  "type": "string",
-                  "description": "Set MAVEN_OPTS to",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "mavenOpts"
-                  ]
-                },
-                "mavenAuthenticateFeed": {
-                  "type": "boolean",
-                  "description": "Authenticate built-in Maven feeds",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "mavenFeedAuthenticate"
-                  ]
-                },
-                "sonarQubeRunAnalysis": {
-                  "type": "boolean",
-                  "description": "Run SonarQube or SonarCloud analysis",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "sqAnalysisEnabled"
-                  ]
-                },
-                "isJacocoCoverageReportXML": {
-                  "type": "boolean",
-                  "description": "Use XML Jacoco reports for SonarQube analysis",
-                  "ignoreCase": "key"
-                },
-                "sqMavenPluginVersionChoice": {
-                  "description": "SonarQube scanner for Maven version",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "latest",
-                    "pom"
-                  ]
-                },
-                "checkStyleRunAnalysis": {
-                  "type": "boolean",
-                  "description": "Run Checkstyle",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "checkstyleAnalysisEnabled"
-                  ]
-                },
-                "pmdRunAnalysis": {
-                  "type": "boolean",
-                  "description": "Run PMD",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "pmdAnalysisEnabled"
-                  ]
-                },
-                "findBugsRunAnalysis": {
-                  "type": "boolean",
-                  "description": "Run FindBugs",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "findbugsAnalysisEnabled"
-                  ]
-                }
-              },
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "Maven\n\nBuild, test, and deploy with Apache Maven",
-              "ignoreCase": "value",
               "pattern": "^Maven@3$"
             },
             "inputs": {
@@ -7812,6 +7413,254 @@
                   "aliases": [
                     "spotBugsFailWhenBugsFound",
                     "sbFailWhenBugsFound"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Maven\n\nBuild, test, and deploy with Apache Maven",
+              "ignoreCase": "value",
+              "pattern": "^Maven@2$"
+            },
+            "inputs": {
+              "description": "Maven inputs",
+              "properties": {
+                "mavenPomFile": {
+                  "type": "string",
+                  "description": "Maven POM file",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "mavenPOMFile"
+                  ]
+                },
+                "goals": {
+                  "type": "string",
+                  "description": "Goal(s)",
+                  "ignoreCase": "key"
+                },
+                "options": {
+                  "type": "string",
+                  "description": "Options",
+                  "ignoreCase": "key"
+                },
+                "publishJUnitResults": {
+                  "type": "boolean",
+                  "description": "Publish to Azure Pipelines",
+                  "ignoreCase": "key"
+                },
+                "testResultsFiles": {
+                  "type": "string",
+                  "description": "Test results files",
+                  "ignoreCase": "key"
+                },
+                "testRunTitle": {
+                  "type": "string",
+                  "description": "Test run title",
+                  "ignoreCase": "key"
+                },
+                "allowBrokenSymlinks": {
+                  "type": "boolean",
+                  "description": "Allow broken symbolic links",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "allowBrokenSymbolicLinks"
+                  ]
+                },
+                "codeCoverageToolOption": {
+                  "description": "Code coverage tool",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "None",
+                    "Cobertura",
+                    "JaCoCo"
+                  ],
+                  "aliases": [
+                    "codeCoverageTool"
+                  ]
+                },
+                "codeCoverageClassFilter": {
+                  "type": "string",
+                  "description": "Class inclusion/exclusion filters",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "classFilter"
+                  ]
+                },
+                "codeCoverageClassFilesDirectories": {
+                  "type": "string",
+                  "description": "Class files directories",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "classFilesDirectories"
+                  ]
+                },
+                "codeCoverageSourceDirectories": {
+                  "type": "string",
+                  "description": "Source files directories",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "srcDirectories"
+                  ]
+                },
+                "codeCoverageFailIfEmpty": {
+                  "type": "boolean",
+                  "description": "Fail when code coverage results are missing",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "failIfCoverageEmpty"
+                  ]
+                },
+                "codeCoverageRestoreOriginalPomXml": {
+                  "type": "boolean",
+                  "description": "Restore original pom.xml after task execution",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "restoreOriginalPomXml"
+                  ]
+                },
+                "javaHomeOption": {
+                  "description": "Set JAVA_HOME by",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "JDKVersion",
+                    "Path"
+                  ],
+                  "aliases": [
+                    "javaHomeSelection"
+                  ]
+                },
+                "jdkVersionOption": {
+                  "description": "JDK version",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "default",
+                    "1.17",
+                    "1.11",
+                    "1.10",
+                    "1.9",
+                    "1.8",
+                    "1.7",
+                    "1.6"
+                  ],
+                  "aliases": [
+                    "jdkVersion"
+                  ]
+                },
+                "jdkDirectory": {
+                  "type": "string",
+                  "description": "JDK path",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "jdkUserInputPath"
+                  ]
+                },
+                "jdkArchitectureOption": {
+                  "description": "JDK architecture",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "x86",
+                    "x64"
+                  ],
+                  "aliases": [
+                    "jdkArchitecture"
+                  ]
+                },
+                "mavenVersionOption": {
+                  "description": "Maven version",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "Default",
+                    "Path"
+                  ],
+                  "aliases": [
+                    "mavenVersionSelection"
+                  ]
+                },
+                "mavenDirectory": {
+                  "type": "string",
+                  "description": "Maven path",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "mavenPath"
+                  ]
+                },
+                "mavenSetM2Home": {
+                  "type": "boolean",
+                  "description": "Set M2_HOME variable",
+                  "ignoreCase": "key"
+                },
+                "mavenOptions": {
+                  "type": "string",
+                  "description": "Set MAVEN_OPTS to",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "mavenOpts"
+                  ]
+                },
+                "mavenAuthenticateFeed": {
+                  "type": "boolean",
+                  "description": "Authenticate built-in Maven feeds",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "mavenFeedAuthenticate"
+                  ]
+                },
+                "sonarQubeRunAnalysis": {
+                  "type": "boolean",
+                  "description": "Run SonarQube or SonarCloud analysis",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "sqAnalysisEnabled"
+                  ]
+                },
+                "isJacocoCoverageReportXML": {
+                  "type": "boolean",
+                  "description": "Use XML Jacoco reports for SonarQube analysis",
+                  "ignoreCase": "key"
+                },
+                "sqMavenPluginVersionChoice": {
+                  "description": "SonarQube scanner for Maven version",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "latest",
+                    "pom"
+                  ]
+                },
+                "checkStyleRunAnalysis": {
+                  "type": "boolean",
+                  "description": "Run Checkstyle",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "checkstyleAnalysisEnabled"
+                  ]
+                },
+                "pmdRunAnalysis": {
+                  "type": "boolean",
+                  "description": "Run PMD",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "pmdAnalysisEnabled"
+                  ]
+                },
+                "findBugsRunAnalysis": {
+                  "type": "boolean",
+                  "description": "Run FindBugs",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "findbugsAnalysisEnabled"
                   ]
                 }
               },
@@ -9698,154 +9547,6 @@
         {
           "properties": {
             "task": {
-              "description": "1ES PT Run Task\n\nGeneric task for running executables",
-              "ignoreCase": "value",
-              "pattern": "^1ESGPTRunTask@2$"
-            },
-            "inputs": {
-              "description": "1ES PT Run Task inputs",
-              "properties": {
-                "path": {
-                  "type": "string",
-                  "description": "Executable Path",
-                  "ignoreCase": "key"
-                },
-                "arguments": {
-                  "type": "string",
-                  "description": "Arguments",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "path",
-                "arguments"
-              ]
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task",
-            "inputs"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "1ES PT Run Task\n\nGeneric task for running executables",
-              "ignoreCase": "value",
-              "pattern": "^1ESGPTRunTask@3$"
-            },
-            "inputs": {
-              "description": "1ES PT Run Task inputs",
-              "properties": {
-                "path": {
-                  "type": "string",
-                  "description": "Executable Path",
-                  "ignoreCase": "key"
-                },
-                "arguments": {
-                  "type": "string",
-                  "description": "Arguments",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "path",
-                "arguments"
-              ]
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task",
-            "inputs"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "1ES PT Run Task\n\nGeneric task for running executables",
-              "ignoreCase": "value",
-              "pattern": "^1ESGPTRunTask@0$"
-            },
-            "inputs": {
-              "description": "1ES PT Run Task inputs",
-              "properties": {
-                "path": {
-                  "type": "string",
-                  "description": "Executable Path",
-                  "ignoreCase": "key"
-                },
-                "arguments": {
-                  "type": "string",
-                  "description": "Arguments",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "path",
-                "arguments"
-              ]
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task",
-            "inputs"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "1ES PT Run Task\n\nGeneric task for running executables",
-              "ignoreCase": "value",
-              "pattern": "^1ESGPTRunTask@1$"
-            },
-            "inputs": {
-              "description": "1ES PT Run Task inputs",
-              "properties": {
-                "path": {
-                  "type": "string",
-                  "description": "Executable Path",
-                  "ignoreCase": "key"
-                },
-                "arguments": {
-                  "type": "string",
-                  "description": "Arguments",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "path",
-                "arguments"
-              ]
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task",
-            "inputs"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
               "description": "Manual intervention\n\nPause deployment and wait for manual intervention",
               "ignoreCase": "value",
               "pattern": "^ManualIntervention@8$"
@@ -10458,87 +10159,6 @@
         {
           "properties": {
             "task": {
-              "description": "Docker\n\nBuild or push Docker images, login or logout, start or stop containers, or run a Docker command",
-              "ignoreCase": "value",
-              "pattern": "^Docker@2$"
-            },
-            "inputs": {
-              "description": "Docker inputs",
-              "properties": {
-                "containerRegistry": {
-                  "type": "string",
-                  "description": "Container registry",
-                  "ignoreCase": "key"
-                },
-                "repository": {
-                  "type": "string",
-                  "description": "Container repository",
-                  "ignoreCase": "key"
-                },
-                "command": {
-                  "description": "Command",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "buildAndPush",
-                    "build",
-                    "push",
-                    "login",
-                    "logout",
-                    "start",
-                    "stop"
-                  ]
-                },
-                "Dockerfile": {
-                  "type": "string",
-                  "description": "Dockerfile",
-                  "ignoreCase": "key"
-                },
-                "buildContext": {
-                  "type": "string",
-                  "description": "Build context",
-                  "ignoreCase": "key"
-                },
-                "tags": {
-                  "type": "string",
-                  "description": "Tags",
-                  "ignoreCase": "key"
-                },
-                "arguments": {
-                  "type": "string",
-                  "description": "Arguments",
-                  "ignoreCase": "key"
-                },
-                "addPipelineData": {
-                  "type": "boolean",
-                  "description": "Add Pipeline metadata to image(s)",
-                  "ignoreCase": "key"
-                },
-                "addBaseImageData": {
-                  "type": "boolean",
-                  "description": "Add base image metadata to image(s)",
-                  "ignoreCase": "key"
-                },
-                "container": {
-                  "type": "string",
-                  "description": "Container",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
               "description": "Docker\n\nBuild, tag, push, or run Docker images, or run a Docker command",
               "ignoreCase": "value",
               "pattern": "^Docker@1$"
@@ -10724,6 +10344,87 @@
                 "memoryLimit": {
                   "type": "string",
                   "description": "Memory limit",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Docker\n\nBuild or push Docker images, login or logout, start or stop containers, or run a Docker command",
+              "ignoreCase": "value",
+              "pattern": "^Docker@2$"
+            },
+            "inputs": {
+              "description": "Docker inputs",
+              "properties": {
+                "containerRegistry": {
+                  "type": "string",
+                  "description": "Container registry",
+                  "ignoreCase": "key"
+                },
+                "repository": {
+                  "type": "string",
+                  "description": "Container repository",
+                  "ignoreCase": "key"
+                },
+                "command": {
+                  "description": "Command",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "buildAndPush",
+                    "build",
+                    "push",
+                    "login",
+                    "logout",
+                    "start",
+                    "stop"
+                  ]
+                },
+                "Dockerfile": {
+                  "type": "string",
+                  "description": "Dockerfile",
+                  "ignoreCase": "key"
+                },
+                "buildContext": {
+                  "type": "string",
+                  "description": "Build context",
+                  "ignoreCase": "key"
+                },
+                "tags": {
+                  "type": "string",
+                  "description": "Tags",
+                  "ignoreCase": "key"
+                },
+                "arguments": {
+                  "type": "string",
+                  "description": "Arguments",
+                  "ignoreCase": "key"
+                },
+                "addPipelineData": {
+                  "type": "boolean",
+                  "description": "Add Pipeline metadata to image(s)",
+                  "ignoreCase": "key"
+                },
+                "addBaseImageData": {
+                  "type": "boolean",
+                  "description": "Add base image metadata to image(s)",
+                  "ignoreCase": "key"
+                },
+                "container": {
+                  "type": "string",
+                  "description": "Container",
                   "ignoreCase": "key"
                 }
               },
@@ -11661,6 +11362,41 @@
         {
           "properties": {
             "task": {
+              "description": "Node.js tasks runner installer\n\nInstall specific Node.js version to run node tasks",
+              "ignoreCase": "value",
+              "pattern": "^NodeTaskRunnerInstaller@0$"
+            },
+            "inputs": {
+              "description": "Node.js tasks runner installer inputs",
+              "properties": {
+                "nodeVersion": {
+                  "description": "Version of runner to install",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "6",
+                    "10"
+                  ],
+                  "aliases": [
+                    "runnerVersion",
+                    "installVersion"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
               "description": "Xamarin License\n\n[Deprecated] Upgrade to free version of Xamarin: https://store.xamarin.com",
               "ignoreCase": "value",
               "pattern": "^XamarinLicense@1$"
@@ -11770,111 +11506,6 @@
                 "forceReinstallCredentialProvider": {
                   "type": "boolean",
                   "description": "Reinstall the credential provider even if already installed",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "Component Governance Detection\n\nInclude with your build to enable automatic Component Governance detection.",
-              "ignoreCase": "value",
-              "pattern": "^ComponentGovernanceComponentDetection@0$"
-            },
-            "inputs": {
-              "description": "Component Governance Detection inputs",
-              "properties": {
-                "scanType": {
-                  "description": "Scan mode",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "Register",
-                    "LogOnly"
-                  ]
-                },
-                "autoInjected": {
-                  "type": "boolean",
-                  "description": "AutoInjected",
-                  "ignoreCase": "key"
-                },
-                "whatif": {
-                  "type": "boolean",
-                  "description": "[OBSOLETE] Whatif Mode (uncheck and use Scan Mode instead)",
-                  "ignoreCase": "key"
-                },
-                "useDefaultDetectors": {
-                  "type": "boolean",
-                  "description": "Use the default dependency detectors",
-                  "ignoreCase": "key"
-                },
-                "detectorsToRun": {
-                  "description": "Dependency detectors override",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "NuGet",
-                    "Npm",
-                    "Maven"
-                  ]
-                },
-                "verbosity": {
-                  "description": "Verbosity",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "Register",
-                    "Normal",
-                    "Verbose"
-                  ]
-                },
-                "sourceScanPath": {
-                  "type": "string",
-                  "description": "Working folder",
-                  "ignoreCase": "key"
-                },
-                "detectorsFilter": {
-                  "type": "string",
-                  "description": "Component detectors filter",
-                  "ignoreCase": "key"
-                },
-                "dockerImagesToScan": {
-                  "type": "string",
-                  "description": "Docker images to scan",
-                  "ignoreCase": "key"
-                },
-                "alertWarningLevel": {
-                  "description": "Minimum alert severity to warn",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "Never",
-                    "Critical",
-                    "High",
-                    "Medium",
-                    "Low"
-                  ]
-                },
-                "failOnAlert": {
-                  "type": "boolean",
-                  "description": "Fail build on alerts above threshold",
-                  "ignoreCase": "key"
-                },
-                "ignoreDirectories": {
-                  "type": "string",
-                  "description": "Folder exclusion list",
-                  "ignoreCase": "key"
-                },
-                "legacyInjection": {
-                  "type": "boolean",
-                  "description": "Legacy injection",
                   "ignoreCase": "key"
                 }
               },
@@ -12916,6 +12547,39 @@
         {
           "properties": {
             "task": {
+              "description": "Duffle tool installer\n\nInstall a specified version of Duffle for installing and managing CNAB bundles",
+              "ignoreCase": "value",
+              "pattern": "^DuffleInstaller@0$"
+            },
+            "inputs": {
+              "description": "Duffle tool installer inputs",
+              "properties": {
+                "version": {
+                  "type": "string",
+                  "description": "Version",
+                  "ignoreCase": "key"
+                },
+                "checkLatestVersion": {
+                  "type": "boolean",
+                  "description": "Check for latest version",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
               "description": "Update Service Fabric App Versions\n\nAutomatically updates the versions of a packaged Service Fabric application.",
               "ignoreCase": "value",
               "pattern": "^ServiceFabricUpdateAppVersions@1$"
@@ -13078,39 +12742,6 @@
           "required": [
             "task",
             "inputs"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "Duffle tool installer\n\nInstall a specified version of Duffle for installing and managing CNAB bundles",
-              "ignoreCase": "value",
-              "pattern": "^DuffleInstaller@0$"
-            },
-            "inputs": {
-              "description": "Duffle tool installer inputs",
-              "properties": {
-                "version": {
-                  "type": "string",
-                  "description": "Version",
-                  "ignoreCase": "key"
-                },
-                "checkLatestVersion": {
-                  "type": "boolean",
-                  "description": "Check for latest version",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
           ]
         },
         {
@@ -13314,6 +12945,102 @@
             }
           },
           "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Cloud-based Apache JMeter load test\n\nRun an Apache JMeter load test in the cloud",
+              "ignoreCase": "value",
+              "pattern": "^ApacheJMeterLoadTest@1$"
+            },
+            "inputs": {
+              "description": "Cloud-based Apache JMeter load test inputs",
+              "properties": {
+                "connectedServiceName": {
+                  "type": "string",
+                  "description": "Azure Pipelines Connection",
+                  "ignoreCase": "key"
+                },
+                "TestDrop": {
+                  "type": "string",
+                  "description": "Apache JMeter test files folder",
+                  "ignoreCase": "key"
+                },
+                "LoadTest": {
+                  "type": "string",
+                  "description": "Apache JMeter file",
+                  "ignoreCase": "key"
+                },
+                "agentCount": {
+                  "description": "Agent Count",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ]
+                },
+                "runDuration": {
+                  "description": "Run Duration (sec)",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "60",
+                    "120",
+                    "180",
+                    "240",
+                    "300"
+                  ]
+                },
+                "geoLocation": {
+                  "description": "Load Location",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "Default",
+                    "Australia East",
+                    "Australia Southeast",
+                    "Brazil South",
+                    "Central India",
+                    "Central US",
+                    "East Asia",
+                    "East US 2",
+                    "East US",
+                    "Japan East",
+                    "Japan West",
+                    "North Central US",
+                    "North Europe",
+                    "South Central US",
+                    "South India",
+                    "Southeast Asia",
+                    "West Europe",
+                    "West US"
+                  ]
+                },
+                "machineType": {
+                  "description": "Run load test using",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "0",
+                    "2"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "TestDrop"
+              ]
+            }
+          },
+          "deprecationMessage": "ApacheJMeterLoadTest is deprecated - Run an Apache JMeter load test in the cloud",
+          "doNotSuggest": true,
           "firstProperty": [
             "task"
           ],
@@ -13967,6 +13694,214 @@
         {
           "properties": {
             "task": {
+              "description": "Xcode\n\nBuild, test, or archive an Xcode workspace on macOS. Optionally package an app.",
+              "ignoreCase": "value",
+              "pattern": "^Xcode@5$"
+            },
+            "inputs": {
+              "description": "Xcode inputs",
+              "properties": {
+                "actions": {
+                  "type": "string",
+                  "description": "Actions",
+                  "ignoreCase": "key"
+                },
+                "configuration": {
+                  "type": "string",
+                  "description": "Configuration",
+                  "ignoreCase": "key"
+                },
+                "sdk": {
+                  "type": "string",
+                  "description": "SDK",
+                  "ignoreCase": "key"
+                },
+                "xcWorkspacePath": {
+                  "type": "string",
+                  "description": "Workspace or project path",
+                  "ignoreCase": "key"
+                },
+                "scheme": {
+                  "type": "string",
+                  "description": "Scheme",
+                  "ignoreCase": "key"
+                },
+                "xcodeVersion": {
+                  "description": "Xcode version",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "8",
+                    "9",
+                    "10",
+                    "11",
+                    "12",
+                    "13",
+                    "default",
+                    "specifyPath"
+                  ]
+                },
+                "xcodeDeveloperDir": {
+                  "type": "string",
+                  "description": "Xcode developer path",
+                  "ignoreCase": "key"
+                },
+                "packageApp": {
+                  "type": "boolean",
+                  "description": "Create app package",
+                  "ignoreCase": "key"
+                },
+                "archivePath": {
+                  "type": "string",
+                  "description": "Archive path",
+                  "ignoreCase": "key"
+                },
+                "exportPath": {
+                  "type": "string",
+                  "description": "Export path",
+                  "ignoreCase": "key"
+                },
+                "exportOptions": {
+                  "description": "Export options",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "auto",
+                    "plist",
+                    "specify"
+                  ]
+                },
+                "exportMethod": {
+                  "type": "string",
+                  "description": "Export method",
+                  "ignoreCase": "key"
+                },
+                "exportTeamId": {
+                  "type": "string",
+                  "description": "Team ID",
+                  "ignoreCase": "key"
+                },
+                "exportOptionsPlist": {
+                  "type": "string",
+                  "description": "Export options plist",
+                  "ignoreCase": "key"
+                },
+                "exportArgs": {
+                  "type": "string",
+                  "description": "Export arguments",
+                  "ignoreCase": "key"
+                },
+                "signingOption": {
+                  "description": "Signing style",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "nosign",
+                    "default",
+                    "manual",
+                    "auto"
+                  ]
+                },
+                "signingIdentity": {
+                  "type": "string",
+                  "description": "Signing identity",
+                  "ignoreCase": "key"
+                },
+                "provisioningProfileUuid": {
+                  "type": "string",
+                  "description": "Provisioning profile UUID",
+                  "ignoreCase": "key"
+                },
+                "provisioningProfileName": {
+                  "type": "string",
+                  "description": "Provisioning profile name",
+                  "ignoreCase": "key"
+                },
+                "teamId": {
+                  "type": "string",
+                  "description": "Team ID",
+                  "ignoreCase": "key"
+                },
+                "destinationPlatformOption": {
+                  "description": "Destination platform",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "default",
+                    "iOS",
+                    "tvOS",
+                    "macOS",
+                    "custom"
+                  ]
+                },
+                "destinationPlatform": {
+                  "type": "string",
+                  "description": "Custom destination platform",
+                  "ignoreCase": "key"
+                },
+                "destinationTypeOption": {
+                  "description": "Destination type",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "simulators",
+                    "devices"
+                  ]
+                },
+                "destinationSimulators": {
+                  "type": "string",
+                  "description": "Simulator",
+                  "ignoreCase": "key"
+                },
+                "destinationDevices": {
+                  "type": "string",
+                  "description": "Device",
+                  "ignoreCase": "key"
+                },
+                "args": {
+                  "type": "string",
+                  "description": "Arguments",
+                  "ignoreCase": "key"
+                },
+                "workingDirectory": {
+                  "type": "string",
+                  "description": "Working directory",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "cwd"
+                  ]
+                },
+                "useXcpretty": {
+                  "type": "boolean",
+                  "description": "Use xcpretty",
+                  "ignoreCase": "key"
+                },
+                "xcprettyArgs": {
+                  "type": "string",
+                  "description": "Xcpretty arguments",
+                  "ignoreCase": "key"
+                },
+                "publishJUnitResults": {
+                  "type": "boolean",
+                  "description": "Publish test results to Azure Pipelines",
+                  "ignoreCase": "key"
+                },
+                "testRunTitle": {
+                  "type": "string",
+                  "description": "Test run title",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
               "description": "Xcode Build\n\nBuild an Xcode workspace on macOS",
               "ignoreCase": "value",
               "pattern": "^Xcode@3$"
@@ -14516,214 +14451,6 @@
                 "xctoolReporter": {
                   "type": "string",
                   "description": "xctool Test Reporter Format",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "Xcode\n\nBuild, test, or archive an Xcode workspace on macOS. Optionally package an app.",
-              "ignoreCase": "value",
-              "pattern": "^Xcode@5$"
-            },
-            "inputs": {
-              "description": "Xcode inputs",
-              "properties": {
-                "actions": {
-                  "type": "string",
-                  "description": "Actions",
-                  "ignoreCase": "key"
-                },
-                "configuration": {
-                  "type": "string",
-                  "description": "Configuration",
-                  "ignoreCase": "key"
-                },
-                "sdk": {
-                  "type": "string",
-                  "description": "SDK",
-                  "ignoreCase": "key"
-                },
-                "xcWorkspacePath": {
-                  "type": "string",
-                  "description": "Workspace or project path",
-                  "ignoreCase": "key"
-                },
-                "scheme": {
-                  "type": "string",
-                  "description": "Scheme",
-                  "ignoreCase": "key"
-                },
-                "xcodeVersion": {
-                  "description": "Xcode version",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "8",
-                    "9",
-                    "10",
-                    "11",
-                    "12",
-                    "13",
-                    "default",
-                    "specifyPath"
-                  ]
-                },
-                "xcodeDeveloperDir": {
-                  "type": "string",
-                  "description": "Xcode developer path",
-                  "ignoreCase": "key"
-                },
-                "packageApp": {
-                  "type": "boolean",
-                  "description": "Create app package",
-                  "ignoreCase": "key"
-                },
-                "archivePath": {
-                  "type": "string",
-                  "description": "Archive path",
-                  "ignoreCase": "key"
-                },
-                "exportPath": {
-                  "type": "string",
-                  "description": "Export path",
-                  "ignoreCase": "key"
-                },
-                "exportOptions": {
-                  "description": "Export options",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "auto",
-                    "plist",
-                    "specify"
-                  ]
-                },
-                "exportMethod": {
-                  "type": "string",
-                  "description": "Export method",
-                  "ignoreCase": "key"
-                },
-                "exportTeamId": {
-                  "type": "string",
-                  "description": "Team ID",
-                  "ignoreCase": "key"
-                },
-                "exportOptionsPlist": {
-                  "type": "string",
-                  "description": "Export options plist",
-                  "ignoreCase": "key"
-                },
-                "exportArgs": {
-                  "type": "string",
-                  "description": "Export arguments",
-                  "ignoreCase": "key"
-                },
-                "signingOption": {
-                  "description": "Signing style",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "nosign",
-                    "default",
-                    "manual",
-                    "auto"
-                  ]
-                },
-                "signingIdentity": {
-                  "type": "string",
-                  "description": "Signing identity",
-                  "ignoreCase": "key"
-                },
-                "provisioningProfileUuid": {
-                  "type": "string",
-                  "description": "Provisioning profile UUID",
-                  "ignoreCase": "key"
-                },
-                "provisioningProfileName": {
-                  "type": "string",
-                  "description": "Provisioning profile name",
-                  "ignoreCase": "key"
-                },
-                "teamId": {
-                  "type": "string",
-                  "description": "Team ID",
-                  "ignoreCase": "key"
-                },
-                "destinationPlatformOption": {
-                  "description": "Destination platform",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "default",
-                    "iOS",
-                    "tvOS",
-                    "macOS",
-                    "custom"
-                  ]
-                },
-                "destinationPlatform": {
-                  "type": "string",
-                  "description": "Custom destination platform",
-                  "ignoreCase": "key"
-                },
-                "destinationTypeOption": {
-                  "description": "Destination type",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "simulators",
-                    "devices"
-                  ]
-                },
-                "destinationSimulators": {
-                  "type": "string",
-                  "description": "Simulator",
-                  "ignoreCase": "key"
-                },
-                "destinationDevices": {
-                  "type": "string",
-                  "description": "Device",
-                  "ignoreCase": "key"
-                },
-                "args": {
-                  "type": "string",
-                  "description": "Arguments",
-                  "ignoreCase": "key"
-                },
-                "workingDirectory": {
-                  "type": "string",
-                  "description": "Working directory",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "cwd"
-                  ]
-                },
-                "useXcpretty": {
-                  "type": "boolean",
-                  "description": "Use xcpretty",
-                  "ignoreCase": "key"
-                },
-                "xcprettyArgs": {
-                  "type": "string",
-                  "description": "Xcpretty arguments",
-                  "ignoreCase": "key"
-                },
-                "publishJUnitResults": {
-                  "type": "boolean",
-                  "description": "Publish test results to Azure Pipelines",
-                  "ignoreCase": "key"
-                },
-                "testRunTitle": {
-                  "type": "string",
-                  "description": "Test run title",
                   "ignoreCase": "key"
                 }
               },
@@ -16527,6 +16254,94 @@
         {
           "properties": {
             "task": {
+              "description": "Cloud-based load test\n\nRun a load test in the cloud with Azure Pipelines",
+              "ignoreCase": "value",
+              "pattern": "^CloudLoadTest@1$"
+            },
+            "inputs": {
+              "description": "Cloud-based load test inputs",
+              "properties": {
+                "connectedServiceName": {
+                  "type": "string",
+                  "description": "Azure Pipelines Connection",
+                  "ignoreCase": "key"
+                },
+                "TestDrop": {
+                  "type": "string",
+                  "description": "Load test files folder",
+                  "ignoreCase": "key"
+                },
+                "LoadTest": {
+                  "type": "string",
+                  "description": "Load test file",
+                  "ignoreCase": "key"
+                },
+                "activeRunSettings": {
+                  "description": "Active Run Settings",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "useFile",
+                    "changeActive"
+                  ]
+                },
+                "runSettingName": {
+                  "type": "string",
+                  "description": "Specify the name of the Run Settings",
+                  "ignoreCase": "key"
+                },
+                "testContextParameters": {
+                  "type": "string",
+                  "description": "Override load test context parameters",
+                  "ignoreCase": "key"
+                },
+                "TestSettings": {
+                  "type": "string",
+                  "description": "Test settings file",
+                  "ignoreCase": "key"
+                },
+                "ThresholdLimit": {
+                  "type": "string",
+                  "description": "Number of permissible threshold violations",
+                  "ignoreCase": "key"
+                },
+                "MachineType": {
+                  "description": "Run load test using",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "0",
+                    "2"
+                  ]
+                },
+                "resourceGroupName": {
+                  "type": "string",
+                  "description": "Resource group rig",
+                  "ignoreCase": "key"
+                },
+                "numOfSelfProvisionedAgents": {
+                  "type": "integer",
+                  "description": "Number of agents to use",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "LoadTest"
+              ]
+            }
+          },
+          "deprecationMessage": "CloudLoadTest is deprecated - Run a load test in the cloud with Azure Pipelines",
+          "doNotSuggest": true,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
               "description": "Kubectl tool installer\n\nInstall Kubectl on agent machine",
               "ignoreCase": "value",
               "pattern": "^KubectlInstaller@0$"
@@ -16706,82 +16521,6 @@
                 "tags": {
                   "type": "string",
                   "description": "Tags",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "NuGet Installer\n\nInstalls or restores missing NuGet packages. Use NuGetAuthenticate@0 task for latest capabilities.",
-              "ignoreCase": "value",
-              "pattern": "^NuGetInstaller@0$"
-            },
-            "inputs": {
-              "description": "NuGet Installer inputs",
-              "properties": {
-                "solution": {
-                  "type": "string",
-                  "description": "Path to solution or packages.config",
-                  "ignoreCase": "key"
-                },
-                "nugetConfigPath": {
-                  "type": "string",
-                  "description": "Path to NuGet.config",
-                  "ignoreCase": "key"
-                },
-                "restoreMode": {
-                  "description": "Installation type",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "restore",
-                    "install"
-                  ]
-                },
-                "noCache": {
-                  "type": "boolean",
-                  "description": "Disable local cache",
-                  "ignoreCase": "key"
-                },
-                "nuGetRestoreArgs": {
-                  "type": "string",
-                  "description": "NuGet arguments",
-                  "ignoreCase": "key"
-                },
-                "verbosity": {
-                  "description": "Verbosity",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "-",
-                    "Quiet",
-                    "Normal",
-                    "Detailed"
-                  ]
-                },
-                "nuGetVersion": {
-                  "description": "NuGet Version",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "3.3.0",
-                    "3.5.0.1829",
-                    "4.0.0.2283",
-                    "custom"
-                  ]
-                },
-                "nuGetPath": {
-                  "type": "string",
-                  "description": "Path to NuGet.exe",
                   "ignoreCase": "key"
                 }
               },
@@ -17048,6 +16787,82 @@
                 "arguments": {
                   "type": "string",
                   "description": "Command and arguments",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "NuGet Installer\n\nInstalls or restores missing NuGet packages. Use NuGetAuthenticate@0 task for latest capabilities.",
+              "ignoreCase": "value",
+              "pattern": "^NuGetInstaller@0$"
+            },
+            "inputs": {
+              "description": "NuGet Installer inputs",
+              "properties": {
+                "solution": {
+                  "type": "string",
+                  "description": "Path to solution or packages.config",
+                  "ignoreCase": "key"
+                },
+                "nugetConfigPath": {
+                  "type": "string",
+                  "description": "Path to NuGet.config",
+                  "ignoreCase": "key"
+                },
+                "restoreMode": {
+                  "description": "Installation type",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "restore",
+                    "install"
+                  ]
+                },
+                "noCache": {
+                  "type": "boolean",
+                  "description": "Disable local cache",
+                  "ignoreCase": "key"
+                },
+                "nuGetRestoreArgs": {
+                  "type": "string",
+                  "description": "NuGet arguments",
+                  "ignoreCase": "key"
+                },
+                "verbosity": {
+                  "description": "Verbosity",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "-",
+                    "Quiet",
+                    "Normal",
+                    "Detailed"
+                  ]
+                },
+                "nuGetVersion": {
+                  "description": "NuGet Version",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "3.3.0",
+                    "3.5.0.1829",
+                    "4.0.0.2283",
+                    "custom"
+                  ]
+                },
+                "nuGetPath": {
+                  "type": "string",
+                  "description": "Path to NuGet.exe",
                   "ignoreCase": "key"
                 }
               },
@@ -17887,6 +17702,145 @@
             "task": {
               "description": "Azure file copy\n\nCopy files to Azure Blob Storage or virtual machines",
               "ignoreCase": "value",
+              "pattern": "^AzureFileCopy@5$"
+            },
+            "inputs": {
+              "description": "Azure file copy inputs",
+              "properties": {
+                "SourcePath": {
+                  "type": "string",
+                  "description": "Source",
+                  "ignoreCase": "key"
+                },
+                "azureSubscription": {
+                  "type": "string",
+                  "description": "Azure Subscription",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "ConnectedServiceNameARM"
+                  ]
+                },
+                "Destination": {
+                  "description": "Destination Type",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "AzureBlob",
+                    "AzureVMs"
+                  ]
+                },
+                "storage": {
+                  "type": "string",
+                  "description": "RM Storage Account",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "StorageAccountRM"
+                  ]
+                },
+                "ContainerName": {
+                  "type": "string",
+                  "description": "Container Name",
+                  "ignoreCase": "key"
+                },
+                "BlobPrefix": {
+                  "type": "string",
+                  "description": "Blob Prefix",
+                  "ignoreCase": "key"
+                },
+                "resourceGroup": {
+                  "type": "string",
+                  "description": "Resource Group",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "EnvironmentNameRM"
+                  ]
+                },
+                "ResourceFilteringMethod": {
+                  "description": "Select Machines By",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "machineNames",
+                    "tags"
+                  ]
+                },
+                "MachineNames": {
+                  "type": "string",
+                  "description": "Filter Criteria",
+                  "ignoreCase": "key"
+                },
+                "vmsAdminUserName": {
+                  "type": "string",
+                  "description": "Admin Login",
+                  "ignoreCase": "key"
+                },
+                "vmsAdminPassword": {
+                  "type": "string",
+                  "description": "Password",
+                  "ignoreCase": "key"
+                },
+                "TargetPath": {
+                  "type": "string",
+                  "description": "Destination Folder",
+                  "ignoreCase": "key"
+                },
+                "AdditionalArgumentsForBlobCopy": {
+                  "type": "string",
+                  "description": "Optional Arguments (for uploading files to blob)",
+                  "ignoreCase": "key"
+                },
+                "AdditionalArgumentsForVMCopy": {
+                  "type": "string",
+                  "description": "Optional Arguments (for downloading files to VM)",
+                  "ignoreCase": "key"
+                },
+                "sasTokenTimeOutInMinutes": {
+                  "type": "string",
+                  "description": "SAS Token Expiration Period In Minutes",
+                  "ignoreCase": "key"
+                },
+                "enableCopyPrerequisites": {
+                  "type": "boolean",
+                  "description": "Enable Copy Prerequisites",
+                  "ignoreCase": "key"
+                },
+                "CopyFilesInParallel": {
+                  "type": "boolean",
+                  "description": "Copy in Parallel",
+                  "ignoreCase": "key"
+                },
+                "CleanTargetBeforeCopy": {
+                  "type": "boolean",
+                  "description": "Clean Target",
+                  "ignoreCase": "key"
+                },
+                "skipCACheck": {
+                  "type": "boolean",
+                  "description": "Test Certificate",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "SourcePath",
+                "azureSubscription",
+                "Destination",
+                "storage"
+              ]
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Azure file copy\n\nCopy files to Azure Blob Storage or virtual machines",
+              "ignoreCase": "value",
               "pattern": "^AzureFileCopy@2$"
             },
             "inputs": {
@@ -18047,145 +18001,6 @@
               "required": [
                 "SourcePath",
                 "Destination"
-              ]
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task",
-            "inputs"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "Azure file copy\n\nCopy files to Azure Blob Storage or virtual machines",
-              "ignoreCase": "value",
-              "pattern": "^AzureFileCopy@5$"
-            },
-            "inputs": {
-              "description": "Azure file copy inputs",
-              "properties": {
-                "SourcePath": {
-                  "type": "string",
-                  "description": "Source",
-                  "ignoreCase": "key"
-                },
-                "azureSubscription": {
-                  "type": "string",
-                  "description": "Azure Subscription",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "ConnectedServiceNameARM"
-                  ]
-                },
-                "Destination": {
-                  "description": "Destination Type",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "AzureBlob",
-                    "AzureVMs"
-                  ]
-                },
-                "storage": {
-                  "type": "string",
-                  "description": "RM Storage Account",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "StorageAccountRM"
-                  ]
-                },
-                "ContainerName": {
-                  "type": "string",
-                  "description": "Container Name",
-                  "ignoreCase": "key"
-                },
-                "BlobPrefix": {
-                  "type": "string",
-                  "description": "Blob Prefix",
-                  "ignoreCase": "key"
-                },
-                "resourceGroup": {
-                  "type": "string",
-                  "description": "Resource Group",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "EnvironmentNameRM"
-                  ]
-                },
-                "ResourceFilteringMethod": {
-                  "description": "Select Machines By",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "machineNames",
-                    "tags"
-                  ]
-                },
-                "MachineNames": {
-                  "type": "string",
-                  "description": "Filter Criteria",
-                  "ignoreCase": "key"
-                },
-                "vmsAdminUserName": {
-                  "type": "string",
-                  "description": "Admin Login",
-                  "ignoreCase": "key"
-                },
-                "vmsAdminPassword": {
-                  "type": "string",
-                  "description": "Password",
-                  "ignoreCase": "key"
-                },
-                "TargetPath": {
-                  "type": "string",
-                  "description": "Destination Folder",
-                  "ignoreCase": "key"
-                },
-                "AdditionalArgumentsForBlobCopy": {
-                  "type": "string",
-                  "description": "Optional Arguments (for uploading files to blob)",
-                  "ignoreCase": "key"
-                },
-                "AdditionalArgumentsForVMCopy": {
-                  "type": "string",
-                  "description": "Optional Arguments (for downloading files to VM)",
-                  "ignoreCase": "key"
-                },
-                "sasTokenTimeOutInMinutes": {
-                  "type": "string",
-                  "description": "SAS Token Expiration Period In Minutes",
-                  "ignoreCase": "key"
-                },
-                "enableCopyPrerequisites": {
-                  "type": "boolean",
-                  "description": "Enable Copy Prerequisites",
-                  "ignoreCase": "key"
-                },
-                "CopyFilesInParallel": {
-                  "type": "boolean",
-                  "description": "Copy in Parallel",
-                  "ignoreCase": "key"
-                },
-                "CleanTargetBeforeCopy": {
-                  "type": "boolean",
-                  "description": "Clean Target",
-                  "ignoreCase": "key"
-                },
-                "skipCACheck": {
-                  "type": "boolean",
-                  "description": "Test Certificate",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "SourcePath",
-                "azureSubscription",
-                "Destination",
-                "storage"
               ]
             }
           },
@@ -18613,6 +18428,241 @@
             "task": {
               "description": "Gradle\n\nBuild using a Gradle wrapper script",
               "ignoreCase": "value",
+              "pattern": "^Gradle@2$"
+            },
+            "inputs": {
+              "description": "Gradle inputs",
+              "properties": {
+                "gradleWrapperFile": {
+                  "type": "string",
+                  "description": "Gradle wrapper",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "wrapperScript"
+                  ]
+                },
+                "workingDirectory": {
+                  "type": "string",
+                  "description": "Working directory",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "cwd"
+                  ]
+                },
+                "options": {
+                  "type": "string",
+                  "description": "Options",
+                  "ignoreCase": "key"
+                },
+                "tasks": {
+                  "type": "string",
+                  "description": "Tasks",
+                  "ignoreCase": "key"
+                },
+                "publishJUnitResults": {
+                  "type": "boolean",
+                  "description": "Publish to Azure Pipelines",
+                  "ignoreCase": "key"
+                },
+                "testResultsFiles": {
+                  "type": "string",
+                  "description": "Test results files",
+                  "ignoreCase": "key"
+                },
+                "testRunTitle": {
+                  "type": "string",
+                  "description": "Test run title",
+                  "ignoreCase": "key"
+                },
+                "codeCoverageToolOption": {
+                  "description": "Code coverage tool",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "None",
+                    "Cobertura",
+                    "JaCoCo"
+                  ],
+                  "aliases": [
+                    "codeCoverageTool"
+                  ]
+                },
+                "codeCoverageClassFilesDirectories": {
+                  "type": "string",
+                  "description": "Class files directories",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "classFilesDirectories"
+                  ]
+                },
+                "codeCoverageClassFilter": {
+                  "type": "string",
+                  "description": "Class inclusion/exclusion filters",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "classFilter"
+                  ]
+                },
+                "codeCoverageFailIfEmpty": {
+                  "type": "boolean",
+                  "description": "Fail when code coverage results are missing",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "failIfCoverageEmpty"
+                  ]
+                },
+                "codeCoverageGradle5xOrHigher": {
+                  "type": "boolean",
+                  "description": "Gradle version >= 5.x",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "gradle5xOrHigher"
+                  ]
+                },
+                "javaHomeOption": {
+                  "description": "Set JAVA_HOME by",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "JDKVersion",
+                    "Path"
+                  ],
+                  "aliases": [
+                    "javaHomeSelection"
+                  ]
+                },
+                "jdkVersionOption": {
+                  "description": "JDK version",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "default",
+                    "1.17",
+                    "1.11",
+                    "1.10",
+                    "1.9",
+                    "1.8",
+                    "1.7",
+                    "1.6"
+                  ],
+                  "aliases": [
+                    "jdkVersion"
+                  ]
+                },
+                "jdkDirectory": {
+                  "type": "string",
+                  "description": "JDK path",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "jdkUserInputPath"
+                  ]
+                },
+                "jdkArchitectureOption": {
+                  "description": "JDK architecture",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "x86",
+                    "x64"
+                  ],
+                  "aliases": [
+                    "jdkArchitecture"
+                  ]
+                },
+                "gradleOptions": {
+                  "type": "string",
+                  "description": "Set GRADLE_OPTS",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "gradleOpts"
+                  ]
+                },
+                "sonarQubeRunAnalysis": {
+                  "type": "boolean",
+                  "description": "Run SonarQube or SonarCloud Analysis",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "sqAnalysisEnabled"
+                  ]
+                },
+                "sqGradlePluginVersionChoice": {
+                  "description": "SonarQube scanner for Gradle version",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "specify",
+                    "build"
+                  ]
+                },
+                "sonarQubeGradlePluginVersion": {
+                  "type": "string",
+                  "description": "SonarQube scanner for Gradle plugin version",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "sqGradlePluginVersion"
+                  ]
+                },
+                "checkStyleRunAnalysis": {
+                  "type": "boolean",
+                  "description": "Run Checkstyle",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "checkstyleAnalysisEnabled"
+                  ]
+                },
+                "findBugsRunAnalysis": {
+                  "type": "boolean",
+                  "description": "Run FindBugs",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "findbugsAnalysisEnabled"
+                  ]
+                },
+                "pmdRunAnalysis": {
+                  "type": "boolean",
+                  "description": "Run PMD",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "pmdAnalysisEnabled"
+                  ]
+                },
+                "spotBugsAnalysis": {
+                  "type": "boolean",
+                  "description": "Run SpotBugs",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "spotBugsAnalysisEnabled"
+                  ]
+                },
+                "spotBugsGradlePluginVersionChoice": {
+                  "description": "Spotbugs plugin version",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "specify",
+                    "build"
+                  ]
+                },
+                "spotbugsGradlePluginVersion": {
+                  "type": "string",
+                  "description": "Version number",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "spotbugsGradlePluginVersion"
+                  ]
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Gradle\n\nBuild using a Gradle wrapper script",
+              "ignoreCase": "value",
               "pattern": "^Gradle@3$"
             },
             "inputs": {
@@ -18719,6 +18769,7 @@
                   "ignoreCase": "all",
                   "enum": [
                     "default",
+                    "1.17",
                     "1.11",
                     "1.10",
                     "1.9",
@@ -19099,240 +19150,6 @@
                   "ignoreCase": "key",
                   "aliases": [
                     "pmdAnalysisEnabled"
-                  ]
-                }
-              },
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "Gradle\n\nBuild using a Gradle wrapper script",
-              "ignoreCase": "value",
-              "pattern": "^Gradle@2$"
-            },
-            "inputs": {
-              "description": "Gradle inputs",
-              "properties": {
-                "gradleWrapperFile": {
-                  "type": "string",
-                  "description": "Gradle wrapper",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "wrapperScript"
-                  ]
-                },
-                "workingDirectory": {
-                  "type": "string",
-                  "description": "Working directory",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "cwd"
-                  ]
-                },
-                "options": {
-                  "type": "string",
-                  "description": "Options",
-                  "ignoreCase": "key"
-                },
-                "tasks": {
-                  "type": "string",
-                  "description": "Tasks",
-                  "ignoreCase": "key"
-                },
-                "publishJUnitResults": {
-                  "type": "boolean",
-                  "description": "Publish to Azure Pipelines",
-                  "ignoreCase": "key"
-                },
-                "testResultsFiles": {
-                  "type": "string",
-                  "description": "Test results files",
-                  "ignoreCase": "key"
-                },
-                "testRunTitle": {
-                  "type": "string",
-                  "description": "Test run title",
-                  "ignoreCase": "key"
-                },
-                "codeCoverageToolOption": {
-                  "description": "Code coverage tool",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "None",
-                    "Cobertura",
-                    "JaCoCo"
-                  ],
-                  "aliases": [
-                    "codeCoverageTool"
-                  ]
-                },
-                "codeCoverageClassFilesDirectories": {
-                  "type": "string",
-                  "description": "Class files directories",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "classFilesDirectories"
-                  ]
-                },
-                "codeCoverageClassFilter": {
-                  "type": "string",
-                  "description": "Class inclusion/exclusion filters",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "classFilter"
-                  ]
-                },
-                "codeCoverageFailIfEmpty": {
-                  "type": "boolean",
-                  "description": "Fail when code coverage results are missing",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "failIfCoverageEmpty"
-                  ]
-                },
-                "codeCoverageGradle5xOrHigher": {
-                  "type": "boolean",
-                  "description": "Gradle version >= 5.x",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "gradle5xOrHigher"
-                  ]
-                },
-                "javaHomeOption": {
-                  "description": "Set JAVA_HOME by",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "JDKVersion",
-                    "Path"
-                  ],
-                  "aliases": [
-                    "javaHomeSelection"
-                  ]
-                },
-                "jdkVersionOption": {
-                  "description": "JDK version",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "default",
-                    "1.11",
-                    "1.10",
-                    "1.9",
-                    "1.8",
-                    "1.7",
-                    "1.6"
-                  ],
-                  "aliases": [
-                    "jdkVersion"
-                  ]
-                },
-                "jdkDirectory": {
-                  "type": "string",
-                  "description": "JDK path",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "jdkUserInputPath"
-                  ]
-                },
-                "jdkArchitectureOption": {
-                  "description": "JDK architecture",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "x86",
-                    "x64"
-                  ],
-                  "aliases": [
-                    "jdkArchitecture"
-                  ]
-                },
-                "gradleOptions": {
-                  "type": "string",
-                  "description": "Set GRADLE_OPTS",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "gradleOpts"
-                  ]
-                },
-                "sonarQubeRunAnalysis": {
-                  "type": "boolean",
-                  "description": "Run SonarQube or SonarCloud Analysis",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "sqAnalysisEnabled"
-                  ]
-                },
-                "sqGradlePluginVersionChoice": {
-                  "description": "SonarQube scanner for Gradle version",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "specify",
-                    "build"
-                  ]
-                },
-                "sonarQubeGradlePluginVersion": {
-                  "type": "string",
-                  "description": "SonarQube scanner for Gradle plugin version",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "sqGradlePluginVersion"
-                  ]
-                },
-                "checkStyleRunAnalysis": {
-                  "type": "boolean",
-                  "description": "Run Checkstyle",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "checkstyleAnalysisEnabled"
-                  ]
-                },
-                "findBugsRunAnalysis": {
-                  "type": "boolean",
-                  "description": "Run FindBugs",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "findbugsAnalysisEnabled"
-                  ]
-                },
-                "pmdRunAnalysis": {
-                  "type": "boolean",
-                  "description": "Run PMD",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "pmdAnalysisEnabled"
-                  ]
-                },
-                "spotBugsAnalysis": {
-                  "type": "boolean",
-                  "description": "Run SpotBugs",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "spotBugsAnalysisEnabled"
-                  ]
-                },
-                "spotBugsGradlePluginVersionChoice": {
-                  "description": "Spotbugs plugin version",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "specify",
-                    "build"
-                  ]
-                },
-                "spotbugsGradlePluginVersion": {
-                  "type": "string",
-                  "description": "Version number",
-                  "ignoreCase": "key",
-                  "aliases": [
-                    "spotbugsGradlePluginVersion"
                   ]
                 }
               },
@@ -20135,15 +19952,81 @@
         {
           "properties": {
             "task": {
-              "description": "CodeQL 3000 Init\n\nInitilizes CodeQL before the code build task.",
+              "description": "Java tool installer test vuln 2\n\nAcquire a specific version of Java from a user-supplied Azure blob or the tool cache and sets JAVA_HOME",
               "ignoreCase": "value",
-              "pattern": "^CodeQL3000Init@0$"
+              "pattern": "^JavaToolInstallerTestVuln2@0$"
             },
             "inputs": {
-              "description": "CodeQL 3000 Init inputs",
-              "properties": {},
+              "description": "Java tool installer test vuln 2 inputs",
+              "properties": {
+                "versionSpec": {
+                  "type": "string",
+                  "description": "JDK version",
+                  "ignoreCase": "key"
+                },
+                "jdkArchitectureOption": {
+                  "description": "JDK architecture",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "x64",
+                    "x86"
+                  ]
+                },
+                "jdkSourceOption": {
+                  "description": "JDK source",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "AzureStorage",
+                    "LocalDirectory",
+                    "PreInstalled"
+                  ]
+                },
+                "jdkFile": {
+                  "type": "string",
+                  "description": "JDK file",
+                  "ignoreCase": "key"
+                },
+                "azureResourceManagerEndpoint": {
+                  "type": "string",
+                  "description": "Azure subscription",
+                  "ignoreCase": "key"
+                },
+                "azureStorageAccountName": {
+                  "type": "string",
+                  "description": "Storage account name",
+                  "ignoreCase": "key"
+                },
+                "azureContainerName": {
+                  "type": "string",
+                  "description": "Container name",
+                  "ignoreCase": "key"
+                },
+                "azureCommonVirtualFile": {
+                  "type": "string",
+                  "description": "Common virtual path",
+                  "ignoreCase": "key"
+                },
+                "jdkDestinationDirectory": {
+                  "type": "string",
+                  "description": "Destination directory",
+                  "ignoreCase": "key"
+                },
+                "cleanDestinationDirectory": {
+                  "type": "boolean",
+                  "description": "Clean destination directory",
+                  "ignoreCase": "key"
+                },
+                "createExtractDirectory": {
+                  "type": "boolean",
+                  "description": "Create directory for extracting",
+                  "ignoreCase": "key"
+                }
+              },
               "additionalProperties": false,
-              "required": []
+              "required": [
+                "jdkArchitectureOption",
+                "jdkSourceOption"
+              ]
             }
           },
           "doNotSuggest": false,
@@ -20151,7 +20034,8 @@
             "task"
           ],
           "required": [
-            "task"
+            "task",
+            "inputs"
           ]
         },
         {
@@ -20844,28 +20728,6 @@
           "required": [
             "task",
             "inputs"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "Secure Supply Chain Analysis\n\nA task to scan for vulnerabilities in your software supply chain. Formerly \"NuGet Security Analysis\".",
-              "ignoreCase": "value",
-              "pattern": "^nuget-security-analysis@0$"
-            },
-            "inputs": {
-              "description": "Secure Supply Chain Analysis inputs",
-              "properties": {},
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
           ]
         },
         {
@@ -22501,143 +22363,6 @@
         {
           "properties": {
             "task": {
-              "description": "Accessibility Insights Azure DevOps Task\n\nScan for accessibility issues in an Azure DevOps pipeline",
-              "ignoreCase": "value",
-              "pattern": "^accessibility-insights@3$"
-            },
-            "inputs": {
-              "description": "Accessibility Insights Azure DevOps Task inputs",
-              "properties": {
-                "hostingMode": {
-                  "description": "Hosting mode",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "staticSite",
-                    "dynamicSite"
-                  ]
-                },
-                "staticSiteDir": {
-                  "type": "string",
-                  "description": "Hosting mode: site directory",
-                  "ignoreCase": "key"
-                },
-                "staticSiteUrlRelativePath": {
-                  "type": "string",
-                  "description": "Hosting mode: base URL",
-                  "ignoreCase": "key"
-                },
-                "staticSitePort": {
-                  "type": "integer",
-                  "description": "Hosting mode: port",
-                  "ignoreCase": "key"
-                },
-                "url": {
-                  "type": "string",
-                  "description": "Hosting mode: URL",
-                  "ignoreCase": "key"
-                },
-                "authType": {
-                  "description": "Authentication type",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "",
-                    "AAD"
-                  ]
-                },
-                "serviceAccountName": {
-                  "type": "string",
-                  "description": "Authentication: service account email address",
-                  "ignoreCase": "key"
-                },
-                "serviceAccountPassword": {
-                  "type": "string",
-                  "description": "Authentication: service account password",
-                  "ignoreCase": "key"
-                },
-                "maxUrls": {
-                  "type": "integer",
-                  "description": "Maximum number of URLs",
-                  "ignoreCase": "key"
-                },
-                "discoveryPatterns": {
-                  "type": "string",
-                  "description": "Discovery patterns",
-                  "ignoreCase": "key"
-                },
-                "inputFile": {
-                  "type": "string",
-                  "description": "Input file",
-                  "ignoreCase": "key"
-                },
-                "inputUrls": {
-                  "type": "string",
-                  "description": "Input URLs",
-                  "ignoreCase": "key"
-                },
-                "scanTimeout": {
-                  "type": "integer",
-                  "description": "Scan timeout (milliseconds)",
-                  "ignoreCase": "key"
-                },
-                "failOnAccessibilityError": {
-                  "type": "boolean",
-                  "description": "Fail on accessibility error",
-                  "ignoreCase": "key"
-                },
-                "baselineFile": {
-                  "type": "string",
-                  "description": "Baseline file path",
-                  "ignoreCase": "key"
-                },
-                "singleWorker": {
-                  "type": "boolean",
-                  "description": "Uses a single crawler worker",
-                  "ignoreCase": "key"
-                },
-                "uploadOutputArtifact": {
-                  "type": "boolean",
-                  "description": "Upload output artifact",
-                  "ignoreCase": "key"
-                },
-                "outputArtifactName": {
-                  "type": "string",
-                  "description": "Output artifact name",
-                  "ignoreCase": "key"
-                },
-                "outputDir": {
-                  "type": "string",
-                  "description": "Output directory",
-                  "ignoreCase": "key"
-                },
-                "snapshot": {
-                  "type": "boolean",
-                  "description": "Snapshot",
-                  "ignoreCase": "key"
-                },
-                "chromePath": {
-                  "type": "string",
-                  "description": "Chrome path",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "hostingMode"
-              ]
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task",
-            "inputs"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
               "description": "Service Fabric PowerShell\n\nRun a PowerShell script in the context of an Azure Service Fabric cluster connection",
               "ignoreCase": "value",
               "pattern": "^ServiceFabricPowerShell@1$"
@@ -22884,6 +22609,7 @@
                   "ignoreCase": "all",
                   "enum": [
                     "latest",
+                    "17.0",
                     "16.0",
                     "15.0",
                     "14.0",
@@ -24481,101 +24207,6 @@
         {
           "properties": {
             "task": {
-              "description": "Manifest Generator Task\n\nCreates a manifest.json and bsi.json for all the files in a folder. This generated manifest can be used to validate the contents of the folder in the future.",
-              "ignoreCase": "value",
-              "pattern": "^ManifestGeneratorTask@0$"
-            },
-            "inputs": {
-              "description": "Manifest Generator Task inputs",
-              "properties": {
-                "BuildDropPath": {
-                  "type": "string",
-                  "description": "The root folder for which the manifest has to be generated.",
-                  "ignoreCase": "key"
-                },
-                "ManifestDirPath": {
-                  "type": "string",
-                  "description": "The path of the directory where the generated manifest files will be placed. A folder named '_manifest' will be created at this location, where all generated SBOMs will be placed. If this parameter is not specified, the files will be placed in {BuildDropPath}/_manifest directory.",
-                  "ignoreCase": "key"
-                },
-                "BuildComponentPath": {
-                  "type": "string",
-                  "description": "The folder that contains the build's components/packages.",
-                  "ignoreCase": "key"
-                },
-                "Verbosity": {
-                  "description": "The verbosity of the output generated by the manifest generator.",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "Verbose",
-                    "Debug",
-                    "Information",
-                    "Warning",
-                    "Error",
-                    "Fatal"
-                  ]
-                },
-                "PackageName": {
-                  "type": "string",
-                  "description": "The name of the package this SBOM describes.",
-                  "ignoreCase": "key"
-                },
-                "PackageVersion": {
-                  "type": "string",
-                  "description": "The version of the package this SBOM describes.",
-                  "ignoreCase": "key"
-                },
-                "DockerImagesToScan": {
-                  "type": "string",
-                  "description": "Comma separated list of docker image names or hashes to be scanned for packages, ex: ubuntu:16.04, 56bab49eef2ef07505f6a1b0d5bd3a601dfc3c76ad4460f24c91d6fa298369ab.",
-                  "ignoreCase": "key"
-                },
-                "AdditionalComponentDetectorArgs": {
-                  "type": "string",
-                  "description": "Additional set of command-line arguments for Component Detector.",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "BuildDropPath"
-              ]
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task",
-            "inputs"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
-              "description": "CodeQL 3000 Finalize\n\nFinalize CodeQL database after the code build task.",
-              "ignoreCase": "value",
-              "pattern": "^CodeQL3000Finalize@0$"
-            },
-            "inputs": {
-              "description": "CodeQL 3000 Finalize inputs",
-              "properties": {},
-              "additionalProperties": false,
-              "required": []
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
               "description": "Copy and Publish Build Artifacts\n\n[DEPRECATED] Use the Copy Files task and the Publish Build Artifacts task instead",
               "ignoreCase": "value",
               "pattern": "^CopyPublishBuildArtifacts@1$"
@@ -25920,75 +25551,6 @@
         {
           "properties": {
             "task": {
-              "description": "Drop Validator Task\n\nValidates a given drop against a manifest generated at build time to verify the integrity of the drop.",
-              "ignoreCase": "value",
-              "pattern": "^DropValidatorTask@0$"
-            },
-            "inputs": {
-              "description": "Drop Validator Task inputs",
-              "properties": {
-                "BuildDropPath": {
-                  "type": "string",
-                  "description": "The root folder of the drop.",
-                  "ignoreCase": "key"
-                },
-                "ManifestDirPath": {
-                  "type": "string",
-                  "description": "The path of the directory where the manifest will be validated. If this parameter is not specified, the manifest will be validated in {BuildDropPath}/_manifest directory.",
-                  "ignoreCase": "key"
-                },
-                "OutputPath": {
-                  "type": "string",
-                  "description": "The path where the generated output file is placed.",
-                  "ignoreCase": "key"
-                },
-                "ValidateSignature": {
-                  "type": "boolean",
-                  "description": "If checked we will verify the signature of the manifest using the provided catalog file.",
-                  "ignoreCase": "key"
-                },
-                "Verbosity": {
-                  "description": "The verbosity of the output generated by the drop validator.",
-                  "ignoreCase": "all",
-                  "enum": [
-                    "Verbose",
-                    "Debug",
-                    "Information",
-                    "Warning",
-                    "Error",
-                    "Fatal"
-                  ]
-                },
-                "ConfigFilePath": {
-                  "type": "string",
-                  "description": "The json file that contains the configuration for the Manifest Tool.",
-                  "ignoreCase": "key"
-                },
-                "RootPathFilter": {
-                  "type": "string",
-                  "description": "If you're downloading only a part of the drop using the '-r' or 'root' parameter in the drop client, specify the same string value here in order to skip validating paths that are not downloaded.",
-                  "ignoreCase": "key"
-                }
-              },
-              "additionalProperties": false,
-              "required": [
-                "BuildDropPath",
-                "OutputPath"
-              ]
-            }
-          },
-          "doNotSuggest": false,
-          "firstProperty": [
-            "task"
-          ],
-          "required": [
-            "task",
-            "inputs"
-          ]
-        },
-        {
-          "properties": {
-            "task": {
               "description": "Deploy Azure Static Web App\n\n[PREVIEW] Build and deploy an Azure Static Web App",
               "ignoreCase": "value",
               "pattern": "^AzureStaticWebApp@0$"
@@ -26521,6 +26083,241 @@
                 "kubernetesServiceConnection": {
                   "type": "string",
                   "description": "Kubernetes service connection",
+                  "ignoreCase": "key"
+                },
+                "namespace": {
+                  "type": "string",
+                  "description": "Namespace",
+                  "ignoreCase": "key"
+                },
+                "strategy": {
+                  "description": "Strategy",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "canary",
+                    "none"
+                  ]
+                },
+                "trafficSplitMethod": {
+                  "description": "Traffic split method",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "pod",
+                    "smi"
+                  ]
+                },
+                "percentage": {
+                  "type": "string",
+                  "description": "Percentage",
+                  "ignoreCase": "key"
+                },
+                "baselineAndCanaryReplicas": {
+                  "type": "string",
+                  "description": "Baseline and canary replicas",
+                  "ignoreCase": "key"
+                },
+                "manifests": {
+                  "type": "string",
+                  "description": "Manifests",
+                  "ignoreCase": "key"
+                },
+                "containers": {
+                  "type": "string",
+                  "description": "Containers",
+                  "ignoreCase": "key"
+                },
+                "imagePullSecrets": {
+                  "type": "string",
+                  "description": "ImagePullSecrets",
+                  "ignoreCase": "key"
+                },
+                "renderType": {
+                  "description": "Render Engine",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "helm",
+                    "kompose",
+                    "kustomize"
+                  ]
+                },
+                "dockerComposeFile": {
+                  "type": "string",
+                  "description": "Path to docker compose file",
+                  "ignoreCase": "key"
+                },
+                "helmChart": {
+                  "type": "string",
+                  "description": "Helm Chart",
+                  "ignoreCase": "key"
+                },
+                "releaseName": {
+                  "type": "string",
+                  "description": "Helm Release Name",
+                  "ignoreCase": "key"
+                },
+                "overrideFiles": {
+                  "type": "string",
+                  "description": "Override Files",
+                  "ignoreCase": "key"
+                },
+                "overrides": {
+                  "type": "string",
+                  "description": "Overrides",
+                  "ignoreCase": "key"
+                },
+                "kustomizationPath": {
+                  "type": "string",
+                  "description": "Kustomization Path",
+                  "ignoreCase": "key"
+                },
+                "resourceToPatch": {
+                  "description": "Resource to patch",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "file",
+                    "name"
+                  ]
+                },
+                "resourceFileToPatch": {
+                  "type": "string",
+                  "description": "File path",
+                  "ignoreCase": "key"
+                },
+                "kind": {
+                  "description": "Kind",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "deployment",
+                    "replicaset",
+                    "statefulset"
+                  ]
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name",
+                  "ignoreCase": "key"
+                },
+                "replicas": {
+                  "type": "string",
+                  "description": "Replica count",
+                  "ignoreCase": "key"
+                },
+                "mergeStrategy": {
+                  "description": "Merge Strategy",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "json",
+                    "merge",
+                    "strategic"
+                  ]
+                },
+                "arguments": {
+                  "type": "string",
+                  "description": "Arguments",
+                  "ignoreCase": "key"
+                },
+                "patch": {
+                  "type": "string",
+                  "description": "Patch",
+                  "ignoreCase": "key"
+                },
+                "secretType": {
+                  "description": "Type of secret",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "dockerRegistry",
+                    "generic"
+                  ]
+                },
+                "secretName": {
+                  "type": "string",
+                  "description": "Secret name",
+                  "ignoreCase": "key"
+                },
+                "secretArguments": {
+                  "type": "string",
+                  "description": "Arguments",
+                  "ignoreCase": "key"
+                },
+                "dockerRegistryEndpoint": {
+                  "type": "string",
+                  "description": "Docker registry service connection",
+                  "ignoreCase": "key"
+                },
+                "rolloutStatusTimeout": {
+                  "type": "string",
+                  "description": "Timeout for rollout status",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": []
+            }
+          },
+          "doNotSuggest": false,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Deploy to Kubernetes\n\nUse Kubernetes manifest files to deploy to clusters or even bake the manifest files to be used for deployments using Helm charts",
+              "ignoreCase": "value",
+              "pattern": "^KubernetesManifest@1$"
+            },
+            "inputs": {
+              "description": "Deploy to Kubernetes inputs",
+              "properties": {
+                "action": {
+                  "description": "Action",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "bake",
+                    "createSecret",
+                    "delete",
+                    "deploy",
+                    "patch",
+                    "promote",
+                    "scale",
+                    "reject"
+                  ]
+                },
+                "connectionType": {
+                  "description": "Service connection type",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "azureResourceManager",
+                    "kubernetesServiceConnection"
+                  ]
+                },
+                "kubernetesServiceConnection": {
+                  "type": "string",
+                  "description": "Kubernetes service connection",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "kubernetesServiceEndpoint"
+                  ]
+                },
+                "azureSubscriptionConnection": {
+                  "type": "string",
+                  "description": "Azure subscription",
+                  "ignoreCase": "key",
+                  "aliases": [
+                    "azureSubscriptionEndpoint"
+                  ]
+                },
+                "azureResourceGroup": {
+                  "type": "string",
+                  "description": "Resource group",
+                  "ignoreCase": "key"
+                },
+                "kubernetesCluster": {
+                  "type": "string",
+                  "description": "Kubernetes cluster",
                   "ignoreCase": "key"
                 },
                 "namespace": {
@@ -29221,6 +29018,117 @@
           ],
           "required": [
             "task"
+          ]
+        },
+        {
+          "properties": {
+            "task": {
+              "description": "Cloud-based web performance test\n\nRun a quick web performance test in the cloud with Azure Pipelines",
+              "ignoreCase": "value",
+              "pattern": "^QuickPerfTest@1$"
+            },
+            "inputs": {
+              "description": "Cloud-based web performance test inputs",
+              "properties": {
+                "connectedServiceName": {
+                  "type": "string",
+                  "description": "Azure Pipelines Connection",
+                  "ignoreCase": "key"
+                },
+                "websiteUrl": {
+                  "type": "string",
+                  "description": "Website URL",
+                  "ignoreCase": "key"
+                },
+                "testName": {
+                  "type": "string",
+                  "description": "Test Name",
+                  "ignoreCase": "key"
+                },
+                "vuLoad": {
+                  "description": "User Load",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "25",
+                    "50",
+                    "100",
+                    "250"
+                  ]
+                },
+                "runDuration": {
+                  "description": "Run Duration (sec)",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "60",
+                    "120",
+                    "180",
+                    "240",
+                    "300"
+                  ]
+                },
+                "geoLocation": {
+                  "description": "Load Location",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "Default",
+                    "Australia East",
+                    "Australia Southeast",
+                    "Brazil South",
+                    "Central India",
+                    "Central US",
+                    "East Asia",
+                    "East US 2",
+                    "East US",
+                    "Japan East",
+                    "Japan West",
+                    "North Central US",
+                    "North Europe",
+                    "South Central US",
+                    "South India",
+                    "Southeast Asia",
+                    "West Europe",
+                    "West US"
+                  ]
+                },
+                "machineType": {
+                  "description": "Run load test using",
+                  "ignoreCase": "all",
+                  "enum": [
+                    "0",
+                    "2"
+                  ]
+                },
+                "resourceGroupName": {
+                  "type": "string",
+                  "description": "Resource group rig",
+                  "ignoreCase": "key"
+                },
+                "numOfSelfProvisionedAgents": {
+                  "type": "integer",
+                  "description": "No. of agents to use",
+                  "ignoreCase": "key"
+                },
+                "avgResponseTimeThreshold": {
+                  "type": "string",
+                  "description": "Fail test if Avg.Response Time(ms) exceeds",
+                  "ignoreCase": "key"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "websiteUrl",
+                "testName"
+              ]
+            }
+          },
+          "deprecationMessage": "QuickPerfTest is deprecated - Run a quick web performance test in the cloud with Azure Pipelines",
+          "doNotSuggest": true,
+          "firstProperty": [
+            "task"
+          ],
+          "required": [
+            "task",
+            "inputs"
           ]
         },
         {
