@@ -67,7 +67,7 @@ export async function locateSchemaFile(
     }
 
     logger.log(
-        `Using hardcoded schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
+        `Using hardcoded schema for workspace folder ${workspaceFolder?.name}: ${schemaUri.path}`,
         'SchemaDetection');
 
     // TODO: We should update getSchemaAssociations so we don't need to constantly
@@ -171,7 +171,7 @@ async function autoDetectSchema(
             session = azureAccountApi.sessions.find(session => session.tenantId === details.tenant);
 
             logger.log(
-                `Using cached information for ${workspaceFolder.name}: ${organizationName}, ${session.tenantId}`,
+                `Using cached information for ${workspaceFolder.name}: ${organizationName}, ${session?.tenantId}`,
                 'SchemaDetection');
         } else {
             logger.log(`Prompting for organization for ${workspaceFolder.name}`, 'SchemaDetection');

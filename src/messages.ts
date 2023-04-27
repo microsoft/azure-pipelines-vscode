@@ -7,6 +7,8 @@ export class Messages {
     public static gitExtensionUnavailable: string = 'Git extension could not be fetched. Please ensure it\'s installed and activated.';
     public static gitExtensionNotEnabled: string = 'Git extension is not enabled. Please change the `git.enabled` setting to true.';
     public static azureLoginRequired: string = 'Please sign in to your Azure account first.';
+    public static branchHeadMissing: string = `The current repository doesn't have any commits. Please [create a commit](https://git-scm.com/docs/git-commit) first, and then try this again.`;
+    public static branchNameMissing: string = `The current repository isn't on a branch. Please [checkout a branch](https://git-scm.com/docs/git-checkout) first, and then try this again.`;
     public static branchRemoteMissing: string = `The current branch doesn't have a tracking branch, and the selected repository has no remotes. We're unable to create a remote tracking branch. Please [set a remote tracking branch](https://git-scm.com/docs/git-branch#Documentation/git-branch.txt---track) first, and then try this again.`;
     public static browsePipeline: string = 'Browse Pipeline';
     public static cannotAddFileRemoteMissing: string = 'Couldn\'t add YAML file to your repo because the remote isn\'t set';

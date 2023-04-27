@@ -41,7 +41,7 @@ export class AppServiceClient extends AzureResourceClient {
 
     public async getAzurePipelineUrl(resourceId: string): Promise<string> {
         let metadata = await this.getAppServiceMetadata(resourceId);
-        if (metadata.properties['VSTSRM_BuildDefinitionWebAccessUrl']) {
+        if (metadata.properties?.['VSTSRM_BuildDefinitionWebAccessUrl']) {
             return metadata.properties['VSTSRM_BuildDefinitionWebAccessUrl'];
         }
 

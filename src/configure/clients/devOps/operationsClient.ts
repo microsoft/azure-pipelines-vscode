@@ -30,11 +30,11 @@ export class OperationsClient {
           }
 
           const operation = response.result;
-          if (operation.status === OperationStatus.Succeeded) {
+          if (operation?.status === OperationStatus.Succeeded) {
             return;
           }
 
-          if (operation.status === OperationStatus.Failed) {
+          if (operation?.status === OperationStatus.Failed) {
             // OperationReference is missing some properties so cast it to any
             throw new Error(util.format(Messages.failedToCreateAzureDevOpsProject, (operation as any).detailedMessage));
           }

@@ -24,7 +24,7 @@ import { GitHubProvider } from './helper/gitHubHelper';
 import { getSubscriptionSession } from './helper/azureSessionHelper';
 import { UserCancelledError } from './helper/userCancelledError';
 import { Build } from 'azure-devops-node-api/interfaces/BuildInterfaces';
-import { ProjectVisibility } from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import { ProjectVisibility, TeamProjectReference } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import { AzureAccount, AzureSubscription } from '../typings/azure-account.api';
 import { Repository } from '../typings/git';
 
@@ -61,8 +61,8 @@ export async function configurePipeline(): Promise<void> {
 }
 
 async function getWorkspace(): Promise<URI> {
-    const workspaceFolders = vscode.workspace?.workspaceFolders;
-    if (workspaceFolders?.length > 0) {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (workspaceFolders !== undefined) {
         telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.CurrentWorkspace);
 
         if (workspaceFolders.length === 1) {
@@ -87,7 +87,7 @@ async function getWorkspace(): Promise<URI> {
             canSelectMany: false,
         });
 
-        if (selectedFolders?.length > 0) {
+        if (selectedFolders !== undefined) {
             return selectedFolders[0];
         } else {
             throw new Error(Messages.noWorkSpaceSelectedError);
@@ -129,8 +129,8 @@ class PipelineConfigurer {
 
         telemetryHelper.setCurrentStep('DisplayCreatedPipeline');
         vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
-            .then((action: string) => {
-                if (action && action.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
+            .then(action => {
+                if (action?.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
                     telemetryHelper.setTelemetry(TelemetryKeys.BrowsePipelineClicked, 'true');
                     vscode.env.openExternal(URI.parse(queuedPipeline._links.web.href));
                 }
@@ -141,7 +141,7 @@ class PipelineConfigurer {
         try {
             await this.getGitDetailsFromRepository();
         } catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.GetSourceRepositoryDetailsFailed, error);
+            telemetryHelper.logError(Layer, TracePoints.GetSourceRepositoryDetailsFailed, error as Error);
             throw error;
         }
 
@@ -193,7 +193,7 @@ class PipelineConfigurer {
                         await operationsClient.waitForOperationSuccess(operation.id);
                         this.inputs.project = await coreApi.getProject(this.inputs.project.name);
                     } catch (error) {
-                        telemetryHelper.logError(Layer, TracePoints.CreateNewOrganizationAndProjectFailure, error);
+                        telemetryHelper.logError(Layer, TracePoints.CreateNewOrganizationAndProjectFailure, error as Error);
                         throw error;
                     }
                 });
@@ -209,7 +209,16 @@ class PipelineConfigurer {
     }
 
     private async getGitDetailsFromRepository(): Promise<void> {
-        let { name, remote } = this.repo.state.HEAD;
+        const { HEAD } = this.repo.state;
+        if (!HEAD) {
+            throw new Error(Messages.branchHeadMissing);
+        }
+
+        let { name, remote } = HEAD;
+
+        if (!name) {
+            throw new Error(Messages.branchNameMissing);
+        }
 
         if (!remote) {
             // Remote tracking branch is not set, see if we have any remotes we can use.
@@ -235,29 +244,29 @@ class PipelineConfigurer {
     }
 
     private async getGitRepositoryParameters(branch: string, remoteName: string): Promise<GitRepositoryParameters> {
-        let remoteUrl = this.repo.state.remotes.find(remote => remote.name === remoteName).fetchUrl;
+        let remoteUrl = this.repo.state.remotes.find(remote => remote.name === remoteName)?.fetchUrl;
         if (remoteUrl) {
             if (AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
                 remoteUrl = AzureDevOpsHelper.getFormattedRemoteUrl(remoteUrl);
-                return <GitRepositoryParameters>{
+                return {
                     repositoryProvider: RepositoryProvider.AzureRepos,
                     repositoryId: "",
                     repositoryName: AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl).repositoryName,
-                    remoteName: remoteName,
-                    remoteUrl: remoteUrl,
+                    remoteName,
+                    remoteUrl,
                     branch: branch,
                     commitId: ""
                 };
             }
             else if (GitHubProvider.isGitHubUrl(remoteUrl)) {
                 remoteUrl = GitHubProvider.getFormattedRemoteUrl(remoteUrl);
-                let repoId = GitHubProvider.getRepositoryIdFromUrl(remoteUrl);
-                return <GitRepositoryParameters>{
+                let repositoryId = GitHubProvider.getRepositoryIdFromUrl(remoteUrl);
+                return {
                     repositoryProvider: RepositoryProvider.Github,
-                    repositoryId: repoId,
-                    repositoryName: repoId,
-                    remoteName: remoteName,
-                    remoteUrl: remoteUrl,
+                    repositoryId,
+                    repositoryName: repositoryId,
+                    remoteName,
+                    remoteUrl,
                     branch: branch,
                     commitId: ""
                 };
@@ -320,7 +329,7 @@ class PipelineConfigurer {
 
                     // FIXME: It _is_ possible for an organization to have no projects.
                     // We need to guard against this and create a project for them.
-                    const selectedProject = await showQuickPick(
+                    const selectedProject = await showQuickPick<QuickPickItemWithData<TeamProjectReference>>(
                         constants.SelectProject,
                         projects.map(project => { return { label: project.name, data: project }; }),
                         { placeHolder: Messages.selectProject },
@@ -349,7 +358,7 @@ class PipelineConfigurer {
             }
         }
         catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.GetAzureDevOpsDetailsFailed, error);
+            telemetryHelper.logError(Layer, TracePoints.GetAzureDevOpsDetailsFailed, error as Error);
             throw error;
         }
     }
@@ -392,7 +401,7 @@ class PipelineConfigurer {
             // show available resources and get the chosen one
             this.appServiceClient = new AppServiceClient(this.inputs.azureSession.credentials2, this.inputs.azureSession.tenantId, this.inputs.azureSession.environment.portalUrl, this.inputs.targetResource.subscriptionId);
 
-            let resourceArray: Promise<Array<{label: string, data: ResourceManagementModels.GenericResource}>> = null;
+            let resourceArray: Promise<Array<{label: string, data: ResourceManagementModels.GenericResource}>>;
             let selectAppText: string = "";
             let placeHolderText: string = "";
 
@@ -474,7 +483,7 @@ class PipelineConfigurer {
                 buildUrl);
         }
         catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error);
+            telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error as Error);
         }
     }
 
@@ -495,7 +504,7 @@ class PipelineConfigurer {
                     this.inputs.sourceRepository.serviceConnectionId = await this.serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, this.inputs.githubPatToken);
                 }
                 catch (error) {
-                    telemetryHelper.logError(Layer, TracePoints.GitHubServiceConnectionError, error);
+                    telemetryHelper.logError(Layer, TracePoints.GitHubServiceConnectionError, error as Error);
                     throw error;
                 }
             });
@@ -521,7 +530,7 @@ class PipelineConfigurer {
                     return await this.serviceConnectionHelper.createAzureServiceConnection(serviceConnectionName, this.inputs.azureSession.tenantId, this.inputs.targetResource.subscriptionId, scope, aadApp);
                 }
                 catch (error) {
-                    telemetryHelper.logError(Layer, TracePoints.AzureServiceConnectionCreateFailure, error);
+                    telemetryHelper.logError(Layer, TracePoints.AzureServiceConnectionCreateFailure, error as Error);
                     throw error;
                 }
             });
@@ -535,7 +544,7 @@ class PipelineConfigurer {
             await vscode.workspace.fs.writeFile(fileUri, Buffer.from(content));
             await vscode.window.showTextDocument(fileUri);
         } catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.AddingContentToPipelineFileFailed, error);
+            telemetryHelper.logError(Layer, TracePoints.AddingContentToPipelineFileFailed, error as Error);
             throw error;
         }
 
@@ -551,7 +560,7 @@ class PipelineConfigurer {
                             await this.repo.push(this.inputs.sourceRepository.remoteName);
                             this.inputs.sourceRepository.commitId = this.repo.state.HEAD.commit;
                         } catch (error) {
-                            telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error);
+                            telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error as Error);
                             vscode.window.showErrorMessage(utils.format(Messages.commitFailedErrorMessage, error.stderr));
                         }
                     });

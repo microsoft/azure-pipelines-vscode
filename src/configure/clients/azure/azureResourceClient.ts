@@ -13,8 +13,8 @@ export class AzureResourceClient {
         let resourceListResult: ResourceManagementModels.ResourceListResult = await this.azureRmClient.resources.list({ filter: `resourceType eq '${resourceType}'` });
 
         if (followNextLink) {
-            let nextLink: string = resourceListResult.nextLink;
-            while (!!nextLink) {
+            let nextLink = resourceListResult.nextLink;
+            while (nextLink !== undefined) {
                 let nextResourceListResult = await this.azureRmClient.resources.listNext(nextLink);
                 resourceListResult = resourceListResult.concat(nextResourceListResult);
                 nextLink = nextResourceListResult.nextLink;

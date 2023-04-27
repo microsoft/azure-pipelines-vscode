@@ -76,8 +76,7 @@ class SchemaContributor {
     public requestCustomSchemaContent(uri: string): string {
         if (uri) {
             const { scheme } = URI.parse(uri);
-            if (scheme && this._customSchemaContributors[scheme] &&
-                this._customSchemaContributors[scheme].requestSchemaContent) {
+            if (scheme && this._customSchemaContributors[scheme]) {
                 return this._customSchemaContributors[scheme].requestSchemaContent(uri);
             }
         }

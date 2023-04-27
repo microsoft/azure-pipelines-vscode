@@ -94,7 +94,7 @@ export class AzureDevOpsHelper {
             defaultBranch: inputs.sourceRepository.branch,
             fullName: inputs.sourceRepository.repositoryName,
             refsUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}/git/refs`
-        } : null;
+        } : undefined;
 
         const properties = { 'source': 'ms-azure-devops.azure-pipelines' };
 
