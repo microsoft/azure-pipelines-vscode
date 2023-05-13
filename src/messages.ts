@@ -26,8 +26,9 @@ export class Messages {
     public static failedToCreateAzureDevOpsProject: string = 'Couldn\'t create a project in the Azure DevOps organization. Error: %s.';
     public static failedToCreateAzurePipeline: string = 'Couldn\'t configure pipeline. Error: %s';
     public static failedToDetermineAzureRepoDetails: string = 'Failed to determine Azure Repo details from remote url. Please ensure that the remote points to a valid Azure Repos url.';
-    public static gitHubPatTokenErrorMessage: string = 'GitHub PAT token cannot be empty.';
-    public static githubPatTokenHelpMessage: string = 'GitHub personal access token (PAT) with following permissions: full access to repository webhooks and services, read and write access to all repository data.';
+    public static gitHubPatErrorMessage: string = 'GitHub PAT cannot be empty.';
+    public static noGitHubPatError: string = 'Please enter a GitHub PAT to configure pipeline';
+    public static githubPatHelpMessage: string = 'GitHub personal access token (PAT) with following permissions: full access to repository webhooks and services, read and write access to all repository data.';
     public static modifyAndCommitFile: string = 'Modify and save your YAML file. %s will commit this file, push the branch \'%s\' to remote \'%s\' and proceed with deployment.';
     public static noAgentQueueFound: string = 'No agent pool found named "%s".';
     public static noAvailableFileNames: string = 'No available filenames found.';
@@ -39,7 +40,6 @@ export class Messages {
     public static organizationNameStaticValidationMessage: string = 'Organization names must start and end with a letter or number and can contain only letters, numbers, and hyphens.';
     public static pipelineSetupSuccessfully: string = 'Pipeline set up successfully!';
     public static remoteRepositoryNotConfigured: string = 'Remote repository is not configured. This extension is compatible with [Azure Repos](https://docs.microsoft.com/en-us/azure/devops/repos/get-started) or [GitHub](https://guides.github.com/activities/hello-world/).';
-    public static resourceIdMissing: string = 'Required argument "resourceId" is missing. Please pass the argument for getting resource.';
     public static resourceTypeIsNotSupported: string = '"%s" resources are not yet supported for configuring pipelines.';
     public static selectFolderLabel: string = 'Select source folder for configuring pipeline';
     public static selectOrganization: string = 'Select an Azure DevOps organization';
@@ -47,8 +47,10 @@ export class Messages {
     public static selectOrganizationLabel: string = 'Select organization';
     public static selectOrganizationPlaceholder: string = 'Select Azure DevOps organization associated with the %s repository';
     public static selectPipelineTemplate: string = 'Select an Azure Pipelines template...';
+    public static noPipelineTemplateSelectedError: string = 'Please select a template to configure pipeline';
     public static selectProject: string = 'Select an Azure DevOps project';
     public static selectRemoteForBranch: string = 'Select the remote repository where you want to track your current branch';
+    public static noBranchRemoteSelectedError: string = 'Please select a remote repository for your current branch to configure pipeline';
     public static selectSubscription: string = 'Select an Azure subscription';
     public static selectWebApp: string = 'Select Web App';
     public static selectFunctionApp: string = 'Select Function App';

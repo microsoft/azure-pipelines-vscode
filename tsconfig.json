@@ -42,7 +42,7 @@
                 --strictFunctionTypes
                 --strictPropertyInitialization.
         */
-        //"strict": true,
+        "strict": true,
 
         /* Specify ECMAScript target version. */
         "target": "es2019",

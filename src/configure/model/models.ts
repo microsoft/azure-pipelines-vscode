@@ -1,25 +1,40 @@
-import { ResourceManagementModels } from '@azure/arm-resources';
 import { QuickPickItem } from 'vscode';
-import { Messages } from '../../messages';
-import { TeamProjectReference } from 'azure-devops-node-api/interfaces/CoreInterfaces';
-import { AzureSession } from '../../typings/azure-account.api';
-
-export class WizardInputs {
-    organizationName: string;
-    isNewOrganization: boolean;
-    project: TeamProjectReference;
-    sourceRepository: GitRepositoryParameters;
-    targetResource: AzureParameters = new AzureParameters();
-    pipelineParameters: PipelineParameters = new PipelineParameters();
-    azureSession: AzureSession;
-    githubPatToken?: string;
-}
+import { TeamProject } from 'azure-devops-node-api/interfaces/CoreInterfaces';
+import { WebApi } from 'azure-devops-node-api';
+import { AppServiceClient } from '../clients/azure/appServiceClient';
+import { Build, BuildDefinition } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { WebSiteManagementModels } from '@azure/arm-appservice';
 
 export interface Organization {
     accountId: string;
     accountName: string;
     accountUri: string;
     properties: {};
+}
+
+/**
+ * Identical to @see {TeamProject} except with name & id verified.
+ */
+export interface ValidatedProject extends TeamProject {
+    name: string;
+    id: string;
+}
+
+/**
+ * Identical to @see {WebSiteManagementModels.Site} except with name, id, & resourceGroup verified.
+ */
+export interface ValidatedSite extends WebSiteManagementModels.Site {
+    name: string;
+    id: string;
+    resourceGroup: string;
+}
+
+/**
+ * Identical to @see {Build} except with definition & id verified.
+ */
+export interface ValidatedBuild extends Build {
+    definition: Required<BuildDefinition>;
+    id: number;
 }
 
 export type OrganizationAvailability = {
@@ -32,34 +47,39 @@ export type OrganizationAvailability = {
     unavailabilityReason: string;
 };
 
-export class AzureParameters {
+export interface AzureSiteDetails {
+    appServiceClient: AppServiceClient;
     subscriptionId: string;
-    resource: ResourceManagementModels.GenericResource;
-    serviceConnectionId: string;
+    site: ValidatedSite;
 }
 
-export class PipelineParameters {
-    pipelineFileName: string;
-    pipelineTemplate: PipelineTemplate;
-}
-
-export interface GitRepositoryParameters {
-    repositoryProvider: RepositoryProvider;
+export type GitRepositoryDetails = {
     repositoryName: string;
-    repositoryId: string;
     remoteName: string;
     remoteUrl: string;
     branch: string;
     commitId: string;
-    serviceConnectionId?: string; // Id of the service connection in Azure DevOps
+} & ({
+    repositoryProvider: RepositoryProvider.AzureRepos;
+    organizationName: string;
+    projectName: string;
+    repositoryName: string;
+} | {
+    repositoryProvider: RepositoryProvider.Github;
+    ownerName: string;
+});
+
+export interface AzureDevOpsDetails {
+    adoClient: WebApi;
+    organizationName: string;
+    project: ValidatedProject;
 }
 
 export interface PipelineTemplate {
     path: string;
     label: string;
     language: string;
-    targetType: TargetResourceType;
-    targetKind: WebAppKind;
+    target: TargetResource;
 }
 
 export enum SourceOptions {
@@ -73,14 +93,16 @@ export enum RepositoryProvider {
     AzureRepos = 'tfsgit'
 }
 
+export type TargetResource = {
+    type: TargetResourceType.None;
+} | {
+    type: TargetResourceType.WebApp;
+    kind: WebAppKind;
+};
+
 export enum TargetResourceType {
     None = 'none',
     WebApp = 'Microsoft.Web/sites'
-}
-
-export enum ServiceConnectionType {
-    GitHub = 'github',
-    AzureRM = 'azurerm'
 }
 
 export enum WebAppKind {
@@ -93,58 +115,6 @@ export enum WebAppKind {
 
 export interface QuickPickItemWithData<T> extends QuickPickItem {
     data: T;
-}
-
-export class ParsedAzureResourceId {
-    public resourceId: string;
-    public subscriptionId: string;
-    public resourceGroup: string;
-    public resourceType: string;
-    public resourceProvider: string;
-    public resourceName: string;
-    public childResourceType?: string;
-    public childResource?: string;
-
-    constructor(resourceId: string) {
-        if (!resourceId) {
-            throw new Error(Messages.resourceIdMissing);
-        }
-
-        this.resourceId = resourceId;
-        this.parseId();
-    }
-
-    private parseId() {
-        // remove all empty parts in the resource to avoid failing in case there are leading/trailing/extra '/'
-        let parts = this.resourceId.split('/').filter((part) => !!part);
-        if (!!parts) {
-            for (let i = 0; i < parts.length; i++) {
-                switch (i) {
-                    case 1:
-                            this.subscriptionId = parts[i];
-                            break;
-                    case 3:
-                            this.resourceGroup = parts[i];
-                            break;
-                    case 5:
-                            this.resourceProvider = parts[i];
-                            break;
-                    case 6:
-                            this.resourceType = parts[i];
-                            break;
-                    case 7:
-                            this.resourceName = parts[i];
-                            break;
-                    case 8:
-                            this.childResourceType = parts[i];
-                            break;
-                    case 9:
-                            this.childResource = parts[i];
-                            break;
-                }
-            }
-        }
-    }
 }
 
 export interface AadApplication {

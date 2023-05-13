@@ -9,17 +9,20 @@ export class GitHubProvider {
         return remoteUrl.startsWith(GitHubProvider.GitHubUrl) || remoteUrl.startsWith(GitHubProvider.SSHGitHubUrl);
     }
 
-    public static getRepositoryIdFromUrl(remoteUrl: string): string {
-        let endCount = remoteUrl.indexOf('.git');
-        if (endCount < 0) {
-            endCount = remoteUrl.length;
-        }
-
-        if (remoteUrl.startsWith(GitHubProvider.SSHGitHubUrl)) {
-            return remoteUrl.substring(GitHubProvider.SSHGitHubUrl.length, endCount);
-        }
-
-        return remoteUrl.substring(GitHubProvider.GitHubUrl.length, endCount);
+    public static getRepositoryDetailsFromRemoteUrl(remoteUrl: string): { ownerName: string, repositoryName: string } {
+        // https://github.com/microsoft/azure-pipelines-vscode.git
+        // => ['https:', '', 'github.com', 'microsoft', 'azure-pipelines-vscode.git']
+        // => { ownerName: 'microsoft', repositoryName: 'azure-pipelines-vscode'}
+        // ===============================================
+        // git@github.com:microsoft/azure-pipelines-vscode
+        // => microsoft/zure-pipelines-vscode
+        // => ['microsoft', 'azure-pipelines-vscode']
+        // => { ownerName: 'microsoft', repositoryName: 'azure-pipelines-vscode'}
+        const parts = remoteUrl.replace(GitHubProvider.SSHGitHubUrl, '').split('/');
+        return {
+            ownerName: parts[parts.length - 2],
+            repositoryName: parts[parts.length - 1].replace(/\.git$/, '')
+        };
     }
 
     public static getFormattedRemoteUrl(remoteUrl: string): string {

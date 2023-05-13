@@ -1,7 +1,7 @@
 import { BuildDefinition, ContinuousIntegrationTrigger, DefinitionQuality, DefinitionTriggerType, DefinitionType, YamlProcess } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { TaskAgentQueue } from 'azure-devops-node-api/interfaces/TaskAgentInterfaces';
 
-import { WizardInputs, RepositoryProvider } from '../../model/models';
+import { RepositoryProvider, GitRepositoryDetails, AzureDevOpsDetails } from '../../model/models';
 import { Messages } from '../../../messages';
 
 export class AzureDevOpsHelper {
@@ -85,28 +85,23 @@ export class AzureDevOpsHelper {
         }
     }
 
-    public static getBuildDefinitionPayload(pipelineName: string, queue: TaskAgentQueue, inputs: WizardInputs): BuildDefinition {
-        const repositoryProperties = inputs.sourceRepository.repositoryProvider === RepositoryProvider.Github ? {
-            apiUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}`,
-            branchesUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}/branches`,
-            cloneUrl: inputs.sourceRepository.remoteUrl,
-            connectedServiceId: inputs.sourceRepository.serviceConnectionId,
-            defaultBranch: inputs.sourceRepository.branch,
-            fullName: inputs.sourceRepository.repositoryName,
-            refsUrl: `https://api.github.com/repos/${inputs.sourceRepository.repositoryId}/git/refs`
-        } : undefined;
-
-        const properties = { 'source': 'ms-azure-devops.azure-pipelines' };
-
+    public static getBuildDefinitionPayload(
+        pipelineName: string,
+        queue: TaskAgentQueue,
+        repoDetails: GitRepositoryDetails,
+        adoDetails: AzureDevOpsDetails,
+        repositoryProperties: { [key: string]: string } | undefined,
+        pipelineFileName: string,
+    ): BuildDefinition {
         return {
             name: pipelineName,
             type: DefinitionType.Build,
             quality: DefinitionQuality.Definition,
             path: "\\", //Folder path of build definition. Root folder in this case
-            project: inputs.project,
+            project: adoDetails.project,
             process: {
                 type: 2,
-                yamlFileName: inputs.pipelineParameters.pipelineFileName,
+                yamlFileName: pipelineFileName,
             } as YamlProcess,
             queue: {
                 id: queue.id,
@@ -119,14 +114,18 @@ export class AzureDevOpsHelper {
                 } as ContinuousIntegrationTrigger,
             ],
             repository: {
-                id: inputs.sourceRepository.repositoryId,
-                name: inputs.sourceRepository.repositoryName,
-                type: inputs.sourceRepository.repositoryProvider,
-                defaultBranch: inputs.sourceRepository.branch,
-                url: inputs.sourceRepository.remoteUrl,
+                id: repoDetails.repositoryProvider === RepositoryProvider.Github
+                    ? `${repoDetails.ownerName}/${repoDetails.repositoryName}`
+                    : undefined,
+                name: repoDetails.repositoryName,
+                type: repoDetails.repositoryProvider,
+                defaultBranch: repoDetails.branch,
+                url: repoDetails.remoteUrl,
                 properties: repositoryProperties,
             },
-            properties: properties,
+            properties: {
+                source: 'ms-azure-devops.azure-pipelines',
+            },
         };
     }
 
@@ -137,33 +136,5 @@ export class AzureDevOpsHelper {
 
     public static getOldFormatBuildUrl(accountName: string, projectName: string, buildId: number) {
         return `https://${accountName}.visualstudio.com/${projectName}/_build/results?buildId=${buildId}&view=results`;
-    }
-
-    public static generateDevOpsOrganizationName(userName: string, repositoryName: string): string {
-        let repositoryNameSuffix = repositoryName.replace("/", "-").trim();
-        let organizationName = `${userName}-${repositoryNameSuffix}`;
-
-        // Name cannot start or end with whitespaces, cannot start with '-', cannot contain characters other than a-z|A-Z|0-9
-        organizationName = organizationName.trim().replace(/^[-]+/, '').replace(/[^a-zA-Z0-9-]/g, '');
-        if(organizationName.length > 50) {
-            organizationName = organizationName.substr(0, 50);
-        }
-
-        return organizationName;
-    }
-
-    public static generateDevOpsProjectName(repositoryName?: string): string {
-        // I don't believe this can be hit based on the caller paths.
-        // Verify to make sure and then make repositoryName required.
-        if (!repositoryName) {
-            return "AzurePipelines";
-        }
-
-        const repoParts = repositoryName.split("/");
-        const suffix = repoParts[repoParts.length - 1]
-            .trim()
-            .replace(/[._]+$/, ''); // project name cannot end with . or _
-
-        return `AzurePipelines-${suffix}`.substring(0, 64);
     }
 }
