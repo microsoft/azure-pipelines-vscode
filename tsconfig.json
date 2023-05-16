@@ -1,8 +1,5 @@
 {
     "compilerOptions": {
-        /* Parse in strict mode and emit "use strict" for each source file. */
-        "alwaysStrict": true,
-
         /* List of library files to be included in the compilation. */
         "lib": [ "es2019" ],
 
@@ -46,9 +43,6 @@
 
         /* Specify ECMAScript target version. */
         "target": "es2019",
-
-        /*  */
-        "allowJs": true,
 
         "skipLibCheck": true // https://github.com/Azure/ms-rest-js/issues/367
     },
