@@ -1719,8 +1719,11 @@
           "$ref": "#/definitions/string"
         },
         "fetchTags": {
-          "description": "Fetch tags?",
-          "$ref": "#/definitions/string"
+          "description": "This causes the server to fetch all tags as well as all objects that are pointed to by those tags.",
+          "enum": [
+            "true",
+            "false"
+          ],
         },
         "lfs": {
           "description": "Fetch and checkout Git LFS objects?",
