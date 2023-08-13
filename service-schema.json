@@ -1073,7 +1073,7 @@
     "branchFilter": {
       "type": "string",
       "description": "branch name or prefix filter",
-      "pattern": "^[^\\/~\\^\\: \\[\\]\\\\]+(\\/[^\\/~\\^\\: \\[\\]\\\\]+)*$"
+      "pattern": "^[^\\/~\\^: \\[\\]\\\\]+(\\/[^\\/~\\^: \\[\\]\\\\]+)*$"
     },
     "templateParameters": {
       "anyOf": [
