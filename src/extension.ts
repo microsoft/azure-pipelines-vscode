@@ -17,6 +17,7 @@ import { getAzureAccountExtensionApi } from './extensionApis';
  * The unique string that identifies the Azure Pipelines languge.
  */
 const LANGUAGE_IDENTIFIER = 'azure-pipelines';
+const YAML_LANGUAGE_IDENTIFIER = 'yaml';
 
 /**
  * The document selector to use when deciding whether to activate Azure Pipelines-specific features.
@@ -78,8 +79,19 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
         }
     }));
 
+    context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
+        if (event.affectsConfiguration('azure-pipelines.1esptschemaFile')) {
+            await loadSchema(context, client);
+        }
+    }));
+
     // Load the schema if we were activated because an Azure Pipelines file.
     if (vscode.window.activeTextEditor?.document.languageId === LANGUAGE_IDENTIFIER) {
+        await loadSchema(context, client);
+    }
+
+    // Load the schema if we were activated because an yaml file.
+    if (vscode.window.activeTextEditor?.document.languageId === YAML_LANGUAGE_IDENTIFIER) {
         await loadSchema(context, client);
     }
 
@@ -110,6 +122,14 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
         }
     }));
 
+    // Re-request the schema when sessions change since auto-detection is dependent on
+    // being able to query ADO organizations using session credentials.
+    context.subscriptions.push(azureAccountApi.onSessionsChanged(async () => {
+        if (azureAccountApi.status === 'LoggedOut') {
+            await loadSchema(context, client);
+        }
+    }));
+
     // We now have an organization for a non-Azure Repo folder,
     // so we can try auto-detecting the schema again.
     context.subscriptions.push(onDidSelectOrganization(async workspaceFolder => {
@@ -124,7 +144,7 @@ async function loadSchema(
     workspaceFolder?: vscode.WorkspaceFolder): Promise<void> {
     if (workspaceFolder === undefined) {
         const textDocument = vscode.window.activeTextEditor?.document;
-        if (textDocument?.languageId !== LANGUAGE_IDENTIFIER) {
+        if (textDocument?.languageId !== LANGUAGE_IDENTIFIER && textDocument?.languageId !== YAML_LANGUAGE_IDENTIFIER) {
             return;
         }
 

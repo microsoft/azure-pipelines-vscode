@@ -17,6 +17,8 @@ import { QuickPickItemWithData } from './configure/model/models';
 import * as logger from './logger';
 import { Messages } from './messages';
 import { AzureSession } from './typings/azure-account.api';
+import * as fs from 'fs'
+import { get1ESPTSchemaUriIfAvailable, getCached1ESPTSchemaInformation } from './schema-association-service-1espt';
 
 const selectOrganizationEvent = new vscode.EventEmitter<vscode.WorkspaceFolder>();
 export const onDidSelectOrganization = selectOrganizationEvent.event;
@@ -25,6 +27,8 @@ export const onDidSelectOrganization = selectOrganizationEvent.event;
  * A session-level cache of all the organizations we've saved the schema for.
  */
 const seenOrganizations = new Set<string>();
+const seen1ESPTOrganizations = new Set<string>();
+let lastUpdated1ESPTSchema = new Date();
 
 export async function locateSchemaFile(
     context: vscode.ExtensionContext,
@@ -65,7 +69,6 @@ export async function locateSchemaFile(
     } else {
         schemaUri = vscode.Uri.file(path.join(context.extensionPath, 'service-schema.json'));
     }
-
     logger.log(
         `Using hardcoded schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
         'SchemaDetection');
@@ -93,6 +96,8 @@ async function autoDetectSchema(
     context: vscode.ExtensionContext,
     workspaceFolder: vscode.WorkspaceFolder): Promise<vscode.Uri | undefined> {
     const azureAccountApi = await getAzureAccountExtensionApi();
+    const config = vscode.workspace.getConfiguration('azure-pipelines')
+    var oneesptSchemaEnabled = vscode.workspace.getConfiguration('azure-pipelines').get<string>('1ESPipelineTemplatesSchemaFile', '');
 
     // We could care less about the subscriptions; all we need are the sessions.
     // However, there's no waitForSessions API, and waitForLogin returns before
@@ -102,6 +107,16 @@ async function autoDetectSchema(
     // This only returns false if there is no login.
     if (!(await azureAccountApi.waitForSubscriptions())) {
         logger.log(`Waiting for login`, 'SchemaDetection');
+
+        // Disable 1ESPT schema and delete 1ESPT schema file if user is signed out
+        const schemaUri1ESPTFolder = Utils.joinPath(context.globalStorageUri, '1ESPTSchema');
+        var schemaUri1ESPTFolderExists = fs.existsSync(schemaUri1ESPTFolder.path.substring(1));
+        config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.Global); // disable 1ESPT schema
+        logger.log("1ESPT schema disabled as user is not signed in", 'SchemaDetection')
+        if(schemaUri1ESPTFolderExists){
+            await vscode.workspace.fs.delete(Utils.joinPath(context.globalStorageUri, '1ESPTSchema'), { recursive: true }) // delete 1ESPT schema folder
+            logger.log("1ESPTSchema folder deleted as user is not signed in", 'SchemaDetection')
+        }
 
         // Don't await this message so that we can return the fallback schema instead of blocking.
         // We'll detect the login in extension.ts and then re-request the schema.
@@ -136,6 +151,10 @@ async function autoDetectSchema(
                 const remoteName = repo.state.HEAD.upstream.remote;
                 remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName)?.fetchUrl;
                 logger.log(`Found remote URL for ${workspaceFolder.name}: ${remoteUrl}`, 'SchemaDetection');
+            }
+            // get remoteUrl for dev branches
+            else if(repo.state.remotes.length >= 0) {
+                remoteUrl = repo.state.remotes[0].fetchUrl;
             }
         }
     } catch (error) {
@@ -243,6 +262,15 @@ async function autoDetectSchema(
     // Create the global storage folder to guarantee that it exists.
     await vscode.workspace.fs.createDirectory(context.globalStorageUri);
 
+    // get cached 1ESPT schema if:
+    // 1. User is signed in with microsoft account
+    // 2. 1ESPT schema is enabled
+    // 3. 1ESPT schema is not older than 24 hours
+    const [schemaUri1ESPT , skipOrgSpecificCachedSchema] = getCached1ESPTSchemaInformation(context, workspaceFolder, organizationName, session, oneesptSchemaEnabled, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
+    if(schemaUri1ESPT){
+        return schemaUri1ESPT;
+    }
+
     // Grab and save the schema if we haven't already seen the organization this session.
     // NOTE: Despite saving the schema to disk, we can't use it as a persistent cache because:
     // 1. ADO doesn't provide an API to indicate which version (milestone) it's on,
@@ -251,7 +279,7 @@ async function autoDetectSchema(
     // So we do the next-best thing and keep a session-level cache so we only
     // hit the network to request an updated schema for an organization once per session.
     const schemaUri = Utils.joinPath(context.globalStorageUri, `${organizationName}-schema.json`);
-    if (seenOrganizations.has(organizationName)) {
+    if (seenOrganizations.has(organizationName) && !skipOrgSpecificCachedSchema) {
         logger.log(`Returning cached schema for ${workspaceFolder.name}`, 'SchemaDetection');
         return schemaUri;
     }
@@ -261,6 +289,15 @@ async function autoDetectSchema(
     const token = await session.credentials2.getToken();
     const authHandler = azdev.getBearerHandler(token.accessToken);
     const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
+
+    // if user is signed in with microsoft account and has enabled 1ESPipeline Template Schema, then give preference to 1ESPT schema
+    if(oneesptSchemaEnabled){
+        const schemaUri1ESPT = await get1ESPTSchemaUriIfAvailable(azureDevOpsClient, organizationName, session, context, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
+        if(schemaUri1ESPT){
+            return schemaUri1ESPT;
+        }
+    }
+
     const taskAgentApi = await azureDevOpsClient.getTaskAgentApi();
     const schema = JSON.stringify(await taskAgentApi.getYamlSchema());
     await vscode.workspace.fs.writeFile(schemaUri, Buffer.from(schema));
