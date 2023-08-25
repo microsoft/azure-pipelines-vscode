@@ -113,6 +113,10 @@ async function autoDetectSchema(
         var schemaUri1ESPTFolderExists = fs.existsSync(schemaUri1ESPTFolder.path.substring(1)); // substring(1) to remove the '/' at the beginning of path
         config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.Global); // disable 1ESPT schema
         logger.log("1ESPT schema disabled as user is not signed in", 'SchemaDetection')
+
+        // show message to user that 1ESPT schema is disabled as user is not signed in
+        vscode.window.showInformationMessage(Messages.disabled1ESPTSchemaAsUserNotSignedInMessage)
+
         if(schemaUri1ESPTFolderExists){
             await vscode.workspace.fs.delete(Utils.joinPath(context.globalStorageUri, '1ESPTSchema'), { recursive: true }) // delete 1ESPT schema folder
             logger.log("1ESPTSchema folder deleted as user is not signed in", 'SchemaDetection')

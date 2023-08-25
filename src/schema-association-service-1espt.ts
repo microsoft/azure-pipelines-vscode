@@ -10,6 +10,7 @@ import * as logger from './logger';
 import { AzureSession } from './typings/azure-account.api';
 import { VersionControlRecursionType } from 'azure-devops-node-api/interfaces/TfvcInterfaces';
 import * as fs from 'fs'
+import { Messages } from './messages';
 
 const milliseconds24hours = 86400000;
 
@@ -18,8 +19,11 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
         if (session.userId.endsWith("@microsoft.com")) {
             const gitApi = await azureDevOpsClient.getGitApi();
             const repositories = await gitApi.getRepositories('1ESPipelineTemplates');
-            if(!repositories || repositories.length == 0){
+            if (!repositories || repositories.length == 0) {
                 logger.log(`1ESPT repo not found for org ${organizationName}`, `SchemaDetection`)
+                const config = vscode.workspace.getConfiguration('azure-pipelines')
+                config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.Global);
+                vscode.window.showInformationMessage(Messages.disabled1ESPTSchemaAsADOOrgNotContains1ESPT)
                 return undefined; // 1ESPT repo not found
             }
             const repository = repositories.find(repo => repo.name === "1ESPipelineTemplates");
@@ -32,7 +36,7 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
             seen1ESPTOrganizations.add(organizationName);
             return schemaUri
         }
-        else 
+        else
         // if user is signed in with account other than microsoft, then disable 1ESPT schema and delete the 1ESPT schema file
         {
             const config = vscode.workspace.getConfiguration('azure-pipelines')
@@ -50,13 +54,13 @@ export function getCached1ESPTSchemaInformation(context: vscode.ExtensionContext
     var skipOrgSpecificCachedSchema = false
     if (seen1ESPTOrganizations.has(organizationName)) {
         const schemaUri1ESPT = Utils.joinPath(context.globalStorageUri, '1ESPTSchema', `${organizationName}-1espt-schema.json`);
-        
+
         // skip fetching cached 1ESPT schema if:
         // 1) User is not signed in with microsoft account
         // 2) 1ESPT schema is disabled
         // 3) last fetched 1ESPT schema is older than 24 hours
         var skipUsingCached1ESPTSchema = !session.userId.endsWith("@microsoft.com") || !oneesptSchemaEnabled || ((new Date().getTime() - lastUpdated1ESPTSchema.getTime()) > milliseconds24hours);
-        
+
         // check if 1ESPT schema file exists
         var cached1ESPTSchemaFileExists = fs.existsSync(schemaUri1ESPT.path.substring(1));
         if (cached1ESPTSchemaFileExists) {
@@ -66,21 +70,18 @@ export function getCached1ESPTSchemaInformation(context: vscode.ExtensionContext
             }
             // 1ESPT schema has been loaded for this org, but is older than 24 hours
             else if (session.userId.endsWith("@microsoft.com") && oneesptSchemaEnabled) {
-                skipOrgSpecificCachedSchema = true 
+                skipOrgSpecificCachedSchema = true
                 logger.log(`Skipping cached 1ESPT schema for ${organizationName} as it is older than 24 hours`, `SchemaDetection`)
             }
             else {
                 logger.log(`Skipping cached 1ESPT schema for ${organizationName}`, `SchemaDetection`)
             }
         }
-        else 
-        // 1ESPT schema file does not exist previously but now user has signed in and 1ESPT schema is enabled, so skip fetching cached org specific schema
-        {
-            if (session.userId.endsWith("@microsoft.com") && oneesptSchemaEnabled) {
-                skipOrgSpecificCachedSchema = true
-                logger.log(`Skip getting org specific cached schema for ${organizationName} as now user is signed in and 1espt schema is enabled`, `SchemaDetection`)
-            }
-        }
+    }
+    // 1ESPT schema file does not exist previously but now user has signed in and 1ESPT schema is enabled, so skip fetching cached org specific schema
+    else if (session.userId.endsWith("@microsoft.com") && oneesptSchemaEnabled) {
+        skipOrgSpecificCachedSchema = true
+        logger.log(`Skip getting org specific cached schema for ${organizationName} as now user is signed in and 1espt schema is enabled`, `SchemaDetection`)
     }
     return [undefined, skipOrgSpecificCachedSchema];
 }
