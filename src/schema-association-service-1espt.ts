@@ -23,9 +23,9 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
                 return undefined; // 1ESPT repo not found
             }
             const repository = repositories.find(repo => repo.name === "1ESPipelineTemplates");
-            var schemaFile = await gitApi.getItem(repository.id, "schema/1espt-base-schema.json", "1ESPipelineTemplates", "", VersionControlRecursionType.None, true, true, true, {}, true, true) // TODO : get only from main branch
+            var schemaFile = await gitApi.getItem(repository.id, "schema/1espt-base-schema.json", "1ESPipelineTemplates", "", VersionControlRecursionType.None, true, true, true, {}, true, true)
 
-            const schemaContent = schemaFile.content //JSON.stringify(schemaFile.content);
+            const schemaContent = schemaFile.content
             const schemaUri = Utils.joinPath(context.globalStorageUri, '1ESPTSchema', `${organizationName}-1espt-schema.json`);
             await vscode.workspace.fs.writeFile(schemaUri, Buffer.from(schemaContent));
             lastUpdated1ESPTSchema = new Date();
@@ -33,7 +33,7 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
             return schemaUri
         }
         else 
-        // if user is signed in with some other account, then disable 1ESPT schema and delete the 1ESPT schema file
+        // if user is signed in with account other than microsoft, then disable 1ESPT schema and delete the 1ESPT schema file
         {
             const config = vscode.workspace.getConfiguration('azure-pipelines')
             config.update('1ESPipelineTemplatesSchemaFile', false, vscode.ConfigurationTarget.Global);
@@ -64,7 +64,7 @@ export function getCached1ESPTSchemaInformation(context: vscode.ExtensionContext
                 logger.log("Returning cached schema for 1ESPT", 'SchemaDetection')
                 return [schemaUri1ESPT, skipOrgSpecificCachedSchema];
             }
-            // 1ESPT has been loaded for this org, but is older than 24 hours
+            // 1ESPT schema has been loaded for this org, but is older than 24 hours
             else if (session.userId.endsWith("@microsoft.com") && oneesptSchemaEnabled) {
                 skipOrgSpecificCachedSchema = true 
                 logger.log(`Skipping cached 1ESPT schema for ${organizationName} as it is older than 24 hours`, `SchemaDetection`)

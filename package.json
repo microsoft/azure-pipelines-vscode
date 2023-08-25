@@ -93,7 +93,7 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Use 1ES Pipeline Template schema file",
-                    "markdownDescription": "If enabled, 1ES Pipeline Template schema file will take precedence over custom schema file when user is signed in with Microsoft account. *Can be enabled only if user is signed in with Microsoft account.*",
+                    "markdownDescription": "If enabled, 1ES Pipeline Template schema file will take precedence over custom schema file when user is signed in with Microsoft account and the schema is available in the ADO organization. *(Can be enabled only if user is signed in with Microsoft account)*",
                     "scope": "machine-overridable"
                 },
                 "azure-pipelines.customSchemaFile": {
