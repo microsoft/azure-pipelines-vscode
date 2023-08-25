@@ -80,7 +80,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     }));
 
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
-        if (event.affectsConfiguration('azure-pipelines.1esptschemaFile')) {
+        if (event.affectsConfiguration('azure-pipelines.1ESPipelineTemplatesSchemaFile')) {
             await loadSchema(context, client);
         }
     }));
