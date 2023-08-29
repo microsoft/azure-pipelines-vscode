@@ -114,18 +114,10 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     }));
 
     // Re-request the schema when sessions change since auto-detection is dependent on
-    // being able to query ADO organizations using session credentials.
+    // being able to query ADO organizations, check if 1ESPT schema can be used using session credentials.
     const azureAccountApi = await getAzureAccountExtensionApi();
     context.subscriptions.push(azureAccountApi.onSessionsChanged(async () => {
-        if (azureAccountApi.status === 'LoggedIn') {
-            await loadSchema(context, client);
-        }
-    }));
-
-    // Re-request the schema when sessions change since auto-detection is dependent on
-    // being able to query ADO organizations using session credentials.
-    context.subscriptions.push(azureAccountApi.onSessionsChanged(async () => {
-        if (azureAccountApi.status === 'LoggedOut') {
+        if (azureAccountApi.status === 'LoggedIn' || azureAccountApi.status === 'LoggedOut') {
             await loadSchema(context, client);
         }
     }));
