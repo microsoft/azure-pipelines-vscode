@@ -27,6 +27,8 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
                 return undefined; // 1ESPT repo not found
             }
             const repository = repositories.find(repo => repo.name === "1ESPipelineTemplates");
+            
+            // Using getItem from GitApi: getItem(repositoryId: string, path: string, project?: string, scopePath?: string, recursionLevel?: GitInterfaces.VersionControlRecursionType, includeContentMetadata?: boolean, latestProcessedChange?: boolean, download?: boolean, versionDescriptor?: GitInterfaces.GitVersionDescriptor, includeContent?: boolean, resolveLfs?: boolean, sanitize?: boolean): Promise<GitInterfaces.GitItem>;
             var schemaFile = await gitApi.getItem(repository.id, "schema/1espt-base-schema.json", "1ESPipelineTemplates", "", VersionControlRecursionType.None, true, true, true, {}, true, true)
 
             const schemaContent = schemaFile.content;
