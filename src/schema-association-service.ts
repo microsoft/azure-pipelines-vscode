@@ -17,7 +17,6 @@ import { QuickPickItemWithData } from './configure/model/models';
 import * as logger from './logger';
 import { Messages } from './messages';
 import { AzureSession } from './typings/azure-account.api';
-import * as fs from 'fs'
 import { get1ESPTSchemaUriIfAvailable, getCached1ESPTSchemaInformation } from './schema-association-service-1espt';
 
 const selectOrganizationEvent = new vscode.EventEmitter<vscode.WorkspaceFolder>();
@@ -43,6 +42,7 @@ export async function locateSchemaFile(
                 logger.log(
                     `Detected schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
                     'SchemaDetection');
+                    console.log("\x1b[33m",schemaUri.path)
 
                 return schemaUri.path;
             }
@@ -73,6 +73,7 @@ export async function locateSchemaFile(
     logger.log(
         `Using hardcoded schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
         'SchemaDetection');
+        console.log("\x1b[33m",schemaUri.path)
 
     // TODO: We should update getSchemaAssociations so we don't need to constantly
     // notify the server of a "new" schema when in reality we're simply updating
@@ -110,17 +111,18 @@ async function autoDetectSchema(
         logger.log(`Waiting for login`, 'SchemaDetection');
 
         // Disable 1ESPT schema and delete 1ESPT schema file if user is signed out
-        const schemaUri1ESPTFolder = Utils.joinPath(context.globalStorageUri, '1ESPTSchema');
-        var schemaUri1ESPTFolderExists = fs.existsSync(schemaUri1ESPTFolder.path.substring(1)); // substring(1) to remove the '/' at the beginning of path
         config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.Global); // disable 1ESPT schema
         logger.log("1ESPT schema disabled as user is not signed in", 'SchemaDetection')
 
         // show message to user that 1ESPT schema is disabled as user is not signed in
         vscode.window.showInformationMessage(Messages.disabled1ESPTSchemaAsUserNotSignedInMessage)
 
-        if(schemaUri1ESPTFolderExists){
+        try{
             await vscode.workspace.fs.delete(Utils.joinPath(context.globalStorageUri, '1ESPTSchema'), { recursive: true }) // delete 1ESPT schema folder
             logger.log("1ESPTSchema folder deleted as user is not signed in", 'SchemaDetection')
+        }
+        catch(error){
+            logger.log(`Error ${error} while trying to delete 1ESPTSchema folder. Either the folder does not exist or there is an actual error.`, 'SchemaDetection')
         }
 
         // Don't await this message so that we can return the fallback schema instead of blocking.
@@ -158,7 +160,7 @@ async function autoDetectSchema(
                 logger.log(`Found remote URL for ${workspaceFolder.name}: ${remoteUrl}`, 'SchemaDetection');
             }
             // get remoteUrl for dev branches
-            else if(repo.state.remotes.length >= 0) {
+            else if(repo.state.remotes.length > 0) {
                 remoteUrl = repo.state.remotes[0].fetchUrl;
             }
         }
@@ -277,7 +279,7 @@ async function autoDetectSchema(
     // 1. User is signed in with microsoft account
     // 2. 1ESPT schema is enabled
     // 3. 1ESPT schema is not older than 24 hours
-    const [schemaUri1ESPT , skipOrgSpecificCachedSchema] = getCached1ESPTSchemaInformation(context, organizationName, session, oneesptSchemaEnabled, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
+    const [schemaUri1ESPT , skipOrgSpecificCachedSchema] = await getCached1ESPTSchemaInformation(context, organizationName, session, oneesptSchemaEnabled, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
     if(schemaUri1ESPT){
         return schemaUri1ESPT;
     }
@@ -288,8 +290,10 @@ async function autoDetectSchema(
 
     // if user is signed in with microsoft account and has enabled 1ESPipeline Template Schema, then give preference to 1ESPT schema
     if(oneesptSchemaEnabled){
-        const schemaUri1ESPT = await get1ESPTSchemaUriIfAvailable(azureDevOpsClient, organizationName, session, context, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
+        const schemaUri1ESPT = await get1ESPTSchemaUriIfAvailable(azureDevOpsClient, organizationName, session, context);
         if(schemaUri1ESPT){
+            lastUpdated1ESPTSchema = new Date();
+            seen1ESPTOrganizations.add(organizationName);
             return schemaUri1ESPT;
         }
     }

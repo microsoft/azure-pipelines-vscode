@@ -38,7 +38,6 @@
         "CI/CD"
     ],
     "activationEvents": [
-        "onLanguage:yaml",
         "onLanguage:azure-pipelines",
         "onCommand:azure-pipelines.configure-pipeline"
     ],
@@ -66,7 +65,8 @@
                     ".azure-pipelines/**/*.yml",
                     ".azure-pipelines/**/*.yaml",
                     ".vsts-ci.yml",
-                    "vsts-ci.yml"
+                    "vsts-ci.yml",
+                    "*.yml"
                 ],
                 "aliases": [
                     "Azure Pipelines"
