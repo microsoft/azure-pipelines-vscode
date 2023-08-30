@@ -97,7 +97,7 @@ async function autoDetectSchema(
     workspaceFolder: vscode.WorkspaceFolder): Promise<vscode.Uri | undefined> {
     const azureAccountApi = await getAzureAccountExtensionApi();
     const config = vscode.workspace.getConfiguration('azure-pipelines')
-    const oneesptSchemaEnabled = vscode.workspace.getConfiguration('azure-pipelines').get<boolean>('1ESPipelineTemplatesSchemaFile', false);
+    const oneesptSchemaEnabled = vscode.workspace.getConfiguration('azure-pipelines', workspaceFolder).get<boolean>('1ESPipelineTemplatesSchemaFile', false);
 
     // We could care less about the subscriptions; all we need are the sessions.
     // However, there's no waitForSessions API, and waitForLogin returns before
@@ -261,6 +261,13 @@ async function autoDetectSchema(
     if (session === undefined) {
         logger.log(`No organization found for ${workspaceFolder.name}`, 'SchemaDetection');
         vscode.window.showErrorMessage(format(Messages.unableToAccessOrganization, organizationName));
+        
+        // Disable 1ESPT schema and delete 1ESPT schema file if user is signed out
+        config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.Workspace); // disable 1ESPT schema
+        logger.log("1ESPT schema disabled as user is not signed in", 'SchemaDetection')
+        // show message to user that 1ESPT schema is disabled as user is not signed in
+        vscode.window.showInformationMessage(Messages.disabled1ESPTSchemaAsUserNotSignedInMessage)
+        
         return undefined;
     }
 
@@ -288,7 +295,7 @@ async function autoDetectSchema(
 
     // if user is signed in with microsoft account and has enabled 1ESPipeline Template Schema, then give preference to 1ESPT schema
     if(oneesptSchemaEnabled){
-        const schemaUri1ESPT = await get1ESPTSchemaUriIfAvailable(azureDevOpsClient, organizationName, session, context);
+        const schemaUri1ESPT = await get1ESPTSchemaUriIfAvailable(azureDevOpsClient, organizationName, session, context, workspaceFolder);
         if(schemaUri1ESPT){
             lastUpdated1ESPTSchema.set(organizationName, new Date());
             seen1ESPTOrganizations.add(organizationName);

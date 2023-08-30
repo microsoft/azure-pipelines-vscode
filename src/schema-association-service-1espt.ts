@@ -12,7 +12,7 @@ import { Messages } from './messages';
 
 const milliseconds24hours = 86400000;
 
-export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebApi, organizationName: string, session: AzureSession, context: vscode.ExtensionContext): Promise<URI> {
+export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebApi, organizationName: string, session: AzureSession, context: vscode.ExtensionContext, workspaceFolder: vscode.WorkspaceFolder): Promise<URI> {
     try {
         if (session.userId.endsWith("@microsoft.com") || session.userId.endsWith(".microsoft.com")) {
             const gitApi = await azureDevOpsClient.getGitApi();
@@ -20,7 +20,7 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
             if (!repositories || repositories.length == 0) {
                 logger.log(`1ESPT repo not found for org ${organizationName}`, `SchemaDetection`)
                 const config = vscode.workspace.getConfiguration('azure-pipelines')
-                config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.WorkspaceFolder); // disable the 1ESPT schema configuration
+                config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.Workspace); // disable the 1ESPT schema configuration
                 vscode.window.showInformationMessage(Messages.disabled1ESPTSchemaAsADOOrgNotContains1ESPT)
                 return undefined; // 1ESPT repo not found
             }
@@ -37,7 +37,7 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
         else
         // if user is signed in with account other than microsoft, then disable 1ESPT schema and delete the 1ESPT schema file
         {
-            const config = vscode.workspace.getConfiguration('azure-pipelines')
+            const config = vscode.workspace.getConfiguration('azure-pipelines', workspaceFolder)
             config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.Workspace);
             await vscode.workspace.fs.delete(Utils.joinPath(context.globalStorageUri, '1ESPTSchema'), { recursive: true })
         }
