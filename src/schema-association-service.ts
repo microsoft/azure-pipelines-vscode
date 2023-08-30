@@ -42,7 +42,6 @@ export async function locateSchemaFile(
                 logger.log(
                     `Detected schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
                     'SchemaDetection');
-                    console.log("\x1b[33m",schemaUri.path)
 
                 return schemaUri.path;
             }
@@ -73,7 +72,6 @@ export async function locateSchemaFile(
     logger.log(
         `Using hardcoded schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
         'SchemaDetection');
-        console.log("\x1b[33m",schemaUri.path)
 
     // TODO: We should update getSchemaAssociations so we don't need to constantly
     // notify the server of a "new" schema when in reality we're simply updating
@@ -111,7 +109,7 @@ async function autoDetectSchema(
         logger.log(`Waiting for login`, 'SchemaDetection');
 
         // Disable 1ESPT schema and delete 1ESPT schema file if user is signed out
-        config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.Global); // disable 1ESPT schema
+        config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.Workspace); // disable 1ESPT schema
         logger.log("1ESPT schema disabled as user is not signed in", 'SchemaDetection')
 
         // show message to user that 1ESPT schema is disabled as user is not signed in

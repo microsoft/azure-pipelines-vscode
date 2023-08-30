@@ -38,7 +38,7 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
         // if user is signed in with account other than microsoft, then disable 1ESPT schema and delete the 1ESPT schema file
         {
             const config = vscode.workspace.getConfiguration('azure-pipelines')
-            config.update('1ESPipelineTemplatesSchemaFile', false, vscode.ConfigurationTarget.WorkspaceFolder);
+            config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.Workspace);
             await vscode.workspace.fs.delete(Utils.joinPath(context.globalStorageUri, '1ESPTSchema'), { recursive: true })
         }
     }
