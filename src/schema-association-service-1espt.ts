@@ -48,7 +48,7 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
     return undefined;
 }
 
-export async function getCached1ESPTSchemaInformation(context: vscode.ExtensionContext, organizationName: string, session: AzureSession, oneesptSchemaEnabled: boolean, lastUpdated1ESPTSchema: Date, seen1ESPTOrganizations: Set<string>): Promise<[URI, boolean]> {
+export async function getCached1ESPTSchemaInformation(context: vscode.ExtensionContext, organizationName: string, session: AzureSession, oneesptSchemaEnabled: boolean, lastUpdated1ESPTSchema: Map<string,Date>, seen1ESPTOrganizations: Set<string>): Promise<[URI, boolean]> {
     var skipOrgSpecificCachedSchema = false
     var validSessionToEnable1ESPTSchema = false;
     if (seen1ESPTOrganizations.has(organizationName)) {
@@ -64,7 +64,7 @@ export async function getCached1ESPTSchemaInformation(context: vscode.ExtensionC
             // 1) User is signed in with microsoft account
             // 2) 1ESPT schema is enabled
             // 3) last fetched 1ESPT schema is less than 24 hours old
-                if (validSessionToEnable1ESPTSchema && oneesptSchemaEnabled && ((new Date().getTime() - lastUpdated1ESPTSchema.getTime()) < milliseconds24hours)) {
+                if (validSessionToEnable1ESPTSchema && oneesptSchemaEnabled && ((new Date().getTime() - lastUpdated1ESPTSchema.get(organizationName).getTime()) < milliseconds24hours)) {
                     logger.log("Returning cached schema for 1ESPT", 'SchemaDetection')
                     return [schemaUri1ESPT, skipOrgSpecificCachedSchema];
                 }

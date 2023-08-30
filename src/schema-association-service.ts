@@ -27,7 +27,7 @@ export const onDidSelectOrganization = selectOrganizationEvent.event;
  */
 const seenOrganizations = new Set<string>();
 const seen1ESPTOrganizations = new Set<string>();
-let lastUpdated1ESPTSchema = new Date();
+const lastUpdated1ESPTSchema = new Map<string, Date>();
 
 export async function locateSchemaFile(
     context: vscode.ExtensionContext,
@@ -292,7 +292,7 @@ async function autoDetectSchema(
     if(oneesptSchemaEnabled){
         const schemaUri1ESPT = await get1ESPTSchemaUriIfAvailable(azureDevOpsClient, organizationName, session, context);
         if(schemaUri1ESPT){
-            lastUpdated1ESPTSchema = new Date();
+            lastUpdated1ESPTSchema.set(organizationName, new Date());
             seen1ESPTOrganizations.add(organizationName);
             return schemaUri1ESPT;
         }
