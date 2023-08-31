@@ -17,7 +17,7 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
         if (session.userId.endsWith("@microsoft.com") || session.userId.endsWith(".microsoft.com")) {
             const gitApi = await azureDevOpsClient.getGitApi();
             const repositories = await gitApi.getRepositories('1ESPipelineTemplates');
-            if (!repositories || repositories.length == 0) {
+            if (!repositories || repositories.length === 0) {
                 logger.log(`1ESPT repo not found for org ${organizationName}`, `SchemaDetection`)
                 const config = vscode.workspace.getConfiguration('azure-pipelines')
                 config.update('1ESPipelineTemplatesSchemaFile', undefined, vscode.ConfigurationTarget.Workspace); // disable the 1ESPT schema configuration
