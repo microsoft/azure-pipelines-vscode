@@ -38,7 +38,6 @@
         "CI/CD"
     ],
     "activationEvents": [
-        "onLanguage:yaml",
         "onLanguage:azure-pipelines",
         "onCommand:azure-pipelines.configure-pipeline"
     ],

@@ -42,7 +42,6 @@ export async function locateSchemaFile(
                 logger.log(
                     `Detected schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
                     'SchemaDetection');
-                    console.log("\x1b[33m",schemaUri.path)
                 return schemaUri.path;
             }
         } catch (error) {
@@ -72,7 +71,6 @@ export async function locateSchemaFile(
     logger.log(
         `Using hardcoded schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
         'SchemaDetection');
-        console.log("\x1b[33m",schemaUri.path)
     // TODO: We should update getSchemaAssociations so we don't need to constantly
     // notify the server of a "new" schema when in reality we're simply updating
     // associations -- which is exactly what getSchemaAssociations is there for!
@@ -289,7 +287,6 @@ async function autoDetectSchema(
         // 3. 1ESPT schema is not older than 24 hours
         const cachedSchemaUri1ESPT = await getCached1ESPTSchemaInformation(context, organizationName, session, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
         if (cachedSchemaUri1ESPT) {
-            console.log("\x1b[33m", "cached1espt")
             return cachedSchemaUri1ESPT;
         }
         else {

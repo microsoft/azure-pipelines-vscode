@@ -17,7 +17,6 @@ import { getAzureAccountExtensionApi } from './extensionApis';
  * The unique string that identifies the Azure Pipelines languge.
  */
 const LANGUAGE_IDENTIFIER = 'azure-pipelines';
-const YAML_LANGUAGE_IDENTIFIER = 'yaml';
 
 /**
  * The document selector to use when deciding whether to activate Azure Pipelines-specific features.
@@ -90,11 +89,6 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
         await loadSchema(context, client);
     }
 
-    // Load the schema if we were activated because an yaml file.
-    if (vscode.window.activeTextEditor?.document.languageId === YAML_LANGUAGE_IDENTIFIER) {
-        await loadSchema(context, client);
-    }
-
     // And subscribe to future open events, as well.
     context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(async () => {
         await loadSchema(context, client);
@@ -136,7 +130,7 @@ async function loadSchema(
     workspaceFolder?: vscode.WorkspaceFolder): Promise<void> {
     if (workspaceFolder === undefined) {
         const textDocument = vscode.window.activeTextEditor?.document;
-        if (textDocument?.languageId !== LANGUAGE_IDENTIFIER && textDocument?.languageId !== YAML_LANGUAGE_IDENTIFIER) {
+        if (textDocument?.languageId !== LANGUAGE_IDENTIFIER) {
             return;
         }
 
