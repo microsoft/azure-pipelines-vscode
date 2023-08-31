@@ -229,7 +229,7 @@ async function autoDetectSchema(
                         const selectedOrganizationAndSession = await showQuickPick(
                             'organization',
                             organizationAndSessionsPromise, {
-                            placeHolder: format(Messages.selectOrganizationPlaceholder, workspaceFolder.name),
+                            	placeHolder: format(Messages.selectOrganizationPlaceholder, workspaceFolder.name),
                         });
 
                         if (selectedOrganizationAndSession === undefined) {
