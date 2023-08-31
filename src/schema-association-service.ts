@@ -270,6 +270,8 @@ async function autoDetectSchema(
 
     // Create the global storage folder to guarantee that it exists.
     await vscode.workspace.fs.createDirectory(context.globalStorageUri);
+    
+    logger.log(`Retrieving schema for ${workspaceFolder.name}`, 'SchemaDetection');
 
     // Try to fetch schema in the following order:
     // 1. Cached 1ESPT schema
@@ -312,8 +314,6 @@ async function autoDetectSchema(
         logger.log(`Returning cached schema for ${workspaceFolder.name}`, 'SchemaDetection');
         return schemaUri;
     }
-
-    logger.log(`Retrieving schema for ${workspaceFolder.name}`, 'SchemaDetection');
 
     const taskAgentApi = await azureDevOpsClient.getTaskAgentApi();
     const schema = JSON.stringify(await taskAgentApi.getYamlSchema());
