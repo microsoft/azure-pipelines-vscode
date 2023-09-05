@@ -17,7 +17,7 @@ import { QuickPickItemWithData } from './configure/model/models';
 import * as logger from './logger';
 import { Messages } from './messages';
 import { AzureSession } from './typings/azure-account.api';
-import { get1ESPTSchemaUriIfAvailable, getCached1ESPTSchemaInformation } from './schema-association-service-1espt';
+import { get1ESPTSchemaUriIfAvailable, getCached1ESPTSchema } from './schema-association-service-1espt';
 
 const selectOrganizationEvent = new vscode.EventEmitter<vscode.WorkspaceFolder>();
 export const onDidSelectOrganization = selectOrganizationEvent.event;
@@ -287,7 +287,7 @@ async function autoDetectSchema(
         // 1. User is signed in with microsoft account
         // 2. 1ESPT schema is enabled
         // 3. 1ESPT schema is not older than 24 hours
-        const cachedSchemaUri1ESPT = await getCached1ESPTSchemaInformation(context, organizationName, session, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
+        const cachedSchemaUri1ESPT = await getCached1ESPTSchema(context, organizationName, session, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
         if (cachedSchemaUri1ESPT) {
             return cachedSchemaUri1ESPT;
         }

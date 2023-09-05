@@ -27,7 +27,7 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
             const repository = repositories.find(repo => repo.name === "1ESPipelineTemplates");
 
             // Using getItem from GitApi: getItem(repositoryId: string, path: string, project?: string, scopePath?: string, recursionLevel?: GitInterfaces.VersionControlRecursionType, includeContentMetadata?: boolean, latestProcessedChange?: boolean, download?: boolean, versionDescriptor?: GitInterfaces.GitVersionDescriptor, includeContent?: boolean, resolveLfs?: boolean, sanitize?: boolean): Promise<GitInterfaces.GitItem>;
-            var schemaFile = await gitApi.getItem(repository.id, "schema/1espt-base-schema.json", "1ESPipelineTemplates", undefined, undefined, true, true, true, undefined, true, true)
+            const schemaFile = await gitApi.getItem(repository.id, "schema/1espt-base-schema.json", "1ESPipelineTemplates", undefined, undefined, true, true, true, undefined, true, true)
 
             const schemaContent = schemaFile.content;
             const schemaUri = Utils.joinPath(context.globalStorageUri, '1ESPTSchema', `${organizationName}-1espt-schema.json`);
@@ -48,20 +48,28 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
     return undefined;
 }
 
-export async function getCached1ESPTSchemaInformation(context: vscode.ExtensionContext, organizationName: string, session: AzureSession, lastUpdated1ESPTSchema: Map<string, Date>, seen1ESPTOrganizations: Set<string>): Promise<URI> {
+/**
+ * Fetch cached 1ESPT schema if:
+ *     1) User is signed in with microsoft account
+       2) 1ESPT schema is enabled
+       3) last fetched 1ESPT schema is less than 24 hours old
+       4) Schema file exists
+ * @param context 
+ * @param organizationName 
+ * @param session 
+ * @param lastUpdated1ESPTSchema 
+ * @param seen1ESPTOrganizations 
+ * @returns 
+ */
+export async function getCached1ESPTSchema(context: vscode.ExtensionContext, organizationName: string, session: AzureSession, lastUpdated1ESPTSchema: Map<string, Date>, seen1ESPTOrganizations: Set<string>): Promise<URI> {
     if (seen1ESPTOrganizations.has(organizationName)) {
         const schemaUri1ESPT = Utils.joinPath(context.globalStorageUri, '1ESPTSchema', `${organizationName}-1espt-schema.json`);
 
         try {
             if (session.userId.endsWith("@microsoft.com") || session.userId.endsWith(".microsoft.com")) {
                 if ((new Date().getTime() - lastUpdated1ESPTSchema.get(organizationName).getTime()) < milliseconds24hours) {
-                    var schemaFileExists = await vscode.workspace.fs.stat(schemaUri1ESPT);
-                    if (schemaFileExists) {
-                        // Fetch cached 1ESPT schema if:
-                        // 1) User is signed in with microsoft account
-                        // 2) 1ESPT schema is enabled
-                        // 3) last fetched 1ESPT schema is less than 24 hours old
-                        // 4) Schema file exists
+                    const schemaFileExists = await vscode.workspace.fs.stat(schemaUri1ESPT);
+                    if (schemaFileExists) {                                 
                         logger.log("Returning cached schema for 1ESPT", 'SchemaDetection')
                         return schemaUri1ESPT;
                     }

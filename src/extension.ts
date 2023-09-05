@@ -73,13 +73,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 
     // Let the server know of any schema changes.
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
-        if (event.affectsConfiguration('azure-pipelines.customSchemaFile')) {
-            await loadSchema(context, client);
-        }
-    }));
-
-    context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
-        if (event.affectsConfiguration('azure-pipelines.1ESPipelineTemplatesSchemaFile')) {
+        if (event.affectsConfiguration('azure-pipelines.customSchemaFile') || event.affectsConfiguration('azure-pipelines.1ESPipelineTemplatesSchemaFile')) {
             await loadSchema(context, client);
         }
     }));
