@@ -62,6 +62,7 @@ export class Messages {
     public static cannotFindPipelineUrlInMetaDataException = 'We were unable to find pipeline associated with the Azure Web App. Please click on "Browse Pipeline" to explore.';
     public static cannotFindOrganizationWithName = 'Unable to find organization with name: %s';
     public static signInForEnhancedIntelliSense = 'Sign in to Azure for enhanced Azure Pipelines IntelliSense';
-    public static disabled1ESPTSchemaAsADOOrgNotContains1ESPT = '1ESPT Schema is disabled as 1ESPT Schema is not available in your ADO organization';
-    public static disabled1ESPTSchemaAsUserNotSignedInMessage = '1ESPT Schema is disabled as user is not signed in with Microsoft account';
+    public static userEligibleForEnahanced1ESPTIntellisense = 'Enable 1ESPT Schema in Azure Pipelines Extension settings for enhanced Intellisense';
+    public static disabled1ESPTSchemaAsUserNotSignedInMessage = '1ESPT Schema is not used for Intellisense as user is not signed in with `@microsoft.com` account';
+    public static enable1ESPTSchema = 'Enable';
 }

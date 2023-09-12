@@ -17,7 +17,7 @@ import { QuickPickItemWithData } from './configure/model/models';
 import * as logger from './logger';
 import { Messages } from './messages';
 import { AzureSession } from './typings/azure-account.api';
-import { get1ESPTSchemaUriIfAvailable, getCached1ESPTSchema } from './schema-association-service-1espt';
+import { get1ESPTSchemaUri, getCached1ESPTSchema, checkIfUserEligibleFor1ESPTIntellisense, delete1ESPTSchemaFileIfPresent } from './schema-association-service-1espt';
 
 const selectOrganizationEvent = new vscode.EventEmitter<vscode.WorkspaceFolder>();
 export const onDidSelectOrganization = selectOrganizationEvent.event;
@@ -28,6 +28,9 @@ export const onDidSelectOrganization = selectOrganizationEvent.event;
 const seenOrganizations = new Set<string>();
 const seen1ESPTOrganizations = new Set<string>();
 const lastUpdated1ESPTSchema = new Map<string, Date>();
+
+var eligibleFor1ESPTIntellisense = undefined;
+var repoId1espt = undefined;
 
 export async function locateSchemaFile(
     context: vscode.ExtensionContext,
@@ -94,7 +97,6 @@ async function autoDetectSchema(
     context: vscode.ExtensionContext,
     workspaceFolder: vscode.WorkspaceFolder): Promise<vscode.Uri | undefined> {
     const azureAccountApi = await getAzureAccountExtensionApi();
-    const config = vscode.workspace.getConfiguration('azure-pipelines')
 
     // We could care less about the subscriptions; all we need are the sessions.
     // However, there's no waitForSessions API, and waitForLogin returns before
@@ -105,15 +107,8 @@ async function autoDetectSchema(
     if (!(await azureAccountApi.waitForSubscriptions())) {
         logger.log(`Waiting for login`, 'SchemaDetection');
 
-        // Disable 1ESPT schema and delete 1ESPT schema file if user is signed out
-        config.update('1ESPipelineTemplatesSchemaFile', false, vscode.ConfigurationTarget.Workspace); // disable 1ESPT schema
-        logger.log("1ESPT schema disabled as user is not signed in", 'SchemaDetection')
-
-        // show message to user that 1ESPT schema is disabled as user is not signed in
-        vscode.window.showInformationMessage(Messages.disabled1ESPTSchemaAsUserNotSignedInMessage)
-
         try {
-            await vscode.workspace.fs.delete(Utils.joinPath(context.globalStorageUri, '1ESPTSchema'), { recursive: true }) // delete 1ESPT schema folder
+            await delete1ESPTSchemaFileIfPresent(context);
             logger.log("1ESPTSchema folder deleted as user is not signed in", 'SchemaDetection')
         }
         catch (error) {
@@ -258,13 +253,7 @@ async function autoDetectSchema(
     if (session === undefined) {
         logger.log(`No organization found for ${workspaceFolder.name}`, 'SchemaDetection');
         vscode.window.showErrorMessage(format(Messages.unableToAccessOrganization, organizationName));
-
-        // Disable 1ESPT schema and delete 1ESPT schema file if user is signed out
-        config.update('1ESPipelineTemplatesSchemaFile', false, vscode.ConfigurationTarget.Workspace); // disable 1ESPT schema
-        logger.log("1ESPT schema disabled as user is not signed in", 'SchemaDetection')
-        // show message to user that 1ESPT schema is disabled as user is not signed in
-        vscode.window.showInformationMessage(Messages.disabled1ESPTSchemaAsUserNotSignedInMessage)
-
+        await delete1ESPTSchemaFileIfPresent(context);
         return undefined;
     }
 
@@ -282,24 +271,40 @@ async function autoDetectSchema(
     const authHandler = azdev.getBearerHandler(token.accessToken);
     const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
 
-    if (vscode.workspace.getConfiguration('azure-pipelines', workspaceFolder).get<boolean>('1ESPipelineTemplatesSchemaFile', false)) {
-        // get cached 1ESPT schema if:
-        // 1. User is signed in with microsoft account
-        // 2. 1ESPT schema is enabled
-        // 3. 1ESPT schema is not older than 24 hours
-        const cachedSchemaUri1ESPT = await getCached1ESPTSchema(context, organizationName, session, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
-        if (cachedSchemaUri1ESPT) {
-            return cachedSchemaUri1ESPT;
-        }
-        else {
-            // if user is signed in with microsoft account and has enabled 1ESPipeline Template Schema, then give preference to 1ESPT schema
-            const schemaUri1ESPT = await get1ESPTSchemaUriIfAvailable(azureDevOpsClient, organizationName, session, context, workspaceFolder);
-            if (schemaUri1ESPT) {
-                lastUpdated1ESPTSchema.set(organizationName, new Date());
-                seen1ESPTOrganizations.add(organizationName);
-                return schemaUri1ESPT;
+    if (eligibleFor1ESPTIntellisense === undefined) {
+        [eligibleFor1ESPTIntellisense, repoId1espt] = await checkIfUserEligibleFor1ESPTIntellisense(azureDevOpsClient, organizationName);
+    }
+
+    if (eligibleFor1ESPTIntellisense) {
+        // user has enabled 1ESPT schema
+        if (vscode.workspace.getConfiguration('azure-pipelines', workspaceFolder).get<boolean>('1ESPipelineTemplatesSchemaFile', false)) {
+            const cachedSchemaUri1ESPT = await getCached1ESPTSchema(context, organizationName, session, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
+            if (cachedSchemaUri1ESPT) {
+                return cachedSchemaUri1ESPT;
+            }
+            else {
+                // if user is signed in with microsoft account and has enabled 1ESPipeline Template Schema, then give preference to 1ESPT schema
+                const schemaUri1ESPT = await get1ESPTSchemaUri(azureDevOpsClient, organizationName,session, context, repoId1espt);
+                if (schemaUri1ESPT) {
+                    lastUpdated1ESPTSchema.set(organizationName, new Date());
+                    seen1ESPTOrganizations.add(organizationName);
+                    return schemaUri1ESPT;
+                }
             }
         }
+        // If 1ESPT schema is not enabled, show a pop-up option to enable it for enahnced intellisense
+        else {
+            vscode.window.showInformationMessage(Messages.userEligibleForEnahanced1ESPTIntellisense, Messages.enable1ESPTSchema).then(async action => {
+                if (action === Messages.enable1ESPTSchema) {
+                    const config = vscode.workspace.getConfiguration('azure-pipelines')
+                    config.update('1ESPipelineTemplatesSchemaFile', true, vscode.ConfigurationTarget.Workspace);
+                
+                }
+            });
+        }
+    }
+    else {
+        logger.log(`User is not eligible for enhanced 1ESPT Schema Intellisense.`, 'SchemaDetection');
     }
 
     // Grab and save the schema if we haven't already seen the organization this session.

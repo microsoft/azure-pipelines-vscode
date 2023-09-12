@@ -12,37 +12,21 @@ import { Messages } from './messages';
 
 const milliseconds24hours = 86400000;
 
-export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebApi, organizationName: string, session: AzureSession, context: vscode.ExtensionContext, workspaceFolder: vscode.WorkspaceFolder): Promise<URI> {
+export async function get1ESPTSchemaUri(azureDevOpsClient: azdev.WebApi, organizationName: string, session: AzureSession, context: vscode.ExtensionContext, repoId1espt: string): Promise<URI> {
     try {
-        if (session.userId.endsWith("@microsoft.com") || session.userId.endsWith(".microsoft.com")) {
+        if (session.userId.endsWith("@microsoft.com")) {
             const gitApi = await azureDevOpsClient.getGitApi();
-            const repositories = await gitApi.getRepositories('1ESPipelineTemplates');
-            if (!repositories || repositories.length === 0) {
-                logger.log(`1ESPipelineTemplates ADO project not found for org ${organizationName}`, `SchemaDetection`);
-                disable1ESPTSchemaConfiguration();
-                return undefined; // 1ESPT ADO project not found
-            }
-
-            const repository = repositories.find(repo => repo.name === "1ESPipelineTemplates");
-            if(!repository){
-                logger.log(`1ESPipelineTemplates repo not found for org ${organizationName}`, `SchemaDetection`);
-                disable1ESPTSchemaConfiguration();
-                return undefined; // 1ESPT repo not found
-            }
             // Using getItem from GitApi: getItem(repositoryId: string, path: string, project?: string, scopePath?: string, recursionLevel?: GitInterfaces.VersionControlRecursionType, includeContentMetadata?: boolean, latestProcessedChange?: boolean, download?: boolean, versionDescriptor?: GitInterfaces.GitVersionDescriptor, includeContent?: boolean, resolveLfs?: boolean, sanitize?: boolean): Promise<GitInterfaces.GitItem>;
-            const schemaFile = await gitApi.getItem(repository.id, "schema/1espt-base-schema.json", "1ESPipelineTemplates", undefined, undefined, true, true, true, undefined, true, true);
+            const schemaFile = await gitApi.getItem(repoId1espt, "schema/1espt-base-schema.json", "1ESPipelineTemplates", undefined, undefined, true, true, true, undefined, true, true);
 
             const schemaContent = schemaFile.content;
             const schemaUri = Utils.joinPath(context.globalStorageUri, '1ESPTSchema', `${organizationName}-1espt-schema.json`);
             await vscode.workspace.fs.writeFile(schemaUri, Buffer.from(schemaContent));
             return schemaUri;
         }
-        else
-        // if user is signed in with account other than microsoft, then disable 1ESPT schema and delete the 1ESPT schema file
-        {
-            const config = vscode.workspace.getConfiguration('azure-pipelines', workspaceFolder);
-            config.update('1ESPipelineTemplatesSchemaFile', false, vscode.ConfigurationTarget.Workspace);
-            await vscode.workspace.fs.delete(Utils.joinPath(context.globalStorageUri, '1ESPTSchema'), { recursive: true });
+        else {
+        // if user is signed in with account other than microsoft, then delete the 1ESPT schema file
+            await delete1ESPTSchemaFileIfPresent(context);
         }
     }
     catch (error) {
@@ -53,7 +37,7 @@ export async function get1ESPTSchemaUriIfAvailable(azureDevOpsClient: azdev.WebA
 
 /**
  * Fetch cached 1ESPT schema if:
- *     1) User is signed in with microsoft account
+       1) User is signed in with microsoft account
        2) 1ESPT schema is enabled
        3) last fetched 1ESPT schema is less than 24 hours old
        4) Schema file exists
@@ -69,10 +53,10 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
         const schemaUri1ESPT = Utils.joinPath(context.globalStorageUri, '1ESPTSchema', `${organizationName}-1espt-schema.json`);
 
         try {
-            if (session.userId.endsWith("@microsoft.com") || session.userId.endsWith(".microsoft.com")) {
+            if (session.userId.endsWith("@microsoft.com")) {
                 if ((new Date().getTime() - lastUpdated1ESPTSchema.get(organizationName).getTime()) < milliseconds24hours) {
                     const schemaFileExists = await vscode.workspace.fs.stat(schemaUri1ESPT);
-                    if (schemaFileExists) {                                 
+                    if (schemaFileExists) {
                         logger.log("Returning cached schema for 1ESPT", 'SchemaDetection');
                         return schemaUri1ESPT;
                     }
@@ -83,6 +67,17 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
                 }
             }
             else {
+                vscode.window.showInformationMessage(Messages.disabled1ESPTSchemaAsUserNotSignedInMessage, Messages.signInLabel)
+                .then(async action => {
+                    if (action === Messages.signInLabel) {
+                        await vscode.window.withProgress({
+                            location: vscode.ProgressLocation.Notification,
+                            title: Messages.waitForAzureSignIn,
+                        }, async () => {
+                            await vscode.commands.executeCommand("azure-account.login");
+                        });
+                    }
+                });
                 logger.log(`Skipping cached 1ESPT schema for ${organizationName} as user is not signed in with Microsoft account`, `SchemaDetection`);
             }
         }
@@ -93,9 +88,40 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
     return undefined;
 }
 
-function disable1ESPTSchemaConfiguration() : void{
-    const config = vscode.workspace.getConfiguration('azure-pipelines');
-    config.update('1ESPipelineTemplatesSchemaFile', false, vscode.ConfigurationTarget.Workspace); // disable the 1ESPT schema configuration
-    vscode.window.showInformationMessage(Messages.disabled1ESPTSchemaAsADOOrgNotContains1ESPT);
+/**
+ * User is eligible for 1ESPT schema if 1ESPT schema is available in ADO organization
+ * @param azureDevOpsClient 
+ * @param organizationName 
+ * @returns 
+ */
+export async function checkIfUserEligibleFor1ESPTIntellisense(azureDevOpsClient: azdev.WebApi, organizationName: string): Promise<[boolean, string]> {
+    try {
+        const gitApi = await azureDevOpsClient.getGitApi();
+        const repositories = await gitApi.getRepositories('1ESPipelineTemplates');
+        if (!repositories || repositories.length === 0) {
+            logger.log(`1ESPipelineTemplates ADO project not found for org ${organizationName}`, `SchemaDetection`);
+            return [false, undefined]; // 1ESPT ADO project not found
+        }
+
+        const repository = repositories.find(repo => repo.name === "1ESPipelineTemplates");
+        if (!repository) {
+            logger.log(`1ESPipelineTemplates repo not found for org ${organizationName}`, `SchemaDetection`);
+            return [false, undefined]; // 1ESPT repo not found
+        }
+
+        return [true, repository.id];
+    }
+    catch (error) {
+        logger.log(`Error : ${error} while checking eligibility for enhanced Intellisense for 1ESPT schema for org: ${organizationName}.`, 'SchemaDetection');
+        return [false, undefined];
+    }
 }
 
+export async function delete1ESPTSchemaFileIfPresent(context: vscode.ExtensionContext) {
+    try {
+        await vscode.workspace.fs.delete(Utils.joinPath(context.globalStorageUri, '1ESPTSchema'), { recursive: true });
+    }
+    catch (error) {
+        logger.log(`Error: ${error} while deleting 1ESPT schema. It's possible that the schema file does not exist`, 'SchemaDetection');
+    }
+}
