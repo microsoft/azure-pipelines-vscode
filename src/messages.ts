@@ -63,6 +63,6 @@ export class Messages {
     public static cannotFindOrganizationWithName = 'Unable to find organization with name: %s';
     public static signInForEnhancedIntelliSense = 'Sign in to Azure for enhanced Azure Pipelines IntelliSense';
     public static userEligibleForEnahanced1ESPTIntellisense = 'Enable 1ESPT Schema in Azure Pipelines Extension settings for enhanced Intellisense';
-    public static disabled1ESPTSchemaAsUserNotSignedInMessage = '1ESPT Schema is not used for Intellisense as user is not signed in with `@microsoft.com` account';
+    public static notUsing1ESPTSchemaAsUserNotSignedInMessage = '1ESPT Schema is not used for Intellisense as user is not signed in with `@microsoft.com` account';
     public static enable1ESPTSchema = 'Enable';
 }

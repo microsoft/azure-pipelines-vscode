@@ -67,7 +67,7 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
                 }
             }
             else {
-                vscode.window.showInformationMessage(Messages.disabled1ESPTSchemaAsUserNotSignedInMessage, Messages.signInLabel)
+                vscode.window.showInformationMessage(Messages.notUsing1ESPTSchemaAsUserNotSignedInMessage, Messages.signInLabel)
                 .then(async action => {
                     if (action === Messages.signInLabel) {
                         await vscode.window.withProgress({
