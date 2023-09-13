@@ -25,7 +25,7 @@ export async function get1ESPTSchemaUri(azureDevOpsClient: azdev.WebApi, organiz
             return schemaUri;
         }
         else {
-        // if user is signed in with account other than microsoft, then delete the 1ESPT schema file
+            // if user is signed in with account other than microsoft, then delete the 1ESPT schema file
             await delete1ESPTSchemaFileIfPresent(context);
         }
     }
