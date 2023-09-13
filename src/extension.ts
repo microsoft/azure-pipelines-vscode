@@ -73,7 +73,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 
     // Let the server know of any schema changes.
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
-        if (event.affectsConfiguration('azure-pipelines.customSchemaFile')) {
+        if (event.affectsConfiguration('azure-pipelines.customSchemaFile') || event.affectsConfiguration('azure-pipelines.1ESPipelineTemplatesSchemaFile')) {
             await loadSchema(context, client);
         }
     }));
@@ -102,10 +102,10 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     }));
 
     // Re-request the schema when sessions change since auto-detection is dependent on
-    // being able to query ADO organizations using session credentials.
+    // being able to query ADO organizations, check if 1ESPT schema can be used using session credentials.
     const azureAccountApi = await getAzureAccountExtensionApi();
     context.subscriptions.push(azureAccountApi.onSessionsChanged(async () => {
-        if (azureAccountApi.status === 'LoggedIn') {
+        if (azureAccountApi.status === 'LoggedIn' || azureAccountApi.status === 'LoggedOut') {
             await loadSchema(context, client);
         }
     }));

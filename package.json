@@ -85,7 +85,14 @@
                 "azure-pipelines.configure": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Enable 'Configure Pipeline' feature"
+                    "description": "Enable 'Configure Pipeline' feature",
+                    "order": 0
+                },
+                "azure-pipelines.1ESPipelineTemplatesSchemaFile": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Use 1ES Pipeline Template schema file",
+                    "markdownDescription": "If enabled, [1ES Pipeline Template schema file](https://aka.ms/1espt) will take precedence over custom schema file when user is signed in with `@microsoft.com` account and the schema is available in the ADO organization."
                 },
                 "azure-pipelines.customSchemaFile": {
                     "type": "string",
