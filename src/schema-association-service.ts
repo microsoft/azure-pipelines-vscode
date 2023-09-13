@@ -270,6 +270,7 @@ async function autoDetectSchema(
     const authHandler = azdev.getBearerHandler(token.accessToken);
     const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
 
+    // Cache the response - this is why this method returns empty strings instead of undefined.
     if (repoId1espt === undefined) {
         repoId1espt = await get1ESPTRepoIdIfAvailable(azureDevOpsClient, organizationName);
     }
