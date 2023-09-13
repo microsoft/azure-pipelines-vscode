@@ -29,7 +29,7 @@ const seenOrganizations = new Set<string>();
 const seen1ESPTOrganizations = new Set<string>();
 const lastUpdated1ESPTSchema = new Map<string, Date>();
 
-var repoId1espt = undefined;
+let repoId1espt = undefined;
 
 export async function locateSchemaFile(
     context: vscode.ExtensionContext,
