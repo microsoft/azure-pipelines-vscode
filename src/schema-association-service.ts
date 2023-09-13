@@ -17,7 +17,7 @@ import { QuickPickItemWithData } from './configure/model/models';
 import * as logger from './logger';
 import { Messages } from './messages';
 import { AzureSession } from './typings/azure-account.api';
-import { get1ESPTSchemaUri, getCached1ESPTSchema, checkIfUserEligibleFor1ESPTIntellisense, delete1ESPTSchemaFileIfPresent } from './schema-association-service-1espt';
+import { get1ESPTSchemaUri, getCached1ESPTSchema, get1ESPTRepoIdIfAvailable, delete1ESPTSchemaFileIfPresent } from './schema-association-service-1espt';
 
 const selectOrganizationEvent = new vscode.EventEmitter<vscode.WorkspaceFolder>();
 export const onDidSelectOrganization = selectOrganizationEvent.event;
@@ -29,7 +29,6 @@ const seenOrganizations = new Set<string>();
 const seen1ESPTOrganizations = new Set<string>();
 const lastUpdated1ESPTSchema = new Map<string, Date>();
 
-var eligibleFor1ESPTIntellisense = undefined;
 var repoId1espt = undefined;
 
 export async function locateSchemaFile(
@@ -271,11 +270,11 @@ async function autoDetectSchema(
     const authHandler = azdev.getBearerHandler(token.accessToken);
     const azureDevOpsClient = new azdev.WebApi(`https://dev.azure.com/${organizationName}`, authHandler);
 
-    if (eligibleFor1ESPTIntellisense === undefined) {
-        [eligibleFor1ESPTIntellisense, repoId1espt] = await checkIfUserEligibleFor1ESPTIntellisense(azureDevOpsClient, organizationName);
+    if (repoId1espt === undefined) {
+        repoId1espt = await get1ESPTRepoIdIfAvailable(azureDevOpsClient, organizationName);
     }
 
-    if (eligibleFor1ESPTIntellisense) {
+    if (repoId1espt?.length > 0) {
         // user has enabled 1ESPT schema
         if (vscode.workspace.getConfiguration('azure-pipelines', workspaceFolder).get<boolean>('1ESPipelineTemplatesSchemaFile', false)) {
             const cachedSchemaUri1ESPT = await getCached1ESPTSchema(context, organizationName, session, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
@@ -292,15 +291,17 @@ async function autoDetectSchema(
                 }
             }
         }
-        // If 1ESPT schema is not enabled, show a pop-up option to enable it for enahnced intellisense
+        // If 1ESPT schema is not enabled, show a pop-up option to enable it for enhanced intellisense
         else {
-            vscode.window.showInformationMessage(Messages.userEligibleForEnahanced1ESPTIntellisense, Messages.enable1ESPTSchema).then(async action => {
-                if (action === Messages.enable1ESPTSchema) {
-                    const config = vscode.workspace.getConfiguration('azure-pipelines')
-                    config.update('1ESPipelineTemplatesSchemaFile', true, vscode.ConfigurationTarget.Workspace);
-                
+            if (context.globalState.get('doNotAskAgain1ESPTSchema') == undefined || !context.globalState.get('doNotAskAgain1ESPTSchema')) {
+                const schema1esptPopupResponse = await vscode.window.showInformationMessage(Messages.userEligibleForEnahanced1ESPTIntellisense, Messages.enable1ESPTSchema, Messages.doNotAskAgain);
+                if (schema1esptPopupResponse === Messages.enable1ESPTSchema) {
+                    vscode.workspace.getConfiguration('azure-pipelines').update('1ESPipelineTemplatesSchemaFile', true, vscode.ConfigurationTarget.Workspace);
                 }
-            });
+                else if (schema1esptPopupResponse === Messages.doNotAskAgain) {
+                    context.globalState.update('doNotAskAgain1ESPTSchema', true);
+                }
+            }
         }
     }
     else {

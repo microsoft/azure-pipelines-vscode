@@ -67,17 +67,15 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
                 }
             }
             else {
-                vscode.window.showInformationMessage(Messages.notUsing1ESPTSchemaAsUserNotSignedInMessage, Messages.signInLabel)
-                .then(async action => {
-                    if (action === Messages.signInLabel) {
-                        await vscode.window.withProgress({
-                            location: vscode.ProgressLocation.Notification,
-                            title: Messages.waitForAzureSignIn,
-                        }, async () => {
-                            await vscode.commands.executeCommand("azure-account.login");
-                        });
-                    }
-                });
+                const signInAction = await vscode.window.showInformationMessage(Messages.notUsing1ESPTSchemaAsUserNotSignedInMessage, Messages.signInLabel);
+                if (signInAction == Messages.signInLabel) {
+                    await vscode.window.withProgress({
+                        location: vscode.ProgressLocation.Notification,
+                        title: Messages.waitForAzureSignIn,
+                    }, async () => {
+                        await vscode.commands.executeCommand("azure-account.login");
+                    });
+                }
                 logger.log(`Skipping cached 1ESPT schema for ${organizationName} as user is not signed in with Microsoft account`, `SchemaDetection`);
             }
         }
@@ -94,26 +92,26 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
  * @param organizationName 
  * @returns 
  */
-export async function checkIfUserEligibleFor1ESPTIntellisense(azureDevOpsClient: azdev.WebApi, organizationName: string): Promise<[boolean, string]> {
+export async function get1ESPTRepoIdIfAvailable(azureDevOpsClient: azdev.WebApi, organizationName: string): Promise<string> {
     try {
         const gitApi = await azureDevOpsClient.getGitApi();
         const repositories = await gitApi.getRepositories('1ESPipelineTemplates');
         if (!repositories || repositories.length === 0) {
             logger.log(`1ESPipelineTemplates ADO project not found for org ${organizationName}`, `SchemaDetection`);
-            return [false, undefined]; // 1ESPT ADO project not found
+            return ""; // 1ESPT ADO project not found
         }
 
         const repository = repositories.find(repo => repo.name === "1ESPipelineTemplates");
         if (!repository) {
             logger.log(`1ESPipelineTemplates repo not found for org ${organizationName}`, `SchemaDetection`);
-            return [false, undefined]; // 1ESPT repo not found
+            return ""; // 1ESPT repo not found
         }
 
-        return [true, repository.id];
+        return repository.id;
     }
     catch (error) {
         logger.log(`Error : ${error} while checking eligibility for enhanced Intellisense for 1ESPT schema for org: ${organizationName}.`, 'SchemaDetection');
-        return [false, undefined];
+        return "";
     }
 }
 
