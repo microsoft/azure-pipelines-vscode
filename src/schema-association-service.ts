@@ -69,9 +69,11 @@ export async function locateSchemaFile(
     } else {
         schemaUri = vscode.Uri.file(path.join(context.extensionPath, 'service-schema.json'));
     }
+
     logger.log(
-        `Using hardcoded schema for workspace folder ${workspaceFolder?.name}: ${schemaUri.path}`,
+        `Using hardcoded schema for workspace folder ${workspaceFolder?.name ?? 'ANONYMOUS_WORKSPACE'}: ${schemaUri.path}`,
         'SchemaDetection');
+
     // TODO: We should update getSchemaAssociations so we don't need to constantly
     // notify the server of a "new" schema when in reality we're simply updating
     // associations -- which is exactly what getSchemaAssociations is there for!
@@ -222,7 +224,7 @@ async function autoDetectSchema(
                         const selectedOrganizationAndSession = await showQuickPick(
                             'organization',
                             organizationAndSessionsPromise, {
-                            	placeHolder: format(Messages.selectOrganizationPlaceholder, workspaceFolder.name),
+                            placeHolder: format(Messages.selectOrganizationPlaceholder, workspaceFolder.name),
                         });
 
                         if (selectedOrganizationAndSession === undefined) {
@@ -283,7 +285,7 @@ async function autoDetectSchema(
             }
             else {
                 // if user is signed in with microsoft account and has enabled 1ESPipeline Template Schema, then give preference to 1ESPT schema
-                const schemaUri1ESPT = await get1ESPTSchemaUri(azureDevOpsClient, organizationName,session, context, repoId1espt);
+                const schemaUri1ESPT = await get1ESPTSchemaUri(azureDevOpsClient, organizationName, session, context, repoId1espt);
                 if (schemaUri1ESPT) {
                     lastUpdated1ESPTSchema.set(organizationName, new Date());
                     return schemaUri1ESPT;
@@ -331,9 +333,9 @@ async function autoDetectSchema(
 
 // Mapping of glob pattern -> schemas
 interface ISchemaAssociations {
-	[pattern: string]: string[];
+    [pattern: string]: string[];
 }
 
 export namespace SchemaAssociationNotification {
-	export const type = new languageclient.NotificationType<ISchemaAssociations>('json/schemaAssociations');
+    export const type = new languageclient.NotificationType<ISchemaAssociations>('json/schemaAssociations');
 }
