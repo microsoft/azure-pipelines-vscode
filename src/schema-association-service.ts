@@ -70,9 +70,11 @@ export async function locateSchemaFile(
     } else {
         schemaUri = vscode.Uri.file(path.join(context.extensionPath, 'service-schema.json'));
     }
+
     logger.log(
-        `Using hardcoded schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
+        `Using hardcoded schema for workspace folder ${workspaceFolder?.name ?? 'ANONYMOUS_WORKSPACE'}: ${schemaUri.path}`,
         'SchemaDetection');
+
     // TODO: We should update getSchemaAssociations so we don't need to constantly
     // notify the server of a "new" schema when in reality we're simply updating
     // associations -- which is exactly what getSchemaAssociations is there for!
@@ -258,7 +260,7 @@ async function autoDetectSchema(
 
     // Create the global storage folder to guarantee that it exists.
     await vscode.workspace.fs.createDirectory(context.globalStorageUri);
-    
+
     logger.log(`Retrieving schema for ${workspaceFolder.name}`, 'SchemaDetection');
 
     // Try to fetch schema in the following order:
