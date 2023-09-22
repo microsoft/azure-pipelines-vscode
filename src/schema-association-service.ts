@@ -26,10 +26,9 @@ export const onDidSelectOrganization = selectOrganizationEvent.event;
  * A session-level cache of all the organizations we've saved the schema for.
  */
 const seenOrganizations = new Set<string>();
-const seen1ESPTOrganizations = new Set<string>();
 const lastUpdated1ESPTSchema = new Map<string, Date>();
 
-let repoId1espt = undefined;
+let repoId1espt: string | undefined = undefined;
 
 export async function locateSchemaFile(
     context: vscode.ExtensionContext,
@@ -258,7 +257,7 @@ async function autoDetectSchema(
 
     // Create the global storage folder to guarantee that it exists.
     await vscode.workspace.fs.createDirectory(context.globalStorageUri);
-    
+
     logger.log(`Retrieving schema for ${workspaceFolder.name}`, 'SchemaDetection');
 
     // Try to fetch schema in the following order:
@@ -278,7 +277,7 @@ async function autoDetectSchema(
     if (repoId1espt?.length > 0) {
         // user has enabled 1ESPT schema
         if (vscode.workspace.getConfiguration('azure-pipelines', workspaceFolder).get<boolean>('1ESPipelineTemplatesSchemaFile', false)) {
-            const cachedSchemaUri1ESPT = await getCached1ESPTSchema(context, organizationName, session, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
+            const cachedSchemaUri1ESPT = await getCached1ESPTSchema(context, organizationName, session, lastUpdated1ESPTSchema);
             if (cachedSchemaUri1ESPT) {
                 return cachedSchemaUri1ESPT;
             }
@@ -287,7 +286,6 @@ async function autoDetectSchema(
                 const schemaUri1ESPT = await get1ESPTSchemaUri(azureDevOpsClient, organizationName,session, context, repoId1espt);
                 if (schemaUri1ESPT) {
                     lastUpdated1ESPTSchema.set(organizationName, new Date());
-                    seen1ESPTOrganizations.add(organizationName);
                     return schemaUri1ESPT;
                 }
             }
