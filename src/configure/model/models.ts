@@ -4,6 +4,7 @@ import { WebApi } from 'azure-devops-node-api';
 import { AppServiceClient } from '../clients/azure/appServiceClient';
 import { Build, BuildDefinition } from 'azure-devops-node-api/interfaces/BuildInterfaces';
 import { WebSiteManagementModels } from '@azure/arm-appservice';
+import { AzureSession } from '../../typings/azure-account.api';
 
 export interface Organization {
     accountId: string;
@@ -70,6 +71,7 @@ export type GitRepositoryDetails = {
 });
 
 export interface AzureDevOpsDetails {
+    session: AzureSession;
     adoClient: WebApi;
     organizationName: string;
     project: ValidatedProject;

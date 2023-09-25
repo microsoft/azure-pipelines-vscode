@@ -1,6 +1,6 @@
 import { PipelineTemplate, TargetResourceType, WebAppKind } from '../model/models';
 import * as fs from 'fs/promises';
-import * as Mustache from 'mustache';
+import Mustache from 'mustache';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { URI } from 'vscode-uri';

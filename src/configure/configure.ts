@@ -121,19 +121,14 @@ class PipelineConfigurer {
 
         const template = await this.getSelectedPipeline();
 
-        const session = await this.getAzureSession(repoDetails);
-        if (session === undefined) {
-            return;
-        }
-
-        const adoDetails = await this.getAzureDevOpsDetails(session, repoDetails);
+        const adoDetails = await this.getAzureDevOpsDetails(repoDetails);
         if (adoDetails === undefined) {
             return;
         }
 
         let azureSiteDetails: AzureSiteDetails | undefined;
         if (template.target.type !== TargetResourceType.None) {
-            azureSiteDetails = await this.getAzureResourceDetails(session, template.target.kind);
+            azureSiteDetails = await this.getAzureResourceDetails(adoDetails.session, template.target.kind);
             if (azureSiteDetails === undefined) {
                 return;
             }
@@ -170,7 +165,6 @@ class PipelineConfigurer {
         if (azureSiteDetails !== undefined) {
             azureServiceConnection = await this.createAzureServiceConnection(
                 serviceConnectionHelper,
-                session,
                 adoDetails,
                 azureSiteDetails,
                 this.uniqueResourceNameSuffix);
@@ -301,51 +295,100 @@ class PipelineConfigurer {
         return template.data;
     }
 
-    private async getAzureSession(repoDetails: GitRepositoryDetails): Promise<AzureSession | undefined> {
+    private async getAzureDevOpsDetails(repoDetails: GitRepositoryDetails): Promise<AzureDevOpsDetails | undefined> {
         if (repoDetails.repositoryProvider === RepositoryProvider.AzureRepos) {
             for (const session of this.azureAccount.sessions) {
                 const organizationsClient = new OrganizationsClient(session.credentials2);
                 const organizations = await organizationsClient.listOrganizations();
                 if (organizations.find(org => org.accountName.toLowerCase() === repoDetails.organizationName.toLowerCase())) {
-                    return session;
+                    const adoClient = await this.getAzureDevOpsClient(repoDetails.organizationName, session);
+                    const coreApi = await adoClient.getCoreApi();
+                    const project = await coreApi.getProject(repoDetails.projectName);
+                    if (this.isValidProject(project)) {
+                        return {
+                            session,
+                            adoClient,
+                            organizationName: repoDetails.organizationName,
+                            project,
+                        };
+                    }
                 }
             }
 
             vscode.window.showWarningMessage("You are not signed in to the Azure DevOps organization that contains this repository.");
             return undefined;
         } else {
-            const message = vscode.window.showInformationMessage("Select the Azure DevOps organization to create this pipeline in",
-                Messages.selectOrganizationLabel);
-            if (message === undefined) {
-                return undefined;
-            }
-
             // Lazily construct list of organizations so that we can immediately show the quick pick,
             // then fill in the choices as they come in.
             const organizationAndSessionsPromise = new Promise<
-                QuickPickItemWithData<AzureSession>[]
+                QuickPickItemWithData<AzureSession | undefined>[]
             >(async resolve => {
-                const organizationAndSessions: QuickPickItemWithData<AzureSession>[] = [];
+                const organizationAndSessions: QuickPickItemWithData<AzureSession | undefined>[] = [];
 
-                for (const azureSession of this.azureAccount.sessions) {
-                    const organizationsClient = new OrganizationsClient(azureSession.credentials2);
+                for (const session of this.azureAccount.sessions) {
+                    const organizationsClient = new OrganizationsClient(session.credentials2);
                     const organizations = await organizationsClient.listOrganizations();
                     organizationAndSessions.push(...organizations.map(organization => ({
                         label: organization.accountName,
-                        data: azureSession,
+                        data: session,
                     })));
                 }
+
+                organizationAndSessions.push({
+                    // This is safe because ADO orgs can't have spaces in them.
+                    label: "Create new Azure DevOps organization...",
+                    data: undefined,
+                })
 
                 resolve(organizationAndSessions);
             });
 
-            const session = await showQuickPick(
+            const result = await showQuickPick(
                 'organization',
                 organizationAndSessionsPromise, {
-                    placeHolder: "Select organization to create pipeline in",
+                    placeHolder: "Select the Azure DevOps organization to create this pipeline in",
+            });
+            if (result === undefined) {
+                return undefined;
+            }
+
+            const { label: organizationName, data: session } = result;
+            if (session === undefined) {
+                // Special flag telling us to create a new organization.
+                await vscode.env.openExternal(vscode.Uri.parse("https://dev.azure.com/"));
+                return undefined;
+            }
+
+            const adoClient = await this.getAzureDevOpsClient(organizationName, session);
+
+            // Ditto for the projects.
+            const projectsPromise = new Promise<
+                QuickPickItemWithData<ValidatedProject>[]
+            >(async resolve => {
+                const coreApi = await adoClient.getCoreApi();
+                const projects = await coreApi.getProjects();
+                const validatedProjects = projects.filter(this.isValidProject).map(project => { return { label: project.name, data: project }; });
+                resolve(validatedProjects);
             });
 
-            return session?.data;
+            // FIXME: It _is_ possible for an organization to have no projects.
+            // We need to guard against this and create a project for them.
+            const selectedProject = await showQuickPick(
+                constants.SelectProject,
+                projectsPromise,
+                { placeHolder: Messages.selectProject },
+                TelemetryKeys.ProjectListCount);
+            if (selectedProject === undefined) {
+                return undefined;
+            }
+
+            const project = selectedProject.data;
+            return {
+                session,
+                adoClient,
+                organizationName,
+                project,
+            };
         }
     }
 
@@ -401,73 +444,6 @@ class PipelineConfigurer {
         };
     }
 
-    private async getAzureDevOpsDetails(session: AzureSession, repoDetails: GitRepositoryDetails): Promise<AzureDevOpsDetails | undefined> {
-        try {
-            const organizationsClient = new OrganizationsClient(session.credentials2);
-            if (repoDetails.repositoryProvider === RepositoryProvider.AzureRepos) {
-                const adoClient = await this.getAzureDevOpsClient(repoDetails.organizationName, session);
-                const coreApi = await adoClient.getCoreApi();
-                const project = await coreApi.getProject(repoDetails.projectName);
-                if (this.isValidProject(project)) {
-                    return {
-                        adoClient,
-                        organizationName: repoDetails.organizationName,
-                        project,
-                    };
-                }
-
-                return undefined;
-            } else {
-                const organizations = await organizationsClient.listOrganizations();
-                if (organizations.length > 0) {
-                    const selectedOrganization = await showQuickPick(
-                        constants.SelectOrganization,
-                        organizations.map(organization => { return { label: organization.accountName }; }),
-                        { placeHolder: Messages.selectOrganization },
-                        TelemetryKeys.OrganizationListCount);
-                    if (selectedOrganization === undefined) {
-                        return undefined;
-                    }
-
-                    const organizationName = selectedOrganization.label;
-
-                    const adoClient = await this.getAzureDevOpsClient(selectedOrganization.label, session);
-                    const coreApi = await adoClient.getCoreApi();
-                    const projects = await coreApi.getProjects();
-
-                    // FIXME: It _is_ possible for an organization to have no projects.
-                    // We need to guard against this and create a project for them.
-                    const selectedProject = await showQuickPick(
-                        constants.SelectProject,
-                        projects.filter(this.isValidProject).map(project => { return { label: project.name, data: project }; }),
-                        { placeHolder: Messages.selectProject },
-                        TelemetryKeys.ProjectListCount);
-                    if (selectedProject === undefined) {
-                        return undefined;
-                    }
-
-                    const project = selectedProject.data;
-                    return {
-                        adoClient,
-                        organizationName,
-                        project,
-                    };
-                } else {
-                    const action = await vscode.window.showWarningMessage("Please create an Azure DevOps organization first", "Open Azure DevOps");
-                    if (action === "Open Azure DevOps") {
-                        await vscode.env.openExternal(vscode.Uri.parse("https://dev.azure.com/"));
-                    }
-
-                    return undefined;
-                }
-            }
-        }
-        catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.GetAzureDevOpsDetailsFailed, error as Error);
-            throw error;
-        }
-    }
-
     private async createGitHubServiceConnection(
         serviceConnectionHelper: ServiceConnectionHelper,
         repoDetails: GitRepositoryDetails,
@@ -505,7 +481,6 @@ class PipelineConfigurer {
 
     private async createAzureServiceConnection(
         serviceConnectionHelper: ServiceConnectionHelper,
-        session: AzureSession,
         adoDetails: AzureDevOpsDetails,
         azureSiteDetails: AzureSiteDetails,
         uniqueResourceNameSuffix: string,
@@ -521,9 +496,14 @@ class PipelineConfigurer {
                 const scope = azureSiteDetails.site.id;
                 try {
                     const aadAppName = GraphHelper.generateAadApplicationName(adoDetails.organizationName, adoDetails.project.name);
-                    const aadApp = await GraphHelper.createSpnAndAssignRole(session, aadAppName, scope);
+                    const aadApp = await GraphHelper.createSpnAndAssignRole(adoDetails.session, aadAppName, scope);
                     const serviceConnectionName = `${azureSiteDetails.site.name}-${uniqueResourceNameSuffix}`;
-                    return serviceConnectionHelper.createAzureServiceConnection(serviceConnectionName, session.tenantId, azureSiteDetails.subscriptionId, scope, aadApp);
+                    return serviceConnectionHelper.createAzureServiceConnection(
+                        serviceConnectionName,
+                        adoDetails.session.tenantId,
+                        azureSiteDetails.subscriptionId,
+                        scope,
+                        aadApp);
                 }
                 catch (error) {
                     telemetryHelper.logError(Layer, TracePoints.AzureServiceConnectionCreateFailure, error as Error);

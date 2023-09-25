@@ -4,10 +4,10 @@
         "lib": [ "es2019" ],
 
         /* Specify module code generation. */
-        "module": "commonjs",
+        "module": "ES2022",
 
         /*  */
-        "moduleResolution": "node",
+        "moduleResolution": "Bundler",
 
         /* Report errors for fallthrough cases in switch statement. */
         "noFallthroughCasesInSwitch": true,

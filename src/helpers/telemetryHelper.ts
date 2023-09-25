@@ -16,6 +16,13 @@ interface TelemetryProperties {
     [key: string]: string;
 }
 
+enum Result {
+    'Succeeded' = 'Succeeded',
+    'Failed' = 'Failed',
+    'Canceled' = 'Canceled'
+}
+
+
 class TelemetryHelper {
     private journeyId: string = uuid();
 
@@ -116,9 +123,3 @@ class TelemetryHelper {
 }
 
 export const telemetryHelper = new TelemetryHelper();
-
-enum Result {
-    'Succeeded' = 'Succeeded',
-    'Failed' = 'Failed',
-    'Canceled' = 'Canceled'
-}
