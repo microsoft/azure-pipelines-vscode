@@ -2420,6 +2420,10 @@
             "demands": {
               "description": "List of demands (for a private pool)",
               "$ref": "#/definitions/poolDemands"
+            },
+            "vmImage": {
+              "description": "For the Azure Pipelines pool, the name of the VM image to use",
+              "$ref": "#/definitions/string"
             }
           },
           "additionalProperties": true
