@@ -297,7 +297,7 @@ class PipelineConfigurer {
 
     private async getAzureDevOpsDetails(repoDetails: GitRepositoryDetails): Promise<AzureDevOpsDetails | undefined> {
         if (repoDetails.repositoryProvider === RepositoryProvider.AzureRepos) {
-            for (const session of this.azureAccount.sessions) {
+            for (const session of this.azureAccount.filters.map(({ session }) => session)) {
                 const organizationsClient = new OrganizationsClient(session.credentials2);
                 const organizations = await organizationsClient.listOrganizations();
                 if (organizations.find(org => org.accountName.toLowerCase() === repoDetails.organizationName.toLowerCase())) {
@@ -325,7 +325,7 @@ class PipelineConfigurer {
             >(async resolve => {
                 const organizationAndSessions: QuickPickItemWithData<AzureSession | undefined>[] = [];
 
-                for (const session of this.azureAccount.sessions) {
+                for (const session of this.azureAccount.filters.map(({ session }) => session)) {
                     const organizationsClient = new OrganizationsClient(session.credentials2);
                     const organizations = await organizationsClient.listOrganizations();
                     organizationAndSessions.push(...organizations.map(organization => ({
@@ -394,14 +394,15 @@ class PipelineConfigurer {
 
     private async getAzureResourceDetails(session: AzureSession, kind: WebAppKind): Promise<AzureSiteDetails | undefined> {
         // show available subscriptions and get the chosen one
-        const azureAccountApi = await getAzureAccountExtensionApi();
-        const subscriptionList = azureAccountApi.filters
-            .filter(subscriptionObject => subscriptionObject.session === session)
+        const subscriptionList = this.azureAccount.filters
+            .filter(filter =>
+                // session is actually an AzureSessionInternal which makes a naive === check fail.
+                filter.session.environment === session.environment && filter.session.tenantId === session.tenantId && filter.session.userId === session.userId)
             .map(subscriptionObject => {
                 return {
                     label: subscriptionObject.subscription.displayName ?? "Unknown subscription",
                     data: subscriptionObject,
-                    description: subscriptionObject.subscription.subscriptionId ?? "Unknown subscription"
+                    description: subscriptionObject.subscription.subscriptionId ?? undefined
                 };
         });
 
