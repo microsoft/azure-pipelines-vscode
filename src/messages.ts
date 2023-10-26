@@ -52,8 +52,6 @@ export class Messages {
     public static selectRemoteForBranch: string = 'Select the remote repository where you want to track your current branch';
     public static noBranchRemoteSelectedError: string = 'Please select a remote repository for your current branch to configure pipeline';
     public static selectSubscription: string = 'Select an Azure subscription';
-    public static selectWebApp: string = 'Select Web App';
-    public static selectFunctionApp: string = 'Select Function App';
     public static selectWorkspaceFolder: string = 'Select a folder from your workspace to deploy';
     public static signInLabel: string = 'Sign In';
     public static unableToAccessOrganization: string = 'Unable to access the "%s" organization. Make sure you\'re signed into the right Azure account.';

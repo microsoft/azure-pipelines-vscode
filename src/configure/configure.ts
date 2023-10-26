@@ -421,26 +421,42 @@ class PipelineConfigurer {
         // show available resources and get the chosen one
         const appServiceClient = new AppServiceClient(session.credentials2, session.tenantId, session.environment.portalUrl, subscriptionId);
 
+        // TODO: Refactor kind so we don't need three kind.includes
 
         const sites = await appServiceClient.getAppServices(kind);
-        const items = sites
-                .filter(this.isValidSite)
-                .map(site => { return { label: site.name, data: site }; });
-        const selectAppText = this.getSelectAppText(kind);
-        const placeHolder = this.getPlaceholderText(kind);
+        const items: QuickPickItemWithData<ValidatedSite | undefined>[] = sites
+            .filter(this.isValidSite)
+            .map(site => { return { label: site.name, data: site }; });
+        const appType = kind.includes("functionapp") ? "Function App" : "Web App";
+
+        items.push({
+            // This is safe because apps can't have spaces in them.
+            label: `Create new ${appType.toLowerCase()}...`,
+            data: undefined,
+        })
 
         const selectedResource = await showQuickPick(
-            selectAppText,
+            kind.includes("functionapp") ? "selectFunctionApp" : "selectWebApp",
             items,
-            { placeHolder },
+            { placeHolder: `Select ${appType}` },
             TelemetryKeys.WebAppListCount);
         if (selectedResource === undefined) {
             return undefined;
         }
 
+        const { data: site } = selectedResource;
+        if (site === undefined) {
+            // Special flag telling us to create a new app.
+            // URL format is documented at
+            // https://github.com/Azure/portaldocs/blob/main/portal-sdk/generated/portalfx-links.md#create-blades
+            const packageId = kind.includes("functionapp") ? "Microsoft.FunctionApp" : "Microsoft.WebSite";
+            await vscode.env.openExternal(vscode.Uri.parse(`https://portal.azure.com/#create/${packageId}`));
+            return undefined;
+        }
+
         return {
             appServiceClient,
-            site: selectedResource.data,
+            site,
             subscriptionId,
         };
     }
@@ -663,30 +679,6 @@ class PipelineConfigurer {
                 return undefined;
             }
         });
-    }
-
-    private getSelectAppText(appKind: WebAppKind) : string {
-        switch(appKind) {
-            case WebAppKind.FunctionApp:
-            case WebAppKind.FunctionAppLinux:
-                return constants.SelectFunctionApp;
-            case WebAppKind.WindowsApp:
-            case WebAppKind.LinuxApp:
-            default:
-                return constants.SelectWebApp;
-        }
-    }
-
-    private getPlaceholderText(appKind: WebAppKind) : string {
-        switch(appKind) {
-            case WebAppKind.FunctionApp:
-            case WebAppKind.FunctionAppLinux:
-                return Messages.selectFunctionApp;
-            case WebAppKind.WindowsApp:
-            case WebAppKind.LinuxApp:
-            default:
-                return Messages.selectWebApp;
-        }
     }
 
     private async getAzureDevOpsClient(organization: string, session: AzureSession): Promise<WebApi> {
