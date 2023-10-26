@@ -63,7 +63,6 @@ export type GitRepositoryDetails = {
     repositoryProvider: RepositoryProvider.AzureRepos;
     organizationName: string;
     projectName: string;
-    repositoryName: string;
 } | {
     repositoryProvider: RepositoryProvider.Github;
     ownerName: string;
