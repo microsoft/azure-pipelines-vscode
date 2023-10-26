@@ -35,20 +35,23 @@ export async function configurePipeline(): Promise<void> {
 
         const signIn = await vscode.window.showInformationMessage(Messages.azureLoginRequired, Messages.signInLabel);
         if (signIn?.toLowerCase() === Messages.signInLabel.toLowerCase()) {
-            await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.waitForAzureSignIn },
-                async () => {
-                    await vscode.commands.executeCommand("azure-account.login");
-                });
+            await vscode.commands.executeCommand("azure-account.login");
         } else {
-            throw new Error(Messages.azureLoginRequired);
+            vscode.window.showWarningMessage(Messages.azureLoginRequired);
+            return;
         }
     }
 
     const gitExtension = await getGitExtensionApi();
     const workspaceUri = await getWorkspace();
+    if (workspaceUri === undefined) {
+        return;
+    }
+
     const repo = gitExtension.getRepository(workspaceUri);
     if (repo === null) {
-        throw new Error(Messages.notAGitRepository);
+        vscode.window.showWarningMessage(Messages.notAGitRepository);
+        return;
     }
 
     // Refresh the repo status so that we have accurate info.
@@ -58,7 +61,7 @@ export async function configurePipeline(): Promise<void> {
     await configurer.configure();
 }
 
-async function getWorkspace(): Promise<URI> {
+async function getWorkspace(): Promise<URI | undefined> {
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (workspaceFolders !== undefined) {
         telemetryHelper.setTelemetry(TelemetryKeys.SourceRepoLocation, SourceOptions.CurrentWorkspace);
@@ -76,7 +79,7 @@ async function getWorkspace(): Promise<URI> {
                 workspaceFolderOptions,
                 { placeHolder: Messages.selectWorkspaceFolder });
             if (selectedWorkspaceFolder === undefined) {
-                throw new Error(Messages.noWorkSpaceSelectedError);
+                return undefined;
             }
 
             return selectedWorkspaceFolder.data.uri;
@@ -90,11 +93,11 @@ async function getWorkspace(): Promise<URI> {
             canSelectMany: false,
         });
 
-        if (selectedFolders !== undefined) {
-            return selectedFolders[0];
-        } else {
-            throw new Error(Messages.noWorkSpaceSelectedError);
+        if (selectedFolders === undefined) {
+            return undefined;
         }
+
+        return selectedFolders[0];
     }
 }
 
@@ -111,15 +114,15 @@ class PipelineConfigurer {
 
     public async configure(): Promise<void> {
         telemetryHelper.setCurrentStep('GetAllRequiredInputs');
-        let repoDetails: GitRepositoryDetails;
-        try {
-            repoDetails = await this.getGitDetailsFromRepository();
-        } catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.GetSourceRepositoryDetailsFailed, error as Error);
+        const repoDetails = await this.getGitDetailsFromRepository();
+        if (repoDetails === undefined) {
             return;
         }
 
         const template = await this.getSelectedPipeline();
+        if (template === undefined) {
+            return;
+        }
 
         const adoDetails = await this.getAzureDevOpsDetails(repoDetails);
         if (adoDetails === undefined) {
@@ -217,23 +220,25 @@ class PipelineConfigurer {
             });
     }
 
-    private async getGitDetailsFromRepository(): Promise<GitRepositoryDetails> {
+    private async getGitDetailsFromRepository(): Promise<GitRepositoryDetails | undefined> {
         const { HEAD } = this.repo.state;
         if (!HEAD) {
-            throw new Error(Messages.branchHeadMissing);
+            vscode.window.showWarningMessage(Messages.branchHeadMissing);
+            return undefined;
         }
 
         let { name, remote } = HEAD;
-
         if (!name) {
-            throw new Error(Messages.branchNameMissing);
+            vscode.window.showWarningMessage(Messages.branchNameMissing);
+            return undefined;
         }
 
         if (!remote) {
             // Remote tracking branch is not set, see if we have any remotes we can use.
             const remotes = this.repo.state.remotes;
             if (remotes.length === 0) {
-                throw new Error(Messages.branchRemoteMissing);
+                vscode.window.showWarningMessage(Messages.branchRemoteMissing);
+                return undefined;
             } else if (remotes.length === 1) {
                 remote = remotes[0].name;
             } else {
@@ -242,10 +247,10 @@ class PipelineConfigurer {
                     constants.SelectRemoteForRepo,
                     remotes.map(remote => ({ label: remote.name })),
                     { placeHolder: Messages.selectRemoteForBranch });
-
                 if (selectedRemote === undefined) {
-                    throw new Error(Messages.noBranchRemoteSelectedError);
+                    return undefined;
                 }
+
                 remote = selectedRemote.label;
             }
         }
@@ -277,10 +282,12 @@ class PipelineConfigurer {
                     branch: name,
                 };
             } else {
-                throw new Error(Messages.cannotIdentifyRespositoryDetails);
+                vscode.window.showWarningMessage(Messages.cannotIdentifyRepositoryDetails);
+                return undefined;
             }
         } else {
-            throw new Error(Messages.remoteRepositoryNotConfigured);
+            vscode.window.showWarningMessage(Messages.remoteRepositoryNotConfigured);
+            return undefined;
         }
 
         telemetryHelper.setTelemetry(TelemetryKeys.RepoProvider, repoDetails.repositoryProvider);
@@ -288,7 +295,7 @@ class PipelineConfigurer {
         return repoDetails;
     }
 
-    private async getSelectedPipeline(): Promise<PipelineTemplate> {
+    private async getSelectedPipeline(): Promise<PipelineTemplate | undefined> {
         const appropriateTemplates: PipelineTemplate[] = await vscode.window.withProgress(
             { location: vscode.ProgressLocation.Notification, title: Messages.analyzingRepo },
             () => templateHelper.analyzeRepoAndListAppropriatePipeline(this.workspaceUri)
@@ -302,7 +309,7 @@ class PipelineConfigurer {
             TelemetryKeys.PipelineTempateListCount);
 
         if (template === undefined) {
-            throw new Error(Messages.noPipelineTemplateSelectedError);
+            return undefined;
         }
 
         telemetryHelper.setTelemetry(TelemetryKeys.ChosenTemplate, template.data.label);
@@ -516,8 +523,7 @@ class PipelineConfigurer {
         azureSiteDetails: AzureSiteDetails,
         uniqueResourceNameSuffix: string,
     ): Promise<string | undefined> {
-        // TODO: show notification while setup is being done.
-        // ?? should SPN created be scoped to resource group of target azure resource.
+        // TODO: should SPN created be scoped to resource group of target azure resource.
         return vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
@@ -623,7 +629,8 @@ class PipelineConfigurer {
                 const taskAgentApi = await adoDetails.adoClient.getTaskAgentApi();
                 const queues = await taskAgentApi.getAgentQueuesByNames([constants.HostedVS2017QueueName], adoDetails.project.name);
                 if (queues.length === 0) {
-                    throw new Error(utils.format(Messages.noAgentQueueFound, constants.HostedVS2017QueueName));
+                    vscode.window.showErrorMessage(utils.format(Messages.noAgentQueueFound, constants.HostedVS2017QueueName));
+                    return undefined;
                 }
 
                 const pipelineName = `${(azureSiteDetails?.site.name ?? template.label)}-${this.uniqueResourceNameSuffix}`;

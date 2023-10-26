@@ -12,7 +12,7 @@ export class Messages {
     public static branchRemoteMissing: string = `The current branch doesn't have a tracking branch, and the selected repository has no remotes. We're unable to create a remote tracking branch. Please [set a remote tracking branch](https://git-scm.com/docs/git-branch#Documentation/git-branch.txt---track) first, and then try this again.`;
     public static browsePipeline: string = 'Browse Pipeline';
     public static cannotAddFileRemoteMissing: string = 'Couldn\'t add YAML file to your repo because the remote isn\'t set';
-    public static cannotIdentifyRespositoryDetails: string = 'Couldn\'t get repository details. Ensure your repo is hosted on [Azure Repos](https://docs.microsoft.com/azure/devops/repos/get-started) or [GitHub](https://guides.github.com/activities/hello-world/).';
+    public static cannotIdentifyRepositoryDetails: string = 'Couldn\'t get repository details. Ensure your repo is hosted on [Azure Repos](https://docs.microsoft.com/azure/devops/repos/get-started) or [GitHub](https://guides.github.com/activities/hello-world/).';
     public static commitAndPush: string = 'Commit & push';
     public static commitFailedErrorMessage: string =`Commit failed due to error: %s`;
     public static configuringPipelineAndDeployment: string = 'Configuring pipeline and proceeding to deployment...';
@@ -34,7 +34,6 @@ export class Messages {
     public static noAvailableFileNames: string = 'No available filenames found.';
     public static notAGitRepository: string = 'Selected workspace is not a [Git](https://git-scm.com/docs/git) repository. Please select a Git repository.';
     public static notAzureRepoUrl: string = 'The repo isn\'t hosted with Azure Repos.';
-    public static noWorkSpaceSelectedError: string = 'Please select a workspace folder to configure pipeline.';
     public static operationTimedOut: string = 'Operation timed out.';
     public static organizationNameReservedMessage: string = 'The organization name %s isn\'t available. Please try another organization name.';
     public static organizationNameStaticValidationMessage: string = 'Organization names must start and end with a letter or number and can contain only letters, numbers, and hyphens.';
@@ -47,10 +46,8 @@ export class Messages {
     public static selectOrganizationLabel: string = 'Select organization';
     public static selectOrganizationPlaceholder: string = 'Select Azure DevOps organization associated with the %s repository';
     public static selectPipelineTemplate: string = 'Select an Azure Pipelines template...';
-    public static noPipelineTemplateSelectedError: string = 'Please select a template to configure pipeline';
     public static selectProject: string = 'Select an Azure DevOps project';
     public static selectRemoteForBranch: string = 'Select the remote repository where you want to track your current branch';
-    public static noBranchRemoteSelectedError: string = 'Please select a remote repository for your current branch to configure pipeline';
     public static selectSubscription: string = 'Select an Azure subscription';
     public static selectWorkspaceFolder: string = 'Select a folder from your workspace to deploy';
     public static signInLabel: string = 'Sign In';
