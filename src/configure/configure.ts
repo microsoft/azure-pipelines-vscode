@@ -206,7 +206,9 @@ class PipelineConfigurer {
 
         telemetryHelper.setCurrentStep('PostPipelineCreation');
         if (azureSiteDetails !== undefined) {
-            // This step should be determined by the resoruce target provider (azure app service, function app, aks) type and pipelineProvider(azure pipeline vs github)
+            // This step should be determined by the
+            // - resource target provider type (azure app service, function app, aks)
+            // - pipeline provider (azure pipeline vs github)
             await this.updateScmType(queuedPipeline, adoDetails, azureSiteDetails);
         }
 
@@ -260,7 +262,11 @@ class PipelineConfigurer {
         if (remoteUrl !== undefined) {
             if (AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
                 remoteUrl = AzureDevOpsHelper.getFormattedRemoteUrl(remoteUrl);
-                const { organizationName, projectName, repositoryName } = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
+                const {
+                    organizationName,
+                    projectName,
+                    repositoryName
+                } = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
                 repoDetails = {
                     repositoryProvider: RepositoryProvider.AzureRepos,
                     organizationName,
@@ -321,7 +327,8 @@ class PipelineConfigurer {
             for (const session of this.azureAccount.filters.map(({ session }) => session)) {
                 const organizationsClient = new OrganizationsClient(session.credentials2);
                 const organizations = await organizationsClient.listOrganizations();
-                if (organizations.find(org => org.accountName.toLowerCase() === repoDetails.organizationName.toLowerCase())) {
+                if (organizations.find(org =>
+                    org.accountName.toLowerCase() === repoDetails.organizationName.toLowerCase())) {
                     const adoClient = await this.getAzureDevOpsClient(repoDetails.organizationName, session);
                     const coreApi = await adoClient.getCoreApi();
                     const project = await coreApi.getProject(repoDetails.projectName);
@@ -388,7 +395,9 @@ class PipelineConfigurer {
             >(async resolve => {
                 const coreApi = await adoClient.getCoreApi();
                 const projects = await coreApi.getProjects();
-                const validatedProjects = projects.filter(this.isValidProject).map(project => { return { label: project.name, data: project }; });
+                const validatedProjects = projects
+                    .filter(this.isValidProject)
+                    .map(project => { return { label: project.name, data: project }; });
                 resolve(validatedProjects);
             });
 
@@ -413,12 +422,16 @@ class PipelineConfigurer {
         }
     }
 
-    private async getAzureResourceDetails(session: AzureSession, kind: WebAppKind): Promise<AzureSiteDetails | undefined> {
+    private async getAzureResourceDetails(
+        session: AzureSession,
+        kind: WebAppKind): Promise<AzureSiteDetails | undefined> {
         // show available subscriptions and get the chosen one
         const subscriptionList = this.azureAccount.filters
             .filter(filter =>
                 // session is actually an AzureSessionInternal which makes a naive === check fail.
-                filter.session.environment === session.environment && filter.session.tenantId === session.tenantId && filter.session.userId === session.userId)
+                filter.session.environment === session.environment &&
+                filter.session.tenantId === session.tenantId &&
+                filter.session.userId === session.userId)
             .map(subscriptionObject => {
                 return {
                     label: subscriptionObject.subscription.displayName ?? "Unknown subscription",
@@ -427,8 +440,10 @@ class PipelineConfigurer {
                 };
         });
 
-        const selectedSubscription =
-            await showQuickPick(constants.SelectSubscription, subscriptionList, { placeHolder: Messages.selectSubscription });
+        const selectedSubscription = await showQuickPick(
+            constants.SelectSubscription,
+            subscriptionList,
+            { placeHolder: Messages.selectSubscription });
         if (selectedSubscription === undefined) {
             return undefined;
         }
@@ -440,7 +455,11 @@ class PipelineConfigurer {
         }
 
         // show available resources and get the chosen one
-        const appServiceClient = new AppServiceClient(session.credentials2, session.tenantId, session.environment.portalUrl, subscriptionId);
+        const appServiceClient = new AppServiceClient(
+            session.credentials2,
+            session.tenantId,
+            session.environment.portalUrl,
+            subscriptionId);
 
         // TODO: Refactor kind so we don't need three kind.includes
 
@@ -532,7 +551,9 @@ class PipelineConfigurer {
             async () => {
                 const scope = azureSiteDetails.site.id;
                 try {
-                    const aadAppName = GraphHelper.generateAadApplicationName(adoDetails.organizationName, adoDetails.project.name);
+                    const aadAppName = GraphHelper.generateAadApplicationName(
+                        adoDetails.organizationName,
+                        adoDetails.project.name);
                     const aadApp = await GraphHelper.createSpnAndAssignRole(adoDetails.session, aadAppName, scope);
                     const serviceConnectionName = `${azureSiteDetails.site.name}-${uniqueResourceNameSuffix}`;
                     return serviceConnectionHelper.createAzureServiceConnection(
@@ -558,7 +579,11 @@ class PipelineConfigurer {
         try {
             const pipelineFileName = await getAvailableFileName("azure-pipelines.yml", this.workspaceUri);
             const fileUri = Utils.joinPath(this.workspaceUri, pipelineFileName);
-            const content = await templateHelper.renderContent(template.path, branch, azureSiteDetails?.site.name, azureServiceConnection);
+            const content = await templateHelper.renderContent(
+                template.path,
+                branch,
+                azureSiteDetails?.site.name,
+                azureServiceConnection);
             await vscode.workspace.fs.writeFile(fileUri, Buffer.from(content));
             await vscode.window.showTextDocument(fileUri);
             return pipelineFileName;
@@ -573,9 +598,19 @@ class PipelineConfigurer {
         repoDetails: GitRepositoryDetails,
     ): Promise<string | undefined> {
         try {
-            const commitOrDiscard = await vscode.window.showInformationMessage(utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, repoDetails.branch, repoDetails.remoteName), Messages.commitAndPush, Messages.discardPipeline);
+            const commitOrDiscard = await vscode.window.showInformationMessage(
+                utils.format(
+                    Messages.modifyAndCommitFile,
+                    Messages.commitAndPush,
+                    repoDetails.branch,
+                    repoDetails.remoteName),
+                Messages.commitAndPush,
+                Messages.discardPipeline);
             if (commitOrDiscard?.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
-                return vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
+                return vscode.window.withProgress({
+                    location: vscode.ProgressLocation.Notification,
+                    title: Messages.configuringPipelineAndDeployment
+                }, async () => {
                     try {
                         const branch = this.repo.state.HEAD;
                         if (branch === undefined) {
@@ -588,8 +623,9 @@ class PipelineConfigurer {
                             return undefined;
                         }
 
+                        // TODO: Only commit the YAML file. Need to file a feature request on VS Code for this.
                         await this.repo.add([Utils.joinPath(this.workspaceUri, pipelineFileName).fsPath]);
-                        await this.repo.commit(Messages.addYmlFile); // TODO: Only commit the YAML file. Need to file a feature request on VS Code for this.
+                        await this.repo.commit(Messages.addYmlFile);
                         await this.repo.push(repoDetails.remoteName);
 
                         const { commit } = branch;
@@ -601,7 +637,8 @@ class PipelineConfigurer {
                         return commit;
                     } catch (error) {
                         telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error as Error);
-                        vscode.window.showErrorMessage(utils.format(Messages.commitFailedErrorMessage, (error as Error).message));
+                        vscode.window.showErrorMessage(
+                            utils.format(Messages.commitFailedErrorMessage, (error as Error).message));
                         return undefined;
                     }
                 });
@@ -624,12 +661,18 @@ class PipelineConfigurer {
         pipelineFileName: string,
         commit: string,
     ): Promise<ValidatedBuild | undefined> {
-        return vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
+        return vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: Messages.configuringPipelineAndDeployment
+        }, async () => {
             try {
                 const taskAgentApi = await adoDetails.adoClient.getTaskAgentApi();
-                const queues = await taskAgentApi.getAgentQueuesByNames([constants.HostedVS2017QueueName], adoDetails.project.name);
+                const queues = await taskAgentApi.getAgentQueuesByNames(
+                    [constants.HostedVS2017QueueName],
+                    adoDetails.project.name);
                 if (queues.length === 0) {
-                    vscode.window.showErrorMessage(utils.format(Messages.noAgentQueueFound, constants.HostedVS2017QueueName));
+                    vscode.window.showErrorMessage(
+                        utils.format(Messages.noAgentQueueFound, constants.HostedVS2017QueueName));
                     return undefined;
                 }
 
@@ -673,8 +716,14 @@ class PipelineConfigurer {
             // update SCM type
             azureSiteDetails.appServiceClient.updateScmType(azureSiteDetails.site);
 
-            const buildDefinitionUrl = AzureDevOpsHelper.getOldFormatBuildDefinitionUrl(adoDetails.organizationName, adoDetails.project.id, queuedPipeline.definition.id);
-            const buildUrl = AzureDevOpsHelper.getOldFormatBuildUrl(adoDetails.organizationName, adoDetails.project.id, queuedPipeline.id);
+            const buildDefinitionUrl = AzureDevOpsHelper.getOldFormatBuildDefinitionUrl(
+                adoDetails.organizationName,
+                adoDetails.project.id,
+                queuedPipeline.definition.id);
+            const buildUrl = AzureDevOpsHelper.getOldFormatBuildUrl(
+                adoDetails.organizationName,
+                adoDetails.project.id,
+                queuedPipeline.id);
 
             const locationsApi = await adoDetails.adoClient.getLocationsApi();
             const { instanceId } = await locationsApi.getConnectionData();
