@@ -466,26 +466,26 @@ class PipelineConfigurer {
         repoDetails: GitRepositoryDetails,
         uniqueResourceNameSuffix: string,
     ): Promise<string | undefined> {
+        const token = await telemetryHelper.executeFunctionWithTimeTelemetry(
+            async () => showInputBox(
+                constants.GitHubPat, {
+                    placeHolder: Messages.enterGitHubPat,
+                    prompt: Messages.githubPatHelpMessage,
+                    validateInput: input => input.length === 0 ? Messages.gitHubPatErrorMessage : null
+                }
+            ), TelemetryKeys.GitHubPatDuration
+        );
+
+        if (token === undefined) {
+            return undefined;
+        }
+
         return vscode.window.withProgress(
             {
                 location: vscode.ProgressLocation.Notification,
                 title: Messages.creatingGitHubServiceConnection
             },
             async () => {
-                const token = await telemetryHelper.executeFunctionWithTimeTelemetry(
-                    async () => showInputBox(
-                        constants.GitHubPat, {
-                            placeHolder: Messages.enterGitHubPat,
-                            prompt: Messages.githubPatHelpMessage,
-                            validateInput: input => input.length === 0 ? Messages.gitHubPatErrorMessage : null
-                        }
-                    ), TelemetryKeys.GitHubPatDuration
-                );
-
-                if (token === undefined) {
-                    return undefined;
-                }
-
                 const serviceConnectionName = `${repoDetails.repositoryName}-${uniqueResourceNameSuffix}`;
                 try {
                     return serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, token);
@@ -493,7 +493,7 @@ class PipelineConfigurer {
                     telemetryHelper.logError(Layer, TracePoints.GitHubServiceConnectionError, error as Error);
                     throw error;
                 }
-            });
+        });
     }
 
     private async createAzureServiceConnection(
