@@ -631,7 +631,7 @@ class PipelineConfigurer {
             telemetryHelper.logError(Layer, TracePoints.PipelineFileCheckInFailed, error as Error);
         }
 
-        return undefined;
+        return pipelineFileName;
     }
 
     private async createAndRunPipeline(
