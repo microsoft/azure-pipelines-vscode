@@ -140,7 +140,7 @@ class PipelineConfigurer {
             adoDetails.project.name,
             adoDetails.adoClient);
 
-        let repositoryProperties: { [key: string]: string } | undefined;
+        let repositoryProperties: Record<string, string> | undefined;
         if (repoDetails.repositoryProvider === RepositoryProvider.Github) {
             const gitHubServiceConnection = await this.createGitHubServiceConnection(
                 serviceConnectionHelper,
@@ -174,13 +174,29 @@ class PipelineConfigurer {
         }
 
         telemetryHelper.setCurrentStep('CheckInPipeline');
-        const pipelineFileName = await this.checkInPipelineFileToRepository(repoDetails, template, azureSiteDetails, azureServiceConnection);
+        const pipelineFileName = await this.createPipelineFile(
+            template,
+            repoDetails.branch,
+            azureSiteDetails,
+            azureServiceConnection);
         if (pipelineFileName === undefined) {
             return;
         }
 
+        const commit = await this.checkInPipelineFileToRepository(pipelineFileName, repoDetails);
+        if (commit === undefined) {
+            return;
+        }
+
         telemetryHelper.setCurrentStep('CreateAndRunPipeline');
-        const queuedPipeline = await this.createAndRunPipeline(repoDetails, adoDetails, template, azureSiteDetails, repositoryProperties, pipelineFileName);
+        const queuedPipeline = await this.createAndRunPipeline(
+            repoDetails,
+            adoDetails,
+            template,
+            azureSiteDetails,
+            repositoryProperties,
+            pipelineFileName,
+            commit);
         if (queuedPipeline === undefined) {
             return;
         }
@@ -248,7 +264,6 @@ class PipelineConfigurer {
                     remoteName: remote,
                     remoteUrl,
                     branch: name,
-                    commitId: ""
                 };
             } else if (GitHubProvider.isGitHubUrl(remoteUrl)) {
                 remoteUrl = GitHubProvider.getFormattedRemoteUrl(remoteUrl);
@@ -260,7 +275,6 @@ class PipelineConfigurer {
                     remoteName: remote,
                     remoteUrl,
                     branch: name,
-                    commitId: ""
                 };
             } else {
                 throw new Error(Messages.cannotIdentifyRespositoryDetails);
@@ -573,24 +587,29 @@ class PipelineConfigurer {
         }
     }
 
-    private async checkInPipelineFileToRepository(
-        repoDetails: GitRepositoryDetails,
+    private async createPipelineFile(
         template: PipelineTemplate,
+        branch: string,
         azureSiteDetails: AzureSiteDetails | undefined,
         azureServiceConnection: string | undefined,
     ): Promise<string | undefined> {
-        let pipelineFileName: string;
         try {
-            pipelineFileName = await getAvailableFileName("azure-pipelines.yml", this.workspaceUri);
+            const pipelineFileName = await getAvailableFileName("azure-pipelines.yml", this.workspaceUri);
             const fileUri = Utils.joinPath(this.workspaceUri, pipelineFileName);
-            const content = await templateHelper.renderContent(template.path, repoDetails.branch, azureSiteDetails?.site.name, azureServiceConnection);
+            const content = await templateHelper.renderContent(template.path, branch, azureSiteDetails?.site.name, azureServiceConnection);
             await vscode.workspace.fs.writeFile(fileUri, Buffer.from(content));
             await vscode.window.showTextDocument(fileUri);
+            return pipelineFileName;
         } catch (error) {
             telemetryHelper.logError(Layer, TracePoints.AddingContentToPipelineFileFailed, error as Error);
             return undefined;
         }
+    }
 
+    private async checkInPipelineFileToRepository(
+        pipelineFileName: string,
+        repoDetails: GitRepositoryDetails,
+    ): Promise<string | undefined> {
         try {
             const commitOrDiscard = await vscode.window.showInformationMessage(utils.format(Messages.modifyAndCommitFile, Messages.commitAndPush, repoDetails.branch, repoDetails.remoteName), Messages.commitAndPush, Messages.discardPipeline);
             if (commitOrDiscard?.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
@@ -631,7 +650,7 @@ class PipelineConfigurer {
             telemetryHelper.logError(Layer, TracePoints.PipelineFileCheckInFailed, error as Error);
         }
 
-        return pipelineFileName;
+        return undefined;
     }
 
     private async createAndRunPipeline(
@@ -639,8 +658,9 @@ class PipelineConfigurer {
         adoDetails: AzureDevOpsDetails,
         template: PipelineTemplate,
         azureSiteDetails: AzureSiteDetails | undefined,
-        repositoryProperties: { [key: string]: string } | undefined,
+        repositoryProperties: Record<string, string> | undefined,
         pipelineFileName: string,
+        commit: string,
     ): Promise<ValidatedBuild | undefined> {
         return vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, title: Messages.configuringPipelineAndDeployment }, async () => {
             try {
@@ -650,7 +670,7 @@ class PipelineConfigurer {
                     throw new Error(utils.format(Messages.noAgentQueueFound, constants.HostedVS2017QueueName));
                 }
 
-                const pipelineName = `${(azureSiteDetails ? azureSiteDetails.site.name : template.label)}-${this.uniqueResourceNameSuffix}`;
+                const pipelineName = `${(azureSiteDetails?.site.name ?? template.label)}-${this.uniqueResourceNameSuffix}`;
                 const definitionPayload = AzureDevOpsHelper.getBuildDefinitionPayload(
                     pipelineName,
                     queues[0],
@@ -662,10 +682,10 @@ class PipelineConfigurer {
                 const buildApi = await adoDetails.adoClient.getBuildApi();
                 const definition = await buildApi.createDefinition(definitionPayload, adoDetails.project.name);
                 const build = await buildApi.queueBuild({
-                    definition: definition,
+                    definition,
                     project: adoDetails.project,
                     sourceBranch: repoDetails.branch,
-                    sourceVersion: repoDetails.commitId
+                    sourceVersion: commit
                 }, adoDetails.project.name);
 
                 if (!this.isValidBuild(build)) {

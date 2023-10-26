@@ -59,7 +59,6 @@ export type GitRepositoryDetails = {
     remoteName: string;
     remoteUrl: string;
     branch: string;
-    commitId: string;
 } & ({
     repositoryProvider: RepositoryProvider.AzureRepos;
     organizationName: string;
