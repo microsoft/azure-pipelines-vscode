@@ -366,7 +366,7 @@ class PipelineConfigurer {
                     // This is safe because ADO orgs can't have spaces in them.
                     label: "Create new Azure DevOps organization...",
                     data: undefined,
-                })
+                });
 
                 resolve(organizationAndSessions);
             });
@@ -391,18 +391,25 @@ class PipelineConfigurer {
 
             // Ditto for the projects.
             const projectsPromise = new Promise<
-                QuickPickItemWithData<ValidatedProject>[]
+                QuickPickItemWithData<ValidatedProject | undefined>[]
             >(async resolve => {
+                const validatedProjects: QuickPickItemWithData<ValidatedProject | undefined>[] = [];
+
                 const coreApi = await adoClient.getCoreApi();
                 const projects = await coreApi.getProjects();
-                const validatedProjects = projects
+                validatedProjects.push(...projects
                     .filter(this.isValidProject)
-                    .map(project => { return { label: project.name, data: project }; });
+                    .map(project => { return { label: project.name, data: project }; }));
+
+                validatedProjects.push({
+                    // This is safe because ADO projects can't end with periods.
+                    label: "Create new project...",
+                    data: undefined,
+                });
+
                 resolve(validatedProjects);
             });
 
-            // FIXME: It _is_ possible for an organization to have no projects.
-            // We need to guard against this and create a project for them.
             const selectedProject = await showQuickPick(
                 constants.SelectProject,
                 projectsPromise,
@@ -413,6 +420,12 @@ class PipelineConfigurer {
             }
 
             const project = selectedProject.data;
+            if (project === undefined) {
+                // Special flag telling us to create a new project.
+                await vscode.env.openExternal(vscode.Uri.parse(`https://dev.azure.com/${organizationName}`));
+                return undefined;
+            }
+
             return {
                 session,
                 adoClient,
@@ -473,7 +486,7 @@ class PipelineConfigurer {
             // This is safe because apps can't have spaces in them.
             label: `Create new ${appType.toLowerCase()}...`,
             data: undefined,
-        })
+        });
 
         const selectedResource = await showQuickPick(
             kind.includes("functionapp") ? "selectFunctionApp" : "selectWebApp",
