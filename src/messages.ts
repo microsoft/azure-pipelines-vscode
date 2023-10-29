@@ -15,6 +15,7 @@ export class Messages {
     public static cannotIdentifyRepositoryDetails: string = 'Couldn\'t get repository details. Ensure your repo is hosted on [Azure Repos](https://docs.microsoft.com/azure/devops/repos/get-started) or [GitHub](https://guides.github.com/activities/hello-world/).';
     public static commitAndPush: string = 'Commit & push';
     public static commitFailedErrorMessage: string =`Commit failed due to error: %s`;
+    public static pushingPipelineFile: string = 'Pushing pipeline file...';
     public static configuringPipelineAndDeployment: string = 'Configuring pipeline and proceeding to deployment...';
     public static couldNotAuthorizeEndpoint: string = 'Couldn\'t authorize endpoint for use in Azure Pipelines.';
     public static creatingAzureDevOpsOrganization: string = 'Creating Azure DevOps organization.';

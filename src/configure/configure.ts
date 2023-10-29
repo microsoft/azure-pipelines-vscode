@@ -609,7 +609,7 @@ class PipelineConfigurer {
             if (commitOrDiscard?.toLowerCase() === Messages.commitAndPush.toLowerCase()) {
                 return vscode.window.withProgress({
                     location: vscode.ProgressLocation.Notification,
-                    title: Messages.configuringPipelineAndDeployment
+                    title: Messages.pushingPipelineFile
                 }, async () => {
                     try {
                         const branch = this.repo.state.HEAD;
