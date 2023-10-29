@@ -589,7 +589,7 @@ class PipelineConfigurer {
             return pipelineFileName;
         } catch (error) {
             telemetryHelper.logError(Layer, TracePoints.AddingContentToPipelineFileFailed, error as Error);
-            return undefined;
+            throw error;
         }
     }
 
@@ -644,12 +644,12 @@ class PipelineConfigurer {
                 });
             } else {
                 telemetryHelper.setTelemetry(TelemetryKeys.PipelineDiscarded, 'true');
+                return undefined;
             }
         } catch (error) {
             telemetryHelper.logError(Layer, TracePoints.PipelineFileCheckInFailed, error as Error);
+            throw error;
         }
-
-        return undefined;
     }
 
     private async createAndRunPipeline(
@@ -702,7 +702,7 @@ class PipelineConfigurer {
             }
             catch (error) {
                 telemetryHelper.logError(Layer, TracePoints.CreateAndQueuePipelineFailed, error as Error);
-                return undefined;
+                throw error;
             }
         });
     }
@@ -754,6 +754,7 @@ class PipelineConfigurer {
                 buildUrl);
         } catch (error) {
             telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error as Error);
+            throw error;
         }
     }
 
