@@ -612,23 +612,12 @@ class PipelineConfigurer {
                     title: Messages.pushingPipelineFile
                 }, async () => {
                     try {
-                        const branch = this.repo.state.HEAD;
-                        if (branch === undefined) {
-                            vscode.window.showWarningMessage("Please checkout a branch to commit the pipeline file to.");
-                            return undefined;
-                        }
-
-                        if (branch.behind !== undefined && branch.behind > 0) {
-                            vscode.window.showWarningMessage("Please pull the latest changes before committing the pipeline file.");
-                            return undefined;
-                        }
-
                         // TODO: Only commit the YAML file. Need to file a feature request on VS Code for this.
                         await this.repo.add([Utils.joinPath(this.workspaceUri, pipelineFileName).fsPath]);
                         await this.repo.commit(Messages.addYmlFile);
                         await this.repo.push(repoDetails.remoteName);
 
-                        const { commit } = branch;
+                        const commit = this.repo.state.HEAD?.commit;
                         if (commit === undefined) {
                             vscode.window.showErrorMessage("Unable to get commit after pushing pipeline, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
                             return undefined;
