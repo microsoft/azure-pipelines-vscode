@@ -159,7 +159,7 @@ class PipelineConfigurer {
                 cloneUrl: repoDetails.remoteUrl,
                 connectedServiceId: gitHubServiceConnection,
                 defaultBranch: repoDetails.branch,
-                fullName: repoDetails.repositoryName,
+                fullName: `${repoDetails.ownerName}/${repoDetails.repositoryName}`,
                 refsUrl: `https://api.github.com/repos/${repoDetails.ownerName}/${repoDetails.repositoryName}/git/refs`
             };
         }
@@ -539,7 +539,7 @@ class PipelineConfigurer {
                 title: Messages.creatingGitHubServiceConnection
             },
             async () => {
-                const serviceConnectionName = `${repoDetails.repositoryName}-${uniqueResourceNameSuffix}`;
+                const serviceConnectionName = `${repoDetails.repositoryName}-github-${uniqueResourceNameSuffix}`;
                 try {
                     return serviceConnectionHelper.createGitHubServiceConnection(serviceConnectionName, token);
                 } catch (error) {

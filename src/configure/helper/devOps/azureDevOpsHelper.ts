@@ -90,7 +90,7 @@ export class AzureDevOpsHelper {
         queue: TaskAgentQueue,
         repoDetails: GitRepositoryDetails,
         adoDetails: AzureDevOpsDetails,
-        repositoryProperties: { [key: string]: string } | undefined,
+        repositoryProperties: Record<string, string> | undefined,
         pipelineFileName: string,
     ): BuildDefinition {
         return {
@@ -117,7 +117,9 @@ export class AzureDevOpsHelper {
                 id: repoDetails.repositoryProvider === RepositoryProvider.Github
                     ? `${repoDetails.ownerName}/${repoDetails.repositoryName}`
                     : undefined,
-                name: repoDetails.repositoryName,
+                name: repoDetails.repositoryProvider === RepositoryProvider.Github
+                    ? `${repoDetails.ownerName}/${repoDetails.repositoryName}`
+                    : repoDetails.repositoryName,
                 type: repoDetails.repositoryProvider,
                 defaultBranch: repoDetails.branch,
                 url: repoDetails.remoteUrl,
