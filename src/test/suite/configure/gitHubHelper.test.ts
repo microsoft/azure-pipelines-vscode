@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { GitHubProvider } from '../../configure/helper/gitHubHelper';
+import { GitHubProvider } from '../../../configure/helper/gitHubHelper';
 
 suite('GitHub Helper', () => {
     suite('isGitHubUrl', () => {

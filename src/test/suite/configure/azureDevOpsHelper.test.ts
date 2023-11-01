@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { AzureDevOpsHelper } from '../../configure/helper/devOps/azureDevOpsHelper';
+import { AzureDevOpsHelper } from '../../../configure/helper/devOps/azureDevOpsHelper';
 
 suite('Azure DevOps Helper', () => {
     suite('isAzureReposUrl', () => {

@@ -134,10 +134,9 @@
         "vscode:prepublish": "npm run compile",
         "compile": "webpack --mode production --progress --color",
         "compile:dev": "webpack --mode development --progress --color",
+        "compile:test": "tsc --project ./tsconfig.test.json",
         "watch": "webpack --mode development --progress --color --watch",
-        "compile:test": "npm run compile:dev && tsc -p ./",
-        "test": "npm run compile:test && node ./out/test/runTest.js",
-        "unittest": "npm run compile:test && mocha -u tdd out/unittest/**/*.js"
+        "test": "node ./out/test/runTest.js"
     },
     "devDependencies": {
         "@types/fs-extra": "4.0.5",
