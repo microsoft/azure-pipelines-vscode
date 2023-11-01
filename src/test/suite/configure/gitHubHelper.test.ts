@@ -30,19 +30,19 @@ suite('GitHub Helper', () => {
 
     suite('getRepositoryDetailsFromRemoteUrl', () => {
         test('Returns owner and repo from an HTTPS URL', () => {
-            assert.strictEqual(
+            assert.deepStrictEqual(
                 GitHubProvider.getRepositoryDetailsFromRemoteUrl('https://github.com/microsoft/azure-pipelines-vscode'),
                 { ownerName: 'microsoft', repositoryName: 'azure-pipelines-vscode' });
         });
 
         test('Returns owner from an HTTPS URL with trailing .git', () => {
-            assert.strictEqual(
+            assert.deepStrictEqual(
                 GitHubProvider.getRepositoryDetailsFromRemoteUrl('https://github.com/microsoft/azure-pipelines-vscode.git'),
                 { ownerName: 'microsoft', repositoryName: 'azure-pipelines-vscode' });
         });
 
         test('Returns owner from a SSH URL', () => {
-            assert.strictEqual(
+            assert.deepStrictEqual(
                 GitHubProvider.getRepositoryDetailsFromRemoteUrl('git@github.com:microsoft/azure-pipelines-vscode.git'),
                 { ownerName: 'microsoft', repositoryName: 'azure-pipelines-vscode' });
         });
