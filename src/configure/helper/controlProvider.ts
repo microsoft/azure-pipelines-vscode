@@ -3,7 +3,7 @@ import { telemetryHelper } from '../../helpers/telemetryHelper';
 import { TelemetryKeys } from '../../helpers/telemetryKeys';
 import { UserCancelledError } from './userCancelledError';
 
-export async function showQuickPick<T extends QuickPickItem>(listName: string, listItems: T[] | Thenable<T[]>, options: QuickPickOptions, itemCountTelemetryKey?: string): Promise<T> {
+export async function showQuickPick<T extends QuickPickItem>(listName: string, listItems: T[] | Thenable<T[]>, options: QuickPickOptions, itemCountTelemetryKey?: string): Promise<T | undefined> {
     try {
         telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, listName);
         return window.showQuickPick(listItems, {
@@ -18,7 +18,7 @@ export async function showQuickPick<T extends QuickPickItem>(listName: string, l
     }
 }
 
-export async function showInputBox(inputName: string, options: InputBoxOptions): Promise<string> {
+export async function showInputBox(inputName: string, options: InputBoxOptions): Promise<string | undefined> {
     telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, inputName);
     return window.showInputBox({
         ignoreFocusOut: true,
@@ -26,7 +26,7 @@ export async function showInputBox(inputName: string, options: InputBoxOptions):
     });
 }
 
-export async function showInformationBox(informationIdentifier: string, informationMessage: string, ...actions: string[]): Promise<string> {
+export async function showInformationBox(informationIdentifier: string, informationMessage: string, ...actions: string[]): Promise<string | undefined> {
     telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, informationIdentifier);
     if (!!actions && actions.length > 0) {
         let result = await window.showInformationMessage(informationMessage, ...actions);

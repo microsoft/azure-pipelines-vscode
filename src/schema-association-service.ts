@@ -26,10 +26,9 @@ export const onDidSelectOrganization = selectOrganizationEvent.event;
  * A session-level cache of all the organizations we've saved the schema for.
  */
 const seenOrganizations = new Set<string>();
-const seen1ESPTOrganizations = new Set<string>();
 const lastUpdated1ESPTSchema = new Map<string, Date>();
 
-let repoId1espt = undefined;
+let repoId1espt: string | undefined = undefined;
 
 export async function locateSchemaFile(
     context: vscode.ExtensionContext,
@@ -188,7 +187,7 @@ async function autoDetectSchema(
             session = azureAccountApi.sessions.find(session => session.tenantId === details.tenant);
 
             logger.log(
-                `Using cached information for ${workspaceFolder.name}: ${organizationName}, ${session.tenantId}`,
+                `Using cached information for ${workspaceFolder.name}: ${organizationName}, ${session?.tenantId}`,
                 'SchemaDetection');
         } else {
             logger.log(`Prompting for organization for ${workspaceFolder.name}`, 'SchemaDetection');
@@ -225,7 +224,7 @@ async function autoDetectSchema(
                         const selectedOrganizationAndSession = await showQuickPick(
                             'organization',
                             organizationAndSessionsPromise, {
-                            	placeHolder: format(Messages.selectOrganizationPlaceholder, workspaceFolder.name),
+                            placeHolder: format(Messages.selectOrganizationPlaceholder, workspaceFolder.name),
                         });
 
                         if (selectedOrganizationAndSession === undefined) {
@@ -280,16 +279,15 @@ async function autoDetectSchema(
     if (repoId1espt?.length > 0) {
         // user has enabled 1ESPT schema
         if (vscode.workspace.getConfiguration('azure-pipelines', workspaceFolder).get<boolean>('1ESPipelineTemplatesSchemaFile', false)) {
-            const cachedSchemaUri1ESPT = await getCached1ESPTSchema(context, organizationName, session, lastUpdated1ESPTSchema, seen1ESPTOrganizations);
+            const cachedSchemaUri1ESPT = await getCached1ESPTSchema(context, organizationName, session, lastUpdated1ESPTSchema);
             if (cachedSchemaUri1ESPT) {
                 return cachedSchemaUri1ESPT;
             }
             else {
                 // if user is signed in with microsoft account and has enabled 1ESPipeline Template Schema, then give preference to 1ESPT schema
-                const schemaUri1ESPT = await get1ESPTSchemaUri(azureDevOpsClient, organizationName,session, context, repoId1espt);
+                const schemaUri1ESPT = await get1ESPTSchemaUri(azureDevOpsClient, organizationName, session, context, repoId1espt);
                 if (schemaUri1ESPT) {
                     lastUpdated1ESPTSchema.set(organizationName, new Date());
-                    seen1ESPTOrganizations.add(organizationName);
                     return schemaUri1ESPT;
                 }
             }
@@ -335,9 +333,9 @@ async function autoDetectSchema(
 
 // Mapping of glob pattern -> schemas
 interface ISchemaAssociations {
-	[pattern: string]: string[];
+    [pattern: string]: string[];
 }
 
 export namespace SchemaAssociationNotification {
-	export const type = new languageclient.NotificationType<ISchemaAssociations>('json/schemaAssociations');
+    export const type = new languageclient.NotificationType<ISchemaAssociations>('json/schemaAssociations');
 }

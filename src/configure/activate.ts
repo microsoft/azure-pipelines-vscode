@@ -5,8 +5,7 @@ import { telemetryHelper } from '../helpers/telemetryHelper';
 
 export async function activateConfigurePipeline(): Promise<void> {
     vscode.commands.registerCommand('azure-pipelines.configure-pipeline', async () => {
-        telemetryHelper.initialize('configure-pipeline');
-        await telemetryHelper.callWithTelemetryAndErrorHandling(async () => {
+        await telemetryHelper.callWithTelemetryAndErrorHandling('azurePipelines.configure-pipeline', async () => {
             await configurePipeline();
         });
     });

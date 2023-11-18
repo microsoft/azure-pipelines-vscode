@@ -4,20 +4,20 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
-- {{{ sourceRepository.branch }}}
+- {{{ branch }}}
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
-  azureServiceConnectionId: '{{{ targetResource.serviceConnectionId }}}'
+  azureServiceConnectionId: '{{{ azureServiceConnection }}}'
 
   # Web app name
-  webAppName: '{{{ targetResource.resource.name }}}'
+  webAppName: '{{{ resource }}}'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
   # Environment name
-  environmentName: '{{{ targetResource.resource.name }}}'
+  environmentName: '{{{ resource }}}'
 
 stages:
 - stage: Build

@@ -9,7 +9,6 @@ export class TracePoints {
     public static ExtractAzureResourceFromNodeFailed = 'extractAzureResourceFromNodeFailed';
     public static GetAzureDevOpsDetailsFailed = 'GetAzureDevOpsDetailsFailed';
     public static GetRepositoryDetailsFromRemoteUrlFailed = 'GetRepositoryDetailsFromRemoteUrlFailed';
-    public static GetSourceRepositoryDetailsFailed = 'getSourceRepositoryDetailsFailed';
     public static GitHubServiceConnectionError = 'gitHubServiceConnectionError';
     public static PipelineFileCheckInFailed = 'PipelineFileCheckInFailed';
     public static PostDeploymentActionFailed = 'PostDeploymentActionFailed';

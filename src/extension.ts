@@ -28,17 +28,17 @@ const DOCUMENT_SELECTOR = [
 
 export async function activate(context: vscode.ExtensionContext) {
     const configurePipelineEnabled = vscode.workspace.getConfiguration(LANGUAGE_IDENTIFIER).get<boolean>('configure', true);
-    telemetryHelper.initialize('azurePipelines.activate', {
-        isActivationEvent: 'true',
-        configurePipelineEnabled: `${configurePipelineEnabled}`,
-    });
-    await telemetryHelper.callWithTelemetryAndErrorHandling(async () => {
+    telemetryHelper.setTelemetry('isActivationEvent', 'true');
+    telemetryHelper.setTelemetry('configurePipelineEnabled', `${configurePipelineEnabled}`);
+    await telemetryHelper.callWithTelemetryAndErrorHandling('azurePipelines.activate', async () => {
         await activateYmlContributor(context);
         if (configurePipelineEnabled) {
             const { activateConfigurePipeline } = await import('./configure/activate');
             await activateConfigurePipeline();
         }
     });
+
+    context.subscriptions.push(telemetryHelper);
 
     logger.log('Extension has been activated!', 'ExtensionActivated');
     return schemaContributor;

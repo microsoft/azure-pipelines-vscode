@@ -19,11 +19,11 @@ export class GraphHelper {
     private static retryCount = 20;
 
     public static async createSpnAndAssignRole(session: AzureSession, aadAppName: string, scope: string): Promise<AadApplication> {
-        let accessToken = await this.getGraphToken(session);
-        let tokenCredentials = new TokenCredentials(accessToken);
-        let graphClient = new RestClient(tokenCredentials);
-        let tenantId = session.tenantId;
-        var aadApp: AadApplication;
+        const accessToken = await this.getGraphToken(session);
+        const tokenCredentials = new TokenCredentials(accessToken);
+        const graphClient = new RestClient(tokenCredentials);
+        const tenantId = session.tenantId;
+        let aadApp: AadApplication;
 
         return this.createAadApp(graphClient, aadAppName, tenantId)
         .then((aadApplication) => {
@@ -50,11 +50,11 @@ export class GraphHelper {
     }
 
     public static generateAadApplicationName(accountName: string, projectName: string): string {
-        var spnLengthAllowed = 92;
-        var guid = uuid();
-        var projectName = projectName.replace(/[^a-zA-Z0-9_-]/g, "");
-        var accountName = accountName.replace(/[^a-zA-Z0-9_-]/g, "");
-        var spnName = accountName + "-" + projectName + "-" + guid;
+        let spnLengthAllowed = 92;
+        const guid = uuid();
+        projectName = projectName.replace(/[^a-zA-Z0-9_-]/g, "");
+        accountName = accountName.replace(/[^a-zA-Z0-9_-]/g, "");
+        const spnName = accountName + "-" + projectName + "-" + guid;
         if (spnName.length <= spnLengthAllowed) {
             return spnName;
         }
@@ -76,9 +76,14 @@ export class GraphHelper {
     }
 
     private static async getGraphToken(session: AzureSession): Promise<string> {
+        const { activeDirectoryGraphResourceId } = session.environment;
+        if (activeDirectoryGraphResourceId === undefined) {
+            throw new Error(util.format(Messages.acquireAccessTokenFailed, "Active Directory Graph resource ID is undefined."));
+        }
+
         return new Promise((resolve, reject) => {
             const credentials = session.credentials2;
-            credentials.authContext.acquireToken(session.environment.activeDirectoryGraphResourceId, session.userId, credentials.clientId, function (err, tokenResponse) {
+            credentials.authContext.acquireToken(activeDirectoryGraphResourceId, session.userId, credentials.clientId, function (err, tokenResponse) {
                 if (err) {
                     reject(new Error(util.format(Messages.acquireAccessTokenFailed, err.message)));
                 } else if (tokenResponse.error) {

@@ -8,7 +8,7 @@ import { parseError } from './parseError';
 import { v4 as uuid } from 'uuid';
 
 const extensionName = 'ms-azure-devops.azure-pipelines';
-const packageJSON = vscode.extensions.getExtension(extensionName).packageJSON;
+const packageJSON = vscode.extensions.getExtension(extensionName)!.packageJSON; // Guaranteed to exist
 const extensionVersion = packageJSON.version;
 const aiKey = packageJSON.aiKey;
 
@@ -16,28 +16,22 @@ interface TelemetryProperties {
     [key: string]: string;
 }
 
-interface TelemetryOptions {
-    suppressIfSuccessful: boolean;
+enum Result {
+    'Succeeded' = 'Succeeded',
+    'Failed' = 'Failed',
+    'Canceled' = 'Canceled'
 }
 
+
 class TelemetryHelper {
-    private journeyId: string;
-    private command: string;
-    private properties: TelemetryProperties;
-    private options: TelemetryOptions;
+    private journeyId: string = uuid();
+
+    private properties: TelemetryProperties = {
+        [TelemetryKeys.JourneyId]: this.journeyId,
+        [TelemetryKeys.Result]: Result.Succeeded,
+    };
 
     private static reporter = new TelemetryReporter(extensionName, extensionVersion, aiKey);
-
-    public initialize(command: string, properties: TelemetryProperties = {}) {
-        this.journeyId = uuid();
-        this.command = command;
-        this.properties = properties;
-        this.options = {
-            suppressIfSuccessful: false,
-        };
-        this.setTelemetry(TelemetryKeys.JourneyId, this.journeyId);
-        this.setTelemetry(TelemetryKeys.Result, Result.Succeeded);
-    }
 
     public dispose() {
         TelemetryHelper.reporter.dispose();
@@ -45,13 +39,6 @@ class TelemetryHelper {
 
     public getJourneyId(): string {
         return this.journeyId;
-    }
-
-    public setOptions(options: Partial<TelemetryOptions>): void {
-        this.options = {
-            ...this.options,
-            ...options,
-        };
     }
 
     public setTelemetry(key: string, value: string): void {
@@ -71,23 +58,10 @@ class TelemetryHelper {
         TelemetryHelper.reporter.sendTelemetryErrorEvent(
             tracePoint, {
                 [TelemetryKeys.JourneyId]: this.journeyId,
-                'command': this.command,
-                'layer': layer,
-                'errorMessage': error.message,
-                'stack': error.stack ?? '',
+                layer,
+                errorMessage: error.message,
+                stack: error.stack ?? '',
             }, undefined, ['errorMesage', 'stack']);
-    }
-
-    // Log an informational message.
-    // No custom properties are logged alongside the message.
-    public logInfo(layer: string, tracePoint: string, info: string): void {
-        TelemetryHelper.reporter.sendTelemetryEvent(
-            tracePoint, {
-                [TelemetryKeys.JourneyId]: this.journeyId,
-                'command': this.command,
-                'layer': layer,
-                'info': info
-            });
     }
 
     // Executes the given function, timing how long it takes.
@@ -110,7 +84,7 @@ class TelemetryHelper {
     // supplied through initialize() or setTelemetry().
     // If the function errors, the telemetry event will additionally contain metadata about the error that occurred.
     // https://github.com/microsoft/vscode-azuretools/blob/5999c2ad4423e86f22d2c648027242d8816a50e4/ui/src/callWithTelemetryAndErrorHandling.ts
-    public async callWithTelemetryAndErrorHandling<T>(callback: () => Promise<T>): Promise<T | void> {
+    public async callWithTelemetryAndErrorHandling<T>(command: string, callback: () => Promise<T>): Promise<T | void> {
         try {
             return await this.executeFunctionWithTimeTelemetry(callback, 'duration');
         } catch (error) {
@@ -122,9 +96,6 @@ class TelemetryHelper {
                 this.setTelemetry('error', parsedError.errorType);
                 this.setTelemetry('errorMessage', parsedError.message);
                 this.setTelemetry('stack', parsedError.stack ?? '');
-                if (this.options.suppressIfSuccessful) {
-                    this.setTelemetry('suppressTelemetry', 'true');
-                }
 
                 logger.log(parsedError.message);
                 if (parsedError.message.includes('\n')) {
@@ -136,13 +107,13 @@ class TelemetryHelper {
         } finally {
             if (this.properties.result === Result.Failed) {
                 TelemetryHelper.reporter.sendTelemetryErrorEvent(
-                    this.command, {
+                    command, {
                         ...this.properties,
                         [TelemetryKeys.JourneyId]: this.journeyId,
                     }, undefined, ['error', 'errorMesage', 'stack']);
-            } else if (!(this.options.suppressIfSuccessful && this.properties.result === Result.Succeeded)) {
+            } else {
                 TelemetryHelper.reporter.sendTelemetryEvent(
-                    this.command, {
+                    command, {
                         ...this.properties,
                         [TelemetryKeys.JourneyId]: this.journeyId,
                     });
@@ -152,9 +123,3 @@ class TelemetryHelper {
 }
 
 export const telemetryHelper = new TelemetryHelper();
-
-enum Result {
-    'Succeeded' = 'Succeeded',
-    'Failed' = 'Failed',
-    'Canceled' = 'Canceled'
-}

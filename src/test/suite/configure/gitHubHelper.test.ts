@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { GitHubProvider } from '../../configure/helper/gitHubHelper';
+import { GitHubProvider } from '../../../configure/helper/gitHubHelper';
 
 suite('GitHub Helper', () => {
     suite('isGitHubUrl', () => {
@@ -28,23 +28,23 @@ suite('GitHub Helper', () => {
         });
     });
 
-    suite('getRepositoryIdFromUrl', () => {
-        test('Returns username/repository from an HTTPS URL', () => {
-            assert.strictEqual(
-                GitHubProvider.getRepositoryIdFromUrl('https://github.com/microsoft/azure-pipelines-vscode'),
-                'microsoft/azure-pipelines-vscode');
+    suite('getRepositoryDetailsFromRemoteUrl', () => {
+        test('Returns owner and repo from an HTTPS URL', () => {
+            assert.deepStrictEqual(
+                GitHubProvider.getRepositoryDetailsFromRemoteUrl('https://github.com/microsoft/azure-pipelines-vscode'),
+                { ownerName: 'microsoft', repositoryName: 'azure-pipelines-vscode' });
         });
 
-        test('Returns username/repository from an HTTPS URL with trailing .git', () => {
-            assert.strictEqual(
-                GitHubProvider.getRepositoryIdFromUrl('https://github.com/microsoft/azure-pipelines-vscode.git'),
-                'microsoft/azure-pipelines-vscode');
+        test('Returns owner from an HTTPS URL with trailing .git', () => {
+            assert.deepStrictEqual(
+                GitHubProvider.getRepositoryDetailsFromRemoteUrl('https://github.com/microsoft/azure-pipelines-vscode.git'),
+                { ownerName: 'microsoft', repositoryName: 'azure-pipelines-vscode' });
         });
 
-        test('Returns username/repository from a SSH URL', () => {
-            assert.strictEqual(
-                GitHubProvider.getRepositoryIdFromUrl('git@github.com:microsoft/azure-pipelines-vscode.git'),
-                'microsoft/azure-pipelines-vscode');
+        test('Returns owner from a SSH URL', () => {
+            assert.deepStrictEqual(
+                GitHubProvider.getRepositoryDetailsFromRemoteUrl('git@github.com:microsoft/azure-pipelines-vscode.git'),
+                { ownerName: 'microsoft', repositoryName: 'azure-pipelines-vscode' });
         });
     });
 

@@ -4,14 +4,14 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
 
 trigger:
-- {{{ sourceRepository.branch }}}
+- {{{ branch }}}
 
 variables:
   # Azure Resource Manager connection
-  azureSubscription: '{{{ targetResource.serviceConnectionId }}}'
+  azureSubscription: '{{{ azureServiceConnection }}}'
 
   # Web app name
-  functionAppName: '{{{ targetResource.resource.name }}}'
+  functionAppName: '{{{ resource }}}'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'

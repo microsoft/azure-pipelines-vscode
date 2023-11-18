@@ -4,14 +4,14 @@
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- {{{ sourceRepository.branch }}}
+- {{{ branch }}}
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '{{{ targetResource.serviceConnectionId }}}'
+  azureSubscription: '{{{ azureServiceConnection }}}'
 
   # Function app name
-  functionAppName: '{{{ targetResource.resource.name }}}'
+  functionAppName: '{{{ resource }}}'
 
   # Agent VM image name
   vmImageName: 'windows-latest'

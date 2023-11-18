@@ -1,0 +1,17 @@
+{
+    "extends": [
+        "./tsconfig.json"
+    ],
+    "compilerOptions": {
+        // Tests are run directly by VS Code, so we need them in CommonJS format.
+        // Node16 will look at package.json to determine the actual module format,
+        // and since we don't have a "type" field, it will default to CommonJS.
+        "module": "Node16",
+        "moduleResolution": "Node16"
+    },
+    "include": [
+        "src/test"
+    ],
+    // Clear exclude from the base config.
+    "exclude": []
+}
