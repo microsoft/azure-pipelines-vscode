@@ -330,6 +330,6 @@ interface ISchemaAssociations {
     [pattern: string]: string[];
 }
 
-export namespace SchemaAssociationNotification {
-    export const type = new languageclient.NotificationType<ISchemaAssociations>('json/schemaAssociations');
+export const SchemaAssociationNotification = {
+    type: new languageclient.NotificationType<ISchemaAssociations>('json/schemaAssociations'),
 }
