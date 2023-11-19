@@ -26,6 +26,9 @@ steps:
   env:
     DISPLAY: ':99.0'
 
+- script: npm run lint
+  displayName: Lint
+
 # Acquire the `vsce` tool and use it to package
 - script: |
     npm install -g vsce
