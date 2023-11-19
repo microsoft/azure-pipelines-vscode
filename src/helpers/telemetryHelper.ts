@@ -17,9 +17,9 @@ interface TelemetryProperties {
 }
 
 enum Result {
-    'Succeeded' = 'Succeeded',
-    'Failed' = 'Failed',
-    'Canceled' = 'Canceled'
+    Succeeded = 'Succeeded',
+    Failed = 'Failed',
+    Canceled = 'Canceled'
 }
 
 
@@ -105,7 +105,7 @@ class TelemetryHelper {
                 }
             }
         } finally {
-            if (this.properties.result === Result.Failed) {
+            if (this.properties.result === Result.Failed.toString()) {
                 TelemetryHelper.reporter.sendTelemetryErrorEvent(
                     command, {
                         ...this.properties,
