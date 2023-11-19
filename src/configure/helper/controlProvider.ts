@@ -1,7 +1,6 @@
 import { InputBoxOptions, QuickPickItem, QuickPickOptions, window } from 'vscode';
 import { telemetryHelper } from '../../helpers/telemetryHelper';
 import { TelemetryKeys } from '../../helpers/telemetryKeys';
-import { UserCancelledError } from './userCancelledError';
 
 export async function showQuickPick<T extends QuickPickItem>(listName: string, listItems: T[] | Thenable<T[]>, options: QuickPickOptions, itemCountTelemetryKey?: string): Promise<T | undefined> {
     try {
