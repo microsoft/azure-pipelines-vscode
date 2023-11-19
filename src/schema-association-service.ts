@@ -49,7 +49,7 @@ export async function locateSchemaFile(
             // Well, we tried our best. Fall back to the predetermined schema paths.
             // TODO: Re-throw error once we're more confident in the schema detection.
             logger.log(
-                `Error auto-detecting schema for workspace folder ${workspaceFolder.name}: ${error}`,
+                `Error auto-detecting schema for workspace folder ${workspaceFolder.name}: ${String(error)}`,
                 'SchemaDetection');
         }
     }
@@ -112,7 +112,7 @@ async function autoDetectSchema(
             logger.log("1ESPTSchema folder deleted as user is not signed in", 'SchemaDetection')
         }
         catch (error) {
-            logger.log(`Error ${error} while trying to delete 1ESPTSchema folder. Either the folder does not exist or there is an actual error.`, 'SchemaDetection')
+            logger.log(`Error ${String(error)} while trying to delete 1ESPTSchema folder. Either the folder does not exist or there is an actual error.`, 'SchemaDetection')
         }
 
         // Don't await this message so that we can return the fallback schema instead of blocking.
@@ -156,7 +156,7 @@ async function autoDetectSchema(
         }
     } catch (error) {
         // Log and that's it - perhaps they're not in a Git repo, and so don't have the Git extension enabled.
-        logger.log(`${workspaceFolder.name} has no remote URLs: ${error}`, 'SchemaDetection');
+        logger.log(`${workspaceFolder.name} has no remote URLs: ${String(error)}`, 'SchemaDetection');
     }
 
     let organizationName: string;
