@@ -15,8 +15,6 @@ export interface IParsedError {
     isUserCancelledError: boolean;
 }
 
-// tslint:disable:no-unsafe-any
-// tslint:disable:no-any
 export function parseError(error: any): IParsedError {
     let errorType: string = '';
     let message: string = '';
@@ -196,13 +194,13 @@ function getCallstack(error: { stack?: string }): string | undefined {
             let result: string = '';
             // Get just the file name, line number and column number
             // From above example: storageserviceclient.js:751:50
-            const fileMatch: RegExpMatchArray | null = l.match(/[^\/\\\(\s]+\.(t|j)s:[0-9]+:[0-9]+/i);
+            const fileMatch: RegExpMatchArray | null = l.match(/[^/\\(\s]+\.(t|j)s:[0-9]+:[0-9]+/i);
 
             // Ignore any lines without a file match (e.g. "at Generator.next (<anonymous>)")
             if (fileMatch) {
                 // Get the function name
                 // From above example: FileService.StorageServiceClient._processResponse
-                const functionMatch: RegExpMatchArray | null = l.match(/^[\s]*at ([^\(\\\/]+(?:\\|\/)?)+/i);
+                const functionMatch: RegExpMatchArray | null = l.match(/^[\s]*at ([^(\\/]+(?:\\|\/)?)+/i);
                 if (functionMatch) {
                     result += functionMatch[1];
                 }
@@ -211,7 +209,7 @@ function getCallstack(error: { stack?: string }): string | undefined {
 
                 // Get the name of the node module (and any sub modules) containing the file
                 // From above example: azure-storage
-                const moduleRegExp: RegExp = /node_modules(?:\\|\/)([^\\\/]+)/ig;
+                const moduleRegExp: RegExp = /node_modules(?:\\|\/)([^\\/]+)/ig;
                 let moduleMatch: RegExpExecArray | null;
                 do {
                     moduleMatch = moduleRegExp.exec(l);

@@ -69,7 +69,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
     });
 
     // TODO: Can we get rid of this since it's set in package.json?
-    vscode.languages.setLanguageConfiguration(LANGUAGE_IDENTIFIER, { wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/ });
+    vscode.languages.setLanguageConfiguration(LANGUAGE_IDENTIFIER, { wordPattern: /("(?:[^\\"]*(?:\\.)?)*"?)|[^\s{}[\],:]+/ });
 
     // Let the server know of any schema changes.
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
