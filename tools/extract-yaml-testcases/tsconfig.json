@@ -1,11 +1,8 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "es6",
+        "module": "Node16",
+        "target": "ES2022",
         "outDir": "out",
-        "lib": [
-            "es6"
-        ],
         "sourceMap": true,
         "rootDir": "src",
         "strict": true,
@@ -13,8 +10,5 @@
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         "noUnusedParameters": true,
-    },
-    "exclude": [
-        "node_modules"
-    ]
+    }
 }
