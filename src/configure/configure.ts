@@ -349,32 +349,27 @@ class PipelineConfigurer {
         } else {
             // Lazily construct list of organizations so that we can immediately show the quick pick,
             // then fill in the choices as they come in.
-            const organizationAndSessionsPromise = new Promise<
-                QuickPickItemWithData<AzureSession | undefined>[]
-            >(async resolve => {
-                const organizationAndSessions: QuickPickItemWithData<AzureSession | undefined>[] = [];
-
-                for (const session of this.azureAccount.filters.map(({ session }) => session)) {
-                    const organizationsClient = new OrganizationsClient(session.credentials2);
-                    const organizations = await organizationsClient.listOrganizations();
-                    organizationAndSessions.push(...organizations.map(organization => ({
-                        label: organization.accountName,
-                        data: session,
-                    })));
-                }
-
-                organizationAndSessions.push({
-                    // This is safe because ADO orgs can't have spaces in them.
-                    label: "Create new Azure DevOps organization...",
-                    data: undefined,
-                });
-
-                resolve(organizationAndSessions);
-            });
+            const getOrganizationsAndSessions = async (): Promise<QuickPickItemWithData<AzureSession | undefined>[]> => {
+                return [
+                    ...(await Promise.all(this.azureAccount.filters.map(async ({ session }) => {
+                        const organizationsClient = new OrganizationsClient(session.credentials2);
+                        const organizations = await organizationsClient.listOrganizations();
+                        return organizations.map(organization => ({
+                            label: organization.accountName,
+                            data: session,
+                        }));
+                    }))).flat(),
+                    {
+                        // This is safe because ADO orgs can't have spaces in them.
+                        label: "Create new Azure DevOps organization...",
+                        data: undefined,
+                    }
+                ];
+            };
 
             const result = await showQuickPick(
                 'organization',
-                organizationAndSessionsPromise, {
+                getOrganizationsAndSessions(), {
                     placeHolder: "Select the Azure DevOps organization to create this pipeline in",
             });
             if (result === undefined) {
@@ -391,29 +386,24 @@ class PipelineConfigurer {
             const adoClient = await this.getAzureDevOpsClient(organizationName, session);
 
             // Ditto for the projects.
-            const projectsPromise = new Promise<
-                QuickPickItemWithData<ValidatedProject | undefined>[]
-            >(async resolve => {
-                const validatedProjects: QuickPickItemWithData<ValidatedProject | undefined>[] = [];
-
+            const getProjects = async (): Promise<QuickPickItemWithData<ValidatedProject | undefined>[]> => {
                 const coreApi = await adoClient.getCoreApi();
                 const projects = await coreApi.getProjects();
-                validatedProjects.push(...projects
-                    .filter(this.isValidProject)
-                    .map(project => { return { label: project.name, data: project }; }));
-
-                validatedProjects.push({
-                    // This is safe because ADO projects can't end with periods.
-                    label: "Create new project...",
-                    data: undefined,
-                });
-
-                resolve(validatedProjects);
-            });
+                return [
+                    ...projects
+                        .filter(this.isValidProject)
+                        .map(project => { return { label: project.name, data: project }; }),
+                    {
+                        // This is safe because ADO projects can't end with periods.
+                        label: "Create new project...",
+                        data: undefined,
+                    }
+                ];
+            };
 
             const selectedProject = await showQuickPick(
                 constants.SelectProject,
-                projectsPromise,
+                getProjects(),
                 { placeHolder: Messages.selectProject },
                 TelemetryKeys.ProjectListCount);
             if (selectedProject === undefined) {

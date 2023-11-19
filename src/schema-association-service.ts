@@ -204,26 +204,20 @@ async function autoDetectSchema(
                     if (action === Messages.selectOrganizationLabel) {
                         // Lazily construct list of organizations so that we can immediately show the quick pick,
                         // then fill in the choices as they come in.
-                        const organizationAndSessionsPromise = new Promise<
-                            QuickPickItemWithData<AzureSession>[]
-                        >(async resolve => {
-                            const organizationAndSessions: QuickPickItemWithData<AzureSession>[] = [];
-
-                            for (const azureSession of azureAccountApi.sessions) {
-                                const organizationsClient = new OrganizationsClient(azureSession.credentials2);
+                        const getOrganizationsAndSessions = async (): Promise<QuickPickItemWithData<AzureSession>[]> => {
+                            return (await Promise.all(azureAccountApi.sessions.map(async session => {
+                                const organizationsClient = new OrganizationsClient(session.credentials2);
                                 const organizations = await organizationsClient.listOrganizations();
-                                organizationAndSessions.push(...organizations.map(organization => ({
+                                return organizations.map(organization => ({
                                     label: organization.accountName,
-                                    data: azureSession,
-                                })));
-                            }
-
-                            resolve(organizationAndSessions);
-                        });
+                                    data: session,
+                                }));
+                            }))).flat();
+                        };
 
                         const selectedOrganizationAndSession = await showQuickPick(
                             'organization',
-                            organizationAndSessionsPromise, {
+                            getOrganizationsAndSessions(), {
                             placeHolder: format(Messages.selectOrganizationPlaceholder, workspaceFolder.name),
                         });
 
