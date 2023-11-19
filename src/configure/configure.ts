@@ -333,7 +333,7 @@ class PipelineConfigurer {
                     const adoClient = await this.getAzureDevOpsClient(repoDetails.organizationName, session);
                     const coreApi = await adoClient.getCoreApi();
                     const project = await coreApi.getProject(repoDetails.projectName);
-                    if (this.isValidProject(project)) {
+                    if (isValidProject(project)) {
                         return {
                             session,
                             adoClient,
@@ -391,7 +391,7 @@ class PipelineConfigurer {
                 const projects = await coreApi.getProjects();
                 return [
                     ...projects
-                        .filter(this.isValidProject)
+                        .filter(isValidProject)
                         .map(project => { return { label: project.name, data: project }; }),
                     {
                         // This is safe because ADO projects can't end with periods.
@@ -469,7 +469,7 @@ class PipelineConfigurer {
 
         const sites = await appServiceClient.getAppServices(kind);
         const items: QuickPickItemWithData<ValidatedSite | undefined>[] = sites
-            .filter(this.isValidSite)
+            .filter(isValidSite)
             .map(site => { return { label: site.name, data: site }; });
         const appType = kind.includes("functionapp") ? "Function App" : "Web App";
 
@@ -687,7 +687,7 @@ class PipelineConfigurer {
                     sourceVersion: commit
                 }, adoDetails.project.name);
 
-                if (!this.isValidBuild(build)) {
+                if (!isValidBuild(build)) {
                     return undefined;
                 }
 
@@ -761,31 +761,31 @@ class PipelineConfigurer {
         this.azureDevOpsClient = new WebApi(`https://dev.azure.com/${organization}`, authHandler);
         return this.azureDevOpsClient;
     }
+}
 
-    private isValidProject(project: TeamProject): project is ValidatedProject {
-        if (project.name === undefined || project.id === undefined) {
-            void vscode.window.showErrorMessage("Unable to get name or ID for project, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
-            return false;
-        }
-
-        return true;
+function isValidProject(project: TeamProject): project is ValidatedProject {
+    if (project.name === undefined || project.id === undefined) {
+        void vscode.window.showErrorMessage("Unable to get name or ID for project, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+        return false;
     }
 
-    private isValidSite(resource: WebSiteManagementModels.Site): resource is ValidatedSite {
-        if (resource.name === undefined || resource.id === undefined) {
-            void vscode.window.showErrorMessage("Unable to get name or ID for resource, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
-            return false;
-        }
+    return true;
+}
 
-        return true;
+function isValidSite(resource: WebSiteManagementModels.Site): resource is ValidatedSite {
+    if (resource.name === undefined || resource.id === undefined) {
+        void vscode.window.showErrorMessage("Unable to get name or ID for resource, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+        return false;
     }
 
-    private isValidBuild(build: Build): build is ValidatedBuild {
-        if (build.definition === undefined || build.definition.id === undefined || build.id === undefined) {
-            void vscode.window.showErrorMessage("Unable to get definition or ID for build, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
-            return false;
-        }
+    return true;
+}
 
-        return true;
+function isValidBuild(build: Build): build is ValidatedBuild {
+    if (build.definition === undefined || build.definition.id === undefined || build.id === undefined) {
+        void vscode.window.showErrorMessage("Unable to get definition or ID for build, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+        return false;
     }
+
+    return true;
 }
