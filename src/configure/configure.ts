@@ -138,10 +138,7 @@ class PipelineConfigurer {
         }
 
         telemetryHelper.setCurrentStep('CreatePreRequisites');
-        const serviceConnectionHelper = new ServiceConnectionHelper(
-            adoDetails.organizationName,
-            adoDetails.project.name,
-            adoDetails.adoClient);
+        const serviceConnectionHelper = new ServiceConnectionHelper(adoDetails.adoClient, adoDetails.project.name);
 
         let repositoryProperties: Record<string, string> | undefined;
         if (repoDetails.repositoryProvider === RepositoryProvider.Github) {

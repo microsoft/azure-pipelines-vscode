@@ -1,22 +1,29 @@
 import * as azdev from 'azure-devops-node-api';
 import { AadApplication } from '../../model/models';
-import { AzureDevOpsBaseUrl } from "../../resources/constants";
+
+// Definitive interface at https://github.com/microsoft/azure-devops-node-api/blob/master/api/interfaces/ServiceEndpointInterfaces.ts,
+// but it isn't exported :(.
+interface ServiceConnection {
+    allPipelines: {
+        authorized: boolean;
+    }
+    id: string;
+    isReady: boolean;
+    type: string;
+    operationStatus: {
+        state: string;
+        statusMessage: string;
+    };
+}
 
 export class ServiceConnectionClient {
-    private connection: azdev.WebApi;
-    private organizationName: string;
-    private projectName: string;
-
-    constructor(organizationName: string, projectName: string, connection: azdev.WebApi) {
-        this.connection = connection;
-        this.organizationName = organizationName;
-        this.projectName = projectName;
+    constructor(private connection: azdev.WebApi, private project: string) {
     }
 
-    public async createGitHubServiceConnection(endpointName: string, gitHubPat: string): Promise<any> {
-        const url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/serviceendpoint/endpoints`;
+    public async createGitHubServiceConnection(endpointName: string, gitHubPat: string): Promise<ServiceConnection> {
+        const url = `${this.connection.serverUrl}/${this.project}/_apis/serviceendpoint/endpoints`;
 
-        return this.connection.rest.create(url, {
+        const response = await this.connection.rest.create<ServiceConnection>(url, {
             "administratorsGroup": null,
             "authorization": {
                 "parameters": {
@@ -37,12 +44,18 @@ export class ServiceConnectionClient {
                 "Content-Type": "application/json",
             },
         });
+
+        if (response.result) {
+            return response.result;
+        } else {
+            throw new Error(`Failed to create GitHub service connection: ${response.statusCode}`);
+        }
     }
 
-    public async createAzureServiceConnection(endpointName: string, tenantId: string, subscriptionId: string, scope: string, aadApp: AadApplication): Promise<any> {
-        const url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/serviceendpoint/endpoints`;
+    public async createAzureServiceConnection(endpointName: string, tenantId: string, subscriptionId: string, scope: string, aadApp: AadApplication): Promise<ServiceConnection> {
+        const url = `${this.connection.serverUrl}/${this.project}/_apis/serviceendpoint/endpoints`;
 
-        return this.connection.rest.create(url, {
+        const response = await this.connection.rest.create<ServiceConnection>(url, {
             "administratorsGroup": null,
             "authorization": {
                 "parameters": {
@@ -72,23 +85,36 @@ export class ServiceConnectionClient {
                 "Content-Type": "application/json",
             },
         });
+
+        if (response.result) {
+            return response.result;
+        } else {
+            throw new Error(`Failed to create Azure service connection: ${response.statusCode}`);
+        }
     }
 
-    public async getEndpointStatus(endpointId: string): Promise<any> {
-        const url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/serviceendpoint/endpoints/${endpointId}`;
+    public async getEndpointStatus(endpointId: string): Promise<ServiceConnection> {
+        const url = `${this.connection.serverUrl}/${this.project}/_apis/serviceendpoint/endpoints/${endpointId}`;
 
-        return this.connection.rest.get(url, {
+        const response = await this.connection.rest.get<ServiceConnection>(url, {
             acceptHeader: "application/json;api-version=5.1-preview.2;excludeUrls=true",
             additionalHeaders: {
                 "Content-Type": "application/json",
             },
         });
+
+        if (response.result) {
+            return response.result;
+        } else {
+            throw new Error(`Failed to get service connection status: ${response.statusCode}`);
+        }
     }
 
-    public async authorizeEndpointForAllPipelines(endpointId: string): Promise<any> {
-        const url = `${AzureDevOpsBaseUrl}/${this.organizationName}/${this.projectName}/_apis/pipelines/pipelinePermissions/endpoint/${endpointId}`;
+    // TODO: Authorize individual pipelines instead of all pipelines.
+    public async authorizeEndpointForAllPipelines(endpointId: string): Promise<ServiceConnection> {
+        const url = `${this.connection.serverUrl}/${this.project}/_apis/pipelines/pipelinePermissions/endpoint/${endpointId}`;
 
-        return this.connection.rest.update(url, {
+        const response = await this.connection.rest.update<ServiceConnection>(url, {
             "allPipelines": {
                 "authorized": true,
                 "authorizedBy": null,
@@ -105,5 +131,11 @@ export class ServiceConnectionClient {
                 "Content-Type": "application/json",
             },
         });
+
+        if (response.result) {
+            return response.result;
+        } else {
+            throw new Error(`Failed to authorize service connection: ${response.statusCode}`);
+        }
     }
 }
