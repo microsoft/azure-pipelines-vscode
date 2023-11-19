@@ -34,7 +34,7 @@ export async function activate(context: vscode.ExtensionContext) {
         await activateYmlContributor(context);
         if (configurePipelineEnabled) {
             const { activateConfigurePipeline } = await import('./configure/activate');
-            await activateConfigurePipeline();
+            activateConfigurePipeline();
         }
     });
 

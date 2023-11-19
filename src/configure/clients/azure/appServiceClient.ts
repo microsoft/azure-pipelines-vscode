@@ -22,10 +22,6 @@ export class AppServiceClient {
         return sites.filter(site => site.kind === filterForResourceKind);
     }
 
-    public async getDeploymentCenterUrl(resourceId: string): Promise<string> {
-        return `${this.portalUrl}/#@${this.tenantId}/resource/${resourceId}/vstscd`;
-    }
-
     public async getAzurePipelineUrl(site: ValidatedSite): Promise<string> {
         const metadata = await this.getAppServiceMetadata(site);
         if (metadata.properties?.['VSTSRM_BuildDefinitionWebAccessUrl']) {
