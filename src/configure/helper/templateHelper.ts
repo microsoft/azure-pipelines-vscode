@@ -8,8 +8,7 @@ import { URI } from 'vscode-uri';
 export async function analyzeRepoAndListAppropriatePipeline(repoUri: URI): Promise<PipelineTemplate[]> {
     // TO-DO: To populate the possible templates on the basis of azure target resource.
     let templateList = simpleWebAppTemplates;
-    let analysisResult = await analyzeRepo(repoUri);
-
+    const analysisResult = await analyzeRepo(repoUri);
 
     if (analysisResult.isNodeApplication) {
         // add all node application templates
@@ -24,7 +23,7 @@ export async function analyzeRepoAndListAppropriatePipeline(repoUri: URI): Promi
         templateList = functionTemplates.concat(templateList);
     }
 
-    if(analysisResult.isDotnetApplication) {
+    if (analysisResult.isDotnetApplication) {
         templateList = dotnetTemplates.concat(templateList);
     }
 
@@ -67,31 +66,20 @@ async function analyzeRepo(repoUri: URI): Promise<{ isNodeApplication: boolean, 
 }
 
 function isNodeRepo(files: string[]): boolean {
-    let nodeFilesRegex = '\\.ts$|\\.js$|package\\.json$|node_modules';
-    return files.some((file) => {
-        let result = new RegExp(nodeFilesRegex).test(file.toLowerCase());
-        return result;
-    });
+    const nodeFilesRegex = /\.ts$|\.js$|package\.json$|node_modules/;
+    return files.some((file) => nodeFilesRegex.test(file.toLowerCase()));
 }
 
 function isFunctionApp(files: string[]): boolean {
-    return files.some((file) => {
-        return file.toLowerCase().endsWith("host.json");
-    });
+    return files.some((file) => file.toLowerCase().endsWith("host.json"));
 }
 
 function isPythonRepo(files: string[]): boolean {
-    let pythonRegex = '.py$';
-    return files.some((file) => {
-        let result = new RegExp(pythonRegex).test(file.toLowerCase());
-        return result;
-    })
+    return files.some((file) => path.extname(file).toLowerCase() === '.py');
 }
 
 function isDotnetApplication(files: string[]): boolean {
-    return files.some((file) => {
-        return file.toLowerCase().endsWith("sln") || file.toLowerCase().endsWith("csproj") || file.toLowerCase().endsWith("fsproj");
-    })
+    return files.some((file) => ['.sln', '.csproj', '.fsproj'].includes(path.extname(file).toLowerCase()));
 }
 
 const nodeTemplates: Array<PipelineTemplate> = [

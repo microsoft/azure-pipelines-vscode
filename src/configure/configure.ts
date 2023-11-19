@@ -229,7 +229,8 @@ class PipelineConfigurer {
             return undefined;
         }
 
-        let { name, remote } = HEAD;
+        const { name } = HEAD;
+        let { remote } = HEAD;
         if (!name) {
             vscode.window.showWarningMessage(Messages.branchNameMissing);
             return undefined;

@@ -25,19 +25,3 @@ export async function showInputBox(inputName: string, options: InputBoxOptions):
         ...options
     });
 }
-
-export async function showInformationBox(informationIdentifier: string, informationMessage: string, ...actions: string[]): Promise<string | undefined> {
-    telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, informationIdentifier);
-    if (!!actions && actions.length > 0) {
-        let result = await window.showInformationMessage(informationMessage, ...actions);
-        if (!result) {
-            throw new UserCancelledError();
-        }
-
-        return result;
-    }
-    else {
-        return window.showInformationMessage(informationMessage, ...actions);
-    }
-
-}

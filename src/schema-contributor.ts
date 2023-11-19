@@ -51,7 +51,7 @@ class SchemaContributor {
      * @returns {string} the schema uri
      */
     public requestCustomSchema(resource: string): string {
-        for (let customKey of Object.keys(this._customSchemaContributors)) {
+        for (const customKey of Object.keys(this._customSchemaContributors)) {
             const contributor = this._customSchemaContributors[customKey];
             const uri = contributor.requestSchema(resource);
             if (uri) {

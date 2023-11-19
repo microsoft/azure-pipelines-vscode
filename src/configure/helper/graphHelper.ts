@@ -100,8 +100,8 @@ export class GraphHelper {
     }
 
     private static async createAadApp(graphClient: RestClient, name: string, tenantId: string): Promise<AadApplication> {
-        let secret = generateRandomPassword(20);
-        let startDate = new Date(Date.now());
+        const secret = generateRandomPassword(20);
+        const startDate = new Date(Date.now());
 
         return graphClient.sendRequest<any>({
             url: `https://graph.windows.net/${tenantId}/applications`,
@@ -131,7 +131,7 @@ export class GraphHelper {
     }
 
     private static async createSpn(graphClient: RestClient, appId: string, tenantId: string): Promise<any> {
-        let createSpnPromise = () => {
+        const createSpnPromise = () => {
             return graphClient.sendRequest<any>({
                 url: `https://graph.windows.net/${tenantId}/servicePrincipals`,
                 queryParameters: {
@@ -153,19 +153,17 @@ export class GraphHelper {
     }
 
     private static async createRoleAssignment(credentials: TokenCredentialsBase, scope: string, objectId: string): Promise<any> {
-        let restClient = new RestClient(credentials);
-        let roleDefinitionId = `${scope}/providers/Microsoft.Authorization/roleDefinitions/${this.contributorRoleId}`;
-        let guid = uuid();
-        let createRoleAssignmentPromise = () => {
+        const restClient = new RestClient(credentials);
+        const createRoleAssignmentPromise = () => {
             return restClient.sendRequest<any>({
-                url: `https://management.azure.com/${scope}/providers/Microsoft.Authorization/roleAssignments/${guid}`,
+                url: `https://management.azure.com/${scope}/providers/Microsoft.Authorization/roleAssignments/${uuid()}`,
                 queryParameters: {
                     "api-version": "2021-04-01-preview" // So we have access to the "principalType" property
                 },
                 method: "PUT",
                 body: {
                     "properties": {
-                        "roleDefinitionId": roleDefinitionId,
+                        "roleDefinitionId": `${scope}/providers/Microsoft.Authorization/roleDefinitions/${this.contributorRoleId}`,
                         "principalId": objectId,
                         "principalType": "ServicePrincipal", // Makes the assignment work for newly-created service principals
                     }

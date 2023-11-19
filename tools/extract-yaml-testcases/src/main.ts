@@ -4,7 +4,7 @@ const path = require('path');
 if (process.argv.length <= 2) {
     usage();
 } else {
-    let options = parseOptions(process.argv);
+    const options = parseOptions(process.argv);
     console.log(options);
 
     fs.readFile(options.input, 'utf8', (err: NodeJS.ErrnoException, data: string) => {
@@ -13,11 +13,11 @@ if (process.argv.length <= 2) {
                 console.error('could not read input file');
                 process.exit(1);
             }
-            
+
             console.error('some error reading input file');
             process.exit(1);
         }
-      
+
         fs.mkdir(options.outputDir, (err: NodeJS.ErrnoException) => {
             if (err && err.code !== 'EEXIST') {
                 console.error('error creating output directory');
@@ -35,7 +35,7 @@ function usage() {
 }
 
 function parseOptions(rawArgs: string[]) {
-    let interestingArgs = rawArgs.slice(2);
+    const interestingArgs = rawArgs.slice(2);
     if (interestingArgs.length > 2) {
         usage();
         process.exit(1);
