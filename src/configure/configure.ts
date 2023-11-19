@@ -212,8 +212,10 @@ class PipelineConfigurer {
         telemetryHelper.setCurrentStep('DisplayCreatedPipeline');
         void vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
             .then(action => {
-                if (action?.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
+                if (action === Messages.browsePipeline) {
                     telemetryHelper.setTelemetry(TelemetryKeys.BrowsePipelineClicked, 'true');
+                    // _links is weakly typed and it's not worth the effort to verify.
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
                     void vscode.env.openExternal(URI.parse(queuedPipeline._links.web.href));
                 }
             });
@@ -456,11 +458,7 @@ class PipelineConfigurer {
         }
 
         // show available resources and get the chosen one
-        const appServiceClient = new AppServiceClient(
-            session.credentials2,
-            session.tenantId,
-            session.environment.portalUrl,
-            subscriptionId);
+        const appServiceClient = new AppServiceClient(session.credentials2, subscriptionId);
 
         // TODO: Refactor kind so we don't need three kind.includes
 
