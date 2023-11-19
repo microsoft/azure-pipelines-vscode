@@ -12,6 +12,11 @@ import { AzureSession } from '../../typings/azure-account.api';
 // client.api("/applications").post()
 // client.api("/servicePrincipals").post()
 // new AuthorizationManagementClient().roleAssignments.create()
+// Disable ESLint rules because there won't be any investment into this file; see above.
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 export class GraphHelper {
 
     private static contributorRoleId = "b24988ac-6180-42a0-ab88-20f7382dd24c";
