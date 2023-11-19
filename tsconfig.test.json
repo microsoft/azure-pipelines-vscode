@@ -11,7 +11,5 @@
     },
     "include": [
         "src/test"
-    ],
-    // Clear exclude from the base config.
-    "exclude": []
+    ]
 }
