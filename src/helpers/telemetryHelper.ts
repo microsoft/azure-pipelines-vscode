@@ -34,7 +34,7 @@ class TelemetryHelper {
     private static reporter = new TelemetryReporter(extensionName, extensionVersion, aiKey);
 
     public dispose() {
-        TelemetryHelper.reporter.dispose();
+        void TelemetryHelper.reporter.dispose();
     }
 
     public getJourneyId(): string {
@@ -99,9 +99,9 @@ class TelemetryHelper {
 
                 logger.log(parsedError.message);
                 if (parsedError.message.includes('\n')) {
-                    vscode.window.showErrorMessage('An error has occurred. Check the output window for more details.');
+                    void vscode.window.showErrorMessage('An error has occurred. Check the output window for more details.');
                 } else {
-                    vscode.window.showErrorMessage(parsedError.message);
+                    void vscode.window.showErrorMessage(parsedError.message);
                 }
             }
         } finally {

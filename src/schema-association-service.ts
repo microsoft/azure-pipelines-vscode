@@ -117,7 +117,7 @@ async function autoDetectSchema(
 
         // Don't await this message so that we can return the fallback schema instead of blocking.
         // We'll detect the login in extension.ts and then re-request the schema.
-        vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel)
+        void vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel)
             .then(async action => {
                 if (action === Messages.signInLabel) {
                     await vscode.window.withProgress({
@@ -197,7 +197,7 @@ async function autoDetectSchema(
             // then displaying the quick pick of all the organizations they have access to.
             // We *do not* await this message so that we can use the fallback schema while waiting.
             // We'll detect when they choose the organization in extension.ts and then re-request the schema.
-            vscode.window.showInformationMessage(
+            void vscode.window.showInformationMessage(
                 format(Messages.selectOrganizationForEnhancedIntelliSense, workspaceFolder.name),
                 Messages.selectOrganizationLabel)
                 .then(async action => {
@@ -252,7 +252,7 @@ async function autoDetectSchema(
     // Not logged into an account that has access.
     if (session === undefined) {
         logger.log(`No organization found for ${workspaceFolder.name}`, 'SchemaDetection');
-        vscode.window.showErrorMessage(format(Messages.unableToAccessOrganization, organizationName));
+        void vscode.window.showErrorMessage(format(Messages.unableToAccessOrganization, organizationName));
         await delete1ESPTSchemaFileIfPresent(context);
         return undefined;
     }
@@ -297,10 +297,10 @@ async function autoDetectSchema(
             if (context.globalState.get('doNotAskAgain1ESPTSchema') == undefined || !context.globalState.get('doNotAskAgain1ESPTSchema')) {
                 const schema1esptPopupResponse = await vscode.window.showInformationMessage(Messages.userEligibleForEnahanced1ESPTIntellisense, Messages.enable1ESPTSchema, Messages.doNotAskAgain);
                 if (schema1esptPopupResponse === Messages.enable1ESPTSchema) {
-                    vscode.workspace.getConfiguration('azure-pipelines').update('1ESPipelineTemplatesSchemaFile', true, vscode.ConfigurationTarget.Workspace);
+                    await vscode.workspace.getConfiguration('azure-pipelines').update('1ESPipelineTemplatesSchemaFile', true, vscode.ConfigurationTarget.Workspace);
                 }
                 else if (schema1esptPopupResponse === Messages.doNotAskAgain) {
-                    context.globalState.update('doNotAskAgain1ESPTSchema', true);
+                    await context.globalState.update('doNotAskAgain1ESPTSchema', true);
                 }
             }
         }

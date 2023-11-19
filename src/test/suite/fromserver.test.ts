@@ -17,7 +17,7 @@ import * as vscode from 'vscode';
 //    console.log('workspace configuration: ' + JSON.stringify(vscode.workspace.getConfiguration()));
 // 2.
 
-suite('Validation Tests From Server', async function() {
+suite('Validation Tests From Server', function() {
     this.timeout(1000000);
 
     test ('Validate all files from server', async function () {

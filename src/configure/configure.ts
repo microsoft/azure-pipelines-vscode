@@ -37,7 +37,7 @@ export async function configurePipeline(): Promise<void> {
         if (signIn?.toLowerCase() === Messages.signInLabel.toLowerCase()) {
             await vscode.commands.executeCommand("azure-account.login");
         } else {
-            vscode.window.showWarningMessage(Messages.azureLoginRequired);
+            void vscode.window.showWarningMessage(Messages.azureLoginRequired);
             return;
         }
     }
@@ -50,7 +50,7 @@ export async function configurePipeline(): Promise<void> {
 
     const repo = gitExtension.getRepository(workspaceUri);
     if (repo === null) {
-        vscode.window.showWarningMessage(Messages.notAGitRepository);
+        void vscode.window.showWarningMessage(Messages.notAGitRepository);
         return;
     }
 
@@ -213,11 +213,11 @@ class PipelineConfigurer {
         }
 
         telemetryHelper.setCurrentStep('DisplayCreatedPipeline');
-        vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
+        void vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
             .then(action => {
                 if (action?.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
                     telemetryHelper.setTelemetry(TelemetryKeys.BrowsePipelineClicked, 'true');
-                    vscode.env.openExternal(URI.parse(queuedPipeline._links.web.href));
+                    void vscode.env.openExternal(URI.parse(queuedPipeline._links.web.href));
                 }
             });
     }
@@ -225,14 +225,14 @@ class PipelineConfigurer {
     private async getGitDetailsFromRepository(): Promise<GitRepositoryDetails | undefined> {
         const { HEAD } = this.repo.state;
         if (!HEAD) {
-            vscode.window.showWarningMessage(Messages.branchHeadMissing);
+            void vscode.window.showWarningMessage(Messages.branchHeadMissing);
             return undefined;
         }
 
         const { name } = HEAD;
         let { remote } = HEAD;
         if (!name) {
-            vscode.window.showWarningMessage(Messages.branchNameMissing);
+            void vscode.window.showWarningMessage(Messages.branchNameMissing);
             return undefined;
         }
 
@@ -240,7 +240,7 @@ class PipelineConfigurer {
             // Remote tracking branch is not set, see if we have any remotes we can use.
             const remotes = this.repo.state.remotes;
             if (remotes.length === 0) {
-                vscode.window.showWarningMessage(Messages.branchRemoteMissing);
+                void vscode.window.showWarningMessage(Messages.branchRemoteMissing);
                 return undefined;
             } else if (remotes.length === 1) {
                 remote = remotes[0].name;
@@ -289,11 +289,11 @@ class PipelineConfigurer {
                     branch: name,
                 };
             } else {
-                vscode.window.showWarningMessage(Messages.cannotIdentifyRepositoryDetails);
+                void vscode.window.showWarningMessage(Messages.cannotIdentifyRepositoryDetails);
                 return undefined;
             }
         } else {
-            vscode.window.showWarningMessage(Messages.remoteRepositoryNotConfigured);
+            void vscode.window.showWarningMessage(Messages.remoteRepositoryNotConfigured);
             return undefined;
         }
 
@@ -344,7 +344,7 @@ class PipelineConfigurer {
                 }
             }
 
-            vscode.window.showWarningMessage("You are not signed in to the Azure DevOps organization that contains this repository.");
+            void vscode.window.showWarningMessage("You are not signed in to the Azure DevOps organization that contains this repository.");
             return undefined;
         } else {
             // Lazily construct list of organizations so that we can immediately show the quick pick,
@@ -464,7 +464,7 @@ class PipelineConfigurer {
 
         const { subscriptionId } = selectedSubscription.data.subscription;
         if (subscriptionId === undefined) {
-            vscode.window.showErrorMessage("Unable to get ID for subscription, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+            void vscode.window.showErrorMessage("Unable to get ID for subscription, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
             return undefined;
         }
 
@@ -633,14 +633,14 @@ class PipelineConfigurer {
 
                         const commit = this.repo.state.HEAD?.commit;
                         if (commit === undefined) {
-                            vscode.window.showErrorMessage("Unable to get commit after pushing pipeline, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+                            void vscode.window.showErrorMessage("Unable to get commit after pushing pipeline, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
                             return undefined;
                         }
 
                         return commit;
                     } catch (error) {
                         telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error as Error);
-                        vscode.window.showErrorMessage(
+                        void vscode.window.showErrorMessage(
                             utils.format(Messages.commitFailedErrorMessage, (error as Error).message));
                         return undefined;
                     }
@@ -674,7 +674,7 @@ class PipelineConfigurer {
                     [constants.HostedVS2017QueueName],
                     adoDetails.project.name);
                 if (queues.length === 0) {
-                    vscode.window.showErrorMessage(
+                    void vscode.window.showErrorMessage(
                         utils.format(Messages.noAgentQueueFound, constants.HostedVS2017QueueName));
                     return undefined;
                 }
@@ -717,7 +717,7 @@ class PipelineConfigurer {
     ): Promise<void> {
         try {
             // update SCM type
-            azureSiteDetails.appServiceClient.updateScmType(azureSiteDetails.site);
+            await azureSiteDetails.appServiceClient.updateScmType(azureSiteDetails.site);
 
             const buildDefinitionUrl = AzureDevOpsHelper.getOldFormatBuildDefinitionUrl(
                 adoDetails.organizationName,
@@ -731,7 +731,7 @@ class PipelineConfigurer {
             const locationsApi = await adoDetails.adoClient.getLocationsApi();
             const { instanceId } = await locationsApi.getConnectionData();
             if (instanceId === undefined) {
-                vscode.window.showErrorMessage("Unable to determine the organization ID, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+                void vscode.window.showErrorMessage("Unable to determine the organization ID, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
                 return;
             }
 
@@ -747,10 +747,10 @@ class PipelineConfigurer {
                 VSTSRM_ReleaseDefinitionId: '',
             };
 
-            azureSiteDetails.appServiceClient.updateAppServiceMetadata(azureSiteDetails.site, metadata);
+            await azureSiteDetails.appServiceClient.updateAppServiceMetadata(azureSiteDetails.site, metadata);
 
             // send a deployment log with information about the setup pipeline and links.
-            azureSiteDetails.appServiceClient.publishDeploymentToAppService(
+            await azureSiteDetails.appServiceClient.publishDeploymentToAppService(
                 azureSiteDetails.site,
                 buildDefinitionUrl,
                 buildDefinitionUrl,
@@ -774,7 +774,7 @@ class PipelineConfigurer {
 
     private isValidProject(project: TeamProject): project is ValidatedProject {
         if (project.name === undefined || project.id === undefined) {
-            vscode.window.showErrorMessage("Unable to get name or ID for project, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+            void vscode.window.showErrorMessage("Unable to get name or ID for project, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
             return false;
         }
 
@@ -783,7 +783,7 @@ class PipelineConfigurer {
 
     private isValidSite(resource: WebSiteManagementModels.Site): resource is ValidatedSite {
         if (resource.name === undefined || resource.id === undefined) {
-            vscode.window.showErrorMessage("Unable to get name or ID for resource, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+            void vscode.window.showErrorMessage("Unable to get name or ID for resource, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
             return false;
         }
 
@@ -792,7 +792,7 @@ class PipelineConfigurer {
 
     private isValidBuild(build: Build): build is ValidatedBuild {
         if (build.definition === undefined || build.definition.id === undefined || build.id === undefined) {
-            vscode.window.showErrorMessage("Unable to get definition or ID for build, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+            void vscode.window.showErrorMessage("Unable to get definition or ID for build, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
             return false;
         }
 
