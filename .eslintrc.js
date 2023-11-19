@@ -12,7 +12,7 @@ module.exports = {
     root: true,
     overrides: [
         {
-            extends: ['plugin:@typescript-eslint/recommended-type-checked'],
+            extends: ['plugin:@typescript-eslint/strict-type-checked'],
             files: ['./**/*.{ts,tsx}'],
             parser: '@typescript-eslint/parser',
             parserOptions: {

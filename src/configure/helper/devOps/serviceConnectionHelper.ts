@@ -4,7 +4,7 @@ import * as util from 'util';
 import { sleepForMilliSeconds } from '../commonHelper';
 import { ServiceConnectionClient } from '../../clients/devOps/serviceConnectionClient';
 import { AadApplication } from '../../model/models';
-import { Messages } from '../../../messages';
+import * as Messages from '../../../messages';
 
 export class ServiceConnectionHelper {
     private serviceConnectionClient: ServiceConnectionClient;
@@ -18,7 +18,7 @@ export class ServiceConnectionHelper {
         const endpointId = connection.id;
         await this.waitForEndpointToBeReady(endpointId);
         const authorizationResponse = await this.serviceConnectionClient.authorizeEndpointForAllPipelines(endpointId);
-        if (authorizationResponse.allPipelines.authorized !== true) {
+        if (!authorizationResponse.allPipelines.authorized) {
             throw new Error(Messages.couldNotAuthorizeEndpoint);
         }
 
@@ -30,7 +30,7 @@ export class ServiceConnectionHelper {
         const endpointId: string = connection.id;
         await this.waitForEndpointToBeReady(endpointId);
         const authorizationResponse = await this.serviceConnectionClient.authorizeEndpointForAllPipelines(endpointId);
-        if (authorizationResponse.allPipelines.authorized !== true) {
+        if (!authorizationResponse.allPipelines.authorized) {
             throw new Error(Messages.couldNotAuthorizeEndpoint);
         }
 

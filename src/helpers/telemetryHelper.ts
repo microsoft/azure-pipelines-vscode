@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import TelemetryReporter from '@vscode/extension-telemetry';
 
-import { TelemetryKeys } from './telemetryKeys';
+import * as TelemetryKeys from './telemetryKeys';
 import * as logger from '../logger';
 import { parseError } from './parseError';
 
@@ -9,7 +9,7 @@ import { v4 as uuid } from 'uuid';
 
 const extensionName = 'ms-azure-devops.azure-pipelines';
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
-const packageJSON = vscode.extensions.getExtension(extensionName)!.packageJSON; // Guaranteed to exist
+const packageJSON = vscode.extensions.getExtension(extensionName)?.packageJSON; // Guaranteed to exist
 const extensionVersion: string = packageJSON.version;
 const aiKey: string = packageJSON.aiKey;
 /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
@@ -86,7 +86,7 @@ class TelemetryHelper {
     // supplied through initialize() or setTelemetry().
     // If the function errors, the telemetry event will additionally contain metadata about the error that occurred.
     // https://github.com/microsoft/vscode-azuretools/blob/5999c2ad4423e86f22d2c648027242d8816a50e4/ui/src/callWithTelemetryAndErrorHandling.ts
-    public async callWithTelemetryAndErrorHandling<T>(command: string, callback: () => Promise<T>): Promise<T | void> {
+    public async callWithTelemetryAndErrorHandling<T>(command: string, callback: () => Promise<T>): Promise<T | undefined> {
         try {
             return await this.executeFunctionWithTimeTelemetry(callback, 'duration');
         } catch (error) {
@@ -121,6 +121,8 @@ class TelemetryHelper {
                     });
             }
         }
+
+        return undefined;
     }
 }
 

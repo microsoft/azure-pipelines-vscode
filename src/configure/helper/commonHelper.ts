@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { URI } from 'vscode-uri';
 import * as util from 'util';
-import { Messages } from '../../messages';
+import * as Messages from '../../messages';
 import * as logger from '../../logger';
 
 export async function sleepForMilliSeconds(timeInMs: number): Promise<void> {
@@ -40,7 +40,9 @@ export async function executeFunctionWithRetry<T>(
             }
         }
 
-        throw errorMessage ? errorMessage.concat(util.format(Messages.retryFailedMessage, retryCount, JSON.stringify(internalError))): util.format  (Messages.retryFailedMessage, retryCount, JSON.stringify(internalError));
+        throw new Error(errorMessage ?
+            errorMessage.concat(util.format(Messages.retryFailedMessage, retryCount, JSON.stringify(internalError))) :
+            util.format(Messages.retryFailedMessage, retryCount, JSON.stringify(internalError)));
 }
 
 export async function getAvailableFileName(fileName: string, repoPath: URI): Promise<string> {

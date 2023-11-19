@@ -1,7 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { AadApplication } from '../model/models';
 import { generateRandomPassword, executeFunctionWithRetry } from './commonHelper';
-import { Messages } from '../../messages';
+import * as Messages from '../../messages';
 import { RestClient } from '../clients/restClient';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
@@ -13,10 +13,7 @@ import { AzureSession } from '../../typings/azure-account.api';
 // client.api("/servicePrincipals").post()
 // new AuthorizationManagementClient().roleAssignments.create()
 // Disable ESLint rules because there won't be any investment into this file; see above.
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable */
 export class GraphHelper {
 
     private static contributorRoleId = "b24988ac-6180-42a0-ab88-20f7382dd24c";

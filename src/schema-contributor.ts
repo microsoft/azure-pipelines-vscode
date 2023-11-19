@@ -13,35 +13,35 @@ interface SchemaContributorProvider {
 // TODO: Add tests for this class.
 // TODO: Can we just get rid of this class?
 class SchemaContributor {
-    private _customSchemaContributors: { [index: string]: SchemaContributorProvider } = {};
+    private _customSchemaContributors: Record<string, SchemaContributorProvider> = {};
 
-    /**
-     * Register a custom schema provider.
-     * TODO: We might be able to use this to intelligently grab the schema for projects using Azure Repos.
-     *
-     * @param {string} schema the provider's name
-     * @param requestSchema the requestSchema function
-     * @param requestSchemaContent the requestSchemaContent function
-     * @returns {boolean}
-     */
-    public registerContributor(schema: string,
-                               requestSchema: (resource: string) => string,
-                               requestSchemaContent: (uri: string) => string): boolean {
-        if (this._customSchemaContributors[schema]) {
-            return false;
-        }
+    // /**
+    //  * Register a custom schema provider.
+    //  * TODO: We might be able to use this to intelligently grab the schema for projects using Azure Repos.
+    //  *
+    //  * @param {string} schema the provider's name
+    //  * @param requestSchema the requestSchema function
+    //  * @param requestSchemaContent the requestSchemaContent function
+    //  * @returns {boolean}
+    //  */
+    // public registerContributor(schema: string,
+    //                            requestSchema: (resource: string) => string,
+    //                            requestSchemaContent: (uri: string) => string): boolean {
+    //     if (this._customSchemaContributors[schema]) {
+    //         return false;
+    //     }
 
-        if (!requestSchema) {
-            throw new Error("Illegal parameter for requestSchema.");
-        }
+    //     if (!requestSchema) {
+    //         throw new Error("Illegal parameter for requestSchema.");
+    //     }
 
-        this._customSchemaContributors[schema] = <SchemaContributorProvider>{
-            requestSchema,
-            requestSchemaContent
-        };
+    //     this._customSchemaContributors[schema] = <SchemaContributorProvider>{
+    //         requestSchema,
+    //         requestSchemaContent
+    //     };
 
-        return true;
-    }
+    //     return true;
+    // }
 
     /**
      * Asks each schema provider whether it has a schema for the given resource,
@@ -51,8 +51,7 @@ class SchemaContributor {
      * @returns {string} the schema uri
      */
     public requestCustomSchema(resource: string): string {
-        for (const customKey of Object.keys(this._customSchemaContributors)) {
-            const contributor = this._customSchemaContributors[customKey];
+        for (const contributor of Object.values(this._customSchemaContributors)) {
             const uri = contributor.requestSchema(resource);
             if (uri) {
                 return uri;
@@ -62,6 +61,7 @@ class SchemaContributor {
         // TODO: This is currently the only way to fallback to the default schema provider.
         // The upstream Red Hat server also falls back when receiving a falsy value,
         // so sync with their changes and change this to return false or something.
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw `Unable to find custom schema for resource: '${resource}'`;
     }
 
@@ -76,11 +76,16 @@ class SchemaContributor {
     public requestCustomSchemaContent(uri: string): string {
         if (uri) {
             const { scheme } = URI.parse(uri);
-            if (scheme && this._customSchemaContributors[scheme]) {
-                return this._customSchemaContributors[scheme].requestSchemaContent(uri);
+            const contributor = this._customSchemaContributors[scheme];
+            // this._customSchemaContributors is an arbitrary type, but I don't know
+            // how to get TypeScript to recognize that we need to check for property existence :(.
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            if (contributor) {
+                return contributor.requestSchemaContent(uri);
             }
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw `Unable to find custom schema content for uri: '${uri}'`;
     }
 }

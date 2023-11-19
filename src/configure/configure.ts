@@ -1,15 +1,15 @@
 import { v4 as uuid } from 'uuid';
 import { AppServiceClient } from './clients/azure/appServiceClient';
 import { OrganizationsClient } from './clients/devOps/organizationsClient';
-import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
-import { Messages } from '../messages';
+import * as AzureDevOpsHelper from './helper/devOps/azureDevOpsHelper';
+import * as Messages from '../messages';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
 import { SourceOptions, RepositoryProvider, QuickPickItemWithData, GitRepositoryDetails, PipelineTemplate, AzureDevOpsDetails, ValidatedBuild, ValidatedProject, WebAppKind, TargetResourceType, ValidatedSite } from './model/models';
 import * as constants from './resources/constants';
-import { TracePoints } from './resources/tracePoints';
+import * as TracePoints from './resources/tracePoints';
 import { getAzureAccountExtensionApi, getGitExtensionApi } from '../extensionApis';
 import { telemetryHelper } from '../helpers/telemetryHelper';
-import { TelemetryKeys } from '../helpers/telemetryKeys';
+import * as TelemetryKeys from '../helpers/telemetryKeys';
 import * as utils from 'util';
 import * as vscode from 'vscode';
 import { URI, Utils } from 'vscode-uri';
@@ -23,7 +23,7 @@ import { AzureSiteDetails } from './model/models';
 import { GraphHelper } from './helper/graphHelper';
 import { TeamProject } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import { WebApi, getBearerHandler } from 'azure-devops-node-api';
-import { GitHubProvider } from './helper/gitHubHelper';
+import * as GitHubHelper from './helper/gitHubHelper';
 import { WebSiteManagementModels } from '@azure/arm-appservice';
 
 const Layer: string = 'configure';
@@ -276,9 +276,9 @@ class PipelineConfigurer {
                     remoteUrl,
                     branch: name,
                 };
-            } else if (GitHubProvider.isGitHubUrl(remoteUrl)) {
-                remoteUrl = GitHubProvider.getFormattedRemoteUrl(remoteUrl);
-                const { ownerName, repositoryName } = GitHubProvider.getRepositoryDetailsFromRemoteUrl(remoteUrl);
+            } else if (GitHubHelper.isGitHubUrl(remoteUrl)) {
+                remoteUrl = GitHubHelper.getFormattedRemoteUrl(remoteUrl);
+                const { ownerName, repositoryName } = GitHubHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
                 repoDetails = {
                     repositoryProvider: RepositoryProvider.Github,
                     ownerName,
@@ -370,7 +370,7 @@ class PipelineConfigurer {
                 'organization',
                 getOrganizationsAndSessions(), {
                     placeHolder: "Select the Azure DevOps organization to create this pipeline in",
-            });
+            }, TelemetryKeys.OrganizationListCount);
             if (result === undefined) {
                 return undefined;
             }

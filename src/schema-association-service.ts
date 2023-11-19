@@ -11,11 +11,11 @@ import * as azdev from 'azure-devops-node-api';
 import { format } from 'util';
 import { getAzureAccountExtensionApi, getGitExtensionApi } from './extensionApis';
 import { OrganizationsClient } from './configure/clients/devOps/organizationsClient';
-import { AzureDevOpsHelper } from './configure/helper/devOps/azureDevOpsHelper';
+import { getRepositoryDetailsFromRemoteUrl, isAzureReposUrl } from './configure/helper/devOps/azureDevOpsHelper';
 import { showQuickPick } from './configure/helper/controlProvider';
 import { QuickPickItemWithData } from './configure/model/models';
 import * as logger from './logger';
-import { Messages } from './messages';
+import * as Messages from './messages';
 import { AzureSession } from './typings/azure-account.api';
 import { get1ESPTSchemaUri, getCached1ESPTSchema, get1ESPTRepoIdIfAvailable, delete1ESPTSchemaFileIfPresent } from './schema-association-service-1espt';
 
@@ -161,11 +161,11 @@ async function autoDetectSchema(
 
     let organizationName: string;
     let session: AzureSession | undefined;
-    if (remoteUrl !== undefined && AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
+    if (remoteUrl !== undefined && isAzureReposUrl(remoteUrl)) {
         logger.log(`${workspaceFolder.name} is an Azure repo`, 'SchemaDetection');
 
         // If we're in an Azure repo, we can silently determine the organization name and session.
-        organizationName = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl).organizationName;
+        organizationName = getRepositoryDetailsFromRemoteUrl(remoteUrl).organizationName;
         for (const azureSession of azureAccountApi.sessions) {
             const organizationsClient = new OrganizationsClient(azureSession.credentials2);
             const organizations = await organizationsClient.listOrganizations();
@@ -270,7 +270,7 @@ async function autoDetectSchema(
         repoId1espt = await get1ESPTRepoIdIfAvailable(azureDevOpsClient, organizationName);
     }
 
-    if (repoId1espt?.length > 0) {
+    if (repoId1espt.length > 0) {
         // user has enabled 1ESPT schema
         if (vscode.workspace.getConfiguration('azure-pipelines', workspaceFolder).get<boolean>('1ESPipelineTemplatesSchemaFile', false)) {
             const cachedSchemaUri1ESPT = await getCached1ESPTSchema(context, organizationName, session, lastUpdated1ESPTSchema);

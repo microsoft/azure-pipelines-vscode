@@ -13,6 +13,7 @@ export let platformEol: string;
  */
 export async function activate(docUri: vscode.Uri) {
     // The extensionId is `publisher.name` from package.json
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const ext = vscode.extensions.getExtension('ms-azure-devops.azure-pipelines')!;
     await ext.activate();
     try {
@@ -41,5 +42,7 @@ export async function setTestContent(content: string): Promise<boolean> {
         doc.positionAt(0),
         doc.positionAt(doc.getText().length)
     );
-    return editor.edit(eb => eb.replace(all, content));
+    return editor.edit(eb => {
+        eb.replace(all, content)
+    });
 }
