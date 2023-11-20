@@ -14,6 +14,7 @@ export const commitAndPush: string = 'Commit & push';
 export const commitFailedErrorMessage: string =`Commit failed due to error: %s`;
 export const pushingPipelineFile: string = 'Pushing pipeline file...';
 export const configuringPipelineAndDeployment: string = 'Configuring pipeline and proceeding to deployment...';
+export const runningPostDeploymentActions: string = 'Running post-deployment actions...';
 export const couldNotAuthorizeEndpoint: string = 'Couldn\'t authorize endpoint for use in Azure Pipelines.';
 export const creatingAzureServiceConnection: string = 'Connecting Azure Pipelines with your subscription: %s';
 export const creatingGitHubServiceConnection: string = 'Creating GitHub service connection';

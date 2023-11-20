@@ -700,50 +700,55 @@ class PipelineConfigurer {
         adoDetails: AzureDevOpsDetails,
         azureSiteDetails: AzureSiteDetails,
     ): Promise<void> {
-        try {
-            // update SCM type
-            await azureSiteDetails.appServiceClient.updateScmType(azureSiteDetails.site);
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: Messages.runningPostDeploymentActions
+        }, async () => {
+            try {
+                // update SCM type
+                await azureSiteDetails.appServiceClient.updateScmType(azureSiteDetails.site);
 
-            const buildDefinitionUrl = AzureDevOpsHelper.getOldFormatBuildDefinitionUrl(
-                adoDetails.organizationName,
-                adoDetails.project.id,
-                queuedPipeline.definition.id);
-            const buildUrl = AzureDevOpsHelper.getOldFormatBuildUrl(
-                adoDetails.organizationName,
-                adoDetails.project.id,
-                queuedPipeline.id);
+                const buildDefinitionUrl = AzureDevOpsHelper.getOldFormatBuildDefinitionUrl(
+                    adoDetails.organizationName,
+                    adoDetails.project.id,
+                    queuedPipeline.definition.id);
+                const buildUrl = AzureDevOpsHelper.getOldFormatBuildUrl(
+                    adoDetails.organizationName,
+                    adoDetails.project.id,
+                    queuedPipeline.id);
 
-            const locationsApi = await adoDetails.adoClient.getLocationsApi();
-            const { instanceId } = await locationsApi.getConnectionData();
-            if (instanceId === undefined) {
-                void vscode.window.showErrorMessage("Unable to determine the organization ID, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
-                return;
+                const locationsApi = await adoDetails.adoClient.getLocationsApi();
+                const { instanceId } = await locationsApi.getConnectionData();
+                if (instanceId === undefined) {
+                    void vscode.window.showErrorMessage("Unable to determine the organization ID, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+                    return;
+                }
+
+                // update metadata of app service to store information about the pipeline deploying to web app.
+                const metadata = await azureSiteDetails.appServiceClient.getAppServiceMetadata(azureSiteDetails.site);
+                metadata.properties = {
+                    ...metadata.properties,
+                    VSTSRM_ProjectId: adoDetails.project.id,
+                    VSTSRM_AccountId: instanceId,
+                    VSTSRM_BuildDefinitionId: queuedPipeline.definition.id.toString(),
+                    VSTSRM_BuildDefinitionWebAccessUrl: buildDefinitionUrl,
+                    VSTSRM_ConfiguredCDEndPoint: '',
+                    VSTSRM_ReleaseDefinitionId: '',
+                };
+
+                await azureSiteDetails.appServiceClient.updateAppServiceMetadata(azureSiteDetails.site, metadata);
+
+                // send a deployment log with information about the setup pipeline and links.
+                await azureSiteDetails.appServiceClient.publishDeploymentToAppService(
+                    azureSiteDetails.site,
+                    buildDefinitionUrl,
+                    buildDefinitionUrl,
+                    buildUrl);
+            } catch (error) {
+                telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error as Error);
+                throw error;
             }
-
-            // update metadata of app service to store information about the pipeline deploying to web app.
-            const metadata = await azureSiteDetails.appServiceClient.getAppServiceMetadata(azureSiteDetails.site);
-            metadata.properties = {
-                ...metadata.properties,
-                VSTSRM_ProjectId: adoDetails.project.id,
-                VSTSRM_AccountId: instanceId,
-                VSTSRM_BuildDefinitionId: queuedPipeline.definition.id.toString(),
-                VSTSRM_BuildDefinitionWebAccessUrl: buildDefinitionUrl,
-                VSTSRM_ConfiguredCDEndPoint: '',
-                VSTSRM_ReleaseDefinitionId: '',
-            };
-
-            await azureSiteDetails.appServiceClient.updateAppServiceMetadata(azureSiteDetails.site, metadata);
-
-            // send a deployment log with information about the setup pipeline and links.
-            await azureSiteDetails.appServiceClient.publishDeploymentToAppService(
-                azureSiteDetails.site,
-                buildDefinitionUrl,
-                buildDefinitionUrl,
-                buildUrl);
-        } catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error as Error);
-            throw error;
-        }
+        });
     }
 
     private async getAzureDevOpsClient(organization: string, session: AzureSession): Promise<WebApi> {
