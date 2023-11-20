@@ -12,36 +12,33 @@ interface SchemaContributorProvider {
 
 // TODO: Add tests for this class.
 // TODO: Can we just get rid of this class?
+//       registerContributor is never called, which means the other two methods always throw.
 class SchemaContributor {
-    private _customSchemaContributors: Record<string, SchemaContributorProvider> = {};
+    private _customSchemaContributors = new Map<string, SchemaContributorProvider>();
 
-    // /**
-    //  * Register a custom schema provider.
-    //  * TODO: We might be able to use this to intelligently grab the schema for projects using Azure Repos.
-    //  *
-    //  * @param {string} schema the provider's name
-    //  * @param requestSchema the requestSchema function
-    //  * @param requestSchemaContent the requestSchemaContent function
-    //  * @returns {boolean}
-    //  */
-    // public registerContributor(schema: string,
-    //                            requestSchema: (resource: string) => string,
-    //                            requestSchemaContent: (uri: string) => string): boolean {
-    //     if (this._customSchemaContributors[schema]) {
-    //         return false;
-    //     }
+    /**
+     * Register a custom schema provider.
+     * TODO: We might be able to use this to intelligently grab the schema for projects using Azure Repos.
+     *
+     * @param {string} schema the provider's name
+     * @param requestSchema the requestSchema function
+     * @param requestSchemaContent the requestSchemaContent function
+     * @returns {boolean}
+     */
+    public registerContributor(schema: string,
+                               requestSchema: (resource: string) => string,
+                               requestSchemaContent: (uri: string) => string): boolean {
+        if (this._customSchemaContributors.has(schema)) {
+            return false;
+        }
 
-    //     if (!requestSchema) {
-    //         throw new Error("Illegal parameter for requestSchema.");
-    //     }
+        this._customSchemaContributors.set(schema, {
+            requestSchema,
+            requestSchemaContent
+        });
 
-    //     this._customSchemaContributors[schema] = <SchemaContributorProvider>{
-    //         requestSchema,
-    //         requestSchemaContent
-    //     };
-
-    //     return true;
-    // }
+        return true;
+    }
 
     /**
      * Asks each schema provider whether it has a schema for the given resource,
@@ -51,7 +48,7 @@ class SchemaContributor {
      * @returns {string} the schema uri
      */
     public requestCustomSchema(resource: string): string {
-        for (const contributor of Object.values(this._customSchemaContributors)) {
+        for (const contributor of this._customSchemaContributors.values()) {
             const uri = contributor.requestSchema(resource);
             if (uri) {
                 return uri;
@@ -74,15 +71,10 @@ class SchemaContributor {
      * @returns {string} the schema content
      */
     public requestCustomSchemaContent(uri: string): string {
-        if (uri) {
-            const { scheme } = URI.parse(uri);
-            const contributor = this._customSchemaContributors[scheme];
-            // this._customSchemaContributors is an arbitrary type, but I don't know
-            // how to get TypeScript to recognize that we need to check for property existence :(.
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            if (contributor) {
-                return contributor.requestSchemaContent(uri);
-            }
+        const { scheme } = URI.parse(uri);
+        const contributor = this._customSchemaContributors.get(scheme);
+        if (contributor) {
+            return contributor.requestSchemaContent(uri);
         }
 
         // eslint-disable-next-line @typescript-eslint/no-throw-literal
