@@ -56,16 +56,13 @@
                 "id": "azure-pipelines",
                 "configuration": "./language-configuration.json",
                 "filenamePatterns": [
-                    "azure-pipelines.yml",
-                    "azure-pipelines.yaml",
-                    ".azure-pipelines.yml",
-                    ".azure-pipelines.yaml",
-                    "azure-pipelines/**/*.yml",
-                    "azure-pipelines/**/*.yaml",
-                    ".azure-pipelines/**/*.yml",
-                    ".azure-pipelines/**/*.yaml",
-                    ".vsts-ci.yml",
-                    "vsts-ci.yml"
+                    "azure-pipelines.{yml,yaml}",
+                    ".azure-pipelines.{yml,yaml}",
+                    "**/azure-pipelines/**/*.{yml,yaml}",
+                    "**/.azure-pipelines/**/*.{yml,yaml}",
+                    "**/.pipelines/**/*.{yml,yaml}",
+                    "vsts-ci.{yml,yaml}",
+                    ".vsts-ci.{yml,yaml}"
                 ],
                 "aliases": [
                     "Azure Pipelines"
