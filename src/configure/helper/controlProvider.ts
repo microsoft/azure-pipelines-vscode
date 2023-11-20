@@ -1,7 +1,6 @@
 import { InputBoxOptions, QuickPickItem, QuickPickOptions, window } from 'vscode';
 import { telemetryHelper } from '../../helpers/telemetryHelper';
-import { TelemetryKeys } from '../../helpers/telemetryKeys';
-import { UserCancelledError } from './userCancelledError';
+import * as TelemetryKeys from '../../helpers/telemetryKeys';
 
 export async function showQuickPick<T extends QuickPickItem>(listName: string, listItems: T[] | Thenable<T[]>, options: QuickPickOptions, itemCountTelemetryKey?: string): Promise<T | undefined> {
     try {
@@ -24,20 +23,4 @@ export async function showInputBox(inputName: string, options: InputBoxOptions):
         ignoreFocusOut: true,
         ...options
     });
-}
-
-export async function showInformationBox(informationIdentifier: string, informationMessage: string, ...actions: string[]): Promise<string | undefined> {
-    telemetryHelper.setTelemetry(TelemetryKeys.CurrentUserInput, informationIdentifier);
-    if (!!actions && actions.length > 0) {
-        let result = await window.showInformationMessage(informationMessage, ...actions);
-        if (!result) {
-            throw new UserCancelledError();
-        }
-
-        return result;
-    }
-    else {
-        return window.showInformationMessage(informationMessage, ...actions);
-    }
-
 }

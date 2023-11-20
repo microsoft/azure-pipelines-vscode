@@ -3,36 +3,17 @@ import { WebSiteManagementClient, WebSiteManagementModels } from '@azure/arm-app
 import { TokenCredentialsBase } from '@azure/ms-rest-nodeauth';
 
 import { WebAppKind, ValidatedSite } from '../../model/models';
-import { Messages } from '../../../messages';
 
 export class AppServiceClient {
-
     private webSiteManagementClient: WebSiteManagementClient;
-    private tenantId: string;
-    private portalUrl: string;
 
-    constructor(credentials: TokenCredentialsBase, tenantId: string, portalUrl: string, subscriptionId: string) {
+    constructor(credentials: TokenCredentialsBase, subscriptionId: string) {
         this.webSiteManagementClient = new WebSiteManagementClient(credentials, subscriptionId);
-        this.tenantId = tenantId;
-        this.portalUrl = portalUrl;
     }
 
     public async getAppServices(filterForResourceKind: WebAppKind): Promise<WebSiteManagementModels.Site[]> {
         const sites = await this.webSiteManagementClient.webApps.list();
         return sites.filter(site => site.kind === filterForResourceKind);
-    }
-
-    public async getDeploymentCenterUrl(resourceId: string): Promise<string> {
-        return `${this.portalUrl}/#@${this.tenantId}/resource/${resourceId}/vstscd`;
-    }
-
-    public async getAzurePipelineUrl(site: ValidatedSite): Promise<string> {
-        const metadata = await this.getAppServiceMetadata(site);
-        if (metadata.properties?.['VSTSRM_BuildDefinitionWebAccessUrl']) {
-            return metadata.properties['VSTSRM_BuildDefinitionWebAccessUrl'];
-        }
-
-        throw new Error(Messages.cannotFindPipelineUrlInMetaDataException);
     }
 
     public async getAppServiceConfig(site: ValidatedSite): Promise<WebSiteManagementModels.SiteConfigResource> {

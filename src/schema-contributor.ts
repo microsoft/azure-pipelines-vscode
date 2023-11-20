@@ -12,8 +12,9 @@ interface SchemaContributorProvider {
 
 // TODO: Add tests for this class.
 // TODO: Can we just get rid of this class?
+//       registerContributor is never called, which means the other two methods always throw.
 class SchemaContributor {
-    private _customSchemaContributors: { [index: string]: SchemaContributorProvider } = {};
+    private _customSchemaContributors = new Map<string, SchemaContributorProvider>();
 
     /**
      * Register a custom schema provider.
@@ -27,18 +28,14 @@ class SchemaContributor {
     public registerContributor(schema: string,
                                requestSchema: (resource: string) => string,
                                requestSchemaContent: (uri: string) => string): boolean {
-        if (this._customSchemaContributors[schema]) {
+        if (this._customSchemaContributors.has(schema)) {
             return false;
         }
 
-        if (!requestSchema) {
-            throw new Error("Illegal parameter for requestSchema.");
-        }
-
-        this._customSchemaContributors[schema] = <SchemaContributorProvider>{
+        this._customSchemaContributors.set(schema, {
             requestSchema,
             requestSchemaContent
-        };
+        });
 
         return true;
     }
@@ -51,8 +48,7 @@ class SchemaContributor {
      * @returns {string} the schema uri
      */
     public requestCustomSchema(resource: string): string {
-        for (let customKey of Object.keys(this._customSchemaContributors)) {
-            const contributor = this._customSchemaContributors[customKey];
+        for (const contributor of this._customSchemaContributors.values()) {
             const uri = contributor.requestSchema(resource);
             if (uri) {
                 return uri;
@@ -62,6 +58,7 @@ class SchemaContributor {
         // TODO: This is currently the only way to fallback to the default schema provider.
         // The upstream Red Hat server also falls back when receiving a falsy value,
         // so sync with their changes and change this to return false or something.
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw `Unable to find custom schema for resource: '${resource}'`;
     }
 
@@ -74,13 +71,13 @@ class SchemaContributor {
      * @returns {string} the schema content
      */
     public requestCustomSchemaContent(uri: string): string {
-        if (uri) {
-            const { scheme } = URI.parse(uri);
-            if (scheme && this._customSchemaContributors[scheme]) {
-                return this._customSchemaContributors[scheme].requestSchemaContent(uri);
-            }
+        const { scheme } = URI.parse(uri);
+        const contributor = this._customSchemaContributors.get(scheme);
+        if (contributor) {
+            return contributor.requestSchemaContent(uri);
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
         throw `Unable to find custom schema content for uri: '${uri}'`;
     }
 }

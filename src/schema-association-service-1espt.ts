@@ -8,7 +8,7 @@ import { URI, Utils } from 'vscode-uri';
 import * as azdev from 'azure-devops-node-api';
 import * as logger from './logger';
 import { AzureSession } from './typings/azure-account.api';
-import { Messages } from './messages';
+import * as Messages from './messages';
 
 const milliseconds24hours = 86400000;
 
@@ -35,7 +35,7 @@ export async function get1ESPTSchemaUri(azureDevOpsClient: azdev.WebApi, organiz
         }
     }
     catch (error) {
-        logger.log(`Error : ${error} while fetching 1ESPT schema for org: ${organizationName}  : `, 'SchemaDetection');
+        logger.log(`Error : ${String(error)} while fetching 1ESPT schema for org: ${organizationName}  : `, 'SchemaDetection');
     }
     return undefined;
 }
@@ -63,10 +63,12 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
     try {
         if (session.userId.endsWith("@microsoft.com")) {
             if ((new Date().getTime() - lastUpdatedDate.getTime()) < milliseconds24hours) {
-                const schemaFileExists = await vscode.workspace.fs.stat(schemaUri1ESPT);
-                if (schemaFileExists) {
+                try {
+                    await vscode.workspace.fs.stat(schemaUri1ESPT);
                     logger.log("Returning cached schema for 1ESPT", 'SchemaDetection');
                     return schemaUri1ESPT;
+                } catch {
+                    // Expected failure if file doesn't exist.
                 }
             }
             // schema is older than 24 hours, fetch schema file again
@@ -88,7 +90,7 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
         }
     }
     catch (error) {
-        logger.log(`Error : ${error} while fetching cached 1ESPT schema for org: ${organizationName}. It's possible that the schema does not exist.`, 'SchemaDetection');
+        logger.log(`Error : ${String(error)} while fetching cached 1ESPT schema for org: ${organizationName}. It's possible that the schema does not exist.`, 'SchemaDetection');
     }
 
     return undefined;
@@ -104,7 +106,7 @@ export async function get1ESPTRepoIdIfAvailable(azureDevOpsClient: azdev.WebApi,
     try {
         const gitApi = await azureDevOpsClient.getGitApi();
         const repositories = await gitApi.getRepositories('1ESPipelineTemplates');
-        if (!repositories || repositories.length === 0) {
+        if (repositories.length === 0) {
             logger.log(`1ESPipelineTemplates ADO project not found for org ${organizationName}`, `SchemaDetection`);
             return ""; // 1ESPT ADO project not found
         }
@@ -118,7 +120,7 @@ export async function get1ESPTRepoIdIfAvailable(azureDevOpsClient: azdev.WebApi,
         return repository.id;
     }
     catch (error) {
-        logger.log(`Error : ${error} while checking eligibility for enhanced Intellisense for 1ESPT schema for org: ${organizationName}.`, 'SchemaDetection');
+        logger.log(`Error : ${String(error)} while checking eligibility for enhanced Intellisense for 1ESPT schema for org: ${organizationName}.`, 'SchemaDetection');
         return "";
     }
 }
@@ -128,6 +130,6 @@ export async function delete1ESPTSchemaFileIfPresent(context: vscode.ExtensionCo
         await vscode.workspace.fs.delete(Utils.joinPath(context.globalStorageUri, '1ESPTSchema'), { recursive: true });
     }
     catch (error) {
-        logger.log(`Error: ${error} while deleting 1ESPT schema. It's possible that the schema file does not exist`, 'SchemaDetection');
+        logger.log(`Error: ${String(error)} while deleting 1ESPT schema. It's possible that the schema file does not exist`, 'SchemaDetection');
     }
 }

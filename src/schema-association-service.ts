@@ -11,11 +11,11 @@ import * as azdev from 'azure-devops-node-api';
 import { format } from 'util';
 import { getAzureAccountExtensionApi, getGitExtensionApi } from './extensionApis';
 import { OrganizationsClient } from './configure/clients/devOps/organizationsClient';
-import { AzureDevOpsHelper } from './configure/helper/devOps/azureDevOpsHelper';
+import { getRepositoryDetailsFromRemoteUrl, isAzureReposUrl } from './configure/helper/devOps/azureDevOpsHelper';
 import { showQuickPick } from './configure/helper/controlProvider';
 import { QuickPickItemWithData } from './configure/model/models';
 import * as logger from './logger';
-import { Messages } from './messages';
+import * as Messages from './messages';
 import { AzureSession } from './typings/azure-account.api';
 import { get1ESPTSchemaUri, getCached1ESPTSchema, get1ESPTRepoIdIfAvailable, delete1ESPTSchemaFileIfPresent } from './schema-association-service-1espt';
 
@@ -49,7 +49,7 @@ export async function locateSchemaFile(
             // Well, we tried our best. Fall back to the predetermined schema paths.
             // TODO: Re-throw error once we're more confident in the schema detection.
             logger.log(
-                `Error auto-detecting schema for workspace folder ${workspaceFolder.name}: ${error}`,
+                `Error auto-detecting schema for workspace folder ${workspaceFolder.name}: ${String(error)}`,
                 'SchemaDetection');
         }
     }
@@ -112,12 +112,12 @@ async function autoDetectSchema(
             logger.log("1ESPTSchema folder deleted as user is not signed in", 'SchemaDetection')
         }
         catch (error) {
-            logger.log(`Error ${error} while trying to delete 1ESPTSchema folder. Either the folder does not exist or there is an actual error.`, 'SchemaDetection')
+            logger.log(`Error ${String(error)} while trying to delete 1ESPTSchema folder. Either the folder does not exist or there is an actual error.`, 'SchemaDetection')
         }
 
         // Don't await this message so that we can return the fallback schema instead of blocking.
         // We'll detect the login in extension.ts and then re-request the schema.
-        vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel)
+        void vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel)
             .then(async action => {
                 if (action === Messages.signInLabel) {
                     await vscode.window.withProgress({
@@ -156,16 +156,16 @@ async function autoDetectSchema(
         }
     } catch (error) {
         // Log and that's it - perhaps they're not in a Git repo, and so don't have the Git extension enabled.
-        logger.log(`${workspaceFolder.name} has no remote URLs: ${error}`, 'SchemaDetection');
+        logger.log(`${workspaceFolder.name} has no remote URLs: ${String(error)}`, 'SchemaDetection');
     }
 
     let organizationName: string;
     let session: AzureSession | undefined;
-    if (remoteUrl !== undefined && AzureDevOpsHelper.isAzureReposUrl(remoteUrl)) {
+    if (remoteUrl !== undefined && isAzureReposUrl(remoteUrl)) {
         logger.log(`${workspaceFolder.name} is an Azure repo`, 'SchemaDetection');
 
         // If we're in an Azure repo, we can silently determine the organization name and session.
-        organizationName = AzureDevOpsHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl).organizationName;
+        organizationName = getRepositoryDetailsFromRemoteUrl(remoteUrl).organizationName;
         for (const azureSession of azureAccountApi.sessions) {
             const organizationsClient = new OrganizationsClient(azureSession.credentials2);
             const organizations = await organizationsClient.listOrganizations();
@@ -197,33 +197,27 @@ async function autoDetectSchema(
             // then displaying the quick pick of all the organizations they have access to.
             // We *do not* await this message so that we can use the fallback schema while waiting.
             // We'll detect when they choose the organization in extension.ts and then re-request the schema.
-            vscode.window.showInformationMessage(
+            void vscode.window.showInformationMessage(
                 format(Messages.selectOrganizationForEnhancedIntelliSense, workspaceFolder.name),
                 Messages.selectOrganizationLabel)
                 .then(async action => {
                     if (action === Messages.selectOrganizationLabel) {
                         // Lazily construct list of organizations so that we can immediately show the quick pick,
                         // then fill in the choices as they come in.
-                        const organizationAndSessionsPromise = new Promise<
-                            QuickPickItemWithData<AzureSession>[]
-                        >(async resolve => {
-                            const organizationAndSessions: QuickPickItemWithData<AzureSession>[] = [];
-
-                            for (const azureSession of azureAccountApi.sessions) {
-                                const organizationsClient = new OrganizationsClient(azureSession.credentials2);
+                        const getOrganizationsAndSessions = async (): Promise<QuickPickItemWithData<AzureSession>[]> => {
+                            return (await Promise.all(azureAccountApi.sessions.map(async session => {
+                                const organizationsClient = new OrganizationsClient(session.credentials2);
                                 const organizations = await organizationsClient.listOrganizations();
-                                organizationAndSessions.push(...organizations.map(organization => ({
+                                return organizations.map(organization => ({
                                     label: organization.accountName,
-                                    data: azureSession,
-                                })));
-                            }
-
-                            resolve(organizationAndSessions);
-                        });
+                                    data: session,
+                                }));
+                            }))).flat();
+                        };
 
                         const selectedOrganizationAndSession = await showQuickPick(
                             'organization',
-                            organizationAndSessionsPromise, {
+                            getOrganizationsAndSessions(), {
                             placeHolder: format(Messages.selectOrganizationPlaceholder, workspaceFolder.name),
                         });
 
@@ -252,7 +246,7 @@ async function autoDetectSchema(
     // Not logged into an account that has access.
     if (session === undefined) {
         logger.log(`No organization found for ${workspaceFolder.name}`, 'SchemaDetection');
-        vscode.window.showErrorMessage(format(Messages.unableToAccessOrganization, organizationName));
+        void vscode.window.showErrorMessage(format(Messages.unableToAccessOrganization, organizationName));
         await delete1ESPTSchemaFileIfPresent(context);
         return undefined;
     }
@@ -276,7 +270,7 @@ async function autoDetectSchema(
         repoId1espt = await get1ESPTRepoIdIfAvailable(azureDevOpsClient, organizationName);
     }
 
-    if (repoId1espt?.length > 0) {
+    if (repoId1espt.length > 0) {
         // user has enabled 1ESPT schema
         if (vscode.workspace.getConfiguration('azure-pipelines', workspaceFolder).get<boolean>('1ESPipelineTemplatesSchemaFile', false)) {
             const cachedSchemaUri1ESPT = await getCached1ESPTSchema(context, organizationName, session, lastUpdated1ESPTSchema);
@@ -297,10 +291,10 @@ async function autoDetectSchema(
             if (context.globalState.get('doNotAskAgain1ESPTSchema') == undefined || !context.globalState.get('doNotAskAgain1ESPTSchema')) {
                 const schema1esptPopupResponse = await vscode.window.showInformationMessage(Messages.userEligibleForEnahanced1ESPTIntellisense, Messages.enable1ESPTSchema, Messages.doNotAskAgain);
                 if (schema1esptPopupResponse === Messages.enable1ESPTSchema) {
-                    vscode.workspace.getConfiguration('azure-pipelines').update('1ESPipelineTemplatesSchemaFile', true, vscode.ConfigurationTarget.Workspace);
+                    await vscode.workspace.getConfiguration('azure-pipelines').update('1ESPipelineTemplatesSchemaFile', true, vscode.ConfigurationTarget.Workspace);
                 }
                 else if (schema1esptPopupResponse === Messages.doNotAskAgain) {
-                    context.globalState.update('doNotAskAgain1ESPTSchema', true);
+                    await context.globalState.update('doNotAskAgain1ESPTSchema', true);
                 }
             }
         }
@@ -336,6 +330,6 @@ interface ISchemaAssociations {
     [pattern: string]: string[];
 }
 
-export namespace SchemaAssociationNotification {
-    export const type = new languageclient.NotificationType<ISchemaAssociations>('json/schemaAssociations');
+export const SchemaAssociationNotification = {
+    type: new languageclient.NotificationType<ISchemaAssociations>('json/schemaAssociations'),
 }

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { URI } from 'vscode-uri';
 import * as util from 'util';
-import { Messages } from '../../messages';
+import * as Messages from '../../messages';
 import * as logger from '../../logger';
 
 export async function sleepForMilliSeconds(timeInMs: number): Promise<void> {
@@ -13,12 +13,12 @@ export async function sleepForMilliSeconds(timeInMs: number): Promise<void> {
 }
 
 export function generateRandomPassword(length: number = 20): string {
-    var characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#%^*()-+";
-    var charTypeSize = new Array(26, 26, 10, 10);
-    var charTypeStartIndex = new Array(0, 26, 52, 62);
-    var password = "";
-    for (var x = 0; x < length; x++) {
-        var i = Math.floor(Math.random() * charTypeSize[x % 4]);
+    const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#%^*()-+";
+    const charTypeSize = [26, 26, 10, 10];
+    const charTypeStartIndex = [0, 26, 52, 62];
+    let password = "";
+    for (let x = 0; x < length; x++) {
+        const i = Math.floor(Math.random() * charTypeSize[x % 4]);
         password += characters.charAt(i + charTypeStartIndex[x % 4]);
     }
     return password;
@@ -40,7 +40,9 @@ export async function executeFunctionWithRetry<T>(
             }
         }
 
-        throw errorMessage ? errorMessage.concat(util.format(Messages.retryFailedMessage, retryCount, JSON.stringify(internalError))): util.format  (Messages.retryFailedMessage, retryCount, JSON.stringify(internalError));
+        throw new Error(errorMessage ?
+            errorMessage.concat(util.format(Messages.retryFailedMessage, retryCount, JSON.stringify(internalError))) :
+            util.format(Messages.retryFailedMessage, retryCount, JSON.stringify(internalError)));
 }
 
 export async function getAvailableFileName(fileName: string, repoPath: URI): Promise<string> {

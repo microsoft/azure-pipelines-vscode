@@ -10,7 +10,7 @@ export interface Organization {
     accountId: string;
     accountName: string;
     accountUri: string;
-    properties: {};
+    properties: Record<string, unknown>;
 }
 
 /**

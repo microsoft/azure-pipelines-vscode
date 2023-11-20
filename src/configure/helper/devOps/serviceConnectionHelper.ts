@@ -4,21 +4,21 @@ import * as util from 'util';
 import { sleepForMilliSeconds } from '../commonHelper';
 import { ServiceConnectionClient } from '../../clients/devOps/serviceConnectionClient';
 import { AadApplication } from '../../model/models';
-import { Messages } from '../../../messages';
+import * as Messages from '../../../messages';
 
 export class ServiceConnectionHelper {
     private serviceConnectionClient: ServiceConnectionClient;
 
-    public constructor(organizationName: string, projectName: string, connection: azdev.WebApi) {
-        this.serviceConnectionClient = new ServiceConnectionClient(organizationName, projectName, connection);
+    public constructor(connection: azdev.WebApi, project: string) {
+        this.serviceConnectionClient = new ServiceConnectionClient(connection, project);
     }
 
     public async createGitHubServiceConnection(name: string, gitHubPat: string): Promise<string> {
-        const response = await this.serviceConnectionClient.createGitHubServiceConnection(name, gitHubPat);
-        const endpointId: string = response.result.id;
+        const connection = await this.serviceConnectionClient.createGitHubServiceConnection(name, gitHubPat);
+        const endpointId = connection.id;
         await this.waitForEndpointToBeReady(endpointId);
         const authorizationResponse = await this.serviceConnectionClient.authorizeEndpointForAllPipelines(endpointId);
-        if (authorizationResponse.result.allPipelines.authorized !== true) {
+        if (!authorizationResponse.allPipelines.authorized) {
             throw new Error(Messages.couldNotAuthorizeEndpoint);
         }
 
@@ -26,11 +26,11 @@ export class ServiceConnectionHelper {
     }
 
     public async createAzureServiceConnection(name: string, tenantId: string, subscriptionId: string, scope: string, aadApp: AadApplication): Promise<string> {
-        const response = await this.serviceConnectionClient.createAzureServiceConnection(name, tenantId, subscriptionId, scope, aadApp);
-        const endpointId: string = response.result.id;
+        const connection = await this.serviceConnectionClient.createAzureServiceConnection(name, tenantId, subscriptionId, scope, aadApp);
+        const endpointId: string = connection.id;
         await this.waitForEndpointToBeReady(endpointId);
         const authorizationResponse = await this.serviceConnectionClient.authorizeEndpointForAllPipelines(endpointId);
-        if (authorizationResponse.result.allPipelines.authorized !== true) {
+        if (!authorizationResponse.allPipelines.authorized) {
             throw new Error(Messages.couldNotAuthorizeEndpoint);
         }
 
@@ -39,15 +39,15 @@ export class ServiceConnectionHelper {
 
     private async waitForEndpointToBeReady(endpointId: string): Promise<void> {
         for (let attempt = 0; attempt < 30; attempt++) {
-            const response = await this.serviceConnectionClient.getEndpointStatus(endpointId);
-            const operationStatus = response.result.operationStatus;
+            const connection = await this.serviceConnectionClient.getEndpointStatus(endpointId);
 
-            if (response.result.isReady) {
+            if (connection.isReady) {
                 return;
             }
 
-            if (operationStatus?.state.toLowerCase() === "failed") {
-                throw Error(util.format(Messages.unableToCreateServiceConnection, response.result.type, operationStatus.state, operationStatus.statusMessage));
+            const { operationStatus } = connection;
+            if (operationStatus.state.toLowerCase() === "failed") {
+                throw Error(util.format(Messages.unableToCreateServiceConnection, connection.type, operationStatus.state, operationStatus.statusMessage));
             }
 
             await sleepForMilliSeconds(2000);

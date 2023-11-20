@@ -1,15 +1,15 @@
 import { v4 as uuid } from 'uuid';
 import { AppServiceClient } from './clients/azure/appServiceClient';
 import { OrganizationsClient } from './clients/devOps/organizationsClient';
-import { AzureDevOpsHelper } from './helper/devOps/azureDevOpsHelper';
-import { Messages } from '../messages';
+import * as AzureDevOpsHelper from './helper/devOps/azureDevOpsHelper';
+import * as Messages from '../messages';
 import { ServiceConnectionHelper } from './helper/devOps/serviceConnectionHelper';
 import { SourceOptions, RepositoryProvider, QuickPickItemWithData, GitRepositoryDetails, PipelineTemplate, AzureDevOpsDetails, ValidatedBuild, ValidatedProject, WebAppKind, TargetResourceType, ValidatedSite } from './model/models';
 import * as constants from './resources/constants';
-import { TracePoints } from './resources/tracePoints';
+import * as TracePoints from './resources/tracePoints';
 import { getAzureAccountExtensionApi, getGitExtensionApi } from '../extensionApis';
 import { telemetryHelper } from '../helpers/telemetryHelper';
-import { TelemetryKeys } from '../helpers/telemetryKeys';
+import * as TelemetryKeys from '../helpers/telemetryKeys';
 import * as utils from 'util';
 import * as vscode from 'vscode';
 import { URI, Utils } from 'vscode-uri';
@@ -23,7 +23,7 @@ import { AzureSiteDetails } from './model/models';
 import { GraphHelper } from './helper/graphHelper';
 import { TeamProject } from 'azure-devops-node-api/interfaces/CoreInterfaces';
 import { WebApi, getBearerHandler } from 'azure-devops-node-api';
-import { GitHubProvider } from './helper/gitHubHelper';
+import * as GitHubHelper from './helper/gitHubHelper';
 import { WebSiteManagementModels } from '@azure/arm-appservice';
 
 const Layer: string = 'configure';
@@ -37,7 +37,7 @@ export async function configurePipeline(): Promise<void> {
         if (signIn?.toLowerCase() === Messages.signInLabel.toLowerCase()) {
             await vscode.commands.executeCommand("azure-account.login");
         } else {
-            vscode.window.showWarningMessage(Messages.azureLoginRequired);
+            void vscode.window.showWarningMessage(Messages.azureLoginRequired);
             return;
         }
     }
@@ -50,7 +50,7 @@ export async function configurePipeline(): Promise<void> {
 
     const repo = gitExtension.getRepository(workspaceUri);
     if (repo === null) {
-        vscode.window.showWarningMessage(Messages.notAGitRepository);
+        void vscode.window.showWarningMessage(Messages.notAGitRepository);
         return;
     }
 
@@ -138,10 +138,7 @@ class PipelineConfigurer {
         }
 
         telemetryHelper.setCurrentStep('CreatePreRequisites');
-        const serviceConnectionHelper = new ServiceConnectionHelper(
-            adoDetails.organizationName,
-            adoDetails.project.name,
-            adoDetails.adoClient);
+        const serviceConnectionHelper = new ServiceConnectionHelper(adoDetails.adoClient, adoDetails.project.name);
 
         let repositoryProperties: Record<string, string> | undefined;
         if (repoDetails.repositoryProvider === RepositoryProvider.Github) {
@@ -213,11 +210,13 @@ class PipelineConfigurer {
         }
 
         telemetryHelper.setCurrentStep('DisplayCreatedPipeline');
-        vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
+        void vscode.window.showInformationMessage(Messages.pipelineSetupSuccessfully, Messages.browsePipeline)
             .then(action => {
-                if (action?.toLowerCase() === Messages.browsePipeline.toLowerCase()) {
+                if (action === Messages.browsePipeline) {
                     telemetryHelper.setTelemetry(TelemetryKeys.BrowsePipelineClicked, 'true');
-                    vscode.env.openExternal(URI.parse(queuedPipeline._links.web.href));
+                    // _links is weakly typed and it's not worth the effort to verify.
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+                    void vscode.env.openExternal(URI.parse(queuedPipeline._links.web.href));
                 }
             });
     }
@@ -225,13 +224,14 @@ class PipelineConfigurer {
     private async getGitDetailsFromRepository(): Promise<GitRepositoryDetails | undefined> {
         const { HEAD } = this.repo.state;
         if (!HEAD) {
-            vscode.window.showWarningMessage(Messages.branchHeadMissing);
+            void vscode.window.showWarningMessage(Messages.branchHeadMissing);
             return undefined;
         }
 
-        let { name, remote } = HEAD;
+        const { name } = HEAD;
+        let { remote } = HEAD;
         if (!name) {
-            vscode.window.showWarningMessage(Messages.branchNameMissing);
+            void vscode.window.showWarningMessage(Messages.branchNameMissing);
             return undefined;
         }
 
@@ -239,7 +239,7 @@ class PipelineConfigurer {
             // Remote tracking branch is not set, see if we have any remotes we can use.
             const remotes = this.repo.state.remotes;
             if (remotes.length === 0) {
-                vscode.window.showWarningMessage(Messages.branchRemoteMissing);
+                void vscode.window.showWarningMessage(Messages.branchRemoteMissing);
                 return undefined;
             } else if (remotes.length === 1) {
                 remote = remotes[0].name;
@@ -276,9 +276,9 @@ class PipelineConfigurer {
                     remoteUrl,
                     branch: name,
                 };
-            } else if (GitHubProvider.isGitHubUrl(remoteUrl)) {
-                remoteUrl = GitHubProvider.getFormattedRemoteUrl(remoteUrl);
-                const { ownerName, repositoryName } = GitHubProvider.getRepositoryDetailsFromRemoteUrl(remoteUrl);
+            } else if (GitHubHelper.isGitHubUrl(remoteUrl)) {
+                remoteUrl = GitHubHelper.getFormattedRemoteUrl(remoteUrl);
+                const { ownerName, repositoryName } = GitHubHelper.getRepositoryDetailsFromRemoteUrl(remoteUrl);
                 repoDetails = {
                     repositoryProvider: RepositoryProvider.Github,
                     ownerName,
@@ -288,11 +288,11 @@ class PipelineConfigurer {
                     branch: name,
                 };
             } else {
-                vscode.window.showWarningMessage(Messages.cannotIdentifyRepositoryDetails);
+                void vscode.window.showWarningMessage(Messages.cannotIdentifyRepositoryDetails);
                 return undefined;
             }
         } else {
-            vscode.window.showWarningMessage(Messages.remoteRepositoryNotConfigured);
+            void vscode.window.showWarningMessage(Messages.remoteRepositoryNotConfigured);
             return undefined;
         }
 
@@ -332,7 +332,7 @@ class PipelineConfigurer {
                     const adoClient = await this.getAzureDevOpsClient(repoDetails.organizationName, session);
                     const coreApi = await adoClient.getCoreApi();
                     const project = await coreApi.getProject(repoDetails.projectName);
-                    if (this.isValidProject(project)) {
+                    if (isValidProject(project)) {
                         return {
                             session,
                             adoClient,
@@ -343,39 +343,34 @@ class PipelineConfigurer {
                 }
             }
 
-            vscode.window.showWarningMessage("You are not signed in to the Azure DevOps organization that contains this repository.");
+            void vscode.window.showWarningMessage("You are not signed in to the Azure DevOps organization that contains this repository.");
             return undefined;
         } else {
             // Lazily construct list of organizations so that we can immediately show the quick pick,
             // then fill in the choices as they come in.
-            const organizationAndSessionsPromise = new Promise<
-                QuickPickItemWithData<AzureSession | undefined>[]
-            >(async resolve => {
-                const organizationAndSessions: QuickPickItemWithData<AzureSession | undefined>[] = [];
-
-                for (const session of this.azureAccount.filters.map(({ session }) => session)) {
-                    const organizationsClient = new OrganizationsClient(session.credentials2);
-                    const organizations = await organizationsClient.listOrganizations();
-                    organizationAndSessions.push(...organizations.map(organization => ({
-                        label: organization.accountName,
-                        data: session,
-                    })));
-                }
-
-                organizationAndSessions.push({
-                    // This is safe because ADO orgs can't have spaces in them.
-                    label: "Create new Azure DevOps organization...",
-                    data: undefined,
-                });
-
-                resolve(organizationAndSessions);
-            });
+            const getOrganizationsAndSessions = async (): Promise<QuickPickItemWithData<AzureSession | undefined>[]> => {
+                return [
+                    ...(await Promise.all(this.azureAccount.filters.map(async ({ session }) => {
+                        const organizationsClient = new OrganizationsClient(session.credentials2);
+                        const organizations = await organizationsClient.listOrganizations();
+                        return organizations.map(organization => ({
+                            label: organization.accountName,
+                            data: session,
+                        }));
+                    }))).flat(),
+                    {
+                        // This is safe because ADO orgs can't have spaces in them.
+                        label: "Create new Azure DevOps organization...",
+                        data: undefined,
+                    }
+                ];
+            };
 
             const result = await showQuickPick(
                 'organization',
-                organizationAndSessionsPromise, {
+                getOrganizationsAndSessions(), {
                     placeHolder: "Select the Azure DevOps organization to create this pipeline in",
-            });
+            }, TelemetryKeys.OrganizationListCount);
             if (result === undefined) {
                 return undefined;
             }
@@ -390,29 +385,24 @@ class PipelineConfigurer {
             const adoClient = await this.getAzureDevOpsClient(organizationName, session);
 
             // Ditto for the projects.
-            const projectsPromise = new Promise<
-                QuickPickItemWithData<ValidatedProject | undefined>[]
-            >(async resolve => {
-                const validatedProjects: QuickPickItemWithData<ValidatedProject | undefined>[] = [];
-
+            const getProjects = async (): Promise<QuickPickItemWithData<ValidatedProject | undefined>[]> => {
                 const coreApi = await adoClient.getCoreApi();
                 const projects = await coreApi.getProjects();
-                validatedProjects.push(...projects
-                    .filter(this.isValidProject)
-                    .map(project => { return { label: project.name, data: project }; }));
-
-                validatedProjects.push({
-                    // This is safe because ADO projects can't end with periods.
-                    label: "Create new project...",
-                    data: undefined,
-                });
-
-                resolve(validatedProjects);
-            });
+                return [
+                    ...projects
+                        .filter(isValidProject)
+                        .map(project => { return { label: project.name, data: project }; }),
+                    {
+                        // This is safe because ADO projects can't end with periods.
+                        label: "Create new project...",
+                        data: undefined,
+                    }
+                ];
+            };
 
             const selectedProject = await showQuickPick(
                 constants.SelectProject,
-                projectsPromise,
+                getProjects(),
                 { placeHolder: Messages.selectProject },
                 TelemetryKeys.ProjectListCount);
             if (selectedProject === undefined) {
@@ -463,22 +453,18 @@ class PipelineConfigurer {
 
         const { subscriptionId } = selectedSubscription.data.subscription;
         if (subscriptionId === undefined) {
-            vscode.window.showErrorMessage("Unable to get ID for subscription, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+            void vscode.window.showErrorMessage("Unable to get ID for subscription, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
             return undefined;
         }
 
         // show available resources and get the chosen one
-        const appServiceClient = new AppServiceClient(
-            session.credentials2,
-            session.tenantId,
-            session.environment.portalUrl,
-            subscriptionId);
+        const appServiceClient = new AppServiceClient(session.credentials2, subscriptionId);
 
         // TODO: Refactor kind so we don't need three kind.includes
 
         const sites = await appServiceClient.getAppServices(kind);
         const items: QuickPickItemWithData<ValidatedSite | undefined>[] = sites
-            .filter(this.isValidSite)
+            .filter(isValidSite)
             .map(site => { return { label: site.name, data: site }; });
         const appType = kind.includes("functionapp") ? "Function App" : "Web App";
 
@@ -632,14 +618,14 @@ class PipelineConfigurer {
 
                         const commit = this.repo.state.HEAD?.commit;
                         if (commit === undefined) {
-                            vscode.window.showErrorMessage("Unable to get commit after pushing pipeline, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+                            void vscode.window.showErrorMessage("Unable to get commit after pushing pipeline, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
                             return undefined;
                         }
 
                         return commit;
                     } catch (error) {
                         telemetryHelper.logError(Layer, TracePoints.CheckInPipelineFailure, error as Error);
-                        vscode.window.showErrorMessage(
+                        void vscode.window.showErrorMessage(
                             utils.format(Messages.commitFailedErrorMessage, (error as Error).message));
                         return undefined;
                     }
@@ -673,7 +659,7 @@ class PipelineConfigurer {
                     [constants.HostedVS2017QueueName],
                     adoDetails.project.name);
                 if (queues.length === 0) {
-                    vscode.window.showErrorMessage(
+                    void vscode.window.showErrorMessage(
                         utils.format(Messages.noAgentQueueFound, constants.HostedVS2017QueueName));
                     return undefined;
                 }
@@ -696,7 +682,7 @@ class PipelineConfigurer {
                     sourceVersion: commit
                 }, adoDetails.project.name);
 
-                if (!this.isValidBuild(build)) {
+                if (!isValidBuild(build)) {
                     return undefined;
                 }
 
@@ -714,50 +700,55 @@ class PipelineConfigurer {
         adoDetails: AzureDevOpsDetails,
         azureSiteDetails: AzureSiteDetails,
     ): Promise<void> {
-        try {
-            // update SCM type
-            azureSiteDetails.appServiceClient.updateScmType(azureSiteDetails.site);
+        await vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: Messages.runningPostDeploymentActions
+        }, async () => {
+            try {
+                // update SCM type
+                await azureSiteDetails.appServiceClient.updateScmType(azureSiteDetails.site);
 
-            const buildDefinitionUrl = AzureDevOpsHelper.getOldFormatBuildDefinitionUrl(
-                adoDetails.organizationName,
-                adoDetails.project.id,
-                queuedPipeline.definition.id);
-            const buildUrl = AzureDevOpsHelper.getOldFormatBuildUrl(
-                adoDetails.organizationName,
-                adoDetails.project.id,
-                queuedPipeline.id);
+                const buildDefinitionUrl = AzureDevOpsHelper.getOldFormatBuildDefinitionUrl(
+                    adoDetails.organizationName,
+                    adoDetails.project.id,
+                    queuedPipeline.definition.id);
+                const buildUrl = AzureDevOpsHelper.getOldFormatBuildUrl(
+                    adoDetails.organizationName,
+                    adoDetails.project.id,
+                    queuedPipeline.id);
 
-            const locationsApi = await adoDetails.adoClient.getLocationsApi();
-            const { instanceId } = await locationsApi.getConnectionData();
-            if (instanceId === undefined) {
-                vscode.window.showErrorMessage("Unable to determine the organization ID, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
-                return;
+                const locationsApi = await adoDetails.adoClient.getLocationsApi();
+                const { instanceId } = await locationsApi.getConnectionData();
+                if (instanceId === undefined) {
+                    void vscode.window.showErrorMessage("Unable to determine the organization ID, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+                    return;
+                }
+
+                // update metadata of app service to store information about the pipeline deploying to web app.
+                const metadata = await azureSiteDetails.appServiceClient.getAppServiceMetadata(azureSiteDetails.site);
+                metadata.properties = {
+                    ...metadata.properties,
+                    VSTSRM_ProjectId: adoDetails.project.id,
+                    VSTSRM_AccountId: instanceId,
+                    VSTSRM_BuildDefinitionId: queuedPipeline.definition.id.toString(),
+                    VSTSRM_BuildDefinitionWebAccessUrl: buildDefinitionUrl,
+                    VSTSRM_ConfiguredCDEndPoint: '',
+                    VSTSRM_ReleaseDefinitionId: '',
+                };
+
+                await azureSiteDetails.appServiceClient.updateAppServiceMetadata(azureSiteDetails.site, metadata);
+
+                // send a deployment log with information about the setup pipeline and links.
+                await azureSiteDetails.appServiceClient.publishDeploymentToAppService(
+                    azureSiteDetails.site,
+                    buildDefinitionUrl,
+                    buildDefinitionUrl,
+                    buildUrl);
+            } catch (error) {
+                telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error as Error);
+                throw error;
             }
-
-            // update metadata of app service to store information about the pipeline deploying to web app.
-            const metadata = await azureSiteDetails.appServiceClient.getAppServiceMetadata(azureSiteDetails.site);
-            metadata.properties = {
-                ...metadata.properties,
-                VSTSRM_ProjectId: adoDetails.project.id,
-                VSTSRM_AccountId: instanceId,
-                VSTSRM_BuildDefinitionId: queuedPipeline.definition.id.toString(),
-                VSTSRM_BuildDefinitionWebAccessUrl: buildDefinitionUrl,
-                VSTSRM_ConfiguredCDEndPoint: '',
-                VSTSRM_ReleaseDefinitionId: '',
-            };
-
-            azureSiteDetails.appServiceClient.updateAppServiceMetadata(azureSiteDetails.site, metadata);
-
-            // send a deployment log with information about the setup pipeline and links.
-            azureSiteDetails.appServiceClient.publishDeploymentToAppService(
-                azureSiteDetails.site,
-                buildDefinitionUrl,
-                buildDefinitionUrl,
-                buildUrl);
-        } catch (error) {
-            telemetryHelper.logError(Layer, TracePoints.PostDeploymentActionFailed, error as Error);
-            throw error;
-        }
+        });
     }
 
     private async getAzureDevOpsClient(organization: string, session: AzureSession): Promise<WebApi> {
@@ -770,31 +761,31 @@ class PipelineConfigurer {
         this.azureDevOpsClient = new WebApi(`https://dev.azure.com/${organization}`, authHandler);
         return this.azureDevOpsClient;
     }
+}
 
-    private isValidProject(project: TeamProject): project is ValidatedProject {
-        if (project.name === undefined || project.id === undefined) {
-            vscode.window.showErrorMessage("Unable to get name or ID for project, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
-            return false;
-        }
-
-        return true;
+function isValidProject(project: TeamProject): project is ValidatedProject {
+    if (project.name === undefined || project.id === undefined) {
+        void vscode.window.showErrorMessage("Unable to get name or ID for project, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+        return false;
     }
 
-    private isValidSite(resource: WebSiteManagementModels.Site): resource is ValidatedSite {
-        if (resource.name === undefined || resource.id === undefined) {
-            vscode.window.showErrorMessage("Unable to get name or ID for resource, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
-            return false;
-        }
+    return true;
+}
 
-        return true;
+function isValidSite(resource: WebSiteManagementModels.Site): resource is ValidatedSite {
+    if (resource.name === undefined || resource.id === undefined) {
+        void vscode.window.showErrorMessage("Unable to get name or ID for resource, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+        return false;
     }
 
-    private isValidBuild(build: Build): build is ValidatedBuild {
-        if (build.definition === undefined || build.definition.id === undefined || build.id === undefined) {
-            vscode.window.showErrorMessage("Unable to get definition or ID for build, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
-            return false;
-        }
+    return true;
+}
 
-        return true;
+function isValidBuild(build: Build): build is ValidatedBuild {
+    if (build.definition === undefined || build.definition.id === undefined || build.id === undefined) {
+        void vscode.window.showErrorMessage("Unable to get definition or ID for build, please file a bug at https://github.com/microsoft/azure-pipelines-vscode/issues/new");
+        return false;
     }
+
+    return true;
 }

@@ -1,6 +1,9 @@
 // Copied from https://github.com/microsoft/vscode-azuretools/blob/5999c2ad4423e86f22d2c648027242d8816a50e4/ui/src/parseError.ts
 // with inline IParsedError interface and no localization
 
+// Disable linting precisely because this file is copied.
+/* eslint-disable */
+
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the MIT License. See License.txt in the project root for license information.

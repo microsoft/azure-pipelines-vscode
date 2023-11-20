@@ -1,25 +1,27 @@
 import * as vscode from 'vscode';
 import TelemetryReporter from '@vscode/extension-telemetry';
 
-import { TelemetryKeys } from './telemetryKeys';
+import * as TelemetryKeys from './telemetryKeys';
 import * as logger from '../logger';
 import { parseError } from './parseError';
 
 import { v4 as uuid } from 'uuid';
 
 const extensionName = 'ms-azure-devops.azure-pipelines';
-const packageJSON = vscode.extensions.getExtension(extensionName)!.packageJSON; // Guaranteed to exist
-const extensionVersion = packageJSON.version;
-const aiKey = packageJSON.aiKey;
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
+const packageJSON = vscode.extensions.getExtension(extensionName)?.packageJSON; // Guaranteed to exist
+const extensionVersion: string = packageJSON.version;
+const aiKey: string = packageJSON.aiKey;
+/* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 
 interface TelemetryProperties {
     [key: string]: string;
 }
 
 enum Result {
-    'Succeeded' = 'Succeeded',
-    'Failed' = 'Failed',
-    'Canceled' = 'Canceled'
+    Succeeded = 'Succeeded',
+    Failed = 'Failed',
+    Canceled = 'Canceled'
 }
 
 
@@ -34,7 +36,7 @@ class TelemetryHelper {
     private static reporter = new TelemetryReporter(extensionName, extensionVersion, aiKey);
 
     public dispose() {
-        TelemetryHelper.reporter.dispose();
+        void TelemetryHelper.reporter.dispose();
     }
 
     public getJourneyId(): string {
@@ -84,7 +86,7 @@ class TelemetryHelper {
     // supplied through initialize() or setTelemetry().
     // If the function errors, the telemetry event will additionally contain metadata about the error that occurred.
     // https://github.com/microsoft/vscode-azuretools/blob/5999c2ad4423e86f22d2c648027242d8816a50e4/ui/src/callWithTelemetryAndErrorHandling.ts
-    public async callWithTelemetryAndErrorHandling<T>(command: string, callback: () => Promise<T>): Promise<T | void> {
+    public async callWithTelemetryAndErrorHandling<T>(command: string, callback: () => Promise<T>): Promise<T | undefined> {
         try {
             return await this.executeFunctionWithTimeTelemetry(callback, 'duration');
         } catch (error) {
@@ -99,13 +101,13 @@ class TelemetryHelper {
 
                 logger.log(parsedError.message);
                 if (parsedError.message.includes('\n')) {
-                    vscode.window.showErrorMessage('An error has occurred. Check the output window for more details.');
+                    void vscode.window.showErrorMessage('An error has occurred. Check the output window for more details.');
                 } else {
-                    vscode.window.showErrorMessage(parsedError.message);
+                    void vscode.window.showErrorMessage(parsedError.message);
                 }
             }
         } finally {
-            if (this.properties.result === Result.Failed) {
+            if (this.properties.result === Result.Failed.toString()) {
                 TelemetryHelper.reporter.sendTelemetryErrorEvent(
                     command, {
                         ...this.properties,
@@ -119,6 +121,8 @@ class TelemetryHelper {
                     });
             }
         }
+
+        return undefined;
     }
 }
 
