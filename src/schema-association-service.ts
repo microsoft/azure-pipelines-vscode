@@ -98,13 +98,16 @@ async function autoDetectSchema(
     workspaceFolder: vscode.WorkspaceFolder): Promise<vscode.Uri | undefined> {
     const azureAccountApi = await getAzureAccountExtensionApi();
 
+    const doNotAskAgainSignIn = context.globalState.get<boolean>('doNotAskAgainSignIn');
+    logger.log(`doNotAskAgainSignIn status: ${doNotAskAgainSignIn}`);
+
     // We could care less about the subscriptions; all we need are the sessions.
     // However, there's no waitForSessions API, and waitForLogin returns before
     // the underlying account information is guaranteed to finish loading.
     // The next-best option is then waitForSubscriptions which, by definition,
     // can't return until the sessions are also available.
     // This only returns false if there is no login.
-    if (!(await azureAccountApi.waitForSubscriptions())) {
+    if (!(await azureAccountApi.waitForSubscriptions()) && !doNotAskAgainSignIn) {
         logger.log(`Waiting for login`, 'SchemaDetection');
 
         try {
@@ -117,7 +120,7 @@ async function autoDetectSchema(
 
         // Don't await this message so that we can return the fallback schema instead of blocking.
         // We'll detect the login in extension.ts and then re-request the schema.
-        void vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel)
+        void vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel, Messages.doNotAskAgain)
             .then(async action => {
                 if (action === Messages.signInLabel) {
                     await vscode.window.withProgress({
@@ -126,6 +129,8 @@ async function autoDetectSchema(
                     }, async () => {
                         await vscode.commands.executeCommand("azure-account.login");
                     });
+                } else if (action === Messages.doNotAskAgain) {
+                    await context.globalState.update('doNotAskAgainSignIn', true);
                 }
             });
 
@@ -177,6 +182,13 @@ async function autoDetectSchema(
     } else {
         logger.log(`${workspaceFolder.name} has no remote URL or is not an Azure repo`, 'SchemaDetection');
 
+        const doNotAskAgainSelectOrg = context.globalState.get<boolean>('doNotAskAgainSelectOrg');
+        logger.log(`doNotAskAgainSelectOrg status: ${doNotAskAgainSelectOrg}`);
+
+        if (doNotAskAgainSelectOrg) {
+            return;
+        }
+
         const azurePipelinesDetails = context.workspaceState.get<{
             [folder: string]: { organization: string; tenant: string; }
         }>('azurePipelinesDetails');
@@ -199,7 +211,7 @@ async function autoDetectSchema(
             // We'll detect when they choose the organization in extension.ts and then re-request the schema.
             void vscode.window.showInformationMessage(
                 format(Messages.selectOrganizationForEnhancedIntelliSense, workspaceFolder.name),
-                Messages.selectOrganizationLabel)
+                Messages.selectOrganizationLabel, Messages.doNotAskAgain)
                 .then(async action => {
                     if (action === Messages.selectOrganizationLabel) {
                         // Lazily construct list of organizations so that we can immediately show the quick pick,
@@ -237,6 +249,8 @@ async function autoDetectSchema(
                         });
 
                         selectOrganizationEvent.fire(workspaceFolder);
+                    } else if (action === Messages.doNotAskAgain) {
+                        await context.globalState.update('doNotAskAgainSelectOrg', true);
                     }
                 });
             return undefined;
