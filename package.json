@@ -66,7 +66,11 @@
                 ],
                 "aliases": [
                     "Azure Pipelines"
-                ]
+                ],
+                "icon": {
+                    "light": "./assets/pipelines-file-icon.svg",
+                    "dark": "./assets/pipelines-file-icon.svg"
+                }
             }
         ],
         "grammars": [
