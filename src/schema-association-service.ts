@@ -28,7 +28,16 @@ export const onDidSelectOrganization = selectOrganizationEvent.event;
 const seenOrganizations = new Set<string>();
 const lastUpdated1ESPTSchema = new Map<string, Date>();
 
+export const DO_NOT_ASK_SIGN_IN_KEY = "DO_NOT_ASK_SIGN_IN_KEY";
+export const DO_NOT_ASK_SELECT_ORG_KEY = "DO_NOT_ASK_SELECT_ORG_KEY";
+
 let repoId1espt: string | undefined = undefined;
+
+export async function resetState(context: vscode.ExtensionContext) {
+    await context.globalState.update(DO_NOT_ASK_SIGN_IN_KEY, undefined);
+    await context.globalState.update(DO_NOT_ASK_SELECT_ORG_KEY, undefined);
+    logger.log(`State is reset`);
+}
 
 export async function locateSchemaFile(
     context: vscode.ExtensionContext,
@@ -98,16 +107,17 @@ async function autoDetectSchema(
     workspaceFolder: vscode.WorkspaceFolder): Promise<vscode.Uri | undefined> {
     const azureAccountApi = await getAzureAccountExtensionApi();
 
-    const doNotAskAgainSignIn = context.globalState.get<boolean>('doNotAskAgainSignIn');
-    logger.log(`doNotAskAgainSignIn status: ${doNotAskAgainSignIn}`);
+    const doNotAskAgainSignIn = context.globalState.get<boolean>(DO_NOT_ASK_SIGN_IN_KEY);
+    logger.log(`Exiting early. Do not ask again for signing in ${doNotAskAgainSignIn}`);
 
-    // We could care less about the subscriptions; all we need are the sessions.
-    // However, there's no waitForSessions API, and waitForLogin returns before
-    // the underlying account information is guaranteed to finish loading.
-    // The next-best option is then waitForSubscriptions which, by definition,
-    // can't return until the sessions are also available.
-    // This only returns false if there is no login.
-    if (!(await azureAccountApi.waitForSubscriptions()) && !doNotAskAgainSignIn) {
+    if (!doNotAskAgainSignIn) {
+        // We could care less about the subscriptions; all we need are the sessions.
+        // However, there's no waitForSessions API, and waitForLogin returns before
+        // the underlying account information is guaranteed to finish loading.
+        // The next-best option is then waitForSubscriptions which, by definition,
+        // can't return until the sessions are also available.
+        // This only returns false if there is no login.
+        if (!(await azureAccountApi.waitForSubscriptions())) {
         logger.log(`Waiting for login`, 'SchemaDetection');
 
         try {
@@ -130,10 +140,11 @@ async function autoDetectSchema(
                         await vscode.commands.executeCommand("azure-account.login");
                     });
                 } else if (action === Messages.doNotAskAgain) {
-                    await context.globalState.update('doNotAskAgainSignIn', true);
+                    await context.globalState.update(DO_NOT_ASK_SIGN_IN_KEY, true);
                 }
             });
 
+        }
         return undefined;
     }
 
@@ -182,8 +193,8 @@ async function autoDetectSchema(
     } else {
         logger.log(`${workspaceFolder.name} has no remote URL or is not an Azure repo`, 'SchemaDetection');
 
-        const doNotAskAgainSelectOrg = context.globalState.get<boolean>('doNotAskAgainSelectOrg');
-        logger.log(`doNotAskAgainSelectOrg status: ${doNotAskAgainSelectOrg}`);
+        const doNotAskAgainSelectOrg = context.globalState.get<boolean>(DO_NOT_ASK_SELECT_ORG_KEY);
+        logger.log(`Exiting early. Do not ask selecting organization: ${doNotAskAgainSelectOrg}`);
 
         if (doNotAskAgainSelectOrg) {
             return;
@@ -250,7 +261,7 @@ async function autoDetectSchema(
 
                         selectOrganizationEvent.fire(workspaceFolder);
                     } else if (action === Messages.doNotAskAgain) {
-                        await context.globalState.update('doNotAskAgainSelectOrg', true);
+                        await context.globalState.update(DO_NOT_ASK_SELECT_ORG_KEY, true);
                     }
                 });
             return undefined;

@@ -115,6 +115,11 @@
                 "command": "azure-pipelines.configure-pipeline",
                 "title": "Configure Pipeline",
                 "category": "Azure Pipelines"
+            },
+            {
+                "command": "azure-pipelines.reset-state",
+                "title": "Reset state",
+                "category": "Azure Pipelines"
             }
         ],
         "menus": {
