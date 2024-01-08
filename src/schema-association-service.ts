@@ -118,31 +118,31 @@ async function autoDetectSchema(
         // can't return until the sessions are also available.
         // This only returns false if there is no login.
         if (!(await azureAccountApi.waitForSubscriptions())) {
-        logger.log(`Waiting for login`, 'SchemaDetection');
+            logger.log(`Waiting for login`, 'SchemaDetection');
 
-        try {
-            await delete1ESPTSchemaFileIfPresent(context);
-            logger.log("1ESPTSchema folder deleted as user is not signed in", 'SchemaDetection')
-        }
-        catch (error) {
-            logger.log(`Error ${String(error)} while trying to delete 1ESPTSchema folder. Either the folder does not exist or there is an actual error.`, 'SchemaDetection')
-        }
+            try {
+                await delete1ESPTSchemaFileIfPresent(context);
+                logger.log("1ESPTSchema folder deleted as user is not signed in", 'SchemaDetection')
+            }
+            catch (error) {
+                logger.log(`Error ${String(error)} while trying to delete 1ESPTSchema folder. Either the folder does not exist or there is an actual error.`, 'SchemaDetection')
+            }
 
-        // Don't await this message so that we can return the fallback schema instead of blocking.
-        // We'll detect the login in extension.ts and then re-request the schema.
-        void vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel, Messages.doNotAskAgain)
-            .then(async action => {
-                if (action === Messages.signInLabel) {
-                    await vscode.window.withProgress({
-                        location: vscode.ProgressLocation.Notification,
-                        title: Messages.waitForAzureSignIn,
-                    }, async () => {
-                        await vscode.commands.executeCommand("azure-account.login");
-                    });
-                } else if (action === Messages.doNotAskAgain) {
-                    await context.globalState.update(DO_NOT_ASK_SIGN_IN_KEY, true);
-                }
-            });
+            // Don't await this message so that we can return the fallback schema instead of blocking.
+            // We'll detect the login in extension.ts and then re-request the schema.
+            void vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel, Messages.doNotAskAgain)
+                .then(async action => {
+                    if (action === Messages.signInLabel) {
+                        await vscode.window.withProgress({
+                            location: vscode.ProgressLocation.Notification,
+                            title: Messages.waitForAzureSignIn,
+                        }, async () => {
+                            await vscode.commands.executeCommand("azure-account.login");
+                        });
+                    } else if (action === Messages.doNotAskAgain) {
+                        await context.globalState.update(DO_NOT_ASK_SIGN_IN_KEY, true);
+                    }
+                });
 
         }
         return undefined;
