@@ -118,7 +118,7 @@
             },
             {
                 "command": "azure-pipelines.reset-state",
-                "title": "Reset state",
+                "title": "Reset 'do not ask again' messages",
                 "category": "Azure Pipelines"
             }
         ],
