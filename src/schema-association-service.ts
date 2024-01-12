@@ -120,7 +120,6 @@ async function autoDetectSchema(
             return undefined;
         }
     
-        if (!doNotAskAgainSignIn) {
         logger.log(`Waiting for login`, 'SchemaDetection');
 
         try {
