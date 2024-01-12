@@ -107,44 +107,46 @@ async function autoDetectSchema(
     workspaceFolder: vscode.WorkspaceFolder): Promise<vscode.Uri | undefined> {
     const azureAccountApi = await getAzureAccountExtensionApi();
 
-    const doNotAskAgainSignIn = context.globalState.get<boolean>(DO_NOT_ASK_SIGN_IN_KEY);
-    logger.log(`Exiting early. Do not ask again for signing in ${doNotAskAgainSignIn}`);
-
-    if (!doNotAskAgainSignIn) {
-        // We could care less about the subscriptions; all we need are the sessions.
-        // However, there's no waitForSessions API, and waitForLogin returns before
-        // the underlying account information is guaranteed to finish loading.
-        // The next-best option is then waitForSubscriptions which, by definition,
-        // can't return until the sessions are also available.
-        // This only returns false if there is no login.
-        if (!(await azureAccountApi.waitForSubscriptions())) {
-            logger.log(`Waiting for login`, 'SchemaDetection');
-
-            try {
-                await delete1ESPTSchemaFileIfPresent(context);
-                logger.log("1ESPTSchema folder deleted as user is not signed in", 'SchemaDetection')
-            }
-            catch (error) {
-                logger.log(`Error ${String(error)} while trying to delete 1ESPTSchema folder. Either the folder does not exist or there is an actual error.`, 'SchemaDetection')
-            }
-
-            // Don't await this message so that we can return the fallback schema instead of blocking.
-            // We'll detect the login in extension.ts and then re-request the schema.
-            void vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel, Messages.doNotAskAgain)
-                .then(async action => {
-                    if (action === Messages.signInLabel) {
-                        await vscode.window.withProgress({
-                            location: vscode.ProgressLocation.Notification,
-                            title: Messages.waitForAzureSignIn,
-                        }, async () => {
-                            await vscode.commands.executeCommand("azure-account.login");
-                        });
-                    } else if (action === Messages.doNotAskAgain) {
-                        await context.globalState.update(DO_NOT_ASK_SIGN_IN_KEY, true);
-                    }
-                });
-
+    // We could care less about the subscriptions; all we need are the sessions.
+    // However, there's no waitForSessions API, and waitForLogin returns before
+    // the underlying account information is guaranteed to finish loading.
+    // The next-best option is then waitForSubscriptions which, by definition,
+    // can't return until the sessions are also available.
+    // This only returns false if there is no login.
+    if (!(await azureAccountApi.waitForSubscriptions())) {
+        const doNotAskAgainSignIn = context.globalState.get<boolean>(DO_NOT_ASK_SIGN_IN_KEY);
+        if (doNotAskAgainSignIn) {
+            logger.log(`Not prompting for login - do not ask again was set`, 'SchemaDetection');
+            return undefined;
         }
+    
+        if (!doNotAskAgainSignIn) {
+        logger.log(`Waiting for login`, 'SchemaDetection');
+
+        try {
+            await delete1ESPTSchemaFileIfPresent(context);
+            logger.log("1ESPTSchema folder deleted as user is not signed in", 'SchemaDetection')
+        }
+        catch (error) {
+            logger.log(`Error ${String(error)} while trying to delete 1ESPTSchema folder. Either the folder does not exist or there is an actual error.`, 'SchemaDetection')
+        }
+
+        // Don't await this message so that we can return the fallback schema instead of blocking.
+        // We'll detect the login in extension.ts and then re-request the schema.
+        void vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel, Messages.doNotAskAgain)
+            .then(async action => {
+                if (action === Messages.signInLabel) {
+                    await vscode.window.withProgress({
+                        location: vscode.ProgressLocation.Notification,
+                        title: Messages.waitForAzureSignIn,
+                    }, async () => {
+                        await vscode.commands.executeCommand("azure-account.login");
+                    });
+                } else if (action === Messages.doNotAskAgain) {
+                    await context.globalState.update(DO_NOT_ASK_SIGN_IN_KEY, true);
+                }
+            });
+
         return undefined;
     }
 
@@ -193,13 +195,6 @@ async function autoDetectSchema(
     } else {
         logger.log(`${workspaceFolder.name} has no remote URL or is not an Azure repo`, 'SchemaDetection');
 
-        const doNotAskAgainSelectOrg = context.globalState.get<boolean>(DO_NOT_ASK_SELECT_ORG_KEY);
-        logger.log(`Exiting early. Do not ask selecting organization: ${doNotAskAgainSelectOrg}`);
-
-        if (doNotAskAgainSelectOrg) {
-            return;
-        }
-
         const azurePipelinesDetails = context.workspaceState.get<{
             [folder: string]: { organization: string; tenant: string; }
         }>('azurePipelinesDetails');
@@ -213,6 +208,12 @@ async function autoDetectSchema(
                 `Using cached information for ${workspaceFolder.name}: ${organizationName}, ${session?.tenantId}`,
                 'SchemaDetection');
         } else {
+            const doNotAskAgainSelectOrg = context.globalState.get<boolean>(DO_NOT_ASK_SELECT_ORG_KEY);
+            if (doNotAskAgainSelectOrg) {
+                logger.log(`Not prompting for organization - do not ask again was set`, 'SchemaDetection');
+                return;
+            }
+
             logger.log(`Prompting for organization for ${workspaceFolder.name}`, 'SchemaDetection');
 
             // Otherwise, we need to manually prompt.
