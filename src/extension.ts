@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as languageclient from 'vscode-languageclient/node';
 
 import * as logger from './logger';
-import { getSchemaAssociation, locateSchemaFile, onDidSelectOrganization, resetState, SchemaAssociationNotification } from './schema-association-service';
+import { getSchemaAssociation, locateSchemaFile, onDidSelectOrganization, resetDoNotAskState, SchemaAssociationNotification } from './schema-association-service';
 import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from './schema-contributor';
 import { telemetryHelper } from './helpers/telemetryHelper';
 import { getAzureAccountExtensionApi } from './extensionApis';
@@ -116,7 +116,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
         await loadSchema(context, client, workspaceFolder);
     }));
 
-    context.subscriptions.push(vscode.commands.registerCommand("azure-pipelines.reset-state", async () => await resetState(context)));
+    context.subscriptions.push(vscode.commands.registerCommand("azure-pipelines.reset-state", async () => await resetDoNotAskState(context)));
 }
 
 // Find the schema and notify the server.

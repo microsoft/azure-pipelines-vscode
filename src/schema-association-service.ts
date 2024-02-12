@@ -33,10 +33,10 @@ export const DO_NOT_ASK_SELECT_ORG_KEY = "DO_NOT_ASK_SELECT_ORG_KEY";
 
 let repoId1espt: string | undefined = undefined;
 
-export async function resetState(context: vscode.ExtensionContext) {
+export async function resetDoNotAskState(context: vscode.ExtensionContext) {
     await context.globalState.update(DO_NOT_ASK_SIGN_IN_KEY, undefined);
     await context.globalState.update(DO_NOT_ASK_SELECT_ORG_KEY, undefined);
-    logger.log(`State is reset`);
+    logger.log("State is reset");
 }
 
 export async function locateSchemaFile(
