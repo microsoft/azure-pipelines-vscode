@@ -119,6 +119,11 @@
                 "command": "azure-pipelines.configure-pipeline",
                 "title": "Configure Pipeline",
                 "category": "Azure Pipelines"
+            },
+            {
+                "command": "azure-pipelines.reset-state",
+                "title": "Reset 'do not ask again' messages",
+                "category": "Azure Pipelines"
             }
         ],
         "menus": {

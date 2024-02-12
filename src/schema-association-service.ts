@@ -28,7 +28,16 @@ export const onDidSelectOrganization = selectOrganizationEvent.event;
 const seenOrganizations = new Set<string>();
 const lastUpdated1ESPTSchema = new Map<string, Date>();
 
+export const DO_NOT_ASK_SIGN_IN_KEY = "DO_NOT_ASK_SIGN_IN_KEY";
+export const DO_NOT_ASK_SELECT_ORG_KEY = "DO_NOT_ASK_SELECT_ORG_KEY";
+
 let repoId1espt: string | undefined = undefined;
+
+export async function resetDoNotAskState(context: vscode.ExtensionContext) {
+    await context.globalState.update(DO_NOT_ASK_SIGN_IN_KEY, undefined);
+    await context.globalState.update(DO_NOT_ASK_SELECT_ORG_KEY, undefined);
+    logger.log("State is reset");
+}
 
 export async function locateSchemaFile(
     context: vscode.ExtensionContext,
@@ -105,6 +114,12 @@ async function autoDetectSchema(
     // can't return until the sessions are also available.
     // This only returns false if there is no login.
     if (!(await azureAccountApi.waitForSubscriptions())) {
+        const doNotAskAgainSignIn = context.globalState.get<boolean>(DO_NOT_ASK_SIGN_IN_KEY);
+        if (doNotAskAgainSignIn) {
+            logger.log(`Not prompting for login - do not ask again was set`, 'SchemaDetection');
+            return undefined;
+        }
+    
         logger.log(`Waiting for login`, 'SchemaDetection');
 
         try {
@@ -117,7 +132,7 @@ async function autoDetectSchema(
 
         // Don't await this message so that we can return the fallback schema instead of blocking.
         // We'll detect the login in extension.ts and then re-request the schema.
-        void vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel)
+        void vscode.window.showInformationMessage(Messages.signInForEnhancedIntelliSense, Messages.signInLabel, Messages.doNotAskAgain)
             .then(async action => {
                 if (action === Messages.signInLabel) {
                     await vscode.window.withProgress({
@@ -126,6 +141,8 @@ async function autoDetectSchema(
                     }, async () => {
                         await vscode.commands.executeCommand("azure-account.login");
                     });
+                } else if (action === Messages.doNotAskAgain) {
+                    await context.globalState.update(DO_NOT_ASK_SIGN_IN_KEY, true);
                 }
             });
 
@@ -190,6 +207,12 @@ async function autoDetectSchema(
                 `Using cached information for ${workspaceFolder.name}: ${organizationName}, ${session?.tenantId}`,
                 'SchemaDetection');
         } else {
+            const doNotAskAgainSelectOrg = context.globalState.get<boolean>(DO_NOT_ASK_SELECT_ORG_KEY);
+            if (doNotAskAgainSelectOrg) {
+                logger.log(`Not prompting for organization - do not ask again was set`, 'SchemaDetection');
+                return;
+            }
+
             logger.log(`Prompting for organization for ${workspaceFolder.name}`, 'SchemaDetection');
 
             // Otherwise, we need to manually prompt.
@@ -199,7 +222,7 @@ async function autoDetectSchema(
             // We'll detect when they choose the organization in extension.ts and then re-request the schema.
             void vscode.window.showInformationMessage(
                 format(Messages.selectOrganizationForEnhancedIntelliSense, workspaceFolder.name),
-                Messages.selectOrganizationLabel)
+                Messages.selectOrganizationLabel, Messages.doNotAskAgain)
                 .then(async action => {
                     if (action === Messages.selectOrganizationLabel) {
                         // Lazily construct list of organizations so that we can immediately show the quick pick,
@@ -237,6 +260,8 @@ async function autoDetectSchema(
                         });
 
                         selectOrganizationEvent.fire(workspaceFolder);
+                    } else if (action === Messages.doNotAskAgain) {
+                        await context.globalState.update(DO_NOT_ASK_SELECT_ORG_KEY, true);
                     }
                 });
             return undefined;
