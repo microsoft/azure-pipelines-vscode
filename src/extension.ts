@@ -116,6 +116,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
         await loadSchema(context, client, workspaceFolder);
     }));
 
+    // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
     context.subscriptions.push(vscode.commands.registerCommand("azure-pipelines.reset-state", async () => await resetDoNotAskState(context)));
 }
 
