@@ -58,25 +58,25 @@ extends:
         - template: /.azure-pipelines/common-steps.yml@self
 
         # if the mini changelog is empty, complain
-        # - bash: |
-        #     LINE_COUNT=$(cat minichangelog.txt | wc -l)
-        #     if [ "$LINE_COUNT" -lt 3 ]; then
-        #       echo Mini changelog is too short. Did you use the wrong version number in CHANGELOG.txt?
-        #       exit 1
-        #     fi
-        #   displayName: Check for length of mini-changelog
+        - bash: |
+            LINE_COUNT=$(cat minichangelog.txt | wc -l)
+            if [ "$LINE_COUNT" -lt 3 ]; then
+              echo Mini changelog is too short. Did you use the wrong version number in CHANGELOG.txt?
+              exit 1
+            fi
+          displayName: Check for length of mini-changelog
 
         # create a GitHub Release
-        # - bash: |
-        #     export npm_config_cache=$(Build.SourcesDirectory)/.azure-pipelines/github-release/npm-cache
-        #     npm install
-        #   displayName: Prepare to create GitHub Release
-        #   workingDirectory: '$(Build.SourcesDirectory)/.azure-pipelines/github-release'
-        # - bash: |
-        #     SCRIPT=.azure-pipelines/github-release/github-release.js
-        #     VSIX=*.vsix
-        #     VERSION=$(node -p "require('./package.json').version")
-        #     node $SCRIPT $VSIX $VERSION $GITHUB_TOKEN
-        #   displayName: Create GitHub Release
-        #   env:
-        #     GITHUB_TOKEN: $(GitHubSecret)
+        - bash: |
+            export npm_config_cache=$(Build.SourcesDirectory)/.azure-pipelines/github-release/npm-cache
+            npm install
+          displayName: Prepare to create GitHub Release
+          workingDirectory: '$(Build.SourcesDirectory)/.azure-pipelines/github-release'
+        - bash: |
+            SCRIPT=.azure-pipelines/github-release/github-release.js
+            VSIX=*.vsix
+            VERSION=$(node -p "require('./package.json').version")
+            node $SCRIPT $VSIX $VERSION $GITHUB_TOKEN
+          displayName: Create GitHub Release
+          env:
+            GITHUB_TOKEN: $(GitHubSecret)
