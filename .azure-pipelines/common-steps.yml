@@ -60,10 +60,3 @@ steps:
       branch.txt
       minichangelog.txt
     targetFolder: $(Build.ArtifactStagingDirectory)
-
-# Publish files as an artifact
-- task: PublishPipelineArtifact@1
-  displayName: Publish VSIX
-  inputs:
-    artifact: azure-pipelines-vscode
-    targetPath: $(Build.ArtifactStagingDirectory)
