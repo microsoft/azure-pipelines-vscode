@@ -7,8 +7,8 @@
 # This Yaml Document has been converted by ESAI Yaml Pipeline Conversion Tool.
 # This pipeline will be extended to the OneESPT template
 
-trigger: none
-pr: none
+# trigger: none
+# pr: none
 resources:
   repositories:
   - repository: 1ESPipelineTemplates
