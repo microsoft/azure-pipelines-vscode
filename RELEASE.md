@@ -7,7 +7,7 @@
 0. Ensure the [CHANGELOG](CHANGELOG.md) is up to date.
 0. Update the [service schema](#bumping-service-schema).
 0. Create a PR on GitHub, mostly for tracking reasons.
-0. Manually queue a [Release build](https://dev.azure.com/ms/azure-pipelines-vscode/_build?definitionId=12) against your PR branch.
+0. Manually queue a [Release build](https://dev.azure.com/mseng/PipelineTools/_build?definitionId=17237) against your PR branch.
     - This will create a GitHub release at the commit you've specified!
 0. Ship the resulting package to the [Marketplace](https://marketplace.visualstudio.com/manage/publishers/ms-azure-devops).
     - You can grab it from either the pipeline run or off GitHub itself.
