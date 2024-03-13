@@ -12,7 +12,10 @@
 
 # This Yaml Document has been converted by ESAI Yaml Pipeline Conversion Tool.
 # This pipeline will be extended to the OneESPT template
-
+trigger:
+  - main
+  
+  # no `pr` keyword because we want all PRs to run this
 resources:
   repositories:
   - repository: 1ESPipelineTemplates
