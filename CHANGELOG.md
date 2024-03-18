@@ -3,6 +3,12 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
+## 1.237.0
+### Added
+- Added go-to-definition support for local templates (thanks @Stuart-Wilcox!)
+### Updated
+- M235 schema
+
 ## 1.228.0
 ### Added
 - Added support for using [1ES Pipeline Template schema Intellisense](https://aka.ms/1espt) for users working on pipelines extending 1ES Pipeline Templates. This feature is available for users with `@microsoft.com` account only.
