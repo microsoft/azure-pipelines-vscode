@@ -7,6 +7,10 @@ steps:
   inputs:
     versionSpec: ">=16.13.0"
 
+- task: NpmAuthenticate@0
+  inputs:
+    workingFile: .npmrc
+
 - script: npm ci
   displayName: npm ci
 
