@@ -6,12 +6,12 @@ export class RestClient extends ServiceClient {
             super.sendRequest(options)
                 .then(response => {
                     if (response.status >= 300) {
-                        reject(response.parsedBody);
+                        reject(response.parsedBody as Error);
                     }
                     resolve(response.parsedBody as TResult);
                 })
                 .catch(error => {
-                    reject(error);
+                    reject(error as Error);
                 });
         });
     }
