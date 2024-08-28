@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/Microsoft/azure-pipelines-vscode/blob/main/service-schema.json",
-  "$comment": "v1.226.1",
+  "$comment": "v1.226.2",
   "title": "Pipeline schema",
   "description": "A pipeline definition",
   "oneOf": [
@@ -31,6 +31,9 @@
       "anyOf": [
         {
           "type": "string"
+        },
+        {
+          "type": "boolean"
         },
         {
           "type": "array",
