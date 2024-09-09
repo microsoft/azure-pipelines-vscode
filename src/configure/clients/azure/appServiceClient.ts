@@ -45,9 +45,9 @@ export class AppServiceClient {
         const message: DeploymentMessage = {
             type: "CDDeploymentConfiguration",
             message: "Successfully set up continuous delivery from VS Code and triggered deployment to Azure Web App.",
-            VSTSRM_BuildDefinitionWebAccessUrl: `${buildDefinitionUrl}`,
+            VSTSRM_BuildDefinitionWebAccessUrl: buildDefinitionUrl,
             VSTSRM_ConfiguredCDEndPoint: '',
-            VSTSRM_BuildWebAccessUrl: `${triggeredBuildUrl}`,
+            VSTSRM_BuildWebAccessUrl: triggeredBuildUrl,
         };
 
         return {

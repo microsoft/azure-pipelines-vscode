@@ -16,6 +16,6 @@ export function log(message: string, event?: string): void {
         logMessage += `[${event}] `;
     }
 
-    logMessage += `${message}`;
+    logMessage += message;
     outputChannel.appendLine(logMessage);
 }
