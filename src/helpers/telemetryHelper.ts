@@ -47,11 +47,11 @@ class TelemetryHelper {
     public logError(layer: string, tracePoint: string, error: Error): void {
         TelemetryHelper.reporter.sendTelemetryErrorEvent(
             tracePoint, {
-                [TelemetryKeys.JourneyId]: this.journeyId,
-                layer,
-                errorMessage: error.message,
-                stack: error.stack ?? '',
-            }, undefined, ['errorMesage', 'stack']);
+            [TelemetryKeys.JourneyId]: this.journeyId,
+            layer,
+            errorMessage: error.message,
+            stack: error.stack ?? '',
+        }, undefined, ['errorMesage', 'stack']);
     }
 
     // Executes the given function, timing how long it takes.
