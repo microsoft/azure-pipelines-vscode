@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { Utils } from 'vscode-uri';
 import * as languageclient from 'vscode-languageclient/node';
 import * as azdev from 'azure-devops-node-api';
-import { SubscriptionClient } from '@azure/arm-resources-subscriptions';
+// import { SubscriptionClient } from '@azure/arm-resources-subscriptions';
 import { format } from 'util';
 import { getGitExtensionApi } from './extensionApis';
 import { OrganizationsClient } from './clients/devOps/organizationsClient';
@@ -31,6 +31,7 @@ const DO_NOT_ASK_SIGN_IN_KEY = "DO_NOT_ASK_SIGN_IN_KEY";
 const DO_NOT_ASK_SELECT_ORG_KEY = "DO_NOT_ASK_SELECT_ORG_KEY";
 
 const AZURE_MANAGEMENT_SCOPES = [
+    // Get tenants
     'https://management.core.windows.net/.default',
 ];
 
@@ -357,14 +358,24 @@ export async function getAzureDevOpsSessions(context: vscode.ExtensionContext, o
         return undefined;
     }
 
-    // The ARM token allows us to get a list of tenants, which we then request ADO tokens for.
-    // eslint-disable-next-line @typescript-eslint/require-await
-    const client = new SubscriptionClient({ getToken: async () => ({ token: managementSession.accessToken, expiresOnTimestamp: 0 }) });
     const azureDevOpsSessions: vscode.AuthenticationSession[] = [];
-    for await (const tenant of client.tenants.list()) {
-        const session = await vscode.authentication.getSession('microsoft', [...AZURE_DEVOPS_SCOPES, `VSCODE_TENANT:${tenant.tenantId}`], { silent: true });
-        if (session !== undefined) {
-            azureDevOpsSessions.push(session);
+
+    // The ARM token allows us to get a list of tenants, which we then request ADO tokens for.
+    let nextLink: string | undefined = 'https://management.azure.com/tenants?api-version=2022-01-01';
+    while (nextLink !== undefined) {
+        const response = await fetch(nextLink, {
+            headers: {
+                Authorization: `Bearer ${managementSession.accessToken}`,
+            },
+        });
+        const data = await response.json() as { value: { tenantId: string }[], nextLink?: string };
+        nextLink = data.nextLink;
+
+        for (const tenant of data.value) {
+            const session = await vscode.authentication.getSession('microsoft', [...AZURE_DEVOPS_SCOPES, `VSCODE_TENANT:${tenant.tenantId}`], { silent: true });
+            if (session !== undefined) {
+                azureDevOpsSessions.push(session);
+            }
         }
     }
 

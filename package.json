@@ -138,7 +138,6 @@
         "webpack-cli": "^4.4.0"
     },
     "dependencies": {
-        "@azure/arm-resources-subscriptions": "^2.1.0",
         "@vscode/extension-telemetry": "^0.5.1",
         "azure-devops-node-api": "^11.0.1",
         "azure-pipelines-language-server": "0.8.0",
