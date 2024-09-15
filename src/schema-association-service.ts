@@ -141,7 +141,9 @@ async function autoDetectSchema(
             if (repo.state.HEAD?.upstream !== undefined) {
                 const remoteName = repo.state.HEAD.upstream.remote;
                 remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName)?.fetchUrl;
-                logger.log(`Found remote URL for ${workspaceFolder.name}: ${remoteUrl}`, 'SchemaDetection');
+                if (remoteUrl !== undefined) {
+                    logger.log(`Found remote URL for ${workspaceFolder.name}: ${remoteUrl}`, 'SchemaDetection');
+                }
             }
             // get remoteUrl for dev branches
             else if (repo.state.remotes.length > 0) {

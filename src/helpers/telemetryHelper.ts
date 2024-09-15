@@ -62,7 +62,7 @@ class TelemetryHelper {
     public async executeFunctionWithTimeTelemetry<T>(callback: () => Promise<T>, telemetryKey: string): Promise<T> {
         const startTime = Date.now();
         try {
-            return callback();
+            return await callback();
         }
         finally {
             this.setTelemetry(telemetryKey, ((Date.now() - startTime) / 1000).toString());
@@ -74,7 +74,7 @@ class TelemetryHelper {
     // supplied through initialize() or setTelemetry().
     public async callWithTelemetryAndErrorHandling<T>(command: string, callback: () => Promise<T>): Promise<T | undefined> {
         try {
-            return this.executeFunctionWithTimeTelemetry(callback, 'duration');
+            return await this.executeFunctionWithTimeTelemetry(callback, 'duration');
         } catch (error) {
             TelemetryHelper.reporter.sendTelemetryErrorEvent(
                 command, {
