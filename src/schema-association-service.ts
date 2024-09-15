@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { Utils } from 'vscode-uri';
 import * as languageclient from 'vscode-languageclient/node';
 import * as azdev from 'azure-devops-node-api';
-// import { SubscriptionClient } from '@azure/arm-resources-subscriptions';
 import { format } from 'util';
 import { getGitExtensionApi } from './extensionApis';
 import { OrganizationsClient } from './clients/devOps/organizationsClient';
