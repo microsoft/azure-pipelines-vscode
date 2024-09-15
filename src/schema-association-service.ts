@@ -381,11 +381,13 @@ export async function getAzureDevOpsSessions(context: vscode.ExtensionContext, o
 
     // Implementation detail (yuck): The microsoft provider sets this to MSAL's homeAccountId,
     // which is further defined as <objectId>.<tenantId>.
+    // Also included is a live.com check for the non-MSAL case, which can be removed once MSAL is the only option.
     // We can use this to determine if the session is for an MSA or not.
-    if (managementSession.account.id.includes('.')
-        // MSA tenant & first-party tenant which MSAs can request tokens for.
-        && ['9188040d-6c67-4c5b-b112-36a304b66dad', 'f8cdef31-a31e-4b4a-93e4-5f571e91255a']
-            .includes(managementSession.account.id.split('.')[1])) {
+    if (managementSession.account.id.includes('live.com') ||
+        (managementSession.account.id.includes('.')
+            // MSA tenant & first-party tenant which MSAs can request tokens for.
+            && ['9188040d-6c67-4c5b-b112-36a304b66dad', 'f8cdef31-a31e-4b4a-93e4-5f571e91255a']
+                .includes(managementSession.account.id.split('.')[1]))) {
         // MSAs have their own organizations that aren't associated with a tenant.
         const msaSession = await vscode.authentication.getSession('microsoft', AZURE_DEVOPS_SCOPES, { silent: true });
         if (msaSession !== undefined) {
