@@ -14,9 +14,7 @@ export const extensionVersion: string = packageJSON.version;
 const aiKey: string = packageJSON.aiKey;
 /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 
-interface TelemetryProperties {
-    [key: string]: string;
-}
+type TelemetryProperties = Record<string, string>;
 
 class TelemetryHelper {
     private journeyId: string = crypto.randomUUID();
