@@ -1,12 +1,13 @@
-
 .gitattributes
 .gitignore
+.vscode-test.mjs
 tsconfig.json
 tslint.json
 webpack.config.js
 .azure-pipelines/
 .vscode/
 .vscode-test/
+coverage/
 dist/**/*.map
 examples/
 node_modules/
