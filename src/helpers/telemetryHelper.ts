@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
+import * as crypto from 'crypto';
+
 import TelemetryReporter from '@vscode/extension-telemetry';
 
 import * as TelemetryKeys from './telemetryKeys';
 import * as logger from '../logger';
 
-import { v4 as uuid } from 'uuid';
 
 const extensionName = 'ms-azure-devops.azure-pipelines';
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
@@ -19,7 +20,7 @@ interface TelemetryProperties {
 
 
 class TelemetryHelper {
-    private journeyId: string = uuid();
+    private journeyId: string = crypto.randomUUID();
 
     private properties: TelemetryProperties = {
         [TelemetryKeys.JourneyId]: this.journeyId,
