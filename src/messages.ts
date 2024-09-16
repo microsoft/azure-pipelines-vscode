@@ -6,6 +6,7 @@ export const selectOrganizationForEnhancedIntelliSense: string = 'Select Azure D
 export const selectOrganizationLabel: string = 'Select organization';
 export const selectOrganizationPlaceholder: string = 'Select Azure DevOps organization associated with the %s repository';
 export const signInLabel: string = 'Sign In';
+export const signInWithADifferentAccountLabel: string = 'Sign in with a different account';
 export const unableToAccessOrganization: string = 'Unable to access the "%s" organization. Make sure you\'re signed into the right Microsoft account.';
 export const signInForEnhancedIntelliSense = 'Sign in to Microsoft for enhanced Azure Pipelines IntelliSense';
 export const userEligibleForEnahanced1ESPTIntellisense = 'Enable 1ESPT Schema in Azure Pipelines Extension settings for enhanced Intellisense';

@@ -77,10 +77,13 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
             }
         }
         else {
-            void vscode.window.showInformationMessage(Messages.notUsing1ESPTSchemaAsUserNotSignedInMessage, Messages.signInLabel)
+            void vscode.window.showInformationMessage(Messages.notUsing1ESPTSchemaAsUserNotSignedInMessage, Messages.signInWithADifferentAccountLabel)
                 .then(async action => {
-                    if (action === Messages.signInLabel) {
-                        await getAzureDevOpsSessions(context, { forceNewSession: { detail: 'Sign in with your @microsoft.com account' } });
+                    if (action === Messages.signInWithADifferentAccountLabel) {
+                        await getAzureDevOpsSessions(context, {
+                            clearSessionPreference: true,
+                            createIfNone: true,
+                        });
                     }
                 });
             logger.log(`Skipping cached 1ESPT schema for ${organizationName} as user is not signed in with Microsoft account`, `SchemaDetection`);

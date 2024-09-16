@@ -174,61 +174,64 @@ async function autoDetectSchema(
                 `Using cached organization for ${workspaceFolder.name}: ${organizationName}`,
                 'SchemaDetection');
         } else {
-            const doNotAskAgainSelectOrg = context.globalState.get<boolean>(DO_NOT_ASK_SELECT_ORG_KEY);
-            if (doNotAskAgainSelectOrg) {
-                logger.log(`Not prompting for organization - do not ask again was set`, 'SchemaDetection');
-                return;
-            }
+            logger.log(`Retrieving organizations for ${workspaceFolder.name}`, 'SchemaDetection');
 
-            logger.log(`Prompting for organization for ${workspaceFolder.name}`, 'SchemaDetection');
+            const organizations = (await Promise.all(azureDevOpsSessions.map(async session => {
+                const organizationsClient = new OrganizationsClient(session.accessToken);
+                const organizations = await organizationsClient.listOrganizations();
+                return organizations.map(({ accountName }) => accountName);
+            }))).flat();
 
-            // Otherwise, we need to manually prompt.
-            // We do this by asking them to select an organization via an information message,
-            // then displaying the quick pick of all the organizations they have access to.
-            // We *do not* await this message so that we can use the fallback schema while waiting.
-            // We'll detect when they choose the organization in extension.ts and then re-request the schema.
-            void vscode.window.showInformationMessage(
-                format(Messages.selectOrganizationForEnhancedIntelliSense, workspaceFolder.name),
-                Messages.selectOrganizationLabel, Messages.doNotAskAgain)
-                .then(async action => {
-                    if (action === Messages.selectOrganizationLabel) {
-                        // Lazily construct list of organizations so that we can immediately show the quick pick,
-                        // then fill in the choices as they come in.
-                        const getOrganizations = async (): Promise<vscode.QuickPickItem[]> => {
-                            return (await Promise.all(azureDevOpsSessions.map(async session => {
-                                const organizationsClient = new OrganizationsClient(session.accessToken);
-                                const organizations = await organizationsClient.listOrganizations();
-                                return organizations.map(organization => ({
-                                    label: organization.accountName,
-                                }));
-                            }))).flat();
-                        };
+            // If there's only one organization, we can just use that.
+            if (organizations.length === 1) {
+                organizationName = organizations[0];
+                logger.log(`Using only available organization ${organizationName} for ${workspaceFolder.name}`, 'SchemaDetection');
+            } else {
+                const doNotAskAgainSelectOrg = context.globalState.get<boolean>(DO_NOT_ASK_SELECT_ORG_KEY);
+                if (doNotAskAgainSelectOrg) {
+                    logger.log(`Not prompting for organization - do not ask again was set`, 'SchemaDetection');
+                    return undefined;
+                }
 
-                        const selectedOrganization = await showQuickPick(
-                            'organization',
-                            getOrganizations(), {
-                            placeHolder: format(Messages.selectOrganizationPlaceholder, workspaceFolder.name),
-                        });
+                logger.log(`${organizations.length} organizations found - prompting for ${workspaceFolder.name}`, 'SchemaDetection');
 
-                        if (selectedOrganization === undefined) {
-                            return;
-                        }
+                // Otherwise, we need to manually prompt.
+                // We do this by asking them to select an organization via an information message,
+                // then displaying the quick pick of all the organizations they have access to.
+                // We *do not* await this message so that we can use the fallback schema while waiting.
+                // We'll detect when they choose the organization in extension.ts and then re-request the schema.
+                void vscode.window.showInformationMessage(
+                    format(Messages.selectOrganizationForEnhancedIntelliSense, workspaceFolder.name),
+                    Messages.selectOrganizationLabel, Messages.doNotAskAgain)
+                    .then(async action => {
+                        if (action === Messages.selectOrganizationLabel) {
+                            const selectedOrganization = await showQuickPick(
+                                'organization',
+                                organizations.map(organization => ({ label: organization })), {
+                                placeHolder: format(Messages.selectOrganizationPlaceholder, workspaceFolder.name),
+                            });
 
-                        organizationName = selectedOrganization.label;
-
-                        await context.workspaceState.update('azurePipelinesDetails', {
-                            ...azurePipelinesDetails,
-                            [workspaceFolder.name]: {
-                                organization: organizationName,
+                            if (selectedOrganization === undefined) {
+                                logger.log(`No organization picked for ${workspaceFolder.name}`, 'SchemaDetection');
+                                return;
                             }
-                        });
 
-                        selectOrganizationEvent.fire(workspaceFolder);
-                    } else if (action === Messages.doNotAskAgain) {
-                        await context.globalState.update(DO_NOT_ASK_SELECT_ORG_KEY, true);
-                    }
-                });
-            return undefined;
+                            organizationName = selectedOrganization.label;
+
+                            await context.workspaceState.update('azurePipelinesDetails', {
+                                ...azurePipelinesDetails,
+                                [workspaceFolder.name]: {
+                                    organization: organizationName,
+                                }
+                            });
+
+                            selectOrganizationEvent.fire(workspaceFolder);
+                        } else if (action === Messages.doNotAskAgain) {
+                            await context.globalState.update(DO_NOT_ASK_SELECT_ORG_KEY, true);
+                        }
+                    });
+                return undefined;
+            }
         }
     }
 
@@ -245,7 +248,15 @@ async function autoDetectSchema(
     // Not logged into an account that has access.
     if (azureDevOpsSession === undefined) {
         logger.log(`No account found for ${organizationName}`, 'SchemaDetection');
-        void vscode.window.showErrorMessage(format(Messages.unableToAccessOrganization, organizationName));
+        void vscode.window.showErrorMessage(format(Messages.unableToAccessOrganization, organizationName), Messages.signInWithADifferentAccountLabel)
+            .then(async action => {
+                if (action === Messages.signInWithADifferentAccountLabel) {
+                    await getAzureDevOpsSessions(context, {
+                        clearSessionPreference: true,
+                        createIfNone: true,
+                    });
+                }
+            });
         await delete1ESPTSchemaFileIfPresent(context);
         return undefined;
     }
