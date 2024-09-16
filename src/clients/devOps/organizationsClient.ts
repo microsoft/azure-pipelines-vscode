@@ -1,6 +1,6 @@
 import { ConnectionData } from 'azure-devops-node-api/interfaces/LocationsInterfaces';
 
-import { telemetryHelper } from '../../helpers/telemetryHelper';
+import { telemetryHelper, extensionVersion } from '../../helpers/telemetryHelper';
 
 export interface Organization {
     accountId: string;
@@ -46,6 +46,7 @@ export class OrganizationsClient {
                 ...init?.headers,
                 'Authorization': `Bearer ${this.token}`,
                 'Content-Type': 'application/json',
+                'User-Agent': `azure-pipelines-vscode ${extensionVersion}`,
                 'X-TFS-Session': telemetryHelper.getJourneyId(),
             }
         });

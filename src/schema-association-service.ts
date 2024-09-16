@@ -13,6 +13,7 @@ import { getGitExtensionApi } from './extensionApis';
 import { OrganizationsClient } from './clients/devOps/organizationsClient';
 import { getRepositoryDetailsFromRemoteUrl, isAzureReposUrl } from './helpers/azureDevOpsHelper';
 import { showQuickPick } from './helpers/controlProvider';
+import { extensionVersion } from './helpers/telemetryHelper';
 import * as logger from './logger';
 import * as Messages from './messages';
 import { get1ESPTSchemaUri, getCached1ESPTSchema, get1ESPTRepoIdIfAvailable, delete1ESPTSchemaFileIfPresent } from './schema-association-service-1espt';
@@ -119,7 +120,6 @@ export function getSchemaAssociation(schemaFilePath: string): ISchemaAssociation
 async function autoDetectSchema(
     context: vscode.ExtensionContext,
     workspaceFolder: vscode.WorkspaceFolder): Promise<vscode.Uri | undefined> {
-
     const azureDevOpsSessions = await getAzureDevOpsSessions(context);
     if (azureDevOpsSessions === undefined) {
         logger.log(`Not logged in`, 'SchemaDetection');
@@ -376,6 +376,7 @@ export async function getAzureDevOpsSessions(context: vscode.ExtensionContext, o
         const response = await fetch(nextLink, {
             headers: {
                 Authorization: `Bearer ${managementSession.accessToken}`,
+                'User-Agent': `azure-pipelines-vscode ${extensionVersion}`,
             },
         });
         const data = await response.json() as { value: { tenantId: string }[], nextLink?: string };
