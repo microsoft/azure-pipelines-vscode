@@ -10,7 +10,7 @@ const config = {
   target: 'node',
   entry: {
     extension: './src/extension.ts',
-    server: './node_modules/azure-pipelines-language-server/out/server.js'
+    server: './node_modules/azure-pipelines-language-server/out/server/src/server.js'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

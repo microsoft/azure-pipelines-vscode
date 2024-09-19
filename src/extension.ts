@@ -143,12 +143,12 @@ function getServerOptions(context: vscode.ExtensionContext): languageclient.Serv
     // TODO: Figure out a way to get sourcemaps working with webpack so that we can always
     // use the webpacked version.
     const languageServerPath = context.extensionMode === vscode.ExtensionMode.Development ?
-        context.asAbsolutePath(path.join('node_modules', 'azure-pipelines-language-server', 'out', 'server.js')) :
+        context.asAbsolutePath(path.join('node_modules', 'azure-pipelines-language-server', 'out', 'server', 'src', 'server.js')) :
         context.asAbsolutePath(path.join('dist', 'server.js'));
 
     return {
         run: { module: languageServerPath, transport: languageclient.TransportKind.ipc },
-        debug: { module: languageServerPath, transport: languageclient.TransportKind.ipc, options: { execArgv: ["--nolazy", "--inspect=6009"] } }
+        debug: { module: languageServerPath, transport: languageclient.TransportKind.ipc, options: { execArgv: ["--nolazy", "--inspect=7009"] } }
     };
 }
 

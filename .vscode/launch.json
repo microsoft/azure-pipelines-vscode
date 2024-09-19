@@ -37,11 +37,10 @@
             "name": "Attach to Server",
             "type": "node",
             "request": "attach",
-            "port": 6009,
+            "port": 7009,
             "restart": true,
             "outFiles": [
-                "${workspaceFolder}/../azure-pipelines-language-server/language-server/out/**/*.js",
-                "${workspaceFolder}/../azure-pipelines-language-server/language-service/lib/**/*.js"
+                "${workspaceFolder}/../azure-pipelines-language-server/out/**/*.js"
             ]
         }
     ],

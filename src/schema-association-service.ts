@@ -99,7 +99,7 @@ export async function locateSchemaFile(
 // the server already looks for.
 // That one is schema -> patterns, rather than pattern -> schemas.
 export function getSchemaAssociation(schemaFilePath: string): ISchemaAssociations {
-    return { '*': [schemaFilePath] };
+    return { [schemaFilePath]: ['*'] };
 }
 
 async function autoDetectSchema(
@@ -119,7 +119,7 @@ async function autoDetectSchema(
             logger.log(`Not prompting for login - do not ask again was set`, 'SchemaDetection');
             return undefined;
         }
-    
+
         logger.log(`Waiting for login`, 'SchemaDetection');
 
         try {
