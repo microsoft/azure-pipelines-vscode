@@ -1,25 +1,6 @@
 import * as vscode from 'vscode';
 import * as Messages from './messages';
-import { AzureAccount } from './typings/azure-account.api';
 import { API, GitExtension } from './typings/git';
-
-let azureAccountExtensionApi: AzureAccount | undefined;
-export async function getAzureAccountExtensionApi(): Promise<AzureAccount> {
-    if (azureAccountExtensionApi === undefined) {
-        const azureAccountExtension = vscode.extensions.getExtension<AzureAccount>("ms-vscode.azure-account");
-        if (!azureAccountExtension) {
-            throw new Error(Messages.azureAccountExtensionUnavailable);
-        }
-
-        if (!azureAccountExtension.isActive) {
-            await azureAccountExtension.activate();
-        }
-
-        azureAccountExtensionApi = azureAccountExtension.exports;
-    }
-
-    return azureAccountExtensionApi;
-}
 
 let gitExtensionApi: API | undefined;
 export async function getGitExtensionApi(): Promise<API> {

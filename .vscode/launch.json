@@ -21,7 +21,7 @@
             "name": "Extension Tests",
             "type": "extensionHost",
             "request": "launch",
-            "runtimeExecutable": "${execPath}",
+            "testConfiguration": "${workspaceFolder}/.vscode-test.js",
             "args": [
                 "${workspaceFolder}/src/test/workspace",
                 "--extensionDevelopmentPath=${workspaceFolder}",

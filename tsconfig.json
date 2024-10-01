@@ -1,8 +1,5 @@
 {
     "compilerOptions": {
-        /* List of library files to be included in the compilation. */
-        "lib": [ "es2019" ],
-
         /* Specify module code generation. */
         "module": "ES2022",
 
@@ -42,9 +39,7 @@
         "strict": true,
 
         /* Specify ECMAScript target version. */
-        "target": "es2019",
-
-        "skipLibCheck": true // https://github.com/Azure/ms-rest-js/issues/367
+        "target": "ES2022",
     },
     "include": [
         "src"
