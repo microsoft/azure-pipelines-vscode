@@ -7,14 +7,14 @@ import * as vscode from 'vscode';
 import { URI, Utils } from 'vscode-uri';
 import * as azdev from 'azure-devops-node-api';
 import * as logger from './logger';
-import { AzureSession } from './typings/azure-account.api';
 import * as Messages from './messages';
+import { getAzureDevOpsSessions } from './schema-association-service';
 
 const milliseconds24hours = 86400000;
 
-export async function get1ESPTSchemaUri(azureDevOpsClient: azdev.WebApi, organizationName: string, session: AzureSession, context: vscode.ExtensionContext, repoId1espt: string): Promise<URI | undefined> {
+export async function get1ESPTSchemaUri(azureDevOpsClient: azdev.WebApi, organizationName: string, session: vscode.AuthenticationSession, context: vscode.ExtensionContext, repoId1espt: string): Promise<URI | undefined> {
     try {
-        if (session.userId.endsWith("@microsoft.com")) {
+        if (session.account.label.endsWith("@microsoft.com")) {
             const gitApi = await azureDevOpsClient.getGitApi();
             // Using getItem from GitApi: getItem(repositoryId: string, path: string, project?: string, scopePath?: string, recursionLevel?: GitInterfaces.VersionControlRecursionType, includeContentMetadata?: boolean, latestProcessedChange?: boolean, download?: boolean, versionDescriptor?: GitInterfaces.GitVersionDescriptor, includeContent?: boolean, resolveLfs?: boolean, sanitize?: boolean): Promise<GitInterfaces.GitItem>;
             const schemaFile = await gitApi.getItem(repoId1espt, "schema/1espt-base-schema.json", "1ESPipelineTemplates", undefined, undefined, true, true, true, undefined, true, true);
@@ -35,7 +35,7 @@ export async function get1ESPTSchemaUri(azureDevOpsClient: azdev.WebApi, organiz
         }
     }
     catch (error) {
-        logger.log(`Error : ${String(error)} while fetching 1ESPT schema for org: ${organizationName}  : `, 'SchemaDetection');
+        logger.log(`Error: ${error instanceof Error ? error.message : String(error)} while fetching 1ESPT schema for org: ${organizationName}  : `, 'SchemaDetection');
     }
     return undefined;
 }
@@ -52,7 +52,7 @@ export async function get1ESPTSchemaUri(azureDevOpsClient: azdev.WebApi, organiz
  * @param lastUpdated1ESPTSchema
  * @returns
  */
-export async function getCached1ESPTSchema(context: vscode.ExtensionContext, organizationName: string, session: AzureSession, lastUpdated1ESPTSchema: Map<string, Date>): Promise<URI | undefined> {
+export async function getCached1ESPTSchema(context: vscode.ExtensionContext, organizationName: string, session: vscode.AuthenticationSession, lastUpdated1ESPTSchema: Map<string, Date>): Promise<URI | undefined> {
     const lastUpdatedDate = lastUpdated1ESPTSchema.get(organizationName);
     if (!lastUpdatedDate) {
         return undefined;
@@ -61,7 +61,7 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
     const schemaUri1ESPT = Utils.joinPath(context.globalStorageUri, '1ESPTSchema', `${organizationName}-1espt-schema.json`);
 
     try {
-        if (session.userId.endsWith("@microsoft.com")) {
+        if (session.account.label.endsWith("@microsoft.com")) {
             if ((new Date().getTime() - lastUpdatedDate.getTime()) < milliseconds24hours) {
                 try {
                     await vscode.workspace.fs.stat(schemaUri1ESPT);
@@ -77,20 +77,20 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
             }
         }
         else {
-            const signInAction = await vscode.window.showInformationMessage(Messages.notUsing1ESPTSchemaAsUserNotSignedInMessage, Messages.signInLabel);
-            if (signInAction == Messages.signInLabel) {
-                await vscode.window.withProgress({
-                    location: vscode.ProgressLocation.Notification,
-                    title: Messages.waitForAzureSignIn,
-                }, async () => {
-                    await vscode.commands.executeCommand("azure-account.login");
+            void vscode.window.showInformationMessage(Messages.notUsing1ESPTSchemaAsUserNotSignedInMessage, Messages.signInWithADifferentAccountLabel)
+                .then(async action => {
+                    if (action === Messages.signInWithADifferentAccountLabel) {
+                        await getAzureDevOpsSessions(context, {
+                            clearSessionPreference: true,
+                            createIfNone: true,
+                        });
+                    }
                 });
-            }
             logger.log(`Skipping cached 1ESPT schema for ${organizationName} as user is not signed in with Microsoft account`, `SchemaDetection`);
         }
     }
     catch (error) {
-        logger.log(`Error : ${String(error)} while fetching cached 1ESPT schema for org: ${organizationName}. It's possible that the schema does not exist.`, 'SchemaDetection');
+        logger.log(`Error: ${error instanceof Error ? error.message : String(error)} while fetching cached 1ESPT schema for org: ${organizationName}. It's possible that the schema does not exist.`, 'SchemaDetection');
     }
 
     return undefined;
@@ -105,13 +105,9 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
 export async function get1ESPTRepoIdIfAvailable(azureDevOpsClient: azdev.WebApi, organizationName: string): Promise<string> {
     try {
         const gitApi = await azureDevOpsClient.getGitApi();
-        const repositories = await gitApi.getRepositories('1ESPipelineTemplates');
-        if (repositories.length === 0) {
-            logger.log(`1ESPipelineTemplates ADO project not found for org ${organizationName}`, `SchemaDetection`);
-            return ""; // 1ESPT ADO project not found
-        }
-
-        const repository = repositories.find(repo => repo.name === "1ESPipelineTemplates");
+        const repository = await gitApi.getRepository('1ESPipelineTemplates', '1ESPipelineTemplates');
+        // Types are wrong and getRepository cah return null.
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (repository?.id === undefined) {
             logger.log(`1ESPipelineTemplates repo not found for org ${organizationName}`, `SchemaDetection`);
             return ""; // 1ESPT repo not found
@@ -120,7 +116,7 @@ export async function get1ESPTRepoIdIfAvailable(azureDevOpsClient: azdev.WebApi,
         return repository.id;
     }
     catch (error) {
-        logger.log(`Error : ${String(error)} while checking eligibility for enhanced Intellisense for 1ESPT schema for org: ${organizationName}.`, 'SchemaDetection');
+        logger.log(`Error: ${error instanceof Error ? error.message : String(error)} while checking eligibility for enhanced Intellisense for 1ESPT schema for org: ${organizationName}.`, 'SchemaDetection');
         return "";
     }
 }
@@ -130,6 +126,6 @@ export async function delete1ESPTSchemaFileIfPresent(context: vscode.ExtensionCo
         await vscode.workspace.fs.delete(Utils.joinPath(context.globalStorageUri, '1ESPTSchema'), { recursive: true });
     }
     catch (error) {
-        logger.log(`Error: ${String(error)} while deleting 1ESPT schema. It's possible that the schema file does not exist`, 'SchemaDetection');
+        logger.log(`Error: ${error instanceof Error ? error.message : String(error)} while deleting 1ESPT schema. It's possible that the schema file does not exist`, 'SchemaDetection');
     }
 }
