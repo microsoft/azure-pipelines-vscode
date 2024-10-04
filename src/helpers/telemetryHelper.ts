@@ -14,9 +14,7 @@ export const extensionVersion: string = packageJSON.version;
 const aiKey: string = packageJSON.aiKey;
 /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 
-interface TelemetryProperties {
-    [key: string]: string;
-}
+type TelemetryProperties = Record<string, string>;
 
 class TelemetryHelper {
     private journeyId: string = crypto.randomUUID();
@@ -47,11 +45,11 @@ class TelemetryHelper {
     public logError(layer: string, tracePoint: string, error: Error): void {
         TelemetryHelper.reporter.sendTelemetryErrorEvent(
             tracePoint, {
-                [TelemetryKeys.JourneyId]: this.journeyId,
-                layer,
-                errorMessage: error.message,
-                stack: error.stack ?? '',
-            }, undefined, ['errorMesage', 'stack']);
+            [TelemetryKeys.JourneyId]: this.journeyId,
+            layer,
+            errorMessage: error.message,
+            stack: error.stack ?? '',
+        }, undefined, ['errorMesage', 'stack']);
     }
 
     // Executes the given function, timing how long it takes.
@@ -62,7 +60,7 @@ class TelemetryHelper {
     public async executeFunctionWithTimeTelemetry<T>(callback: () => Promise<T>, telemetryKey: string): Promise<T> {
         const startTime = Date.now();
         try {
-            return callback();
+            return await callback();
         }
         finally {
             this.setTelemetry(telemetryKey, ((Date.now() - startTime) / 1000).toString());
@@ -74,7 +72,7 @@ class TelemetryHelper {
     // supplied through initialize() or setTelemetry().
     public async callWithTelemetryAndErrorHandling<T>(command: string, callback: () => Promise<T>): Promise<T | undefined> {
         try {
-            return this.executeFunctionWithTimeTelemetry(callback, 'duration');
+            return await this.executeFunctionWithTimeTelemetry(callback, 'duration');
         } catch (error) {
             TelemetryHelper.reporter.sendTelemetryErrorEvent(
                 command, {

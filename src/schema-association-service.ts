@@ -141,7 +141,9 @@ async function autoDetectSchema(
             if (repo.state.HEAD?.upstream !== undefined) {
                 const remoteName = repo.state.HEAD.upstream.remote;
                 remoteUrl = repo.state.remotes.find(remote => remote.name === remoteName)?.fetchUrl;
-                logger.log(`Found remote URL for ${workspaceFolder.name}: ${remoteUrl}`, 'SchemaDetection');
+                if (remoteUrl !== undefined) {
+                    logger.log(`Found remote URL for ${workspaceFolder.name}: ${remoteUrl}`, 'SchemaDetection');
+                }
             }
             // get remoteUrl for dev branches
             else if (repo.state.remotes.length > 0) {
@@ -162,9 +164,9 @@ async function autoDetectSchema(
     } else {
         logger.log(`${workspaceFolder.name} has no remote URL or is not an Azure repo`, 'SchemaDetection');
 
-        const azurePipelinesDetails = context.workspaceState.get<{
-            [folder: string]: { organization: string; tenant: string; }
-        }>('azurePipelinesDetails');
+        const azurePipelinesDetails = context.workspaceState.get<
+            Record<string, { organization: string; tenant: string; }>
+        >('azurePipelinesDetails');
         if (azurePipelinesDetails?.[workspaceFolder.name] !== undefined) {
             // If we already have cached information for this workspace folder, use it.
             const details = azurePipelinesDetails[workspaceFolder.name];
@@ -410,9 +412,7 @@ export async function getAzureDevOpsSessions(context: vscode.ExtensionContext, o
 }
 
 // Mapping of glob pattern -> schemas
-interface ISchemaAssociations {
-    [pattern: string]: string[];
-}
+type ISchemaAssociations = Record<string, string[]>;
 
 export const SchemaAssociationNotification = {
     type: new languageclient.NotificationType<ISchemaAssociations>('json/schemaAssociations'),
