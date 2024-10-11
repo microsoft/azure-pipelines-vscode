@@ -208,7 +208,7 @@ All of the material changes in this version were courtesy of @50Wliu. Thanks!
 - Syntax highlighting for Azure Pipelines files
 - Intellisense for Azure Pipelines files
 
-## 1.247.1-beta-0.3
+## 1.247.1-beta-0.4
 ### Added
 - Added ESRP Esrp CodeSigning step
 - Updated build generation to sign the VSIX
