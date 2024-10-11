@@ -207,3 +207,7 @@ All of the material changes in this version were courtesy of @50Wliu. Thanks!
 - Initial release
 - Syntax highlighting for Azure Pipelines files
 - Intellisense for Azure Pipelines files
+
+## 1.247.1-beta-0.2
+### Added
+- ESRP signing of extension
