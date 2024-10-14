@@ -90,7 +90,7 @@ async function createRelease() {
             url: createReleaseResult.data.upload_url,
             headers: {
                 'content-length': manifestSize,
-                'content-type': application/xml,
+                'content-type': 'application/xml',
             },
             name: manifest,
             file: fs.createReadStream(manifest)
@@ -109,7 +109,7 @@ async function createRelease() {
             url: createReleaseResult.data.upload_url,
             headers: {
                 'content-length': signatureSize,
-                'content-type': application/pkcs7-signature,
+                'content-type': 'application/pkcs7-signature',
             },
             name: signature,
             file: fs.createReadStream(signature)
