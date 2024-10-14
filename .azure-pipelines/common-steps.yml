@@ -36,9 +36,47 @@ steps:
 # Acquire the `vsce` tool and use it to package
 - script: |
     npm install -g @vscode/vsce
-    vsce package
+  displayName: Install VSCE
+
+- script: |
+    vsce package -o extension.vsix
   displayName: Create VSIX
 
+- script: |
+    vsce generate-manifest -i extension.vsix -o extension.manifest
+  displayName: Create VSIX Manifest
+
+- script: |
+    cp extension.manifest extension.signature.p7s
+  displayName: Prepare Manifest Signature
+
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@5
+  inputs:
+    ConnectedServiceName: PipelinesAgentAndTasksESRP
+    AppRegistrationClientId: $(AppRegistrationClientId)
+    AppRegistrationTenantId: $(AppRegistrationTenantId)
+    AuthAKVName: $(AuthAKVName)
+    AuthCertName: $(AuthCertName)
+    AuthSignCertName: $(AuthSignCertName)
+    FolderPath: '$(Build.ArtifactStagingDirectory)'
+    Pattern: 'extension.signature.p7s'
+    signConfigType: inlineSignParams
+    inlineOperation: |
+      [
+        {
+          "keyCode": "CP-401405",
+          "operationSetCode": "VSCodePublisherSign",
+          "parameters" : [],
+          "toolName": "sign",
+          "toolVersion": "1.0"
+        }
+      ]
+    SessionTimeout: 90
+    MaxConcurrency: 25
+    MaxRetryAttempts: 5
+    PendingAnalysisWaitTimeoutMinutes: 5
+  displayName: Sign Extension
+  
 - script: |
     npm run vscode:prepublish
     cat /home/vsts/.npm/_logs/*.log
@@ -59,8 +97,10 @@ steps:
   displayName: Stage VSIX for publishing
   inputs:
     contents: |-
-      *.vsix
+      extension.vsix
       version.txt
       branch.txt
       minichangelog.txt
+      extension.signature.p7s
+      extension.manifest
     targetFolder: $(Build.ArtifactStagingDirectory)
