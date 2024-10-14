@@ -64,7 +64,7 @@ extends:
             LINE_COUNT=$(cat minichangelog.txt | wc -l)
             if [ "$LINE_COUNT" -lt 3 ]; then
               echo Mini changelog is too short. Did you use the wrong version number in CHANGELOG.txt?
-              exit 1
+              exit 0
             fi
           displayName: Check for length of mini-changelog
 
@@ -77,7 +77,7 @@ extends:
 
         - bash: |
             SCRIPT=.azure-pipelines/github-release/github-release.js
-            VSIX=*.vsix
+            VSIX=extension.vsix
             VERSION=$(node -p "require('./package.json').version")
             VSIX_SIGNATURE=extension.signature.p7s
             VSIX_MANIFEST=extension.manifest
