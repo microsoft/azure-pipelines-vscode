@@ -64,7 +64,7 @@ extends:
             LINE_COUNT=$(cat minichangelog.txt | wc -l)
             if [ "$LINE_COUNT" -lt 3 ]; then
               echo Mini changelog is too short. Did you use the wrong version number in CHANGELOG.txt?
-              exit 0
+              exit 1
             fi
           displayName: Check for length of mini-changelog
 
