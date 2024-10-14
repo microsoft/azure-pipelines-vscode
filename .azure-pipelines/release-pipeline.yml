@@ -4,17 +4,17 @@
 
 # Only trigger manually
 
-# This Yaml Document has been converted by ESAI Yaml Pipeline Conversion Tool.
-# This pipeline will be extended to the OneESPT template
-
 trigger: none
+
 pr: none
+
 resources:
   repositories:
   - repository: 1ESPipelineTemplates
     type: git
     name: 1ESPipelineTemplates/1ESPipelineTemplates
     ref: refs/tags/release
+
 extends:
   template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
   parameters:
@@ -36,6 +36,7 @@ extends:
       os: linux
     customBuildTags:
     - ES365AIMigrationTooling
+
     stages:
     - stage: stage
       jobs:
@@ -46,6 +47,7 @@ extends:
             displayName: 'Publish VSIX'
             artifactName: azure-pipelines-vscode
             targetPath: $(Build.ArtifactStagingDirectory)
+
         steps:
         # release version should be correctly set in package.json
         - bash: |
@@ -72,11 +74,14 @@ extends:
             npm install
           displayName: Prepare to create GitHub Release
           workingDirectory: '$(Build.SourcesDirectory)/.azure-pipelines/github-release'
+
         - bash: |
             SCRIPT=.azure-pipelines/github-release/github-release.js
             VSIX=*.vsix
             VERSION=$(node -p "require('./package.json').version")
-            node $SCRIPT $VSIX $VERSION $GITHUB_TOKEN
+            VSIX_SIGNATURE=extension.signature.p7s
+            VSIX_MANIFEST=extension.manifest
+            node $SCRIPT $VSIX $VERSION $GITHUB_TOKEN $VSIX_SIGNATURE $VSIX_MANIFEST
           displayName: Create GitHub Release
           env:
             GITHUB_TOKEN: $(GitHubSecret)
