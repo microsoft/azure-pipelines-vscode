@@ -39,11 +39,11 @@ steps:
   displayName: Install VSCE
 
 - script: |
-    vsce package -o extension.vsix
+    npx @vscode/vsce package -o extension.vsix
   displayName: Create VSIX
 
 - script: |
-    vsce generate-manifest -i extension.vsix -o extension.manifest
+    npx @vscode/vsce generate-manifest -i extension.vsix -o extension.manifest
   displayName: Create VSIX Manifest
 
 - script: |
@@ -58,7 +58,7 @@ steps:
     AuthAKVName: $(AuthAKVName)
     AuthCertName: $(AuthCertName)
     AuthSignCertName: $(AuthSignCertName)
-    FolderPath: '$(Build.ArtifactStagingDirectory)'
+    FolderPath: '$(Build.SourcesDirectory)'
     Pattern: 'extension.signature.p7s'
     signConfigType: inlineSignParams
     inlineOperation: |
