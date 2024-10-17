@@ -3,7 +3,7 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
-## 1.247.2
+## 1.247.3
 ### Added
 - Added ESRP Esrp CodeSigning step
 - Updated build generation to sign the VSIX
