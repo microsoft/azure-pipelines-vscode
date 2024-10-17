@@ -11,6 +11,9 @@ const DEBUG_LOGGING = process.env.SYSTEM_DEBUG && process.env.SYSTEM_DEBUG == 't
 let vsixName = process.argv[2] || null;
 let version = process.argv[3] || null;
 let token = process.argv[4] || null
+let signature = process.argv[5] || null
+let manifest = process.argv[6] || null
+
 if (token === null) {
     console.log(`Usage:
 
@@ -59,12 +62,12 @@ async function createRelease() {
         console.log(createReleaseResult);
     }
 
+    // Upload the VSIX
     const vsixSize = fs.statSync(vsixName).size;
-
     console.log('Uploading VSIX...');
-    let uploadResult;
+    let vsixUploadResult;
     try {
-        uploadResult = await octokit.repos.uploadAsset({
+        vsixUploadResult = await octokit.repos.uploadAsset({
             url: createReleaseResult.data.upload_url,
             headers: {
                 'content-length': vsixSize,
@@ -78,8 +81,48 @@ async function createRelease() {
     }
     console.log('Uploaded VSIX.');
 
+    // Upload the Manifest
+    const manifestSize = fs.statSync(manifest).size;
+    console.log('Uploading Manifest...');
+    let manifestUploadResult;
+    try {
+        manifestUploadResult = await octokit.repos.uploadAsset({
+            url: createReleaseResult.data.upload_url,
+            headers: {
+                'content-length': manifestSize,
+                'content-type': 'application/xml',
+            },
+            name: manifest,
+            file: fs.createReadStream(manifest)
+        });
+    } catch (e) {
+        throw e;
+    }
+    console.log('Uploaded Manifest.');
+
+    // Upload the Signature
+    const signatureSize = fs.statSync(signature).size;
+    console.log('Uploading Signature...');
+    let signatureUploadResult;
+    try {
+        signatureUploadResult = await octokit.repos.uploadAsset({
+            url: createReleaseResult.data.upload_url,
+            headers: {
+                'content-length': signatureSize,
+                'content-type': 'application/pkcs7-signature',
+            },
+            name: signature,
+            file: fs.createReadStream(signature)
+        });
+    } catch (e) {
+        throw e;
+    }
+    console.log('Uploaded Signature.');
+
     if (DEBUG_LOGGING) {
-        console.log(uploadResult);
+        console.log("VISX Upload Result:" + vsixUploadResult);
+        console.log("Manifest Upload Result:" + manifestUploadResult);
+        console.log("Signature Upload Result:" + signatureUploadResult);
     }
 }
 
