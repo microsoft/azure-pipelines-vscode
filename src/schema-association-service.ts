@@ -382,9 +382,13 @@ export async function getAzureDevOpsSessions(context: vscode.ExtensionContext, o
         const data = await response.json() as { value: { tenantId: string }[], nextLink?: string };
         nextLink = data.nextLink;
 
+        logger.log(`Found ${data.value.length} tenants`, 'SchemaDetection');
+
         for (const tenant of data.value) {
+            logger.log(`Getting session for tenant ${tenant}`, 'SchemaDetection');
             const session = await vscode.authentication.getSession('microsoft', [...AZURE_DEVOPS_SCOPES, `VSCODE_TENANT:${tenant.tenantId}`], { silent: true });
             if (session !== undefined) {
+                logger.log(`Found session for tenant ${tenant}`, 'SchemaDetection');
                 azureDevOpsSessions.push(session);
             }
         }
@@ -400,11 +404,15 @@ export async function getAzureDevOpsSessions(context: vscode.ExtensionContext, o
             && ['9188040d-6c67-4c5b-b112-36a304b66dad', 'f8cdef31-a31e-4b4a-93e4-5f571e91255a']
                 .includes(managementSession.account.id.split('.')[1]))) {
         // MSAs have their own organizations that aren't associated with a tenant.
+        logger.log('Getting session for MSA', 'SchemaDetection');
         const msaSession = await vscode.authentication.getSession('microsoft', AZURE_DEVOPS_SCOPES, { silent: true });
         if (msaSession !== undefined) {
+            logger.log('Found session for MSA', 'SchemaDetection');
             azureDevOpsSessions.push(msaSession);
         }
     }
+
+    logger.log(`Found ${azureDevOpsSessions.length} sessions total`, 'SchemaDetection');
 
     return azureDevOpsSessions;
 }
