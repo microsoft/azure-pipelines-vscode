@@ -385,10 +385,10 @@ export async function getAzureDevOpsSessions(context: vscode.ExtensionContext, o
         logger.log(`Found ${data.value.length} tenants`, 'SchemaDetection');
 
         for (const tenant of data.value) {
-            logger.log(`Getting session for tenant ${tenant}`, 'SchemaDetection');
+            logger.log(`Getting session for tenant ${tenant.tenantId}`, 'SchemaDetection');
             const session = await vscode.authentication.getSession('microsoft', [...AZURE_DEVOPS_SCOPES, `VSCODE_TENANT:${tenant.tenantId}`], { silent: true });
             if (session !== undefined) {
-                logger.log(`Found session for tenant ${tenant}`, 'SchemaDetection');
+                logger.log(`Found session for tenant ${tenant.tenantId}`, 'SchemaDetection');
                 azureDevOpsSessions.push(session);
             }
         }
