@@ -169,16 +169,16 @@ async function autoDetectSchema(
                 `Using cached organization for ${workspaceFolder.name}: ${organizationName}`,
                 'SchemaDetection');
         } else {
-            logger.log(`Retrieving organizations for ${workspaceFolder.name}`, 'SchemaDetection');
-
-            const organizationsClient = new OrganizationsClient(azureDevOpsSession.accessToken);
-            const organizations = (await organizationsClient.listOrganizations()).map(({ accountName }) => accountName);
-
             const doNotAskAgainSelectOrg = context.globalState.get<boolean>(DO_NOT_ASK_SELECT_ORG_KEY);
             if (doNotAskAgainSelectOrg) {
                 logger.log(`Not prompting for organization - do not ask again was set`, 'SchemaDetection');
                 return undefined;
             }
+
+            logger.log(`Retrieving organizations for ${workspaceFolder.name}`, 'SchemaDetection');
+
+            const organizationsClient = new OrganizationsClient(azureDevOpsSession.accessToken);
+            const organizations = (await organizationsClient.listOrganizations()).map(({ accountName }) => accountName);
 
             logger.log(`${organizations.length} organizations found - prompting for ${workspaceFolder.name}`, 'SchemaDetection');
 
