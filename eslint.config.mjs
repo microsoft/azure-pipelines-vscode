@@ -9,8 +9,10 @@ export default tseslint.config(
     ...tseslint.configs.stylisticTypeChecked,
     {
         ignores: [
-            '.azure-pipelines/**',
-            'dist/**',
+            '.azure-pipelines/',
+            '.vscode-test/',
+            'dist/',
+            'out/',
         ],
     },
     {
