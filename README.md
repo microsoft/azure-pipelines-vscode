@@ -27,7 +27,7 @@ You probably have custom tasks installed in your organization.
 
 To provide the most relevant IntelliSense, the extension will automatically detect and use your organization's schema! All you need to do is follow the instructions when prompted.
 
-### Using a different Microsot Entra tenant
+### Using a different Microsoft Entra tenant
 
 The extension uses your account's default tenant to connect to Azure DevOps.
 Sometimes, this is not what you want as your Azure DevOps organization is linked to a different tenant.
