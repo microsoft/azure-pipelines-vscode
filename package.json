@@ -22,7 +22,6 @@
     },
     "categories": [
         "Programming Languages",
-        "Formatters",
         "Azure"
     ],
     "tags": [
@@ -111,6 +110,9 @@
             }
         ]
     },
+    "extensionDependencies": [
+        "vscode.git"
+    ],
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "webpack --mode production --progress --color",
