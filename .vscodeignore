@@ -1,10 +1,13 @@
 .gitattributes
 .gitignore
+.npmrc
 .vscode-test.mjs
+eslint.config.mjs
 tsconfig.json
-tslint.json
-webpack.config.js
+tsconfig.test.json
+webpack.config.mjs
 .azure-pipelines/
+.github/
 .vscode/
 .vscode-test/
 coverage/

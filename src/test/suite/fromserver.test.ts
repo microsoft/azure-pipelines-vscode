@@ -43,5 +43,5 @@ async function testFileIsValid(file: vscode.Uri) {
 }
 
 async function sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return await new Promise((resolve) => setTimeout(resolve, ms));
 }
