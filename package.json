@@ -87,6 +87,13 @@
                     "type": "string",
                     "description": "Use a different schema file",
                     "scope": "machine-overridable"
+                },
+                "azure-pipelines.tenant": {
+                    "type": "string",
+                    "description": "Microsoft Entra tenant ID to use when connecting to Azure DevOps. Leave empty to use your account's default tenant.",
+                    "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$|^$",
+                    "patternErrorMessage": "The tenant must be a valid GUID.",
+                    "scope": "resource"
                 }
             }
         },

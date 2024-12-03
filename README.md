@@ -27,7 +27,13 @@ You probably have custom tasks installed in your organization.
 
 To provide the most relevant IntelliSense, the extension will automatically detect and use your organization's schema! All you need to do is follow the instructions when prompted.
 
-> If automatic fetching of the organization schema doesn't work, try signing out and signing back in using the `Azure: Sign Out` and `Azure: Sign In` commands from the VS Code command palette (Ctrl/Cmd + Shift + P).
+### Using a different Microsoft Entra tenant
+
+The extension uses your account's default tenant to connect to Azure DevOps.
+Sometimes, this is not what you want as your Azure DevOps organization is linked to a different tenant.
+
+To get the extension to use the correct tenant, go to the [Tenant](vscode://settings/azure-pipelines.tenant) setting and enter the Microsoft Entra tenant ID that your organization uses.
+You can view which tenant your organization is connected to by going to `https://dev.azure.com/YOUR-ORG-HERE/_settings/organizationAad`.
 
 ### Specific schema
 

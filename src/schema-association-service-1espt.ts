@@ -8,7 +8,7 @@ import { URI, Utils } from 'vscode-uri';
 import * as azdev from 'azure-devops-node-api';
 import * as logger from './logger';
 import * as Messages from './messages';
-import { getAzureDevOpsSessions } from './schema-association-service';
+import { getAzureDevOpsSession } from './schema-association-service';
 
 const milliseconds24hours = 86400000;
 
@@ -80,7 +80,7 @@ export async function getCached1ESPTSchema(context: vscode.ExtensionContext, org
             void vscode.window.showInformationMessage(Messages.notUsing1ESPTSchemaAsUserNotSignedInMessage, Messages.signInWithADifferentAccountLabel)
                 .then(async action => {
                     if (action === Messages.signInWithADifferentAccountLabel) {
-                        await getAzureDevOpsSessions(context, {
+                        await getAzureDevOpsSession(context, {
                             clearSessionPreference: true,
                             createIfNone: true,
                         });
