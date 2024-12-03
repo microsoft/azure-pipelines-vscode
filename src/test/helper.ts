@@ -26,7 +26,7 @@ export async function activate(docUri: vscode.Uri) {
 }
 
 async function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return await new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export const getDocPath = (p: string) => {
@@ -42,7 +42,7 @@ export async function setTestContent(content: string): Promise<boolean> {
         doc.positionAt(0),
         doc.positionAt(doc.getText().length)
     );
-    return editor.edit(eb => {
+    return await editor.edit(eb => {
         eb.replace(all, content)
     });
 }
