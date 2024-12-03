@@ -58,7 +58,7 @@ class SchemaContributor {
         // TODO: This is currently the only way to fallback to the default schema provider.
         // The upstream Red Hat server also falls back when receiving a falsy value,
         // so sync with their changes and change this to return false or something.
-        // eslint-disable-next-line @typescript-eslint/no-throw-literal
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw `Unable to find custom schema for resource: '${resource}'`;
     }
 
@@ -77,7 +77,7 @@ class SchemaContributor {
             return contributor.requestSchemaContent(uri);
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-throw-literal
+        // eslint-disable-next-line @typescript-eslint/only-throw-error
         throw `Unable to find custom schema content for uri: '${uri}'`;
     }
 }
