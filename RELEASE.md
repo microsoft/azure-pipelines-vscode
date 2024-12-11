@@ -1,8 +1,8 @@
 # Releasing the extension
 
-0. Work in a branch. I sometimes go with `ship-<version-num>`, for example, `ship-191`.
 0. Find the current sprint using https://whatsprintis.it.
-0. Update the version to the major sprint number using `npm version --no-git-tag-version THE_SPRINT_VERSION`.
+0. Work in a branch. I sometimes go with `ship-<version-num>`, for example, `ship-191`.
+0. Update the version to the major sprint number using `npm version --no-git-tag-version 1.THE_SPRINT_VERSION.0`.
     - Replace `THE_SPRINT_VERSION` with `patch` if you are doing a bugfix release.
 0. Ensure the [CHANGELOG](CHANGELOG.md) is up to date.
 0. Update the [service schema](#bumping-service-schema).
