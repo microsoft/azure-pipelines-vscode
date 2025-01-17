@@ -77,11 +77,7 @@ steps:
     MaxRetryAttempts: 5
     PendingAnalysisWaitTimeoutMinutes: 5
   displayName: Sign Extension
-  condition: |
-    and(
-      succeeded(),
-      ne(variables['build.reason'], 'PullRequest'),
-    )
+  condition: and(succeeded(), ne(variables['build.reason'], 'PullRequest'))
   
 - script: |
     npm run vscode:prepublish
