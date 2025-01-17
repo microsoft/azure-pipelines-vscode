@@ -52,11 +52,12 @@ steps:
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@5
   inputs:
-    ConnectedServiceName: PipelinesAgentAndTasksESRP
+    ConnectedServiceName: $(ConnectedServiceName)
+    UseMSIAuthentication: true
     AppRegistrationClientId: $(AppRegistrationClientId)
     AppRegistrationTenantId: $(AppRegistrationTenantId)
+    EsrpClientId: $(EsrpClientId)
     AuthAKVName: $(AuthAKVName)
-    AuthCertName: $(AuthCertName)
     AuthSignCertName: $(AuthSignCertName)
     FolderPath: '$(Build.SourcesDirectory)'
     Pattern: 'extension.signature.p7s'
@@ -76,6 +77,11 @@ steps:
     MaxRetryAttempts: 5
     PendingAnalysisWaitTimeoutMinutes: 5
   displayName: Sign Extension
+  condition: |
+    and(
+      succeeded(),
+      ne(variables['build.reason'], 'PullRequest'),
+    )
   
 - script: |
     npm run vscode:prepublish
