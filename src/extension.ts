@@ -11,7 +11,6 @@ import * as logger from './logger';
 import { getSchemaAssociation, locateSchemaFile, onDidSelectOrganization, resetDoNotAskState, SchemaAssociationNotification } from './schema-association-service';
 import { schemaContributor, CUSTOM_SCHEMA_REQUEST, CUSTOM_CONTENT_REQUEST } from './schema-contributor';
 import { telemetryHelper } from './helpers/telemetryHelper';
-import { getAzureAccountExtensionApi } from './extensionApis';
 
 /**
  * The unique string that identifies the Azure Pipelines languge.
@@ -27,15 +26,9 @@ const DOCUMENT_SELECTOR = [
 ]
 
 export async function activate(context: vscode.ExtensionContext) {
-    const configurePipelineEnabled = vscode.workspace.getConfiguration(LANGUAGE_IDENTIFIER).get<boolean>('configure', true);
     telemetryHelper.setTelemetry('isActivationEvent', 'true');
-    telemetryHelper.setTelemetry('configurePipelineEnabled', `${configurePipelineEnabled}`);
     await telemetryHelper.callWithTelemetryAndErrorHandling('azurePipelines.activate', async () => {
         await activateYmlContributor(context);
-        if (configurePipelineEnabled) {
-            const { activateConfigurePipeline } = await import('./configure/activate');
-            activateConfigurePipeline();
-        }
     });
 
     context.subscriptions.push(telemetryHelper);
@@ -73,7 +66,9 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 
     // Let the server know of any schema changes.
     context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(async event => {
-        if (event.affectsConfiguration('azure-pipelines.customSchemaFile') || event.affectsConfiguration('azure-pipelines.1ESPipelineTemplatesSchemaFile')) {
+        if (event.affectsConfiguration('azure-pipelines.customSchemaFile') ||
+            event.affectsConfiguration('azure-pipelines.1ESPipelineTemplatesSchemaFile') ||
+            event.affectsConfiguration('azure-pipelines.tenant')) {
             await loadSchema(context, client);
         }
     }));
@@ -103,9 +98,8 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 
     // Re-request the schema when sessions change since auto-detection is dependent on
     // being able to query ADO organizations, check if 1ESPT schema can be used using session credentials.
-    const azureAccountApi = await getAzureAccountExtensionApi();
-    context.subscriptions.push(azureAccountApi.onSessionsChanged(async () => {
-        if (azureAccountApi.status === 'LoggedIn' || azureAccountApi.status === 'LoggedOut') {
+    context.subscriptions.push(vscode.authentication.onDidChangeSessions(async session => {
+        if (session.provider.id === 'microsoft') {
             await loadSchema(context, client);
         }
     }));
