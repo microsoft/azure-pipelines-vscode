@@ -69,19 +69,30 @@ extends:
           displayName: Check for length of mini-changelog
 
         # create a GitHub Release
-        - bash: |
-            export npm_config_cache=$(Build.SourcesDirectory)/.azure-pipelines/github-release/npm-cache
-            npm install
-          displayName: Prepare to create GitHub Release
-          workingDirectory: '$(Build.SourcesDirectory)/.azure-pipelines/github-release'
-
-        - bash: |
-            SCRIPT=.azure-pipelines/github-release/github-release.js
-            VSIX=extension.vsix
-            VERSION=$(node -p "require('./package.json').version")
-            VSIX_SIGNATURE=extension.signature.p7s
-            VSIX_MANIFEST=extension.manifest
-            node $SCRIPT $VSIX $VERSION $GITHUB_TOKEN $VSIX_SIGNATURE $VSIX_MANIFEST
-          displayName: Create GitHub Release
-          env:
-            GITHUB_TOKEN: $(GitHubSecret)
+    - stage: GitHub Release
+      displayName: GitHub Release
+      jobs:
+        - deployment: GitHub Release
+          displayName: GitHub Release
+          environment: 'vscode-extension-github-release'
+          strategy:
+            runOnce:
+            deploy:
+              steps:
+              # create a GitHub Release
+              - bash: |
+                  export npm_config_cache=$(Build.SourcesDirectory)/.azure-pipelines/github-release/npm-cache
+                  npm install
+                displayName: Prepare to create GitHub Release
+                workingDirectory: '$(Build.SourcesDirectory)/.azure-pipelines/github-release'
+    
+              - bash: |
+                  SCRIPT=.azure-pipelines/github-release/github-release.js
+                  VSIX=extension.vsix
+                  VERSION=$(node -p "require('./package.json').version")
+                  VSIX_SIGNATURE=extension.signature.p7s
+                  VSIX_MANIFEST=extension.manifest
+                  node $SCRIPT $VSIX $VERSION $GITHUB_TOKEN $VSIX_SIGNATURE $VSIX_MANIFEST
+                displayName: Create GitHub Release
+                env:
+                GITHUB_TOKEN: $(GitHubSecret)
