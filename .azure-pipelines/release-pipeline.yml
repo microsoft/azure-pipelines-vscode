@@ -68,7 +68,7 @@ extends:
             fi
           displayName: Check for length of mini-changelog
 
-        # create a GitHub Release
+    # create a GitHub Release
     - stage: GitHub Release
       displayName: GitHub Release
       jobs:
@@ -79,7 +79,6 @@ extends:
             runOnce:
             deploy:
               steps:
-              # create a GitHub Release
               - bash: |
                   export npm_config_cache=$(Build.SourcesDirectory)/.azure-pipelines/github-release/npm-cache
                   npm install
