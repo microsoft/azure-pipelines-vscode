@@ -3,11 +3,9 @@ All notable changes to the Azure Pipelines extension will be documented in this 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/). Versioning follows an internal Azure DevOps format that is not compatible with SemVer.
 
-## 1.253.0
+## 1.249.1
 ### Added
 - Condition to trigger GitHub release only from main branch
-### Fixed
-- Errors due to version mismatch when trying to find version in changelog
 
 ## 1.249.0
 ### Updated
