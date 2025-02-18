@@ -61,6 +61,8 @@ extends:
 
         # if the mini changelog is empty, complain
         - bash: |
+            echo minichangelog.txt:
+            cat minichangelog.txt
             LINE_COUNT=$(cat minichangelog.txt | wc -l)
             if [ "$LINE_COUNT" -lt 3 ]; then
               echo Mini changelog is too short. Did you use the wrong version number in CHANGELOG.txt?
@@ -74,6 +76,7 @@ extends:
             npm install
           displayName: Prepare to create GitHub Release
           workingDirectory: '$(Build.SourcesDirectory)/.azure-pipelines/github-release'
+          condition: eq(variables['Build.SourceBranchName'], 'main')
 
         - bash: |
             SCRIPT=.azure-pipelines/github-release/github-release.js
@@ -83,5 +86,6 @@ extends:
             VSIX_MANIFEST=extension.manifest
             node $SCRIPT $VSIX $VERSION $GITHUB_TOKEN $VSIX_SIGNATURE $VSIX_MANIFEST
           displayName: Create GitHub Release
+          condition: eq(variables['Build.SourceBranchName'], 'main')
           env:
             GITHUB_TOKEN: $(GitHubSecret)
