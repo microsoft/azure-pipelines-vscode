@@ -247,7 +247,7 @@ async function autoDetectSchema(
 
     const organizationsClient = new OrganizationsClient(azureDevOpsSession.accessToken);
     const organizations = await organizationsClient.listOrganizations();
-    if (!organizations.map(({ accountName }) => accountName).includes(organizationName)) {
+    if (!organizations.map(({ accountName }) => accountName.toLowerCase()).includes(organizationName.toLowerCase())) {
         logger.log(`Account does not have access to ${organizationName}`, 'SchemaDetection');
 
         void vscode.window.showErrorMessage(
