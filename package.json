@@ -151,5 +151,8 @@
         "azure-pipelines-language-server": "0.8.0",
         "vscode-languageclient": "^7.0.0",
         "vscode-uri": "^3.0.2"
+    },
+    "overrides": {
+        "js-yaml": "^4.1.0"
     }
 }
