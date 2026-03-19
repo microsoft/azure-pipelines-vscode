@@ -89,7 +89,12 @@ extends:
             GITHUB_TOKEN: $(GitHubSecret)
 
         # publish to VS Marketplace
-        - bash: |
-            npx @vscode/vsce@latest publish -i $(Build.ArtifactStagingDirectory)/extension.vsix --manifestPath $(Build.ArtifactStagingDirectory)/extension.manifest --signaturePath $(Build.ArtifactStagingDirectory)/extension.signature.p7s
+        - task: AzureCLI@2
           displayName: Publish extension to VS Marketplace
           condition: eq(variables['Build.SourceBranchName'], 'main')
+          inputs:
+            azureSubscription: Azure Pipelines VS Code Extension Publisher
+            scriptType: "bash"
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              npx @vscode/vsce@latest publish --azure-credential -i $(Build.ArtifactStagingDirectory)/extension.vsix --manifestPath $(Build.ArtifactStagingDirectory)/extension.manifest --signaturePath $(Build.ArtifactStagingDirectory)/extension.signature.p7s
