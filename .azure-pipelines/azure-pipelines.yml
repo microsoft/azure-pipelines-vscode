@@ -27,8 +27,6 @@ extends:
   parameters:
     settings:
       skipBuildTagsForGitHubPullRequests: true
-    # featureFlags:
-      # autoBaseline: false
     sdl:
       baseline:
         baselineSet: default
