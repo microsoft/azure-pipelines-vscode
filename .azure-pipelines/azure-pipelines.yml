@@ -26,6 +26,7 @@ extends:
   template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
   parameters:
     settings:
+      networkIsolationPolicy: Permissive,Npm
       skipBuildTagsForGitHubPullRequests: true
     sdl:
       baseline:
