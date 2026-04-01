@@ -58,7 +58,9 @@ steps:
     AppRegistrationTenantId: $(AppRegistrationTenantId)
     EsrpClientId: $(EsrpClientId)
     AuthAKVName: $(AuthAKVName)
+    AuthCertName: $(AuthCertName)
     AuthSignCertName: $(AuthSignCertName)
+    ServiceEndpointUrl: $(ESRPServiceEndpointUrl)
     FolderPath: '$(Build.SourcesDirectory)'
     Pattern: 'extension.signature.p7s'
     signConfigType: inlineSignParams
