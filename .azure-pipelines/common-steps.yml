@@ -33,11 +33,6 @@ steps:
 - script: npm run lint
   displayName: Lint
 
-# Acquire the `vsce` tool and use it to package
-- script: |
-    npm install -g @vscode/vsce
-  displayName: Install VSCE
-
 - script: |
     npx @vscode/vsce package -o extension.vsix
   displayName: Create VSIX
