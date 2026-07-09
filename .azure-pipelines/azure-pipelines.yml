@@ -13,7 +13,7 @@
 # This Yaml Document has been converted by ESAI Yaml Pipeline Conversion Tool.
 # This pipeline will be extended to the OneESPT template
 trigger:
-  - main
+  - none
   
   # no `pr` keyword because we want all PRs to run this
 resources:
@@ -70,3 +70,5 @@ extends:
           displayName: Set version number of package and build
 
         - template: /.azure-pipelines/common-steps.yml@self
+          parameters:
+            signExtension: false

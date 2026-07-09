@@ -1,6 +1,11 @@
 # Common steps template
 #
 # Things which happen regardless of CI, PR, or release builds
+parameters:
+- name: signExtension
+  type: boolean
+  default: true
+
 steps:
 - task: NodeTool@0
   displayName: Install Node 16 LTS or greater
@@ -45,36 +50,37 @@ steps:
     cp extension.manifest extension.signature.p7s
   displayName: Prepare Manifest Signature
 
-- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@5
-  inputs:
-    ConnectedServiceName: $(ConnectedServiceName)
-    UseMSIAuthentication: true
-    AppRegistrationClientId: $(AppRegistrationClientId)
-    AppRegistrationTenantId: $(AppRegistrationTenantId)
-    EsrpClientId: $(EsrpClientId)
-    AuthAKVName: $(AuthAKVName)
-    AuthCertName: $(AuthCertName)
-    AuthSignCertName: $(AuthSignCertName)
-    ServiceEndpointUrl: $(ESRPServiceEndpointUrl)
-    FolderPath: '$(Build.SourcesDirectory)'
-    Pattern: 'extension.signature.p7s'
-    signConfigType: inlineSignParams
-    inlineOperation: |
-      [
-        {
-          "keyCode": "CP-401405",
-          "operationSetCode": "VSCodePublisherSign",
-          "parameters" : [],
-          "toolName": "sign",
-          "toolVersion": "1.0"
-        }
-      ]
-    SessionTimeout: 90
-    MaxConcurrency: 25
-    MaxRetryAttempts: 5
-    PendingAnalysisWaitTimeoutMinutes: 5
-  displayName: Sign Extension
-  condition: and(succeeded(), ne(variables['build.reason'], 'PullRequest'))
+- ${{ if parameters.signExtension }}:
+  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@5
+    inputs:
+      ConnectedServiceName: $(ConnectedServiceName)
+      UseMSIAuthentication: true
+      AppRegistrationClientId: $(AppRegistrationClientId)
+      AppRegistrationTenantId: $(AppRegistrationTenantId)
+      EsrpClientId: $(EsrpClientId)
+      AuthAKVName: $(AuthAKVName)
+      AuthCertName: $(AuthCertName)
+      AuthSignCertName: $(AuthSignCertName)
+      ServiceEndpointUrl: $(ESRPServiceEndpointUrl)
+      FolderPath: '$(Build.SourcesDirectory)'
+      Pattern: 'extension.signature.p7s'
+      signConfigType: inlineSignParams
+      inlineOperation: |
+        [
+          {
+            "keyCode": "CP-401405",
+            "operationSetCode": "VSCodePublisherSign",
+            "parameters" : [],
+            "toolName": "sign",
+            "toolVersion": "1.0"
+          }
+        ]
+      SessionTimeout: 90
+      MaxConcurrency: 25
+      MaxRetryAttempts: 5
+      PendingAnalysisWaitTimeoutMinutes: 5
+    displayName: Sign Extension
+    condition: and(succeeded(), ne(variables['build.reason'], 'PullRequest'))
   
 - script: |
     npm run vscode:prepublish
