@@ -69,5 +69,3 @@ extends:
           displayName: Set version number of package and build
 
         - template: /.azure-pipelines/common-steps.yml@self
-          parameters:
-            signExtension: false

@@ -4,7 +4,7 @@
 parameters:
 - name: signExtension
   type: boolean
-  default: true
+  default: false
 
 steps:
 - task: NodeTool@0
