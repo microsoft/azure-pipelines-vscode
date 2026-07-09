@@ -56,6 +56,8 @@ extends:
 
         # do all the normal build stuff
         - template: /.azure-pipelines/common-steps.yml@self
+          parameters:
+            signExtension: true
 
         # if the mini changelog is empty, complain
         - bash: |
