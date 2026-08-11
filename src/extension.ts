@@ -27,26 +27,32 @@ const DOCUMENT_SELECTOR = [
 
 export async function activate(context: vscode.ExtensionContext) {
     telemetryHelper.setTelemetry('isActivationEvent', 'true');
+    logger.log('Activating extension...', 'ExtensionActivation');
+
     await telemetryHelper.callWithTelemetryAndErrorHandling('azurePipelines.activate', async () => {
         await activateYmlContributor(context);
     });
 
     context.subscriptions.push(telemetryHelper);
 
-    logger.log('Extension has been activated!', 'ExtensionActivated');
+    logger.log('Extension has been activated!', 'ExtensionActivation');
     return schemaContributor;
 }
 
 async function activateYmlContributor(context: vscode.ExtensionContext) {
     const serverOptions: languageclient.ServerOptions = getServerOptions(context);
     const clientOptions: languageclient.LanguageClientOptions = getClientOptions();
-    const client = new languageclient.LanguageClient(LANGUAGE_IDENTIFIER, 'Azure Pipelines Language', serverOptions, clientOptions);
+    const client = new languageclient.LanguageClient(LANGUAGE_IDENTIFIER, 'Azure Pipelines Language Server', serverOptions, clientOptions);
 
     const disposable = client.start();
     context.subscriptions.push(disposable);
 
+    logger.log('Waiting for server to start...', 'ExtensionActivation');
+
     // If this throws, the telemetry event in activate() will catch & log it
     await client.onReady();
+
+    logger.log('Server started', 'ExtensionActivation');
 
     // Fired whenever the server is about to validate a YAML file (e.g. on content change),
     // and allows us to return a custom schema to use for validation.
@@ -75,6 +81,7 @@ async function activateYmlContributor(context: vscode.ExtensionContext) {
 
     // Load the schema if we were activated because an Azure Pipelines file.
     if (vscode.window.activeTextEditor?.document.languageId === LANGUAGE_IDENTIFIER) {
+        logger.log('Active file is Azure Pipelines, loading schema', 'ExtensionActivation');
         await loadSchema(context, client);
     }
 
@@ -119,18 +126,25 @@ async function loadSchema(
     context: vscode.ExtensionContext,
     client: languageclient.LanguageClient,
     workspaceFolder?: vscode.WorkspaceFolder): Promise<void> {
+    logger.log('Loading schema...', 'LoadSchema');
     if (workspaceFolder === undefined) {
+        logger.log('Detecting workspace folder', 'LoadSchema');
         const textDocument = vscode.window.activeTextEditor?.document;
         if (textDocument?.languageId !== LANGUAGE_IDENTIFIER) {
+            logger.log('Active file not Azure Pipelines', 'LoadSchema');
             return;
         }
 
         workspaceFolder = vscode.workspace.getWorkspaceFolder(textDocument.uri);
     }
 
+    logger.log(`Using workspace folder '${workspaceFolder?.name}'`, 'LoadSchema');
     const schemaFilePath = await locateSchemaFile(context, workspaceFolder);
     const schema = getSchemaAssociation(schemaFilePath);
+
+    logger.log(`Sending schema '${schemaFilePath}' to server`, 'LoadSchema');
     client.sendNotification(SchemaAssociationNotification.type, schema);
+    logger.log('Sent schema to server', 'LoadSchema');
 }
 
 function getServerOptions(context: vscode.ExtensionContext): languageclient.ServerOptions {

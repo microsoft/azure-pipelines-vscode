@@ -55,11 +55,11 @@ export async function locateSchemaFile(
     // TODO: Support auto-detection for Azure Pipelines files outside of the workspace.
     if (workspaceFolder !== undefined) {
         try {
-            logger.log(`Detecting schema for workspace folder ${workspaceFolder.name}`, 'SchemaDetection');
+            logger.log(`Detecting schema for workspace folder '${workspaceFolder.name}'`, 'SchemaDetection');
             schemaUri = await autoDetectSchema(context, workspaceFolder);
             if (schemaUri) {
                 logger.log(
-                    `Detected schema for workspace folder ${workspaceFolder.name}: ${schemaUri.path}`,
+                    `Detected schema for workspace folder '${workspaceFolder.name}': ${schemaUri.path}`,
                     'SchemaDetection');
                 return schemaUri.path;
             }
@@ -67,7 +67,7 @@ export async function locateSchemaFile(
             // Well, we tried our best. Fall back to the predetermined schema paths.
             // TODO: Re-throw error once we're more confident in the schema detection.
             logger.log(
-                `Error auto-detecting schema for workspace folder ${workspaceFolder.name}: ${String(error)}`,
+                `Error auto-detecting schema for workspace folder '${workspaceFolder.name}': ${String(error)}`,
                 'SchemaDetection');
         }
     }
@@ -89,7 +89,7 @@ export async function locateSchemaFile(
     }
 
     logger.log(
-        `Using hardcoded schema for workspace folder ${workspaceFolder?.name ?? 'ANONYMOUS_WORKSPACE'}: ${schemaUri.path}`,
+        `Using hardcoded schema for workspace folder '${workspaceFolder?.name ?? 'ANONYMOUS_WORKSPACE'}': ${schemaUri.path}`,
         'SchemaDetection');
 
     // TODO: We should update getSchemaAssociations so we don't need to constantly
@@ -347,7 +347,7 @@ async function autoDetectSchema(
 export async function getAzureDevOpsSession(context: vscode.ExtensionContext, options?: vscode.AuthenticationGetSessionOptions): Promise<vscode.AuthenticationSession | undefined> {
     const rawTenantId = vscode.workspace.getConfiguration('azure-pipelines').get<string>('tenant', '');
     const tenantId = rawTenantId.trim().length > 0 ? rawTenantId : undefined;
-    logger.log(`Getting session for tenant ${tenantId ?? 'default'}`, 'SchemaDetection');
+    logger.log(`Getting session for tenant '${tenantId ?? 'default'}'`, 'SchemaDetection');
     const azureDevOpsSession = await vscode.authentication.getSession(
         'microsoft',
         tenantId ? [...AZURE_DEVOPS_SCOPES, `VSCODE_TENANT:${tenantId}`] : AZURE_DEVOPS_SCOPES,
