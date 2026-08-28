@@ -1,5 +1,6 @@
 import { ConnectionData } from 'azure-devops-node-api/interfaces/LocationsInterfaces';
 
+import * as logger from '../../logger';
 import { telemetryHelper, extensionVersion } from '../../helpers/telemetryHelper';
 
 export interface Organization {
@@ -24,6 +25,8 @@ export class OrganizationsClient {
             return [];
         }
 
+        logger.log(`Authenticated user: ${authenticatedUser.id}`, 'OrganizationsClient');
+
         const { value: organizations } = await this.fetch<{ value: Organization[] }>(`https://app.vssps.visualstudio.com/_apis/accounts?memberId=${authenticatedUser.id}&api-version=7.0`);
         this.organizations = organizations.sort((org1, org2) => {
             const account1 = org1.accountName.toLowerCase();
@@ -36,6 +39,7 @@ export class OrganizationsClient {
             return 0;
         });
 
+        logger.log(`Organizations: ${this.organizations.map(org => org.accountName).join(', ')}`, 'OrganizationsClient');
         return this.organizations;
     }
 
