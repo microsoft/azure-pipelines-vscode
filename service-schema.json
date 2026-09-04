@@ -1560,7 +1560,7 @@
                     ]
                 },
                 "mapDockerSocket": {
-                    "description": "Set this flag to false to force the agent not to setup the /var/run/docker.sock volume on container jobs",
+                    "description": "Set to true to map /var/run/docker.sock into the job container on Linux agents. The default is false",
                     "$ref": "#/definitions/boolean"
                 },
                 "options": {
@@ -2614,7 +2614,7 @@
                             ]
                         },
                         "mapDockerSocket": {
-                            "description": "Set this flag to false to force the agent not to setup the /var/run/docker.sock volume on container jobs",
+                            "description": "Set to true to map /var/run/docker.sock into the job container on Linux agents. The default is false",
                             "$ref": "#/definitions/boolean"
                         },
                         "options": {
@@ -2660,7 +2660,7 @@
                     ]
                 },
                 "mapDockerSocket": {
-                    "description": "Set this flag to false to force the agent not to setup the /var/run/docker.sock volume on container jobs",
+                    "description": "Set to true to map /var/run/docker.sock into the job container on Linux agents. The default is false",
                     "$ref": "#/definitions/boolean"
                 },
                 "options": {
