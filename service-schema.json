@@ -4422,15 +4422,6 @@
                             ]
                         },
                         {
-                            "description": "Publish Cobertura or JaCoCo code coverage results from a build",
-                            "deprecationMessage": "PublishCodeCoverageResults is deprecated - Publish Cobertura or JaCoCo code coverage results from a build",
-                            "doNotSuggest": true,
-                            "ignoreCase": "value",
-                            "enum": [
-                                "PowerShellOnTargetMachines@2"
-                            ]
-                        },
-                        {
                             "description": "Publish any of the code coverage results from a build",
                             "doNotSuggest": false,
                             "ignoreCase": "value",
@@ -10035,6 +10026,47 @@
                             "required": [
                                 "EnvironmentName",
                                 "ScriptPath"
+                            ]
+                        }
+                    },
+                    "doNotSuggest": false,
+                    "firstProperty": [
+                        "task"
+                    ],
+                    "required": [
+                        "task",
+                        "inputs"
+                    ]
+                },
+                {
+                    "properties": {
+                        "task": {
+                            "description": "Publish code coverage results v2\n\nPublish any of the code coverage results from a build",
+                            "ignoreCase": "value",
+                            "pattern": "^PublishCodeCoverageResults@2$"
+                        },
+                        "inputs": {
+                            "description": "Publish code coverage results v2 inputs",
+                            "properties": {
+                                "summaryFileLocation": {
+                                    "type": "string",
+                                    "description": "Path to summary files",
+                                    "ignoreCase": "key"
+                                },
+                                "pathToSources": {
+                                    "type": "string",
+                                    "description": "Path to Source files",
+                                    "ignoreCase": "key"
+                                },
+                                "failIfCoverageEmpty": {
+                                    "type": "boolean",
+                                    "description": "Fail if code coverage results are missing",
+                                    "ignoreCase": "key"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "required": [
+                                "summaryFileLocation"
                             ]
                         }
                     },
